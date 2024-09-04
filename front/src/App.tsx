@@ -3,6 +3,7 @@ import { createGlobalStyle, styled } from "styled-components";
 import { RouterProvider } from "react-router-dom";
 import reset from "styled-reset";
 import router from "./router/routes";
+import AppAuthHandler from "./pages/AppAuthHandler";
 
 const GlobalStyles = createGlobalStyle`
   ${reset};
@@ -16,14 +17,13 @@ body{
   }
 
 `;
-const Wrapper = styled.div`
-`;
+const Wrapper = styled.div``;
 
 function App() {
-
   return (
     <Wrapper>
       <GlobalStyles />
+      <AppAuthHandler />
       <RouterProvider router={router} />
     </Wrapper>
   );

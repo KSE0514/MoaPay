@@ -24,17 +24,11 @@ const router = createBrowserRouter([
   },
   {
     path: PATH.BIOMETRICS_LOGIN,
-    element: (
-        <BiometricsLogin />
-    ),
+    element: <BiometricsLogin />,
   },
   {
     path: PATH.CREATE_ACCOUNT,
-    element: (
-      <AuthProvider>
-        <CreateAccount />
-      </AuthProvider>
-    ),
+    element: <CreateAccount />,
   },
 ]);
 

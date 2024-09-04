@@ -1,6 +1,4 @@
-const BiometricsLogin = ()=>{
-    return(
-        <></>
-    )
-}
+const BiometricsLogin = () => {
+  return <></>;
+};
 export default BiometricsLogin;
