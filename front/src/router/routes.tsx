@@ -6,7 +6,7 @@ import AuthProvider from "../pages/AuthProvider";
 import Layout from "../components/layout/Layout/Layout";
 import BiometricsLogin from "../pages/BiometricsLogin/BiometricsLogin";
 import CreateAccount from "../pages/CreateAccount/CreateAccount";
-import Home from "../pages/Home/Home";
+import Home from "../pages/Home/Home.tsx";
 import AppAuthHandler from "../pages/AppAuthHandler";
 
 const router = createBrowserRouter([
@@ -22,7 +22,7 @@ const router = createBrowserRouter([
         ),
         children: [
           {
-            path: "",
+            path: PATH.HOME,
             element: <Home />,
           },
         ],
