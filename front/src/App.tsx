@@ -1,3 +1,4 @@
+import "./styles/font.css";
 import { useEffect, useState } from "react";
 import { createGlobalStyle, styled } from "styled-components";
 import { RouterProvider } from "react-router-dom";
@@ -7,23 +8,22 @@ import AppAuthHandler from "./pages/AppAuthHandler";
 
 const GlobalStyles = createGlobalStyle`
   ${reset};
-  *{
-    box-sizing: border-box; 
-  } 
-  :root{
-  }
-body{
-    font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+
+ *{
+  box-sizing: border-box;
+  font-family: 'Pretendard-Regular';
   }
 
+
 `;
-const Wrapper = styled.div``;
+const Wrapper = styled.div`
+  font-family: "Pretendard-Regular";
+`;
 
 function App() {
   return (
     <Wrapper>
       <GlobalStyles />
-      <AppAuthHandler />
       <RouterProvider router={router} />
     </Wrapper>
   );
