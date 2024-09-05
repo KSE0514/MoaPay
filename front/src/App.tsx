@@ -12,7 +12,14 @@ const GlobalStyles = createGlobalStyle`
  *{
   box-sizing: border-box;
   font-family: 'Pretendard-Regular';
+  
   }
+  .error {
+  color: red;
+  font-size: 12px;
+  margin-bottom: 5px;
+}
+
 
 
 `;

@@ -2,6 +2,17 @@ import styled from "styled-components";
 
 export const Wrapper = styled.div``;
 export const MessageAuthenticationForm = styled.div`
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+    }
+    to {
+      opacity: 1;
+    }
+  }
+  &.fade-in {
+    animation: fadeIn 1.2s ease forwards;
+  }
   padding: 30% 40px 30% 40px;
 `;
 export const Header = styled.div`
@@ -29,7 +40,7 @@ export const Form = styled.div`
     }
   }
   //생년월일 파트
-  .form-row:nth-child(2) {
+  .birth {
     display: flex;
     //주민번호 앞자리와 뒷자리 파트가 40% 60%의 크기를 각자 가져감
     & > *:nth-child(1) {
@@ -67,7 +78,7 @@ export const Form = styled.div`
     }
   }
   //인증번호 파트
-  .form-row:nth-child(5) {
+  .auth-btn {
     display: flex;
     & > button {
       border-radius: 10px;
@@ -92,5 +103,69 @@ export const Form = styled.div`
   .join-btn {
     background-color: #c473f6;
     color: white;
+  }
+`;
+
+export const LogoView = styled.div`
+  @keyframes up {
+    0% {
+      opacity: 0;
+      transform: translateY(50px);
+    }
+    100% {
+      opacity: 1;
+      transform: translateY(0px);
+    }
+  }
+  @keyframes down {
+    0% {
+      opacity: 0;
+      transform: translateY(-50px);
+    }
+    100% {
+      opacity: 1;
+      transform: translateY(0px);
+    }
+  }
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100vh;
+
+  & > div {
+    font-size: 30px;
+    font-weight: 800;
+    padding: 0px 0px 25% 0px;
+    animation: down 2.5s forwards;
+  }
+
+  button {
+    background-color: #c473f6;
+    position: relative;
+    padding: 12px 35px;
+    font-size: 17px;
+    font-weight: 800;
+    color: #181818;
+    border: 3px solid #c473f6;
+    border-radius: 8px;
+    box-shadow: 0 0 0 #fec1958c;
+    transition: all 0.2.5s ease-in-out;
+    cursor: pointer;
+    animation: up 2.5s forwards;
+    & img {
+      width: 15px;
+      height: 20px;
+    }
+  }
+
+  button:hover {
+    background: transparent;
+    color: #181818;
+    box-shadow: 0 0 25px #c473f6;
+  }
+
+  .fil0 {
+    fill: #fffdef;
   }
 `;

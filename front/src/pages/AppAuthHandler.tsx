@@ -28,7 +28,7 @@ const AppAuthHandler: React.FC = () => {
           if (timeDiff > 60000) {
             //이전 로그인 기록이 있는 경우
             if (hasLoggedInBefore) {
-              requestSimpleLogin();
+              requestBiometricsLogin();
             }
             //이전 로그인 기록이 없는 경우
             else {
@@ -53,7 +53,7 @@ const AppAuthHandler: React.FC = () => {
       if (!lastActiveTime) {
         // 사용자가 이전에 로그인한 적이 있는 경우, 간편 로그인 화면으로 이동합니다.
         if (hasLoggedInBefore) {
-          requestSimpleLogin();
+          requestBiometricsLogin();
         }
         // 사용자가 이전에 로그인한 적이 없으면 회원가입 페이지로 이동합니다.
         else {
@@ -70,7 +70,7 @@ const AppAuthHandler: React.FC = () => {
       localStorage.setItem("lastActiveTime", Date.now().toString());
     };
 
-    const requestSimpleLogin = () => {
+    const requestBiometricsLogin = () => {
       console.log("로그인");
       navigate(PATH.BIOMETRICS_LOGIN);
     };

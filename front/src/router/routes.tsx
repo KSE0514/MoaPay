@@ -8,6 +8,7 @@ import BiometricsLogin from "../pages/BiometricsLogin/BiometricsLogin";
 import CreateAccount from "../pages/CreateAccount/CreateAccount";
 import Home from "../pages/Home/Home.tsx";
 import AppAuthHandler from "../pages/AppAuthHandler";
+import PasswordLogin from "../pages/PasswordLogin/PasswordLogin.tsx";
 
 const router = createBrowserRouter([
   {
@@ -35,6 +36,7 @@ const router = createBrowserRouter([
         path: PATH.CREATE_ACCOUNT,
         element: <CreateAccount />,
       },
+      { path: PATH.PASSWORD_LOGIN, element: <PasswordLogin /> },
     ],
   },
 ]);
