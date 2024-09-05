@@ -18,7 +18,11 @@ const GlobalStyles = createGlobalStyle`
   color: red;
   font-size: 12px;
   margin-bottom: 5px;
-}
+  }
+  :root{
+    --light-gray:rgb(217, 217, 217);
+    --light-purple:#c473f6;
+  }
 
 
 

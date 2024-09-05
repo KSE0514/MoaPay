@@ -36,7 +36,7 @@ export const Form = styled.div`
       width: 100%;
       height: 100%;
       border-radius: 10px;
-      border: 2px solid rgb(217, 217, 217);
+      border: 2px solid var(--light-gray);
     }
   }
   //생년월일 파트
@@ -65,11 +65,11 @@ export const Form = styled.div`
           height: 17px;
           width: 17px;
           margin-left: 5px;
-          background-color: rgb(217, 217, 217);
+          background-color: var(--light-gray);
         }
       }
       .line {
-        background-color: rgb(217, 217, 217);
+        background-color: var(--light-gray);
         width: 15px;
         height: 2px;
         margin: 0px 10px;
@@ -87,7 +87,7 @@ export const Form = styled.div`
       margin-left: 10px;
       font-weight: 800;
       color: white;
-      background-color: #c473f6;
+      background-color: var(--light-purple);
     }
   }
   //확인버튼
@@ -101,7 +101,7 @@ export const Form = styled.div`
     color: gray;
   }
   .join-btn {
-    background-color: #c473f6;
+    background-color: var(--light-purple);
     color: white;
   }
 `;
@@ -141,13 +141,13 @@ export const LogoView = styled.div`
   }
 
   button {
-    background-color: #c473f6;
+    background-color: var(--light-purple);
     position: relative;
     padding: 12px 35px;
     font-size: 17px;
     font-weight: 800;
     color: #181818;
-    border: 3px solid #c473f6;
+    border: 3px solid var(--light-purple);
     border-radius: 8px;
     box-shadow: 0 0 0 #fec1958c;
     transition: all 0.2.5s ease-in-out;
@@ -162,7 +162,7 @@ export const LogoView = styled.div`
   button:hover {
     background: transparent;
     color: #181818;
-    box-shadow: 0 0 25px #c473f6;
+    box-shadow: 0 0 25px var(--light-purple);
   }
 
   .fil0 {

@@ -59,6 +59,9 @@ const CreateAccount = () => {
     }
   };
 
+  /**
+   * 유효성검사
+   */
   const validateFields = () => {
     let errors = {};
     // 필수 입력 항목 체크
@@ -74,9 +77,9 @@ const CreateAccount = () => {
     return Object.keys(errors).length === 0;
   };
 
-  /*
-    존재하는 유저인지 판단
-  */
+  /**
+   * 존재하는 유저인지 판단
+   */
   const checkUser = () => {
     //회원 여부 판단 요청
 
@@ -96,20 +99,23 @@ const CreateAccount = () => {
     }
   };
 
-  const join = () => {};
-
-  /*
-    인증번호 받아오기
-  */
+  /**
+   * 인증번호 받아오기
+   */
   const getAuthNumber = () => {
     if (!validateFields()) {
       return; // 유효성 검사 통과하지 못하면 중단
     }
 
     // 인증번호 발급 로직
-    setAuthSent(false); // 인증번호 발급됨
+    setAuthSent(true); // 인증번호 발급됨
     setBtnMent("인증번호 재발송");
   };
+
+  /**
+   * 회원가입
+   */
+  const join = () => {};
 
   return (
     <Wrapper>
