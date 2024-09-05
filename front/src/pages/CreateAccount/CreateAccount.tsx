@@ -91,9 +91,8 @@ const CreateAccount = () => {
       navigate(PATH.PASSWORD_LOGIN, {
         state: {
           ment: `앱을 켜려면\n비밀번호를 눌러주세요`,
-          doubleCheck: false,
-          beforePasswordCheck: false,
           back: false,
+          mode: "Login",
         },
       });
     }

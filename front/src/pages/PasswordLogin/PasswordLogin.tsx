@@ -18,7 +18,7 @@ import {
 const PasswordLogin: React.FC = () => {
   const location = useLocation();
 
-  const { ment, doubleCheck, back, beforePasswordCheck } =
+  const { ment, back, mode } =
     (location.state as {
       ment: string;
       doubleCheck: boolean;
@@ -27,7 +27,6 @@ const PasswordLogin: React.FC = () => {
     }) || {};
   const [password, setPassword] = useState<string>(""); // 입력한 비밀번호
   const [doubleCheckPassword, setDoubleCheckPassword] = useState<string>(""); //2차 검증 비밀번호
-  const [beforeCheckPassoword, setBeforeCheckPassoword] = useState<string>(""); // 비밀번호 변경 전 확인용 비밀번호
   const [keyPads, setKeyPads] = useState<string[]>([
     "1",
     "2",
@@ -81,6 +80,15 @@ const PasswordLogin: React.FC = () => {
    */
   useEffect(() => {
     if (password.length == 6) {
+      if (mode == "Login") {
+        //비밀번호 유효성 검사 후 home으로 이동
+      } else if (mode == "Pay") {
+        //결제로 이동
+      } else if (mode == "Join") {
+        //2차검증
+      } else if (mode == "SettingPassword") {
+        //비밀번호 변경시작
+      }
     }
   }, [password]);
   return (
