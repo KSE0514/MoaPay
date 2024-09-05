@@ -84,7 +84,7 @@ const CreateAccount = () => {
     //회원 여부 판단 요청
 
     //요청 결과에 따라 비밀번호 로그인 또는 회원가입으로 전달
-    if (false) {
+    if(true) {
       //회원가입
       setIsAuth(true);
     } else {
@@ -106,7 +106,7 @@ const CreateAccount = () => {
       return; // 유효성 검사 통과하지 못하면 중단
     }
 
-    // 인증번호 발급 로직
+    // 인증번호 발급하기
     setAuthSent(true); // 인증번호 발급됨
     setBtnMent("인증번호 재발송");
   };
@@ -114,7 +114,20 @@ const CreateAccount = () => {
   /**
    * 회원가입
    */
-  const join = () => {};
+  const join = () => {
+    //인증 번호가 일치하는지 확인
+    
+    //회원 가입 요청 보내기
+
+    //응답 받으면 PasswordLogin로 이동시키기
+    navigate(PATH.PASSWORD_LOGIN, {
+        state: {
+          ment: `간편 비밀번호를\n입력해주세요`,
+          back: false,
+          mode: "Join",
+        },
+      });
+  };
 
   return (
     <Wrapper>
