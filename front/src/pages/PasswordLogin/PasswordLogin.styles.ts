@@ -33,9 +33,12 @@ export const Ment = styled.div`
   text-align: center;
   color: black;
   line-height: 30px;
-  font-size: 20px;
+  font-size: 19px;
   font-weight: 560;
   padding-top: 40px;
+  @media screen and (max-width: 400px) {
+    font-size: 17px;
+  }
 `;
 export const PasswordView = styled.div`
   @keyframes ddiyoung {
@@ -73,6 +76,10 @@ export const KeyPad = styled.div`
     border-radius: 10px;
     font-size: 20px;
     font-weight: 800;
+    @media screen and (max-width: 400px) {
+      width: 55px;
+      height: 55px;
+    }
   }
   button:hover {
     background-color: var(--light-purple);
