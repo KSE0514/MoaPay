@@ -11,6 +11,7 @@ export const Wrapper = styled.div`
   border-top: 3px solid #4a4a4a;
   border-top-right-radius: 20px;
   border-top-left-radius: 20px;
+  background-color: white;
 `;
 export const StyledIcon = styled(FontAwesomeIcon)`
   width: 48px;
