@@ -94,25 +94,71 @@ align-items: center;
 `;
 
 export const CardList = styled.div`
-    flex: 1;
-    height: 500px;
-    overflow-y: scroll;
-    &>img,&>div{
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: relative;
+  perspective:100px;
+  transform-style: preserve-3d;
+  flex: 1;
+  height: 500px;
+  width: 100%;
+    /* overflow-y: scroll; */
+    .container{
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      flex-direction: column;
+      overflow: hidden;
+      width:100%;
+    }
+    .card{
       width: 336px;
       height: 212px;
-    }  
-  &>div{
+      transition:0.5s;
+      position:absolute;
+    }
+    img{
+      width: 100%;
+    }
+    .card:nth-of-type(1){  
+      transform:translateY(-75px) translateZ(-0.2px);
+      width: 88%;
+    }
+    .card:nth-of-type(2){  
+      z-index: 10;
+    }
+    .card:nth-of-type(3){
+      transform:translateY(75px) translateZ(-0.2px);
+      width: 88%;
+    }
+
+  .add-card{
+    background-color:white;
     color:rgba(125, 136, 255, 0.86);
     border:3px dotted rgba(125, 136, 255, 0.86);
     border-radius: 33px;
     display: flex;
     justify-content: center;
-    padding:28px 90px 0px 90px;
+    padding:25px 0px 0px 0px;
     font-size: 20px;
     p{
       margin-top: 5px;
     }
   }
+  /* 두 번째 .add-card에 스타일 적용 */
+  .add-card-big{
+    padding: 0px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+
+  .add-card-bigp {
+    margin-top: 0px;
+  }
+
+  
 `
 export const PlusIcon = styled(FontAwesomeIcon)`
   height: 13px;
