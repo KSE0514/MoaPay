@@ -59,7 +59,7 @@ const Home = () => {
 
   //카드 정보 받아오기
   useEffect(()=>{
-    setCardList(["null","/src/assets/image/card.png","/src/assets/image/cards/신용카드이미지/100_신한카드_Air_One.png",]);
+    setCardList(["null","/src/assets/image/card.png","/src/assets/image/cards/신용카드이미지/100_신한카드_Air_One.png","/src/assets/image/cards/신용카드이미지/12_올바른_FLEX_카드.png",]);
   },[]);
   return (
     <Wrapper>

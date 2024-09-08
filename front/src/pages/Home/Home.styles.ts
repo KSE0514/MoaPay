@@ -73,7 +73,7 @@ align-items: center;
   padding:5px 31px;
   background-color: rgba(214, 125, 249, 0.62);
   border-radius: 21px;
-  margin: 62px 0px 35px 0px ;
+  margin: 32px 0px 55px 0px ;
 }
 .tri{
   position: absolute;
@@ -117,9 +117,10 @@ export const CardList = styled.div`
       height: 212px;
       transition:0.5s;
       position:absolute;
-    }
-    img{
+      &>img{
       width: 100%;
+      height: 100%;
+      }
     }
     .card:nth-of-type(1){  
       transform:translateY(-75px) translateZ(-0.2px);
@@ -132,8 +133,11 @@ export const CardList = styled.div`
       transform:translateY(75px) translateZ(-0.2px);
       width: 88%;
     }
+    .card:nth-of-type(n+4) {
+      display: none;
+    }
 
-  .add-card{
+   .add-card{
     background-color:white;
     color:rgba(125, 136, 255, 0.86);
     border:3px dotted rgba(125, 136, 255, 0.86);
@@ -147,17 +151,16 @@ export const CardList = styled.div`
     }
   }
   /* 두 번째 .add-card에 스타일 적용 */
-  .add-card-big{
+  .card:nth-of-type(2).add-card {
+    font-size: 25px;
     padding: 0px;
     display: flex;
     justify-content: center;
     align-items: center;
+    p{
+      margin-top: 0px;
+    }
   }
-
-  .add-card-bigp {
-    margin-top: 0px;
-  }
-
   
 `
 export const PlusIcon = styled(FontAwesomeIcon)`
