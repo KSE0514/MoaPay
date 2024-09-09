@@ -1,3 +1,4 @@
+// router.tsx
 import { createBrowserRouter } from "react-router-dom";
 import { PATH } from "../constants/path";
 import ProtectedRoute from "../pages/ProtectedRoute";
@@ -5,30 +6,89 @@ import AuthProvider from "../pages/AuthProvider";
 import Layout from "../components/layout/Layout/Layout";
 import BiometricsLogin from "../pages/BiometricsLogin/BiometricsLogin";
 import CreateAccount from "../pages/CreateAccount/CreateAccount";
-import Home from "../pages/Home/Home";
-
+import Home from "../pages/Home/Home.tsx";
+import AppAuthHandler from "../pages/AppAuthHandler";
+import PasswordLogin from "../pages/PasswordLogin/PasswordLogin.tsx";
+import CardRecommend from "../pages/CardRecommend/CardRecommend.tsx";
+import Setting from "../pages/Setting/Setting.tsx";
+import Statistics from "../pages/Statistics/Statistics.tsx";
+import Consulting from "../pages/Statistics/Components/Consulting/Consulting.tsx";
+import Analysis from "../pages/Statistics/Components/Analysis/Analysis.tsx";
+import Benefits from "../pages/Statistics/Components/Benefits/Benefits.tsx";
+import Consumption from "../pages/Statistics/Components/Consumption/Consumption.tsx";
+import PaymentRecommendation from "../pages/PaymentRecommendation/PaymentRecommendation.tsx";
+import UserCardDetail from "../pages/UserCardDetail/UserCardDetail.tsx";
 const router = createBrowserRouter([
   {
-    path: PATH.ROOT,
-    element: (
-      <ProtectedRoute>
-        <Layout />
-      </ProtectedRoute>
-    ),
+    element: <AppAuthHandler />, // 최상위 레이아웃으로 AppAuthHandler 설정
     children: [
       {
-        path: "",
-        element: <Home />,
+        path: PATH.ROOT,
+        element: (
+          <ProtectedRoute>
+            <Layout />
+          </ProtectedRoute>
+        ),
+        children: [
+          {
+            path: PATH.HOME,
+            element: <Home />,
+          },
+          {
+            path: PATH.CARD_RECOMMEND,
+            element: <CardRecommend />,
+          },
+          {
+            path: PATH.SETTING,
+            element: <Setting />,
+          },
+          {
+            path: PATH.STATISTICS,
+            element: <Statistics />,
+            children: [
+              {
+                path: PATH.STATISTICS_CONSULTING,
+                element: <Consulting />,
+              },
+              {
+                path: PATH.STATISTICS_ANALYSIS,
+                element: <Analysis />,
+              },
+              {
+                path: PATH.STATISTICS_BENEFITS,
+                element: <Benefits />,
+              },
+              {
+                path: PATH.STATISTICS_CONSUMPTION,
+                element: <Consumption />,
+              },
+            ],
+          },
+          {
+            path: PATH.PAYMENT_RECOMMENDATION,
+            element: <PaymentRecommendation />,
+          },
+          {
+            path: PATH.USER_CARD_LIST,
+            element: <UserCardDetail />,
+          },
+          {
+            path: PATH.USER_CARD_DETAIL,
+            element: <UserCardDetail />,
+          },
+        ],
       },
+      {
+        path: PATH.BIOMETRICS_LOGIN,
+        element: <BiometricsLogin />,
+      },
+      {
+        path: PATH.CREATE_ACCOUNT,
+        element: <CreateAccount />,
+      },
+      { path: PATH.PASSWORD_LOGIN, element: <PasswordLogin /> },
+      {},
     ],
-  },
-  {
-    path: PATH.BIOMETRICS_LOGIN,
-    element: <BiometricsLogin />,
-  },
-  {
-    path: PATH.CREATE_ACCOUNT,
-    element: <CreateAccount />,
   },
 ]);
 
