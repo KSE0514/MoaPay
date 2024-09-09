@@ -18,6 +18,8 @@ import Benefits from "../pages/Statistics/Components/Benefits/Benefits.tsx";
 import Consumption from "../pages/Statistics/Components/Consumption/Consumption.tsx";
 import PaymentRecommendation from "../pages/PaymentRecommendation/PaymentRecommendation.tsx";
 import UserCardDetail from "../pages/UserCardDetail/UserCardDetail.tsx";
+
+import Dutchpay from "../pages/Dutchpay/Dutchpay.tsx";
 const router = createBrowserRouter([
   {
     element: <AppAuthHandler />, // 최상위 레이아웃으로 AppAuthHandler 설정
@@ -87,7 +89,10 @@ const router = createBrowserRouter([
         element: <CreateAccount />,
       },
       { path: PATH.PASSWORD_LOGIN, element: <PasswordLogin /> },
-      {},
+      { 
+        path: PATH.DUTCHPAY,
+        element: <Dutchpay />,
+      },
     ],
   },
 ]);
