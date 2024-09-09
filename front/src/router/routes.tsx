@@ -12,10 +12,10 @@ import PasswordLogin from "../pages/PasswordLogin/PasswordLogin.tsx";
 import CardRecommend from "../pages/CardRecommend/CardRecommend.tsx";
 import Setting from "../pages/Setting/Setting.tsx";
 import Statistics from "../pages/Statistics/Statistics.tsx";
-import Consulting from "../pages/Statistics/Components/Consulting/Consulting.tsx";
-import Analysis from "../pages/Statistics/Components/Analysis/Analysis.tsx";
-import Benefits from "../pages/Statistics/Components/Benefits/Benefits.tsx";
-import Consumption from "../pages/Statistics/Components/Consumption/Consumption.tsx";
+import Consulting from "../pages/Statistics/Consulting/Consulting.tsx";
+import Analysis from "../pages/Statistics/Analysis/Analysis.tsx";
+import Benefits from "../pages/Statistics/Benefits/Benefits.tsx";
+import Consumption from "../pages/Statistics/Consumption/Consumption.tsx";
 import PaymentRecommendation from "../pages/PaymentRecommendation/PaymentRecommendation.tsx";
 import UserCardDetail from "../pages/UserCardDetail/UserCardDetail.tsx";
 const router = createBrowserRouter([

@@ -1,38 +1,20 @@
 import { Outlet } from "react-router-dom";
 import { useState, useEffect } from "react";
-import {
-  Wrapper,
-  Layout,
-  Top,
-  Bottom,
-  Month,
-  Nav,
-  Circle,
-  Text,
-} from "./Statistics.styles";
+import { Wrapper, Layout, WaveDiv, OutletWrapper } from "./Statistics.styles";
 const Statistics = () => {
   const [isConsultingMode, setIsConsultingMode] = useState<boolean>(false);
-  const [month, setMonth] = useState<string>();
   return (
     <>
-      {isConsultingMode ? (
-        <Wrapper>
+      {!isConsultingMode ? (
+        <Wrapper className="Wrapper">
           <Layout>
-            <div></div>
-            <div></div>
-            <div></div>
+            <div className="first-wave"></div>
+            <WaveDiv>
+              <div className="second-wave"></div>
+              <div className="last-wave"></div>
+            </WaveDiv>
           </Layout>
-          <Top>
-            <Month></Month>
-            <div>
-              <Circle></Circle>
-              <Text></Text>
-            </div>
-          </Top>
-          <Bottom>
-            <Nav></Nav>
-            <Outlet />
-          </Bottom>
+          <Outlet />
         </Wrapper>
       ) : (
         <Outlet />
