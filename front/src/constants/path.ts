@@ -5,7 +5,7 @@ const PATH = {
   CREATE_ACCOUNT: "/create-account", //nonav
   PASSWORD_LOGIN: "/password-login", //nonav
   CARD_RECOMMEND: "/card-recommend",
-  STATISTICS: "/statistics",
+  STATISTICS: "/statistics/",
   SETTING: "/setting",
   PAYMENT_RECOMMENDATION: "/payment-recommendation", //nonav
   STATISTICS_CONSULTING: "consulting",
