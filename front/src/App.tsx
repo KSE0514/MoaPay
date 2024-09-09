@@ -22,6 +22,7 @@ const GlobalStyles = createGlobalStyle`
   :root{
     --light-gray:rgb(217, 217, 217);
     --light-purple:#c473f6;
+    --day-font:"Reem Kufi Ink", sans-serif;
   }
 
 

@@ -1,14 +1,19 @@
 import { styled } from "styled-components";
 import "../../assets/image/secondWave.png";
 export const Wrapper = styled.div`
+  display: flex;
+  flex-direction: column;
   width: 100%;
+  height: 100%;
+  padding:0px 20px 113.5px 20px;
 `;
 export const Layout = styled.div`
   position: relative;
   width: 100%;
   .first-wave {
     position: absolute;
-    background-color: rgba(86, 59, 237, 0.43);
+    background-color: #a26eef;
+    border:none;
     z-index: 2;
     border-radius: 50%;
     height: 500px;
@@ -18,45 +23,39 @@ export const Layout = styled.div`
   }
 `;
 export const WaveDiv = styled.div`
-  position: absolute;
   width: 100%;
-  top: 0;
-  .second-wave {
+  &>div{
     position: absolute;
-    top: -20px;
-    z-index: 1;
-    background: url("/src/assets/image/secondWave.png") repeat-x;
-    width: 3200px;
-    height: 508px;
-    animation: wave 5s cubic-bezier(0.36, 0.45, 0.63, 0.53) infinite;
-    /* transform: translate3d(0, 0, 0); */
-  }
-  .last-wave {
-    position: absolute;
-    background: url("/src/assets/image/lastWave.png") repeat-x;
-    z-index: 0;
-    width: 3200px;
-    height: 508px;
-    animation: wave 5s cubic-bezier(0.36, 0.45, 0.63, 0.53) infinite;
+    width:20000px;
+    height:380px;
     transform: translate3d(0, 0, 0);
   }
+  .second-wave {
+    z-index: 1;
+    background: url("/src/assets/image/secondWave.png") repeat-x;
+    animation: first-wave 10s cubic-bezier(0.36, 0.45, 0.63, 0.53) infinite;
+  }
+  .last-wave {
+    background: url("/src/assets/image/lastWave.png") repeat-x;
+    z-index: 0;
+    animation: second-wave 40s cubic-bezier(0.36, 0.45, 0.63, 0.53) infinite;
+  }
 
-  @keyframes wave {
+  @keyframes first-wave {
     0% {
       margin-left: 0;
     }
     100% {
-      margin-left: -3000px;
+      margin-left: -1600px;
+    }
+  }
+    @keyframes second-wave {
+    0% {
+      margin-left: 0;
+    }
+    100% {
+      margin-left: -2733px;
     }
   }
 
-  @keyframes swell {
-    0%,
-    100% {
-      transform: translate3d(0, -25px, 0);
-    }
-    50% {
-      transform: translate3d(0, 5px, 0);
-    }
-  }
 `;

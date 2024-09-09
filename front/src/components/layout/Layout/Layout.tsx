@@ -14,7 +14,7 @@ const Layout = () => {
   console.log("isNoNav", isNoNav); // 디버깅을 위해 추가
 
   return (
-    <Wrapper>
+    <Wrapper className="LayouyWrapper">
       <Outlet />
       {/* 경로가 일치하지 않을 때만 Nav 표시 */}
       {!isNoNav && <Nav />}
