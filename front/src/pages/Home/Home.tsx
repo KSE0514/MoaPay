@@ -1,6 +1,6 @@
 import styled from "styled-components";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faRepeat,faBars,faPlus } from "@fortawesome/free-solid-svg-icons";
+import { faRepeat, faBars, faPlus } from "@fortawesome/free-solid-svg-icons";
 import {
   Top,
   Bottom,
@@ -9,12 +9,13 @@ import {
   Time,
   ButtonArea,
   Wrapper,
-  CardList,PlusIcon
+  CardList,
+  PlusIcon,
 } from "./Home.styles";
-import barcode from "../../assets/image/barcode.png"
-import { useRef, useState, useEffect } from 'react';
+import barcode from "../../assets/image/barcode.png";
+import { useRef, useState, useEffect } from "react";
 const Home = () => {
-  const [cardList,setCardList] = useState<string[]>([]);
+  const [cardList, setCardList] = useState<string[]>([]);
   const containerRef = useRef<HTMLDivElement | null>(null);
   let startY = 0;
 
@@ -40,9 +41,9 @@ const Home = () => {
   // 마지막 카드를 첫 번째로 이동 (위로 스와이프)
   const handleSlideUp = () => {
     if (containerRef.current) {
-      const cards = containerRef.current.querySelectorAll('.card');
+      const cards = containerRef.current.querySelectorAll(".card");
       if (cards.length > 0) {
-        containerRef.current.prepend(cards[cards.length - 1]);
+        containerRef.current.append(cards[0]);
       }
     }
   };
@@ -50,17 +51,22 @@ const Home = () => {
   // 첫 번째 카드를 마지막으로 이동 (아래로 스와이프)
   const handleSlideDown = () => {
     if (containerRef.current) {
-      const cards = containerRef.current.querySelectorAll('.card');
+      const cards = containerRef.current.querySelectorAll(".card");
       if (cards.length > 0) {
-        containerRef.current.append(cards[0]);
+        containerRef.current.prepend(cards[cards.length - 1]);
       }
     }
   };
 
   //카드 정보 받아오기
-  useEffect(()=>{
-    setCardList(["null","/src/assets/image/card.png","/src/assets/image/cards/신용카드이미지/100_신한카드_Air_One.png","/src/assets/image/cards/신용카드이미지/12_올바른_FLEX_카드.png",]);
-  },[]);
+  useEffect(() => {
+    setCardList([
+      "null",
+      "/src/assets/image/card.png",
+      "/src/assets/image/cards/신용카드이미지/100_신한카드_Air_One.png",
+      "/src/assets/image/cards/신용카드이미지/12_올바른_FLEX_카드.png",
+    ]);
+  }, []);
   return (
     <Wrapper>
       <Top>
@@ -85,26 +91,28 @@ const Home = () => {
           <FontAwesomeIcon icon={faBars} />
           <p>편집</p>
         </div>
-        <CardList>    
+        <CardList>
           <div
             className="container"
             ref={containerRef}
             onTouchStart={handleTouchStart} // 터치 시작 이벤트 처리
-            onTouchEnd={handleTouchEnd}     // 터치 종료 이벤트 처리
-          > 
-          {
-           cardList.map((card, index) => (
-            card=="null"?(
-              <div className="card add-card" >
-                <div>
-                  <PlusIcon icon={faPlus} />
+            onTouchEnd={handleTouchEnd} // 터치 종료 이벤트 처리
+          >
+            {cardList.map((card, index) =>
+              card == "null" ? (
+                <div className="card add-card">
+                  <div>
+                    <PlusIcon icon={faPlus} />
+                  </div>
+                  <p>카드 등록하기</p>
                 </div>
-                <p>카드 등록하기</p>
-              </div>
-              ):
-              (<div className="card"><img src={card}/></div>)
-          ))}
-          </div> 
+              ) : (
+                <div className="card">
+                  <img src={card} />
+                </div>
+              )
+            )}
+          </div>
         </CardList>
         <div className="remaining-performance">다음 실적까지 100,000원</div>
         <div className="tri tri-left"></div>
