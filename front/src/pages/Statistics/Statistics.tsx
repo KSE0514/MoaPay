@@ -1,6 +1,6 @@
 import { Outlet } from "react-router-dom";
 import { useState, useEffect } from "react";
-import { Wrapper, Layout, WaveDiv, OutletWrapper } from "./Statistics.styles";
+import { Wrapper, Layout, WaveDiv } from "./Statistics.styles";
 const Statistics = () => {
   const [isConsultingMode, setIsConsultingMode] = useState<boolean>(false);
   return (

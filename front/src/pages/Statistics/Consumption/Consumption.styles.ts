@@ -8,7 +8,6 @@ export const Top = styled.div`
     color: white;
   }
 `;
-export const Bottom = styled.div``;
 export const Month = styled.div`
   z-index: 20;
   padding-top: 20px;
@@ -105,4 +104,21 @@ export const Text = styled.div`
   font-size: 28px;
   font-weight:600;
 `;
-export const Nav = styled.div``;
+
+// botton
+
+export const Bottom = styled.div`
+  width: 100%;
+  margin-top: 143px;
+`;
+
+export const Nav = styled.div`
+  display: flex;
+  width: 100%;
+  li{
+    width: 25%;
+    font-size: 18px;
+    list-style:none;
+    text-align: center;
+  }
+`;

@@ -27,7 +27,7 @@ export const WaveDiv = styled.div`
   &>div{
     position: absolute;
     width:20000px;
-    height:380px;
+    height:400px;
     transform: translate3d(0, 0, 0);
   }
   .second-wave {
@@ -59,3 +59,4 @@ export const WaveDiv = styled.div`
   }
 
 `;
+

@@ -1,8 +1,13 @@
 import { useEffect, useState } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCaretDown, faCaretUp } from "@fortawesome/free-solid-svg-icons";
-import { Top, Bottom, Month, Nav, Circle, Text, DropDownIcon,Info } from "./Consumption.styles";
+import { Top, Bottom, Month, Nav, Circle, Text, DropDownIcon,Info ,List} from "./Consumption.styles";
 
+interface data{
+  name:string,
+  money:number,
+
+}
 const Consumption = () => {
   const [selectedMonth, setSelectedMonth] = useState<string>(`${new Date().getFullYear()}.${String(new Date().getMonth() + 1).padStart(2, '0')}`); //이번 달을 첫 데이터값으로 지정
   const [openDropDown, setOpenDropDown] = useState<boolean>(false); //드롭다운 펼치기 여부
@@ -10,7 +15,7 @@ const Consumption = () => {
   const [iconAnimateClass, setIconAnimateClass] = useState<string>(""); //아이콘 애니메이션 여부
   const [isFirstRender, setIsFirstRender] = useState<boolean>(true); // 첫 렌더링 체크 플래그
   const [money,setMoney] = useState<string>("100,000");
-
+  const [dataList,setDataList] = useState<data[]>([]);
   const OpenDropDown = () => {
     if (openDropDown) {
       setCloseAnimateClass(true);
@@ -77,6 +82,7 @@ const Consumption = () => {
           <li>통계</li>
           <li>절약</li>
         </Nav>
+        <List></List>
       </Bottom>
     </>
   );
