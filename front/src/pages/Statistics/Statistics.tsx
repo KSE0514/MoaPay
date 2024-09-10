@@ -1,19 +1,14 @@
 import { Outlet } from "react-router-dom";
 import { useState, useEffect } from "react";
-import { Wrapper, Layout, WaveDiv } from "./Statistics.styles";
+import { Wrapper } from "./Statistics.styles";
+import Wave from "../../components/statistics/Wave/Wave";
 const Statistics = () => {
   const [isConsultingMode, setIsConsultingMode] = useState<boolean>(false);
   return (
     <>
       {!isConsultingMode ? (
         <Wrapper className="Wrapper">
-          <Layout>
-            <div className="first-wave"></div>
-            <WaveDiv>
-              <div className="second-wave"></div>
-              <div className="last-wave"></div>
-            </WaveDiv>
-          </Layout>
+          <Wave />
           <Outlet />
         </Wrapper>
       ) : (

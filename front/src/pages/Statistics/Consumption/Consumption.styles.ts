@@ -1,7 +1,8 @@
 import { styled } from "styled-components";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
 export const Top = styled.div`
+  margin-top: 10px;
   * {
     position: relative;
     z-index: 10;
@@ -13,46 +14,46 @@ export const Month = styled.div`
   padding-top: 20px;
   font-family: var(--day-font);
   @keyframes binggle {
-   0%{
-    transform: rotateZ(-180deg);
-   }
-   100%{
-    transform: rotateZ(0deg);
-   } 
+    0% {
+      transform: rotateZ(-180deg);
+    }
+    100% {
+      transform: rotateZ(0deg);
+    }
   }
   @keyframes down {
-    0%{
+    0% {
       max-height: 0px;
-       padding: 0 20px 0 10px;
+      padding: 0 20px 0 10px;
     }
-    100%{
+    100% {
       max-height: 300px;
-       padding: 10px 20px 15px 10px;
+      padding: 10px 20px 15px 10px;
     }
   }
-    @keyframes up{
-    0%{
+  @keyframes up {
+    0% {
       max-height: 300px;
-       padding: 10px 20px 15px 10px;
+      padding: 10px 20px 15px 10px;
     }
-    100%{
+    100% {
       max-height: 0px;
-       padding: 0 20px 0 10px;
+      padding: 0 20px 0 10px;
     }
   }
-  .dropdown-btn{
+  .dropdown-btn {
     position: relative;
     font-size: 40px;
     display: flex;
     align-items: center;
-    p{
+    p {
       margin-right: 14px;
     }
   }
-  .binggle{
+  .binggle {
     animation: binggle 0.8s linear;
   }
-  .dropdown-menu{
+  .dropdown-menu {
     position: absolute;
     margin-top: 10px;
     width: fit-content;
@@ -61,24 +62,23 @@ export const Month = styled.div`
     font-size: 40px;
     max-height: 0;
     overflow: hidden;
-    li{
-      color: #a26eef; 
+    li {
+      color: #a26eef;
       width: fit-content;
       margin-bottom: 7px;
-      border-bottom: 1.5px solid  #a26eef;
+      border-bottom: 1.5px solid #a26eef;
     }
-    li:last-child{
+    li:last-child {
       margin-bottom: 0px;
     }
   }
 
-  .dropdown-menu.open{
-      animation: down 1s forwards;
+  .dropdown-menu.open {
+    animation: down 1s forwards;
   }
-  .dropdown-menu.close{
+  .dropdown-menu.close {
     animation: up 1s forwards;
   }
-  
 `;
 export const DropDownIcon = styled(FontAwesomeIcon)`
   width: 20px;
@@ -86,23 +86,17 @@ export const DropDownIcon = styled(FontAwesomeIcon)`
 
 export const Info = styled.div`
   width: 100%;
-  margin-top:36px;
+  margin-top: 25px;
   display: flex;
   align-items: center;
-  justify-content:space-evenly;
-`
-export const Circle = styled.div`
-  width: 180px;
-  height: 180px;
-  border-radius: 50%;
-  background-color: skyblue;
-  margin-left: -5px;
+  justify-content: space-around;
 `;
+
 export const Text = styled.div`
   text-align: center;
   line-height: 61px;
   font-size: 28px;
-  font-weight:600;
+  font-weight: 500;
 `;
 
 // botton
@@ -112,13 +106,4 @@ export const Bottom = styled.div`
   margin-top: 143px;
 `;
 
-export const Nav = styled.div`
-  display: flex;
-  width: 100%;
-  li{
-    width: 25%;
-    font-size: 18px;
-    list-style:none;
-    text-align: center;
-  }
-`;
+export const List = styled.div``;
