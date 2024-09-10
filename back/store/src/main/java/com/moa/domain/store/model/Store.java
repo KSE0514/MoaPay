@@ -3,6 +3,7 @@ package com.moa.domain.store.model;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
+import lombok.*;
 import org.springframework.cglib.core.Local;
 
 import com.fasterxml.uuid.Generators;
@@ -16,15 +17,11 @@ import jakarta.persistence.Id;
 import jakarta.persistence.PrePersist;
 import jakarta.persistence.PreUpdate;
 import jakarta.validation.constraints.NotNull;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
 
 @Entity
 @Getter
 @Builder
-@NoArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
 public class Store {
 
