@@ -36,7 +36,7 @@ const Statistics = () => {
   );
 
   // test data
-  const [dataList, setDataList] = useState<data[]>([{img:"",cateory:"",money:50000,per:50},{img:"",cateory:"",money:50000,per:50},{img:"",cateory:"",money:50000,per:50},{img:"",cateory:"",money:50000,per:50},{img:"",cateory:"",money:50000,per:50},]);
+  const [dataList, setDataList] = useState<data[]>([{img:"",cateory:"미용",money:50000,per:50},{img:"",cateory:"식비",money:50000,per:50},{img:"",cateory:"",money:50000,per:50},{img:"",cateory:"",money:50000,per:50},{img:"",cateory:"여행",money:50000,per:50},]);
   
   /**
    * 드롭다운 컨트롤 함수
@@ -60,10 +60,22 @@ const Statistics = () => {
     setNavPosition(`calc(calc(100% / 4) * ${index})`);
     //데이터 요청받아서 navigate할때 같이 보내줘야함 -> navigator(paths[index],{state:[datalist]]})
     //받을 때는 locationt사용   const location = useLocation();  const data = location.state;
-    if(index==0||index==1)setMode("Donut")
-    else if(index==2)setMode("BarGraph")
-    else setMode("Ano")
-    navigator(paths[index]);
+    if(index==0){
+      setMode("Donut")
+      navigator(paths[index],{state:dataList});
+    }
+    else if( index==1){
+      setMode("Donut")
+      navigator(paths[index],{state:dataList});
+    }
+    else if(index==2){
+      setMode("BarGraph")
+      navigator(paths[index]);
+    }
+    else {
+      setMode("Ano")
+      navigator(paths[index]);
+    }
   };
 
   /**

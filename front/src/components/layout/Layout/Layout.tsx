@@ -11,8 +11,6 @@ const Layout = () => {
     matchPath({ path: PATH.USER_CARD_LIST }, location.pathname) ||
     matchPath({ path: PATH.USER_CARD_DETAIL }, location.pathname);
 
-  console.log("isNoNav", isNoNav); // 디버깅을 위해 추가
-
   return (
     <Wrapper className="LayouyWrapper">
       <Outlet />
