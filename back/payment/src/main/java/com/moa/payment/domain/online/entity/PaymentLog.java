@@ -1,10 +1,9 @@
 package com.moa.payment.domain.online.entity;
 
-import com.moa.payment.domain.online.model.dto.Status;
+import com.moa.payment.domain.online.model.Status;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import lombok.*;
-
 import java.time.LocalDateTime;
 import java.util.UUID;
 
