@@ -1,8 +1,12 @@
+import triangle from "./../../assets/image/triangle.png"
+import Participant from "../../components/dutch/Participant/Participant";
+
 import {
   Wrapper,
   Top,
   LinkBox,
-  Triangle,
+  Main,
+  BackImg,
 } from './Dutchpay.styles'
 
 const Dutchpay = () => {
@@ -15,8 +19,19 @@ const Dutchpay = () => {
           인원을 설정해주세요.
         </LinkBox>
       </Top>
-      <Triangle>
-      </Triangle>
+
+      <Main>
+        {/* 3. 더치페이하는 상품 정보 */}
+        {/* 2. 참여자 목록 컴포넌트 */}
+        <Participant />
+      </Main>
+
+      {/* 배경 도형 */}
+      <BackImg>
+        <img src={triangle}/>
+        <img src={triangle}/>
+        <img src={triangle}/>
+      </BackImg>
     </Wrapper>
   )
 };

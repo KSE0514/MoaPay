@@ -1,7 +1,9 @@
 import styled from "styled-components";
 
 export const Wrapper = styled.div`
-
+  position: relative;
+  height: 100vh;
+  // width: 100vw;
 `
 
 export const Top = styled.div`
@@ -14,6 +16,19 @@ export const Top = styled.div`
   font-weight: 700;
 `
 
+export const Main = styled.div`
+  position: relative;
+  width: 80%;
+  height: 80%;
+  border: 3px solid black;
+  border-top-right-radius: 30px;
+  border-top-left-radius: 30px;
+  background-color: rgba(255, 255, 255, 0.65);
+  margin: 0 auto;
+  padding: 20px;
+  z-index: 1;
+`
+
 export const LinkBox = styled.div`
   background-color: #C5CAFF;
   width: 75%;
@@ -24,11 +39,23 @@ export const LinkBox = styled.div`
   font-weight: 100;
 `
 
-export const Triangle = styled.div`
-    // width: 0px;
-    // height: 0px;
-    // border-radius: 10%;
-    // border-bottom: calc( 90px * 1.732 ) solid #C5CAFF;
-    // border-left: 90px solid transparent;
-    // border-right: 90px solid transparent;
+export const BackImg = styled.div`
+  // display: flex;
+  z-index: -1;
+  & > img {
+    position: absolute;
+  }
+
+  & > img:nth-of-type(1) {
+    bottom: -15px;
+    left: -50%;
+  }
+  & > img:nth-of-type(2) {
+    bottom: -17px;
+    // left: -50%;
+  }
+  & > img:nth-of-type(3) {
+    bottom: -15px;
+    right: -50%;
+  }
 `
