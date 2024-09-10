@@ -1,12 +1,13 @@
-import { Outlet } from "react-router-dom";
+import { Outlet, useNavigate } from "react-router-dom";
 import { useState, useEffect } from "react";
 import { Wrapper } from "./Statistics.styles";
 import Wave from "../../components/statistics/Wave/Wave";
 import Nav from "../../components/statistics/Nav/Nav";
-import DounetChart from "../../components/statistics/Chart/DounetChart/DounetChart";
-import StatisticDounetChartText from "../../components/statistics/Text/StatisticDounetChartText/StatisticDounetChartText";
+import DonutChart from "../../components/statistics/Chart/DonutChart/DonutChart";
+import StatisticDonutChartText from "../../components/statistics/Text/StatisticDonutChartText/StatisticDonutChartText";
 import { faCaretDown, faCaretUp } from "@fortawesome/free-solid-svg-icons";
 import { Top, Month, Info, Bottom, DropDownIcon } from "./Statistics.styles";
+import { PATH } from "../../constants/path";
 
 interface data {
   img: string;
@@ -16,22 +17,27 @@ interface data {
 }
 
 const Statistics = () => {
+  const navigator = useNavigate();
+  const paths = [`${PATH.STATISTICS}${PATH.STATISTICS_CONSUMPTION}`,`${PATH.STATISTICS}${PATH.STATISTICS_BENEFITS}`,`${PATH.STATISTICS}${PATH.STATISTICS_ANALYSIS}`,`${PATH.STATISTICS}${PATH.STATISTICS_CONSULTING}`]
+  //이번 달을 첫 데이터값으로 지정
   const [selectedMonth, setSelectedMonth] = useState<string>(
     `${new Date().getFullYear()}.${String(new Date().getMonth() + 1).padStart(
       2,
       "0"
     )}`
-  ); //이번 달을 첫 데이터값으로 지정
+  );
   const [openDropDown, setOpenDropDown] = useState<boolean>(false); //드롭다운 펼치기 여부
   const [closeAnimateClass, setCloseAnimateClass] = useState(false); //드롭다운 접기
   const [iconAnimateClass, setIconAnimateClass] = useState<string>(""); //아이콘 애니메이션 여부
   const [isFirstRender, setIsFirstRender] = useState<boolean>(true); // 첫 렌더링 체크 플래그
-  const [money, setMoney] = useState<string>("100,000");
-  const [dataList, setDataList] = useState<data[]>([]);
-  const [isConsultingMode, setIsConsultingMode] = useState<string>("Dounet");
+  const [mode, setMode] = useState<string>("Donut");
   const [navPosition, setNavPosition] = useState<string>(
     `calc(calc(100% / 4) * 0)`
   );
+
+  // test data
+  const [dataList, setDataList] = useState<data[]>([{img:"",cateory:"",money:50000,per:50},{img:"",cateory:"",money:50000,per:50},{img:"",cateory:"",money:50000,per:50},{img:"",cateory:"",money:50000,per:50},{img:"",cateory:"",money:50000,per:50},]);
+  
   /**
    * 드롭다운 컨트롤 함수
    */
@@ -52,6 +58,12 @@ const Statistics = () => {
    */
   const changeComponent = (index: number) => {
     setNavPosition(`calc(calc(100% / 4) * ${index})`);
+    //데이터 요청받아서 navigate할때 같이 보내줘야함 -> navigator(paths[index],{state:[datalist]]})
+    //받을 때는 locationt사용   const location = useLocation();  const data = location.state;
+    if(index==0||index==1)setMode("Donut")
+    else if(index==2)setMode("BarGraph")
+    else setMode("Ano")
+    navigator(paths[index]);
   };
 
   /**
@@ -74,50 +86,54 @@ const Statistics = () => {
     // 타이머 정리
     return () => clearTimeout(timer);
   }, [openDropDown]);
+
   return (
     <>
-      {isConsultingMode == "Dounet" || isConsultingMode == "BarGraph" ? (
+      {(mode === "Donut" || mode === "BarGraph") && (
         <Wrapper className="Wrapper">
           <Wave />
           <Top>
-            {isConsultingMode == "Dounet" ? (
-              <Month onClick={OpenDropDown}>
-                <div className="dropdown-btn">
-                  <p>{selectedMonth}</p>
-                  {/* 애니메이션 클래스 적용 */}
-                  <div className={iconAnimateClass}>
-                    <DropDownIcon
-                      icon={openDropDown ? faCaretUp : faCaretDown}
-                    />
+            {mode === "Donut" && (
+              <>
+                <Month>
+                  <div className="dropdown-btn">
+                    <p>{selectedMonth}</p>
+                    <div className={iconAnimateClass}>
+                      <DropDownIcon onClick={OpenDropDown}
+                        icon={openDropDown ? faCaretUp : faCaretDown}
+                      />
+                    </div>
                   </div>
-                </div>
-                <ul
-                  className={`dropdown-menu ${openDropDown ? "open" : ""}  ${
-                    closeAnimateClass ? "close" : ""
-                  }`}
-                >
-                  {/* 데이터가 존재하는 월만 출력? 아니면 모든 월을 출력하는 대신 데이터가 없으면 데이터가 존재하지않는다고 표현? */}
-                  <li>2024.09</li>
-                  <li>2024.08</li>
-                  <li>2024.07</li>
-                </ul>
-              </Month>
-            ) : null}
-            <Info>
-              <DounetChart />
-              <StatisticDounetChartText
-                text={`이번달에는\n${money}원\n소비했어요!`}
-              />
-            </Info>
+                  <ul
+                    className={`dropdown-menu ${openDropDown ? "open" : ""}  ${
+                      closeAnimateClass ? "close" : ""
+                    }`}
+                  >
+                    <li onClick={(e) => setSelectedMonth(e.currentTarget.textContent||"")}>2024.09</li>
+                    <li onClick={(e) => setSelectedMonth(e.currentTarget.textContent||"")}>2024.08</li>
+                    <li onClick={(e) => setSelectedMonth(e.currentTarget.textContent||"")}>2024.07</li>
+                  </ul>
+                </Month>
+                <Info>
+                  <DonutChart />
+                  <StatisticDonutChartText
+                    text={`이번달에는\n100000원\n소비했어요!`}
+                  />
+                </Info>
+              </>
+            )}
+            {mode === "BarGraph" && (
+              <>
+              </>
+            )}
           </Top>
           <Bottom>
             <Nav navPosition={navPosition} changeComponent={changeComponent} />
             <Outlet />
           </Bottom>
         </Wrapper>
-      ) : (
-        <Outlet />
       )}
+      <Outlet />
     </>
   );
 };

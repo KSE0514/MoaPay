@@ -10,6 +10,7 @@ export const Wrapper = styled.div`
 `;
 
 export const Top = styled.div`
+  height: 400px;
   margin-top: 10px;
   * {
     position: relative;
@@ -104,7 +105,6 @@ export const Info = styled.div`
 
 export const Bottom = styled.div`
   width: 100%;
-  margin-top: 143px;
 `;
 
 export const List = styled.div``;

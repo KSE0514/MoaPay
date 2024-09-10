@@ -1,8 +1,8 @@
-import { Chart } from "./StatisticDounetChartText.styles";
+import { Chart } from "./StatisticDonutChartText.styles";
 type TextProps = {
   text: string;
 };
-const StatisticDounetChartText: React.FC<TextProps> = ({ text }) => {
+const StatisticDonutChartText: React.FC<TextProps> = ({ text }) => {
   return (
     <Chart>
       {text.split("\n").map((line, index) => (
@@ -15,4 +15,4 @@ const StatisticDounetChartText: React.FC<TextProps> = ({ text }) => {
   );
 };
 
-export default StatisticDounetChartText;
+export default StatisticDonutChartText;
