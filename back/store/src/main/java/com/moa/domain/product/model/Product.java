@@ -7,6 +7,8 @@ import lombok.*;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
+import com.moa.domain.product.model.dto.UpdateProductRequestDto;
+
 @Entity
 @Builder
 @Getter
@@ -51,4 +53,9 @@ public class Product {
         this.updateTime = LocalDateTime.now();
     }
 
+    public void changeProductInfo(UpdateProductRequestDto product) {
+        this.name = product.getName();
+        this.price = product.getPrice();
+        this.imageUrl = product.getImageUrl();
+    }
 }

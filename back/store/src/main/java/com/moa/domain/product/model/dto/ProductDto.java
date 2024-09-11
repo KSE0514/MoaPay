@@ -15,6 +15,7 @@ public class ProductDto {
     private UUID productUuId;
     private String productName;
     private long price;
+    private String imageUrl;
     private LocalDateTime createTime;
     private LocalDateTime updateTime;
 
@@ -24,5 +25,8 @@ public class ProductDto {
         this.price = product.getPrice();
         this.createTime = product.getCreateTime();
         this.updateTime = product.getUpdateTime();
+        if (product.getImageUrl() != null) {
+            this.imageUrl = product.getImageUrl();
+        }
     }
 }
