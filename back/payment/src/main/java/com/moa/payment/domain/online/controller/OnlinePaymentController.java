@@ -34,8 +34,9 @@ public class OnlinePaymentController {
     }
 
     @DeleteMapping("/info/{QRCode}")
-    public ResponseEntity<ResultResponse> deletePaymentInfo(@PathVariable String QRCode) {
-        onlineService.deleteOnlinePaymentInfo(QRCode);
+    public ResponseEntity<ResultResponse> disablePaymentInfo(@PathVariable String QRCode) {
+        // onlineService.deleteOnlinePaymentInfo(QRCode);
+        onlineService.disableOnlinePaymentInfo(QRCode);
         ResultResponse resultResponse = ResultResponse.of(HttpStatus.OK, "QR코드를 비활성화했습니다.");
         return ResponseEntity.status(resultResponse.getStatus()).body(resultResponse);
     }

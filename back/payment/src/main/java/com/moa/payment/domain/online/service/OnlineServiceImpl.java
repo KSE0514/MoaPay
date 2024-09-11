@@ -21,8 +21,8 @@ public class OnlineServiceImpl implements OnlineService {
         // [1] 등록된 값과 연동할 QRcode 발급, redis에 등록(Hash)
         int QRCode;
         while(true) {
-            QRCode = (int)(Math.random()*10000000);
-            if(redisRepository.QRCodeRegistTest("QR:"+String.valueOf(QRCode))) break; // 성공적으로 등록되었다면 return
+            QRCode = (int)(Math.random() * 10000000);
+            if(redisRepository.QRCodeRegistTest("QR:" + String.valueOf(QRCode))) break; // 성공적으로 등록되었다면 return
         }
         // [2] 중복 아닌 거 확인했다면 그 값 기반으로 나머지 결제정보 등록
         redisRepository.RegistQRCodeInfo(QRCode, dto);
@@ -46,7 +46,7 @@ public class OnlineServiceImpl implements OnlineService {
     }
 
     @Override
-    public void deleteOnlinePaymentInfo(String QRCode) {
-        redisRepository.deleteQRCodeInfo(QRCode);
+    public void disableOnlinePaymentInfo(String QRCode) {
+        redisRepository.disableQRCodeInfo(QRCode);
     }
 }
