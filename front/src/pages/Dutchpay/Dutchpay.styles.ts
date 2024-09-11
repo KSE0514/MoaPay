@@ -18,14 +18,14 @@ export const Top = styled.div`
 
 export const Main = styled.div`
   position: relative;
-  width: 80%;
+  width: 85%;
   height: 80%;
   border: 3px solid black;
   border-top-right-radius: 30px;
   border-top-left-radius: 30px;
   background-color: rgba(255, 255, 255, 0.65);
   margin: 0 auto;
-  padding: 20px;
+  padding: 20px 25px;
   z-index: 1;
 `
 
