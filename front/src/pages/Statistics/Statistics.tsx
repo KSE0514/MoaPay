@@ -10,7 +10,6 @@ import { Top, Month, Info, Bottom, DropDownIcon } from "./Statistics.styles";
 import { PATH } from "../../constants/path";
 
 interface data {
-  img: string;
   cateory: string;
   money: number;
   per: number;
@@ -18,7 +17,12 @@ interface data {
 
 const Statistics = () => {
   const navigator = useNavigate();
-  const paths = [`${PATH.STATISTICS}${PATH.STATISTICS_CONSUMPTION}`,`${PATH.STATISTICS}${PATH.STATISTICS_BENEFITS}`,`${PATH.STATISTICS}${PATH.STATISTICS_ANALYSIS}`,`${PATH.STATISTICS}${PATH.STATISTICS_CONSULTING}`]
+  const paths = [
+    `${PATH.STATISTICS}${PATH.STATISTICS_CONSUMPTION}`,
+    `${PATH.STATISTICS}${PATH.STATISTICS_BENEFITS}`,
+    `${PATH.STATISTICS}${PATH.STATISTICS_ANALYSIS}`,
+    `${PATH.STATISTICS}${PATH.STATISTICS_CONSULTING}`,
+  ];
   //이번 달을 첫 데이터값으로 지정
   const [selectedMonth, setSelectedMonth] = useState<string>(
     `${new Date().getFullYear()}.${String(new Date().getMonth() + 1).padStart(
@@ -36,8 +40,29 @@ const Statistics = () => {
   );
 
   // test data
-  const [dataList, setDataList] = useState<data[]>([{img:"",cateory:"미용",money:50000,per:50},{img:"",cateory:"식비",money:50000,per:50},{img:"",cateory:"",money:50000,per:50},{img:"",cateory:"",money:50000,per:50},{img:"",cateory:"여행",money:50000,per:50},]);
-  
+  const [dataList, setDataList] = useState<data[]>([
+    { cateory: "간편결제", money: 50000, per: 2.5 },
+    { cateory: "교육", money: 250000, per: 12.5 },
+    { cateory: "교통", money: 50000, per: 2.5 },
+    { cateory: "마트·편의점", money: 50000, per: 2.5 },
+    { cateory: "미용", money: 100000, per: 5.0 },
+    { cateory: "보험", money: 50000, per: 2.5 },
+    { cateory: "숙박", money: 250000, per: 12.5 },
+    { cateory: "생활", money: 50000, per: 2.5 },
+    { cateory: "쇼핑", money: 50000, per: 2.5 },
+    { cateory: "식비", money: 100000, per: 5.0 },
+    { cateory: "연회비", money: 50000, per: 2.5 },
+    { cateory: "온라인 쇼핑", money: 250000, per: 12.5 },
+    { cateory: "의료", money: 50000, per: 2.5 },
+    { cateory: "주거·통신", money: 50000, per: 2.5 },
+    { cateory: "자동차", money: 100000, per: 5.0 },
+    { cateory: "취미", money: 50000, per: 2.5 },
+    { cateory: "카페", money: 250000, per: 12.5 },
+    { cateory: "해외", money: 50000, per: 2.5 },
+    { cateory: "항공·여행", money: 50000, per: 2.5 },
+    { cateory: "ALL", money: 100000, per: 5.0 },
+  ]);
+
   /**
    * 드롭다운 컨트롤 함수
    */
@@ -60,20 +85,17 @@ const Statistics = () => {
     setNavPosition(`calc(calc(100% / 4) * ${index})`);
     //데이터 요청받아서 navigate할때 같이 보내줘야함 -> navigator(paths[index],{state:[datalist]]})
     //받을 때는 locationt사용   const location = useLocation();  const data = location.state;
-    if(index==0){
-      setMode("Donut")
-      navigator(paths[index],{state:dataList});
-    }
-    else if( index==1){
-      setMode("Donut")
-      navigator(paths[index],{state:dataList});
-    }
-    else if(index==2){
-      setMode("BarGraph")
+    if (index == 0) {
+      setMode("Donut");
+      navigator(paths[index], { state: dataList });
+    } else if (index == 1) {
+      setMode("Donut");
+      navigator(paths[index], { state: dataList });
+    } else if (index == 2) {
+      setMode("BarGraph");
       navigator(paths[index]);
-    }
-    else {
-      setMode("Ano")
+    } else {
+      setMode("Ano");
       navigator(paths[index]);
     }
   };
@@ -104,14 +126,15 @@ const Statistics = () => {
       {(mode === "Donut" || mode === "BarGraph") && (
         <Wrapper className="Wrapper">
           <Wave />
-          <Top>
+          <Top className="Top">
             {mode === "Donut" && (
               <>
                 <Month>
                   <div className="dropdown-btn">
                     <p>{selectedMonth}</p>
                     <div className={iconAnimateClass}>
-                      <DropDownIcon onClick={OpenDropDown}
+                      <DropDownIcon
+                        onClick={OpenDropDown}
                         icon={openDropDown ? faCaretUp : faCaretDown}
                       />
                     </div>
@@ -121,25 +144,40 @@ const Statistics = () => {
                       closeAnimateClass ? "close" : ""
                     }`}
                   >
-                    <li onClick={(e) => setSelectedMonth(e.currentTarget.textContent||"")}>2024.09</li>
-                    <li onClick={(e) => setSelectedMonth(e.currentTarget.textContent||"")}>2024.08</li>
-                    <li onClick={(e) => setSelectedMonth(e.currentTarget.textContent||"")}>2024.07</li>
+                    <li
+                      onClick={(e) =>
+                        setSelectedMonth(e.currentTarget.textContent || "")
+                      }
+                    >
+                      2024.09
+                    </li>
+                    <li
+                      onClick={(e) =>
+                        setSelectedMonth(e.currentTarget.textContent || "")
+                      }
+                    >
+                      2024.08
+                    </li>
+                    <li
+                      onClick={(e) =>
+                        setSelectedMonth(e.currentTarget.textContent || "")
+                      }
+                    >
+                      2024.07
+                    </li>
                   </ul>
                 </Month>
                 <Info>
                   <DonutChart />
                   <StatisticDonutChartText
-                    text={`이번달에는\n100000원\n소비했어요!`}
+                    text={`이번달에는\n200000원\n소비했어요!`}
                   />
                 </Info>
               </>
             )}
-            {mode === "BarGraph" && (
-              <>
-              </>
-            )}
+            {mode === "BarGraph" && <></>}
           </Top>
-          <Bottom>
+          <Bottom className="Bottom">
             <Nav navPosition={navPosition} changeComponent={changeComponent} />
             <Outlet />
           </Bottom>

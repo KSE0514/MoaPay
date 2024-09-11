@@ -105,6 +105,8 @@ export const Info = styled.div`
 
 export const Bottom = styled.div`
   width: 100%;
+  height: calc(100vh - 550px);
+  flex: 1;
+  display: flex;
+  flex-direction: column;
 `;
-
-export const List = styled.div``;
