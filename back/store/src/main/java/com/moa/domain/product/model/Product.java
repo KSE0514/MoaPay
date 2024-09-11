@@ -54,7 +54,7 @@ public class Product {
     }
 
     public void changeProductInfo(UpdateProductRequestDto product) {
-        this.name = product.getName();
+        this.name = product.getProductName();
         this.price = product.getPrice();
         this.imageUrl = product.getImageUrl();
     }

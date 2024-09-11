@@ -21,7 +21,7 @@ public class ProductDto {
 
     public ProductDto(Product product) {
         this.productUuId = product.getUuid();
-        this.productName = getProductName();
+        this.productName = product.getName();
         this.price = product.getPrice();
         this.createTime = product.getCreateTime();
         this.updateTime = product.getUpdateTime();

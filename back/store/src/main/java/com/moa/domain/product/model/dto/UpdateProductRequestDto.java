@@ -6,7 +6,7 @@ import lombok.Setter;
 @Getter
 @Setter
 public class UpdateProductRequestDto {
-	private String name;
+	private String productName;
 	private long price;
 	private String imageUrl;
 }
