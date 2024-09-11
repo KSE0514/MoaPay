@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState, useRef } from "react";
 import {
   Chart as ChartJS,
   BarElement,
@@ -27,39 +27,46 @@ ChartJS.register(
 type Props = {
   userDataList: number[];
   avgDataList: number[];
-  consumptionMode:boolean;
+  consumptionMode: boolean;
 };
 
-const MixedChart: React.FC<Props> = ({ consumptionMode,avgDataList, userDataList }) => {
-  const currentDate = `${new Date().getFullYear()}.${String(
-    new Date().getMonth() + 1
-  ).padStart(2, "0")}`;
-  const chartTitle = consumptionMode
-    ? "소비 그래프"
-    : "혜택 그래프";
-    const backgroundColor = consumptionMode?"#FFAAE7":"#D7D9FF"
+const MixedChart: React.FC<Props> = ({
+  consumptionMode,
+  avgDataList,
+  userDataList,
+}) => {
+  const [months, setMonths] = useState<string[]>([]);
+  const chartRef = useRef<any>(null);
+  const [xRange, setXRange] = useState<{ min: number; max: number }>({
+    min: 0,
+    max: 5, // 처음에는 6개월만 표시
+  });
 
+  const chartTitle: string = consumptionMode ? "소비 그래프" : "혜택 그래프";
+  const backgroundColor: string = consumptionMode ? "#FFAAE7" : "#D7D9FF";
+
+  useEffect(() => {
+    const getLast12Months = () => {
+      const result: string[] = [];
+      const now = new Date(); // 현재 년, 월을 기록
+
+      for (let i = 0; i < 12; i++) {
+        const year = now.getFullYear(); // 년
+        const month = now.getMonth() + 1; // 월
+        result.push(`${year}.${month < 10 ? `0${month}` : month}`); // 데이터 삽입
+
+        now.setMonth(now.getMonth() - 1); // now에서 month 값을 하나 줄임
+      }
+
+      return result.reverse();
+    };
+
+    setMonths(getLast12Months());
+  }, []);
+
+  // 차트 데이터 설정
   const data = {
-    labels: [
-      "2024.1",
-      "2024.2",
-      "2024.3",
-      "2024.4",
-      "2024.5",
-      "2024.6",
-      //   { currentDate },
-      //   { currentDate },
-      //   { currentDate },
-      //   { currentDate },
-      //   { currentDate },
-      //   { currentDate },
-      //   { currentDate },
-      //   { currentDate },
-      //   { currentDate },
-      //   { currentDate },
-      //   { currentDate },
-      //   { currentDate },
-    ],
+    labels: months,
     datasets: [
       {
         type: "line",
@@ -76,31 +83,67 @@ const MixedChart: React.FC<Props> = ({ consumptionMode,avgDataList, userDataList
     ],
   };
 
+  // 차트 옵션 설정
   const options = {
     responsive: true,
     maintainAspectRatio: false, // 차트의 기본 비율을 유지하지 않음
+    scales: {
+      x: {
+        min: xRange.min, // 초기 최소값
+        max: xRange.max, // 초기 최대값 (6개월만 표시)
+      },
+    },
     plugins: {
       legend: {
         display: false, // 범례(그래프 이름)를 비활성화
       },
-       title: {
+      title: {
         display: true, // 제목을 표시할지 여부
-        text:chartTitle, // 제목 텍스트
+        text: chartTitle, // 제목 텍스트
         font: {
-          size: 18 // 제목 폰트 크기
+          size: 18, // 제목 폰트 크기
         },
-        align: 'center', // 제목을 중앙에 정렬
-      }
+        align: "center", // 제목을 중앙에 정렬
+      },
     },
   };
 
+  // 터치 이벤트를 처리하는 변수
+  let touchStartX = 0;
+
+  // 터치 시작 시 호출
+  const handleTouchStart = (event: React.TouchEvent<HTMLDivElement>) => {
+    touchStartX = event.touches[0].clientX; // 터치 시작 위치 저장
+  };
+
+  // 터치 이동 시 호출
+  const handleTouchMove = (event: React.TouchEvent<HTMLDivElement>) => {
+    const touchEndX = event.touches[0].clientX; // 터치가 끝나는 위치
+    if(touchEndX>390||touchStartX<70)return;
+    const deltaX = Math.trunc((touchEndX - touchStartX)/6); // 터치 시작과 끝의 차이
+    setXRange((prevRange) => {
+      const newMin = Math.max(0, prevRange.min - deltaX);
+      const newMax = prevRange.max-deltaX;
+      console.log(newMin,newMax);
+
+      // 최소값이 0보다 크거나, 최대값이 데이터 범위 안에 있을 때만 업데이트
+      if (newMin >= 0 && newMax <= months.length) {
+        return { min: newMin, max: newMax };
+      }
+      return prevRange;
+    });
+
+    touchStartX = touchEndX; // 현재 위치를 다음 움직임의 시작 위치로 업데이트
+  };
+
   return (
-    <Chart
-      style={{ height: "100%" }}
-      type="bar"
-      data={data}
-      options={options}
-    />
+    <div
+      style={{ width: "100%",height:"100%", overflowX: "hidden" }}
+      onTouchStart={handleTouchStart} // 터치 시작
+      onTouchMove={handleTouchMove}   // 터치 이동
+    >
+      <Chart ref={chartRef} style={{height:"100%"}} type="bar" data={data} options={options} />
+    </div>
   );
 };
 
