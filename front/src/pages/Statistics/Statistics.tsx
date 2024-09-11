@@ -1,12 +1,21 @@
-import { Outlet, useNavigate } from "react-router-dom";
+import { Outlet, useLocation, useNavigate } from "react-router-dom";
 import { useState, useEffect } from "react";
-import { Wrapper } from "./Statistics.styles";
+import { TopWrapper, Wrapper } from "./Statistics.styles";
 import Wave from "../../components/statistics/Wave/Wave";
 import Nav from "../../components/statistics/Nav/Nav";
 import DonutChart from "../../components/statistics/Chart/DonutChart/DonutChart";
 import StatisticDonutChartText from "../../components/statistics/Text/StatisticDonutChartText/StatisticDonutChartText";
 import { faCaretDown, faCaretUp } from "@fortawesome/free-solid-svg-icons";
-import { Top, Month, Info, Bottom, DropDownIcon } from "./Statistics.styles";
+import {
+  Top,
+  Month,
+  Info,
+  Bottom,
+  DropDownIcon,
+  NowDate,
+  ImageBox,
+  TextBox,
+} from "./Statistics.styles";
 import { PATH } from "../../constants/path";
 
 interface data {
@@ -17,6 +26,7 @@ interface data {
 
 const Statistics = () => {
   const navigator = useNavigate();
+  const location = useLocation();
   const paths = [
     `${PATH.STATISTICS}${PATH.STATISTICS_CONSUMPTION}`,
     `${PATH.STATISTICS}${PATH.STATISTICS_BENEFITS}`,
@@ -89,9 +99,12 @@ const Statistics = () => {
       setMode("Donut");
       navigator(paths[index], { state: dataList });
     } else if (index == 1) {
+      //데이터 요청받아서 navigate할때 같이 보내줘야함 -> navigator(paths[index],{state:[datalist]]})
+      //받을 때는 locationt사용   const location = useLocation();  const data = location.state;
       setMode("Donut");
       navigator(paths[index], { state: dataList });
     } else if (index == 2) {
+      //또래 비교금액 가져오기
       setMode("BarGraph");
       navigator(paths[index]);
     } else {
@@ -121,69 +134,101 @@ const Statistics = () => {
     return () => clearTimeout(timer);
   }, [openDropDown]);
 
+  useEffect(() => {
+    const currentPath = location.pathname;
+    // URL 경로에 맞게 index 값을 설정
+    const index = paths.findIndex((path) => path === currentPath);
+    console.log("index: " + index);
+    if (index !== -1) {
+      changeComponent(index); // URL에 맞는 컴포넌트를 렌더링
+    }
+  }, []);
+
   return (
     <>
-      {(mode === "Donut" || mode === "BarGraph") && (
-        <Wrapper className="Wrapper">
-          <Wave />
-          <Top className="Top">
-            {mode === "Donut" && (
-              <>
-                <Month>
-                  <div className="dropdown-btn">
-                    <p>{selectedMonth}</p>
-                    <div className={iconAnimateClass}>
-                      <DropDownIcon
-                        onClick={OpenDropDown}
-                        icon={openDropDown ? faCaretUp : faCaretDown}
-                      />
-                    </div>
+      <Wrapper className="Wrapper">
+        <Wave />
+        <Top className="Top">
+          {mode === "Donut" && (
+            <>
+              <Month>
+                <div className="dropdown-btn">
+                  <p>{selectedMonth}</p>
+                  <div className={iconAnimateClass}>
+                    <DropDownIcon
+                      onClick={OpenDropDown}
+                      icon={openDropDown ? faCaretUp : faCaretDown}
+                    />
                   </div>
-                  <ul
-                    className={`dropdown-menu ${openDropDown ? "open" : ""}  ${
-                      closeAnimateClass ? "close" : ""
-                    }`}
+                </div>
+                <ul
+                  className={`dropdown-menu ${openDropDown ? "open" : ""}  ${
+                    closeAnimateClass ? "close" : ""
+                  }`}
+                >
+                  <li
+                    onClick={(e) =>
+                      setSelectedMonth(e.currentTarget.textContent || "")
+                    }
                   >
-                    <li
-                      onClick={(e) =>
-                        setSelectedMonth(e.currentTarget.textContent || "")
-                      }
-                    >
-                      2024.09
-                    </li>
-                    <li
-                      onClick={(e) =>
-                        setSelectedMonth(e.currentTarget.textContent || "")
-                      }
-                    >
-                      2024.08
-                    </li>
-                    <li
-                      onClick={(e) =>
-                        setSelectedMonth(e.currentTarget.textContent || "")
-                      }
-                    >
-                      2024.07
-                    </li>
-                  </ul>
-                </Month>
-                <Info>
-                  <DonutChart />
-                  <StatisticDonutChartText
-                    text={`이번달에는\n200000원\n소비했어요!`}
-                  />
-                </Info>
-              </>
-            )}
-            {mode === "BarGraph" && <></>}
-          </Top>
-          <Bottom className="Bottom">
-            <Nav navPosition={navPosition} changeComponent={changeComponent} />
-            <Outlet />
-          </Bottom>
-        </Wrapper>
-      )}
-      <Outlet />
+                    2024.09
+                  </li>
+                  <li
+                    onClick={(e) =>
+                      setSelectedMonth(e.currentTarget.textContent || "")
+                    }
+                  >
+                    2024.08
+                  </li>
+                  <li
+                    onClick={(e) =>
+                      setSelectedMonth(e.currentTarget.textContent || "")
+                    }
+                  >
+                    2024.07
+                  </li>
+                </ul>
+              </Month>
+              <Info>
+                <DonutChart />
+                <StatisticDonutChartText
+                  text={`이번달에는\n200000원\n소비했어요!`}
+                />
+              </Info>
+            </>
+          )}
+          {mode === "BarGraph" && (
+            <TopWrapper>
+              <NowDate>{`${new Date().getFullYear()}년 ${String(
+                new Date().getMonth() + 1
+              )}월엔...`}</NowDate>
+              <ImageBox>
+                <img
+                  src={
+                    true
+                      ? "/src/assets/image/good-pig.png"
+                      : "/src/assets/image/sad-pig.png"
+                  }
+                ></img>
+              </ImageBox>
+              <TextBox>
+                {"또래 남성에 비해 50,000원 덜 쓰고,\n34,200원의 혜택을 누렸어요!"
+                  .split("\n")
+                  .map((line, index) => (
+                    <span key={index}>
+                      {line}
+                      <br />
+                    </span>
+                  ))}
+              </TextBox>
+            </TopWrapper>
+          )}
+        </Top>
+        <Bottom className="Bottom">
+          <Nav navPosition={navPosition} changeComponent={changeComponent} />
+          <Outlet />
+        </Bottom>
+      </Wrapper>
     </>
   );
 };

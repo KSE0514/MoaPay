@@ -7,6 +7,7 @@ export const Wrapper = styled.div`
   width: 100%;
   height: 100%;
   padding: 0px 20px 113.5px 20px;
+  font-family: "Reem Kufi Ink";
 `;
 
 export const Top = styled.div`
@@ -18,6 +19,16 @@ export const Top = styled.div`
     color: white;
   }
 `;
+
+export const Bottom = styled.div`
+  width: 100%;
+  height: calc(100vh - 550px);
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+`;
+
+// 소비 + 혜택 디자인
 export const Month = styled.div`
   z-index: 20;
   padding-top: 20px;
@@ -101,12 +112,36 @@ export const Info = styled.div`
   justify-content: space-around;
 `;
 
-// botton
-
-export const Bottom = styled.div`
-  width: 100%;
-  height: calc(100vh - 550px);
-  flex: 1;
+// 통계
+export const TopWrapper = styled.div`
+  @keyframes fadeIn {
+    0% {
+      opacity: 0;
+    }
+    100% {
+      opacity: 1;
+    }
+  }
+  padding-top: 35px;
   display: flex;
   flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  font-weight: 600;
+  animation: fadeIn 2s;
+`;
+export const NowDate = styled.div`
+  font-size: 28px;
+`;
+export const ImageBox = styled.div`
+  margin: 25px 0px 11px 0px;
+  img {
+    width: 250px;
+    height: 130px;
+  }
+`;
+export const TextBox = styled.div`
+  font-size: 22px;
+  line-height: 32px;
+  text-align: center;
 `;
