@@ -44,4 +44,9 @@ public class OnlineServiceImpl implements OnlineService {
                 .totalPrice(Long.parseLong(searchedInfo.get("totalPrice")))
                 .build();
     }
+
+    @Override
+    public void deleteOnlinePaymentInfo(String QRCode) {
+        redisRepository.deleteQRCodeInfo(QRCode);
+    }
 }

@@ -3,9 +3,9 @@ package com.moa.payment.domain.online.repository;
 import com.moa.payment.domain.online.model.dto.GetOnlineQRCodeRequestDto;
 import com.moa.payment.global.exception.BusinessException;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.keyvalue.core.KeyValueOperations;
 import org.springframework.data.redis.core.HashOperations;
 import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.data.redis.core.ValueOperations;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 
@@ -46,6 +46,13 @@ public class OnlinePaymentRedisRepository {
         result.put("categoryId", ops.get(qr, "categoryId"));
         result.put("totalPrice", ops.get(qr, "totalPrice"));
         return result;
+    }
+
+    public void deleteQRCodeInfo(String QRCode) {
+        String qr = "QR:"+QRCode;
+        if(!redisTemplate.delete(qr)){
+            throw new BusinessException(HttpStatus.BAD_REQUEST, "삭제할 코드가 없습니다.");
+        }
     }
 
 }
