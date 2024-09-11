@@ -27,12 +27,17 @@ ChartJS.register(
 type Props = {
   userDataList: number[];
   avgDataList: number[];
+  consumptionMode:boolean;
 };
 
-const MixedChart: React.FC<Props> = ({ avgDataList, userDataList }) => {
+const MixedChart: React.FC<Props> = ({ consumptionMode,avgDataList, userDataList }) => {
   const currentDate = `${new Date().getFullYear()}.${String(
     new Date().getMonth() + 1
   ).padStart(2, "0")}`;
+  const chartTitle = consumptionMode
+    ? "소비 그래프"
+    : "혜택 그래프";
+    const backgroundColor = consumptionMode?"#FFAAE7":"#D7D9FF"
 
   const data = {
     labels: [
@@ -66,7 +71,7 @@ const MixedChart: React.FC<Props> = ({ avgDataList, userDataList }) => {
       {
         type: "bar",
         data: userDataList,
-        backgroundColor: "#ffaae7",
+        backgroundColor: backgroundColor,
       },
     ],
   };
@@ -78,9 +83,14 @@ const MixedChart: React.FC<Props> = ({ avgDataList, userDataList }) => {
       legend: {
         display: false, // 범례(그래프 이름)를 비활성화
       },
-      title: {
-        display: false, // 타이틀을 비활성화
-      },
+       title: {
+        display: true, // 제목을 표시할지 여부
+        text:chartTitle, // 제목 텍스트
+        font: {
+          size: 18 // 제목 폰트 크기
+        },
+        align: 'center', // 제목을 중앙에 정렬
+      }
     },
   };
 

@@ -1,48 +1,8 @@
 import { useEffect, useState } from "react";
 import { Graph, Switch } from "./Analysis.styles";
 import MixedChart from "../../../components/statistics/Chart/BarGraph/BarGraph";
-import styled from "styled-components";
-const ToggleWrapper = styled.div`
-  display: flex;
-  justify-content: end;
-  position: relative;
-  .toggle {
-    margin: 20px 10px 20px 0px;
-  }
-`;
+import Toggle from "../../../components/statistics/Toggle/toggle";
 
-const Input = styled.input`
-  opacity: 0;
-`;
-
-const Label = styled.label<{ checked: boolean }>`
-  width: 140px;
-  background: #ffaae7;
-  height: 40px;
-  display: inline-block;
-  border-radius: 50px;
-  position: relative;
-  transition: all 0.3s ease;
-  transform-origin: 20% center;
-  border: 0.5px solid rgba(117, 117, 117, 0.31);
-  box-shadow: inset 0px 0px 4px 0px rgba(0, 0, 0, 0.2),
-    0 -3px 4px rgba(0, 0, 0, 0.15);
-
-  &:before {
-    content: "";
-    display: block;
-    width: ${(props) => (props.checked ? "35px" : "35px")};
-    height: ${(props) => (props.checked ? "35px" : "35px")};
-    top: 2.5px;
-    left: ${(props) => (props.checked ? "100px" : "0.25em")};
-    background: #fff;
-    border-radius: 2em;
-    box-shadow: inset 0.5px -1px 1px rgba(0, 0, 0, 0.35);
-    position: absolute;
-    transition: all 0.3s ease;
-    transform: ${(props) => (props.checked ? "rotate(0)" : "rotate(-25deg)")};
-  }
-`;
 const Analysis = () => {
   const [consumptionMode, setConsumptionMode] = useState<boolean>(true);
   /**
@@ -89,19 +49,9 @@ const Analysis = () => {
   return (
     <>
       <Graph>
-        <MixedChart userDataList={userDataList} avgDataList={avgDataList} />
+        <MixedChart consumptionMode={consumptionMode} userDataList={userDataList} avgDataList={avgDataList} />
       </Graph>
-      <ToggleWrapper>
-        <div className="toggle normal">
-          <Input
-            type="checkbox"
-            id="normal"
-            checked={consumptionMode}
-            onChange={handleToggle}
-          />
-          <Label htmlFor="normal" checked={consumptionMode} />
-        </div>
-      </ToggleWrapper>
+      <Toggle consumptionMode={consumptionMode} handleToggle={handleToggle} />
     </>
   );
 };
