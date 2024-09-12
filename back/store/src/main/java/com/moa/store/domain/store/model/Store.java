@@ -4,11 +4,10 @@ import java.time.LocalDateTime;
 import java.util.UUID;
 
 import lombok.*;
-import org.springframework.cglib.core.Local;
 
 import com.fasterxml.uuid.Generators;
+import com.moa.store.domain.store.model.dto.UpdateMerchantRequestDto;
 
-import jakarta.annotation.Nullable;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -31,7 +30,6 @@ public class Store {
 
 	@NotNull
 	@Column(columnDefinition = "binary(16)", unique = true, nullable = false, updatable = false)
-	//Generators.timeBasedEpochGenerator().generate()
 	private UUID uuid;
 
 	@NotNull
@@ -43,6 +41,10 @@ public class Store {
 	private String categoryId;
 
 	@NotNull
+	@Column(name = "category_name", length = 20)
+	private String categoryName;
+
+	@NotNull
 	@Column(name = "admin_id", length = 20)
 	private String adminId;
 
@@ -51,9 +53,11 @@ public class Store {
 	private String adminPassword;
 
 	@NotNull
+	@Column(name = "create_time")
 	private LocalDateTime createTime;
 
 	@NotNull
+	@Column(name = "update_time")
 	private LocalDateTime updateTime;
 
 	@Column(name = "merchant_url")
@@ -62,6 +66,7 @@ public class Store {
 	@PrePersist
 	public void prePersist() {
 		LocalDateTime now = LocalDateTime.now();
+		this.uuid = Generators.timeBasedEpochGenerator().generate();
 		this.createTime = now;
 		this.updateTime = now;
 	}
@@ -69,5 +74,11 @@ public class Store {
 	@PreUpdate
 	public void preUpdate() {
 		this.updateTime = LocalDateTime.now();
+	}
+
+	public void updateStoreInfo(UpdateMerchantRequestDto merchant) {
+		this.name = merchant.getMerchantName();
+		this.merchantUrl = merchant.getMerchantUrl();
+		this.categoryId = merchant.getCategoryId();
 	}
 }
