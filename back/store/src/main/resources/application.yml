@@ -1,11 +1,32 @@
+#spring:
+#  application:
+#    name: store
+#
+#  config:
+#    import: "configserver:http://localhost:8888"
+#
+#  cloud:
+#    config:
+#      name: store
+#      profile: local
+
+server:
+  port: 18200
+
 spring:
   application:
     name: store
 
-  config:
-    import: "configserver:http://localhost:8888"
+  datasource:
+    url: jdbc:mysql://localhost:3306/store?serverTimezone=UTC
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    username: princess
+    password: moaprincess
 
-  cloud:
-    config:
-      name: store
-      profile: local
+  jpa:
+    show-sql: true
+    hibernate:
+      ddl-auto: update
+    properties:
+      hibernate:
+        format_sql: true
