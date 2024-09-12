@@ -9,4 +9,5 @@ public interface OnlineService {
     GetOnlineQRCodeResponseDto getOnlineQRcode(GetOnlineQRCodeRequestDto dto);
     GetOnlinePaymentInfoResponseDto getOnlinePaymentInfo(String QRCode);
     void disableOnlinePaymentInfo(String QRCode);
+
 }
