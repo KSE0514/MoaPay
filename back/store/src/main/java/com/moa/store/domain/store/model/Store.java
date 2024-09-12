@@ -80,5 +80,6 @@ public class Store {
 		this.name = merchant.getMerchantName();
 		this.merchantUrl = merchant.getMerchantUrl();
 		this.categoryId = merchant.getCategoryId();
+		this.categoryName = merchant.getCategoryName();
 	}
 }

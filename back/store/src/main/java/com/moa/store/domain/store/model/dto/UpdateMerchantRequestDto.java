@@ -8,5 +8,6 @@ import lombok.Setter;
 public class UpdateMerchantRequestDto {
 	private String merchantName;
 	private String categoryId;
+	private String categoryName;
 	private String merchantUrl;
 }

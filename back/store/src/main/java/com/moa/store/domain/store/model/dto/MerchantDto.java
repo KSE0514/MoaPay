@@ -5,6 +5,7 @@ import java.util.UUID;
 
 import com.moa.store.domain.store.model.Store;
 
+import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
 

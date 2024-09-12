@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -20,6 +21,7 @@ import lombok.RequiredArgsConstructor;
 @Service
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
+@Slf4j
 public class StoreServiceImpl implements StoreService{
 
 	private final StoreRepository storeRepository;
@@ -30,6 +32,7 @@ public class StoreServiceImpl implements StoreService{
 		Store store = Store.builder()
 			.name(createMerchantRequestDto.getMerchantName())
 			.categoryId(createMerchantRequestDto.getCategoryId())
+			.categoryName(createMerchantRequestDto.getCategoryName())
 			.adminId(createMerchantRequestDto.getAdminId())
 			.adminPassword(createMerchantRequestDto.getAdminPassword())
 			.merchantUrl(createMerchantRequestDto.getMerchantUrl())

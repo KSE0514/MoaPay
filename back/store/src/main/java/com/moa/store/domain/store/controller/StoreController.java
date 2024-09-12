@@ -3,15 +3,10 @@ package com.moa.store.domain.store.controller;
 import java.util.List;
 import java.util.UUID;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import com.moa.store.domain.store.model.dto.CreateMerchantRequestDto;
 import com.moa.store.domain.store.model.dto.MerchantDto;
@@ -24,13 +19,14 @@ import lombok.RequiredArgsConstructor;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/store/merchant")
+@Slf4j
 public class StoreController {
 
 	private final StoreService storeService;
 
 	// 가맹점 생성, API 명세서 10행
 	@PostMapping
-	public ResponseEntity<ResultResponse> createStore(CreateMerchantRequestDto createMerchantRequestDto) {
+	public ResponseEntity<ResultResponse> createStore(@RequestBody CreateMerchantRequestDto createMerchantRequestDto) {
 		MerchantDto merchant = new MerchantDto(storeService.createStore(createMerchantRequestDto));
 		ResultResponse resultResponse = ResultResponse.of(HttpStatus.CREATED, "가맹점 등록을 완료했습니다.", merchant);
 		return ResponseEntity.status(resultResponse.getStatus()).body(resultResponse);
@@ -38,7 +34,7 @@ public class StoreController {
 
 	// 가맹점 정보 수정, API 명세서 11행
 	@PutMapping("/{uuid}")
-	public ResponseEntity<ResultResponse> updateStore(@PathVariable("uuid") UUID uuid, UpdateMerchantRequestDto updateMerchantRequestDto) {
+	public ResponseEntity<ResultResponse> updateStore(@PathVariable("uuid") UUID uuid, @RequestBody UpdateMerchantRequestDto updateMerchantRequestDto) {
 		MerchantDto merchant = new MerchantDto(storeService.updateStore(uuid, updateMerchantRequestDto));
 		ResultResponse resultResponse = ResultResponse.of(HttpStatus.OK, "가맹점 정보 수정을 완료했습니다.", merchant);
 		return ResponseEntity.status(resultResponse.getStatus()).body(resultResponse);
