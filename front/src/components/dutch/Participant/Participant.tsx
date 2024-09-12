@@ -6,6 +6,7 @@ import line from "./../../../assets/image/dutch_line.png"
 // import { useEffect } from 'react';
 import {
   Wrapper,
+  Price,
   Title,
   PartiList,
   PartiInfo,
@@ -36,6 +37,8 @@ const Participant = () => {
       <Product productName={'새콤달콤 티니핑 시즌4 하츄핑 꽃다발 봉제 인형'} productUrl={'https://www.ssg.com/item/itemView.ssg?itemId=1000566517100'} />
 
       {/* <div>총 금액: {prduct_price}원</div> */}
+      <Price>총 금액: 22,990 원</Price>
+
       {/* 구분 점선 */}
       <img src={line}/> 
       

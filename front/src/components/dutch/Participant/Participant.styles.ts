@@ -10,6 +10,14 @@ export const Wrapper = styled.div`
   }
 `
 
+export const Price = styled.div`
+  color: #8748F3;
+  text-align: center;
+  padding: 20px 0 5px 0;
+  font-size: 18px;
+  font-weight: 700;
+`
+
 export const Title = styled.div`
   font-weight: 700;
   font-size: 24px;
