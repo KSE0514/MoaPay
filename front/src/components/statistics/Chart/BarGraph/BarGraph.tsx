@@ -38,8 +38,8 @@ const MixedChart: React.FC<Props> = ({
   const [months, setMonths] = useState<string[]>([]);
   const chartRef = useRef<any>(null);
   const [xRange, setXRange] = useState<{ min: number; max: number }>({
-    min: 0,
-    max: 5, // 처음에는 6개월만 표시
+    min: 6,
+    max: 11, // 처음에는 6개월만 표시
   });
 
   const chartTitle: string = consumptionMode ? "소비 그래프" : "혜택 그래프";
@@ -58,6 +58,7 @@ const MixedChart: React.FC<Props> = ({
         now.setMonth(now.getMonth() - 1); // now에서 month 값을 하나 줄임
       }
 
+      console.log(result);
       return result.reverse();
     };
 
@@ -119,18 +120,32 @@ const MixedChart: React.FC<Props> = ({
   // 터치 이동 시 호출
   const handleTouchMove = (event: React.TouchEvent<HTMLDivElement>) => {
     const touchEndX = event.touches[0].clientX; // 터치가 끝나는 위치
-    if(touchEndX>390||touchStartX<70)return;
-    const deltaX = Math.trunc((touchEndX - touchStartX)/6); // 터치 시작과 끝의 차이
+    if (touchEndX > 390 || touchStartX < 70) return;
+    console.log("start: " + touchStartX + " end" + touchEndX);
+    const deltaX = Math.trunc(Math.abs(touchEndX - touchStartX) / 6); // 터치 시작과 끝의 차이
     setXRange((prevRange) => {
-      const newMin = Math.max(0, prevRange.min - deltaX);
-      const newMax = prevRange.max-deltaX;
-      console.log(newMin,newMax);
-
-      // 최소값이 0보다 크거나, 최대값이 데이터 범위 안에 있을 때만 업데이트
-      if (newMin >= 0 && newMax <= months.length) {
+      console.log("deltaX " + deltaX);
+      if (touchEndX - touchStartX > 0) {
+        let newMin = prevRange.min - deltaX < 0 ? 0 : prevRange.min - deltaX;
+        const newMax = prevRange.max - deltaX < 0 ? 5 : newMin + 5;
+        if (newMax > 11) {
+          newMin = newMin - (newMax - 11);
+        }
+        console.log(newMin, newMax);
+        console.log("===============================");
+        // 최소값이 0보다 크거나, 최대값이 데이터 범위 안에 있을 때만 업데이트
+        return { min: newMin, max: newMax };
+      } else {
+        let newMin = prevRange.min + deltaX > 11 ? 6 : prevRange.min + deltaX;
+        const newMax = prevRange.max + deltaX > 11 ? 11 : newMin + 5;
+        if (newMax > 11) {
+          newMin = newMin - (newMax - 11);
+        }
+        console.log(newMin, newMax);
+        console.log("===============================");
+        // 최소값이 0보다 크거나, 최대값이 데이터 범위 안에 있을 때만 업데이트
         return { min: newMin, max: newMax };
       }
-      return prevRange;
     });
 
     touchStartX = touchEndX; // 현재 위치를 다음 움직임의 시작 위치로 업데이트
@@ -138,11 +153,17 @@ const MixedChart: React.FC<Props> = ({
 
   return (
     <div
-      style={{ width: "100%",height:"100%", overflowX: "hidden" }}
+      style={{ width: "100%", height: "100%", overflowX: "hidden" }}
       onTouchStart={handleTouchStart} // 터치 시작
-      onTouchMove={handleTouchMove}   // 터치 이동
+      onTouchMove={handleTouchMove} // 터치 이동
     >
-      <Chart ref={chartRef} style={{height:"100%"}} type="bar" data={data} options={options} />
+      <Chart
+        ref={chartRef}
+        style={{ height: "100%" }}
+        type="bar"
+        data={data}
+        options={options}
+      />
     </div>
   );
 };
