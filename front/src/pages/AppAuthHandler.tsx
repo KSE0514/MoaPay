@@ -7,86 +7,86 @@ const AppAuthHandler: React.FC = () => {
   const { isLoggedIn, setIsLoggedIn } = useAuthStore();
   const navigate = useNavigate();
 
-  useEffect(() => {
-    //앱의 시각 상태 변경되었을 때 실행될 함수
-    const handleVisibilityChange = () => {
-      //백그라운드로 옮겨질 경우
-      if (document.hidden) {
-        //lastBackgroundTime 업데이트하기
-        localStorage.setItem("lastBackgroundTime", Date.now().toString());
-      }
-      //앱으로 돌아온 경우
-      else {
-        //마지막 활성시간 가져오기 = 백그라운드로 가기 전의 시간 가져오기
-        const lastBackgroundTime = localStorage.getItem("lastBackgroundTime");
-        //백그라운드로 가기 전의 시간이 있는 경우 - 앱 백그라운드 에서 되돌아온 경우 / 이게 없으면 앱을 아예 꺼버린 것
-        if (lastBackgroundTime) {
-          const timeDiff = Date.now() - parseInt(lastBackgroundTime, 10);
-          const hasLoggedInBefore =
-            localStorage.getItem("hasLoggedInBefore") === "true";
-          //백그라운드에서 머무른 시간이 1분을 초과한 경우
-          if (timeDiff > 60000) {
-            //이전 로그인 기록이 있는 경우
-            if (hasLoggedInBefore) {
-              requestBiometricsLogin();
-            }
-            //이전 로그인 기록이 없는 경우
-            else {
-              requestCreateAccount();
-            }
-          }
-        }
-      }
-    };
+  // useEffect(() => {
+  //   //앱의 시각 상태 변경되었을 때 실행될 함수
+  //   const handleVisibilityChange = () => {
+  //     //백그라운드로 옮겨질 경우
+  //     if (document.hidden) {
+  //       //lastBackgroundTime 업데이트하기
+  //       localStorage.setItem("lastBackgroundTime", Date.now().toString());
+  //     }
+  //     //앱으로 돌아온 경우
+  //     else {
+  //       //마지막 활성시간 가져오기 = 백그라운드로 가기 전의 시간 가져오기
+  //       const lastBackgroundTime = localStorage.getItem("lastBackgroundTime");
+  //       //백그라운드로 가기 전의 시간이 있는 경우 - 앱 백그라운드 에서 되돌아온 경우 / 이게 없으면 앱을 아예 꺼버린 것
+  //       if (lastBackgroundTime) {
+  //         const timeDiff = Date.now() - parseInt(lastBackgroundTime, 10);
+  //         const hasLoggedInBefore =
+  //           localStorage.getItem("hasLoggedInBefore") === "true";
+  //         //백그라운드에서 머무른 시간이 1분을 초과한 경우
+  //         if (timeDiff > 60000) {
+  //           //이전 로그인 기록이 있는 경우
+  //           if (hasLoggedInBefore) {
+  //             requestBiometricsLogin();
+  //           }
+  //           //이전 로그인 기록이 없는 경우
+  //           else {
+  //             requestCreateAccount();
+  //           }
+  //         }
+  //       }
+  //     }
+  //   };
 
-    //앱이 시작될 때 실행될 함수
-    const handleAppStart = () => {
-      // 마지막 활성화 시간을 localStorage에서 가져옵니다.
-      const lastActiveTime = localStorage.getItem("lastActiveTime");
+  //   //앱이 시작될 때 실행될 함수
+  //   const handleAppStart = () => {
+  //     // 마지막 활성화 시간을 localStorage에서 가져옵니다.
+  //     const lastActiveTime = localStorage.getItem("lastActiveTime");
 
-      // 사용자가 이전에 로그인한 적이 있는지 확인합니다.
-      // "hasLoggedInBefore" 값이 "true"이면 이전에 로그인한 상태를 의미합니다.
-      const hasLoggedInBefore =
-        localStorage.getItem("hasLoggedInBefore") === "true";
+  //     // 사용자가 이전에 로그인한 적이 있는지 확인합니다.
+  //     // "hasLoggedInBefore" 값이 "true"이면 이전에 로그인한 상태를 의미합니다.
+  //     const hasLoggedInBefore =
+  //       localStorage.getItem("hasLoggedInBefore") === "true";
 
-      // 만약 lastActiveTime이 없으면 앱이 처음 시작되었거나 완전히 종료되었다가 다시 실행된 것입니다.
-      if (!lastActiveTime) {
-        // 사용자가 이전에 로그인한 적이 있는 경우, 간편 로그인 화면으로 이동합니다.
-        if (hasLoggedInBefore) {
-          requestBiometricsLogin();
-        }
-        // 사용자가 이전에 로그인한 적이 없으면 회원가입 페이지로 이동합니다.
-        else {
-          requestCreateAccount();
-        }
-      }
-      // lastActiveTime이 있으면, 사용자가 앱을 백그라운드에 두었다가 다시 돌아온 상태입니다.
-      else {
-        // hasLoggedInBefore 값을 기반으로 로그인 상태를 전역 상태(zustand)에 설정합니다.
-        setIsLoggedIn(hasLoggedInBefore);
-      }
+  //     // 만약 lastActiveTime이 없으면 앱이 처음 시작되었거나 완전히 종료되었다가 다시 실행된 것입니다.
+  //     if (!lastActiveTime) {
+  //       // 사용자가 이전에 로그인한 적이 있는 경우, 간편 로그인 화면으로 이동합니다.
+  //       if (hasLoggedInBefore) {
+  //         requestBiometricsLogin();
+  //       }
+  //       // 사용자가 이전에 로그인한 적이 없으면 회원가입 페이지로 이동합니다.
+  //       else {
+  //         requestCreateAccount();
+  //       }
+  //     }
+  //     // lastActiveTime이 있으면, 사용자가 앱을 백그라운드에 두었다가 다시 돌아온 상태입니다.
+  //     else {
+  //       // hasLoggedInBefore 값을 기반으로 로그인 상태를 전역 상태(zustand)에 설정합니다.
+  //       setIsLoggedIn(hasLoggedInBefore);
+  //     }
 
-      // 마지막 활성화 시간을 현재 시간으로 localStorage에 저장하여 추후 비교에 사용할 수 있도록 합니다.
-      localStorage.setItem("lastActiveTime", Date.now().toString());
-    };
+  //     // 마지막 활성화 시간을 현재 시간으로 localStorage에 저장하여 추후 비교에 사용할 수 있도록 합니다.
+  //     localStorage.setItem("lastActiveTime", Date.now().toString());
+  //   };
 
-    const requestBiometricsLogin = () => {
-      console.log("로그인");
-      navigate(PATH.BIOMETRICS_LOGIN);
-    };
+  //   const requestBiometricsLogin = () => {
+  //     console.log("로그인");
+  //     navigate(PATH.BIOMETRICS_LOGIN);
+  //   };
 
-    const requestCreateAccount = () => {
-      console.log("회원가입");
-      navigate(PATH.CREATE_ACCOUNT);
-    };
+  //   const requestCreateAccount = () => {
+  //     console.log("회원가입");
+  //     navigate(PATH.CREATE_ACCOUNT);
+  //   };
 
-    handleAppStart();
-    document.addEventListener("visibilitychange", handleVisibilityChange);
+  //   handleAppStart();
+  //   document.addEventListener("visibilitychange", handleVisibilityChange);
 
-    return () => {
-      document.removeEventListener("visibilitychange", handleVisibilityChange);
-    };
-  }, [navigate, setIsLoggedIn]);
+  //   return () => {
+  //     document.removeEventListener("visibilitychange", handleVisibilityChange);
+  //   };
+  // }, [navigate, setIsLoggedIn]);
 
   return <Outlet />; // 자식 경로를 렌더링
 };

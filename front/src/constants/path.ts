@@ -8,7 +8,7 @@ const PATH = {
   STATISTICS: "/statistics/",
   SETTING: "/setting",
   PAYMENT_RECOMMENDATION: "/payment-recommendation", //nonav
-  STATISTICS_CONSULTING: "consulting",
+  STATISTICS_SAVING: "saving",
   STATISTICS_ANALYSIS: "analysis",
   STATISTICS_BENEFITS: "benefits",
   STATISTICS_CONSUMPTION: "consumption",
