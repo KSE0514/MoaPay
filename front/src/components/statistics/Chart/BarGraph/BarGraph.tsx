@@ -12,7 +12,6 @@ import {
 } from "chart.js";
 import { Chart } from "react-chartjs-2";
 
-// Chart.js에서 사용할 요소를 등록
 ChartJS.register(
   BarElement,
   LineElement,
@@ -64,7 +63,6 @@ const MixedChart: React.FC<Props> = ({
     setMonths(getLast12Months());
   }, []);
 
-  // 차트 데이터 설정
   const data = {
     labels: months,
     datasets: [
@@ -83,7 +81,6 @@ const MixedChart: React.FC<Props> = ({
     ],
   };
 
-  // 차트 옵션 설정
   const options = {
     responsive: true,
     maintainAspectRatio: false, // 차트의 기본 비율을 유지하지 않음
@@ -108,55 +105,43 @@ const MixedChart: React.FC<Props> = ({
     },
   };
 
-  // 터치 이벤트를 처리하는 변수
   let touchStartX = 0;
 
-  // 터치 시작 시 호출
   const handleTouchStart = (event: React.TouchEvent<HTMLDivElement>) => {
     touchStartX = event.touches[0].clientX; // 터치 시작 위치 저장
   };
 
-  // 터치 이동 시 호출
   const handleTouchMove = (event: React.TouchEvent<HTMLDivElement>) => {
     const touchEndX = event.touches[0].clientX; // 터치가 끝나는 위치
     if (touchEndX > 390 || touchStartX < 70) return;
-    console.log("start: " + touchStartX + " end" + touchEndX);
     const deltaX = Math.trunc(Math.abs(touchEndX - touchStartX) / 6); // 터치 시작과 끝의 차이
     setXRange((prevRange) => {
-      console.log("deltaX " + deltaX);
+      let newMin, newMax;
+
       if (touchEndX - touchStartX < 0) {
-        console.log("뒤로 이동")
-        if(prevRange.max+deltaX>11||prevRange.min+deltaX>6){
-          const newMin = 6;
-          const newMax = 11;
-          return { min: newMin, max: newMax };
-        }
-        else{
-          const newMin = prevRange.min+deltaX;
-          const newMax = prevRange.max+deltaX;
-          return { min: newMin, max: newMax };
-        }
+        // 뒤로 이동
+        newMin = Math.min(prevRange.min + deltaX, 6);
+        newMax = Math.min(prevRange.max + deltaX, 11);
       } else {
-        console.log("앞으로 이동")
-        if(prevRange.max-deltaX<5||prevRange.min-deltaX<0){
-          const newMin = 0;
-          const newMax = 5;
-          return { min: newMin, max: newMax };
-        }
-        else{
-          const newMin = prevRange.min-deltaX;
-          const newMax = prevRange.max-deltaX;
-          return { min: newMin, max: newMax };
-        }
+        // 앞으로 이동
+        newMin = Math.max(prevRange.min - deltaX, 0);
+        newMax = Math.max(prevRange.max - deltaX, 5);
       }
+
+      // 값이 실제로 변경된 경우에만 상태 업데이트
+      if (newMin !== prevRange.min || newMax !== prevRange.max) {
+        return { min: newMin, max: newMax };
+      }
+
+      return prevRange; // 값이 변경되지 않았으면 이전 상태 유지
     });
-};
+  };
 
   return (
     <div
       style={{ width: "100%", height: "100%", overflowX: "hidden" }}
-      onTouchStart={handleTouchStart} // 터치 시작
-      onTouchMove={handleTouchMove} // 터치 이동
+      onTouchStart={handleTouchStart}
+      onTouchMove={handleTouchMove}
     >
       <Chart
         ref={chartRef}

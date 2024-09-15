@@ -12,7 +12,7 @@ import PasswordLogin from "../pages/PasswordLogin/PasswordLogin.tsx";
 import CardRecommend from "../pages/CardRecommend/CardRecommend.tsx";
 import Setting from "../pages/Setting/Setting.tsx";
 import Statistics from "../pages/Statistics/Statistics.tsx";
-import Consulting from "../pages/Statistics/Consulting/Consulting.tsx";
+import Saving from "../pages/Statistics/Saving/Saving.tsx";
 import Analysis from "../pages/Statistics/Analysis/Analysis.tsx";
 import Benefits from "../pages/Statistics/Benefits/Benefits.tsx";
 import Consumption from "../pages/Statistics/Consumption/Consumption.tsx";
@@ -47,8 +47,8 @@ const router = createBrowserRouter([
             element: <Statistics />,
             children: [
               {
-                path: PATH.STATISTICS_CONSULTING,
-                element: <Consulting />,
+                path: PATH.STATISTICS_SAVING,
+                element: <Saving />,
               },
               {
                 path: PATH.STATISTICS_ANALYSIS,

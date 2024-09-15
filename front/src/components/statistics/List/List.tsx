@@ -1,14 +1,14 @@
 import { useEffect, useRef } from "react";
 import { Wrapper, ListItem } from "./List.styles";
 
-interface data {
+interface Data {
   cateory: string;
   money: number;
   per: number;
 }
 
 interface Props {
-  consumptionList: data[]; // props로 받을 데이터 타입 지정
+  consumptionList: Data[]; // props로 받을 데이터 타입 지정
 }
 
 const List = ({ consumptionList }: Props) => {
@@ -29,9 +29,12 @@ const List = ({ consumptionList }: Props) => {
     });
   }, [consumptionList]); // consumptionList 변경 시마다 이미지 크기 다시 체크
 
+  // per 기준으로 내림차순 정렬
+  const sortedList = [...consumptionList].sort((a, b) => b.per - a.per);
+
   return (
     <Wrapper className="list-wrapper">
-      {consumptionList.map((consumption: data, index: number) => (
+      {sortedList.map((consumption: Data, index: number) => (
         <ListItem key={index}>
           <div className="Col">
             <div>
@@ -51,8 +54,6 @@ const List = ({ consumptionList }: Props) => {
             <p>
               {`${consumption.per}%`} | {consumption.money.toLocaleString()}{" "}
             </p>
-            {/* <p>{`${consumption.cateory} (${consumption.per}%)`}</p> */}
-            {/* <p>{consumption.money.toLocaleString()}</p> */}
           </div>
         </ListItem>
       ))}

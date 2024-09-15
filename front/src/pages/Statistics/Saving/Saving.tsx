@@ -1,6 +1,6 @@
 import Nav from "../../../components/statistics/Nav/Nav";
 
-const Consulting = () => {
+const Saving = () => {
   return <></>;
 };
-export default Consulting;
+export default Saving;

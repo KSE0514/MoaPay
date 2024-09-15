@@ -31,7 +31,7 @@ const Statistics = () => {
     `${PATH.STATISTICS}${PATH.STATISTICS_CONSUMPTION}`,
     `${PATH.STATISTICS}${PATH.STATISTICS_BENEFITS}`,
     `${PATH.STATISTICS}${PATH.STATISTICS_ANALYSIS}`,
-    `${PATH.STATISTICS}${PATH.STATISTICS_CONSULTING}`,
+    `${PATH.STATISTICS}${PATH.STATISTICS_SAVING}`,
   ];
   //이번 달을 첫 데이터값으로 지정
   const [selectedMonth, setSelectedMonth] = useState<string>(
@@ -190,7 +190,7 @@ const Statistics = () => {
                 </ul>
               </Month>
               <Info>
-                <DonutChart />
+                <DonutChart dataList={dataList} />
                 <StatisticDonutChartText
                   text={`이번달에는\n200000원\n소비했어요!`}
                 />
