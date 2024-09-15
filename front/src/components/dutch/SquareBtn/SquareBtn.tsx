@@ -2,9 +2,14 @@ import {
   Btn
 } from './SquareBtn.styles'
 
-const SquareBtn = ({text}) => {
+const SquareBtn = ({text, color, onClick}) => {
   return (
-    <Btn>
+    <Btn
+      style={{
+        backgroundColor: color
+      }}
+      onClick={onClick}
+    >
       {text}
     </Btn>
   )

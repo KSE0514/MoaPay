@@ -16,6 +16,12 @@ export const Top = styled.div`
   font-weight: 700;
 `
 
+export const Title = styled.div`
+  display:flex;
+  align-items:center;
+  margin: 0 auto;
+`
+
 export const Main = styled.div`
   position: relative;
   width: 85%;
@@ -30,13 +36,38 @@ export const Main = styled.div`
 `
 
 export const LinkBox = styled.div`
+  display: flex;
+  align-items: center;
   background-color: #C5CAFF;
   width: 75%;
   border-radius: 7px;
-  padding: 8px 0;
+  padding: 4px 5px;
+  padding-left: 21.704px;
   margin: 0 auto;
   font-size: 18px;
   font-weight: 100;
+
+  & > svg {
+    focus:cusor;
+  }
+
+  & > input {
+    width: 100%;
+    // height: 100%;
+    font-size: 20px;
+    text-align: center;
+    background-color: rgba(0,0,0,0);
+    border: none;
+  }
+  :focus{
+    outline: none; // 클릭시 테두리 안 생기도록
+  }
+  // placeholder 설정
+  ::-webkit-input-placeholder{
+    color: black;
+    font-size: 19px;
+  }
+  
 `
 
 export const BackImg = styled.div`
