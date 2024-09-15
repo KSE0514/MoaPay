@@ -58,7 +58,6 @@ const MixedChart: React.FC<Props> = ({
         now.setMonth(now.getMonth() - 1); // now에서 month 값을 하나 줄임
       }
 
-      console.log(result);
       return result.reverse();
     };
 
@@ -125,31 +124,33 @@ const MixedChart: React.FC<Props> = ({
     const deltaX = Math.trunc(Math.abs(touchEndX - touchStartX) / 6); // 터치 시작과 끝의 차이
     setXRange((prevRange) => {
       console.log("deltaX " + deltaX);
-      if (touchEndX - touchStartX > 0) {
-        let newMin = prevRange.min - deltaX < 0 ? 0 : prevRange.min - deltaX;
-        const newMax = prevRange.max - deltaX < 0 ? 5 : newMin + 5;
-        if (newMax > 11) {
-          newMin = newMin - (newMax - 11);
+      if (touchEndX - touchStartX < 0) {
+        console.log("뒤로 이동")
+        if(prevRange.max+deltaX>11||prevRange.min+deltaX>6){
+          const newMin = 6;
+          const newMax = 11;
+          return { min: newMin, max: newMax };
         }
-        console.log(newMin, newMax);
-        console.log("===============================");
-        // 최소값이 0보다 크거나, 최대값이 데이터 범위 안에 있을 때만 업데이트
-        return { min: newMin, max: newMax };
+        else{
+          const newMin = prevRange.min+deltaX;
+          const newMax = prevRange.max+deltaX;
+          return { min: newMin, max: newMax };
+        }
       } else {
-        let newMin = prevRange.min + deltaX > 11 ? 6 : prevRange.min + deltaX;
-        const newMax = prevRange.max + deltaX > 11 ? 11 : newMin + 5;
-        if (newMax > 11) {
-          newMin = newMin - (newMax - 11);
+        console.log("앞으로 이동")
+        if(prevRange.max-deltaX<5||prevRange.min-deltaX<0){
+          const newMin = 0;
+          const newMax = 5;
+          return { min: newMin, max: newMax };
         }
-        console.log(newMin, newMax);
-        console.log("===============================");
-        // 최소값이 0보다 크거나, 최대값이 데이터 범위 안에 있을 때만 업데이트
-        return { min: newMin, max: newMax };
+        else{
+          const newMin = prevRange.min-deltaX;
+          const newMax = prevRange.max-deltaX;
+          return { min: newMin, max: newMax };
+        }
       }
     });
-
-    touchStartX = touchEndX; // 현재 위치를 다음 움직임의 시작 위치로 업데이트
-  };
+};
 
   return (
     <div
