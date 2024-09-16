@@ -12,7 +12,7 @@ const Layout = () => {
     matchPath({ path: PATH.USER_CARD_DETAIL }, location.pathname);
 
   return (
-    <Wrapper className="LayouyWrapper">
+    <Wrapper className="LayoutWrapper">
       <Outlet />
       {/* 경로가 일치하지 않을 때만 Nav 표시 */}
       {!isNoNav && <Nav />}
