@@ -1,5 +1,6 @@
 package com.moa.cardbank.domain.card.entity;
 
+import com.fasterxml.uuid.Generators;
 import com.moa.cardbank.domain.card.model.Status;
 import com.moa.cardbank.domain.store.entity.Merchant;
 import jakarta.persistence.*;
@@ -63,6 +64,7 @@ public class PaymentLog {
     @PrePersist
     private void prePersist() {
         LocalDateTime now = LocalDateTime.now();
+        this.uuid = Generators.timeBasedEpochGenerator().generate();
         this.createTime = now;
         this.updateTime = now;
     }

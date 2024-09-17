@@ -1,5 +1,6 @@
 package com.moa.cardbank.domain.card.entity;
 
+import com.fasterxml.uuid.Generators;
 import com.moa.cardbank.domain.account.entity.Account;
 import com.moa.cardbank.domain.member.entity.Member;
 import jakarta.persistence.*;
@@ -65,4 +66,9 @@ public class MyCard {
     @NotNull
     @Column(name = "account_id")
     private long accountId;
+
+    @PrePersist
+    public void prePersist() {
+        this.uuid = Generators.timeBasedEpochGenerator().generate();
+    }
 }

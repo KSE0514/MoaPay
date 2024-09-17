@@ -1,5 +1,6 @@
 package com.moa.cardbank.domain.member.entity;
 
+import com.fasterxml.uuid.Generators;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import lombok.*;
@@ -25,4 +26,9 @@ public class Member {
 
     @Column(name = "name", length = 10)
     private String name;
+
+    @PrePersist
+    public void prePersist() {
+        this.uuid = Generators.timeBasedEpochGenerator().generate();
+    }
 }

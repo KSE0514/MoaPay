@@ -1,5 +1,6 @@
 package com.moa.cardbank.domain.account.entity;
 
+import com.fasterxml.uuid.Generators;
 import com.moa.cardbank.domain.member.entity.Member;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
@@ -34,11 +35,16 @@ public class Account {
     private Long memberId;
 
     @NotNull
-    @Column(name = "number", unique = true)
+    @Column(name = "number", unique = true, updatable = false)
     private String number;
 
     @NotNull
     @Column(name = "balance")
     private Long balance;
+
+    @PrePersist
+    public void prePersist() {
+        this.uuid = Generators.timeBasedEpochGenerator().generate();
+    }
 
 }

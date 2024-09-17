@@ -1,5 +1,6 @@
 package com.moa.payment.domain.online.entity;
 
+import com.fasterxml.uuid.Generators;
 import com.moa.payment.domain.online.model.Status;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
@@ -77,6 +78,7 @@ public class PaymentLog {
     @PreUpdate
     private void preUpdate() {
         this.updateTime = LocalDateTime.now();
+        this.uuid = Generators.timeBasedEpochGenerator().generate();
     }
 
 }
