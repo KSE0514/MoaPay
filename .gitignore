@@ -22,3 +22,5 @@
 /front/*.njsproj
 /front/*.sln
 /front/*.sw?
+
+.idea

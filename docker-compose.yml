@@ -1,0 +1,137 @@
+version: "3"
+services:
+  # frontend
+  frontend:
+    build:
+      context: ./front
+      dockerfile: Dockerfile
+    container_name: frontend
+    ports: "3000:3000"
+    networks: webnet
+
+  # backend
+  eureka-server:
+    build:
+      context: ./back/eureka-server
+      dockerfile: Dockerfile
+    container_name: eureka-server
+    ports:
+      - "8761:8761"
+    networks:
+      - webnet
+    restart: always
+
+  api-gateway:
+    build:
+      context: ./back/gateway
+      dockerfile: Dockerfile
+    container_name: api-gateway
+    ports:
+      - "8765:8765"
+    depends_on:
+      - eureka-server
+    networks:
+      - webnet
+    restart: always
+
+  payment:
+    build:
+      context: ./back/payment
+      dockerfile: Dockerfile
+    container_name: payment
+    ports:
+      - "18010:8080"
+    networks:
+      - webnet
+    depends_on:
+      - eureka-server
+      - api-gateway
+      - payment-mysql
+      - payment-redis
+    environment:
+      - SPRING_PROFILES_ACTIVE=prod
+
+  moapay:
+    build:
+      context: ./back/moapay
+      dockerfile: Dockerfile
+    container_name: moapay
+    ports:
+      - "18020:8080"
+    networks:
+      - webnet
+    depends_on:
+      - eureka-server
+      - api-gateway
+      - moapay-mysql
+      - moapay-redis
+    environment:
+      - SPRING_PROFILES_ACTIVE=prod
+
+  member:
+    build:
+      context: ./back/member
+      dockerfile: Dockerfile
+    container_name: member
+    ports:
+      - "18040:8080"
+    networks:
+      - webnet
+    depends_on:
+      - eureka-server
+      - api-gateway
+      - member-mysql
+      - member-redis
+    environment:
+      - SPRING_PROFILES_ACTIVE=prod
+
+  # notification:
+  #   build:
+  #     context: ./back/notification
+  #     dockerfile: Dockerfile
+  #   container_name: notification
+  #   ports:
+  #     - "18060:8080"
+  #   networks:
+  #     - webnet
+  #   depends_on:
+  #     - eureka-server
+  #     - api-gateway
+  #   environment:
+  #     - SPRING_PROFILES_ACTIVE=prod
+
+  cardbank:
+    build:
+      context: ./back/cardbank
+      dockerfile: Dockerfile
+    container_name: cardbank
+    ports:
+      - "18100:8080"
+    networks:
+      - webnet
+    depends_on:
+      - eureka-server
+      - api-gateway
+      - cardbank-mysql
+    environment:
+      - SPRING_PROFILES_ACTIVE=prod
+
+  store:
+    build:
+      context: ./back/store
+      dockerfile: Dockerfile
+    container_name: store
+    ports:
+      - "18200:8080"
+    networks:
+      - webnet
+    depends_on:
+      - eureka-server
+      - api-gateway
+      - store-mysql
+    environment:
+      - SPRING_PROFILES_ACTIVE=prod
+
+networks:
+  webnet:
+    external: true
