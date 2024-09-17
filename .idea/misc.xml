@@ -2,9 +2,11 @@
 <project version="4">
   <component name="ExternalStorageConfigurationManager" enabled="true" />
   <component name="FrameworkDetectionExcludesConfiguration">
+    <file type="web" url="file://$PROJECT_DIR$/../moa-config-server" />
     <file type="web" url="file://$PROJECT_DIR$/back/cardbank" />
     <file type="web" url="file://$PROJECT_DIR$/back/eureka" />
     <file type="web" url="file://$PROJECT_DIR$/back/gateway" />
+    <file type="web" url="file://$PROJECT_DIR$/back/member" />
     <file type="web" url="file://$PROJECT_DIR$/back/moapay" />
     <file type="web" url="file://$PROJECT_DIR$/back/payment" />
     <file type="web" url="file://$PROJECT_DIR$/back/settlement" />
