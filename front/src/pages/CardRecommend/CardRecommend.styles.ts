@@ -77,6 +77,7 @@ export const ComparisonList = styled.div`
   }
   header,
   .row {
+    font-size: 15px;
     display: flex;
     justify-content: center;
     align-items: center;
@@ -111,13 +112,11 @@ export const ComparisonList = styled.div`
     .benefit-category {
       width: 100%;
       text-align: start;
-      font-size: 13px;
       font-weight: 700;
       margin-bottom: 3px;
     }
     .benefit-explanation {
       width: 100%;
-      font-size: 13px;
       margin-bottom: 10px;
     }
   }

@@ -28,7 +28,7 @@ interface card {
  * 추천받은 카드를 가져올때 정보를 다 가져와서 프론트쪽에서 가지고 있기
  */
 const CardRecommend = () => {
-  const [isLoading, setIsLoading] = useState<boolean>(true);
+  const [isLoading, setIsLoading] = useState<boolean>(false);
   // const [RecommendedCardList, setRecommendedCardList] = useState<card[]>([]);
   // const [userCardInfoList, setUserCardInfoList] = useState<card[]>([]);
   const [comparisonCard, setComparisonCard] = useState<(card | null)[]>([

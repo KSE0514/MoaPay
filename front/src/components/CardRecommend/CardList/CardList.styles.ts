@@ -7,6 +7,7 @@ export const CardInfo = styled.div`
   width: 100%;
   height: 110px;
   align-items: center;
+  transition: transform 0.3s ease; /* 애니메이션을 부드럽게 만듦 */
   div {
     width: 40%;
     position: relative;
