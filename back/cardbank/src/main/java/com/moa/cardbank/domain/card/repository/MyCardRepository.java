@@ -9,4 +9,5 @@ import java.util.UUID;
 public interface MyCardRepository extends JpaRepository<MyCard, Long> {
     Optional<MyCard> findByUuid(UUID uuid);
     <S extends MyCard> S save(S myCard);
+    boolean existsByCardNumber(String cardNumber);
 }

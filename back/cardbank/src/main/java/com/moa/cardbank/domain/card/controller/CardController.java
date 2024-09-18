@@ -1,5 +1,7 @@
 package com.moa.cardbank.domain.card.controller;
 
+import com.moa.cardbank.domain.card.model.dto.CreateMyCardRequestDto;
+import com.moa.cardbank.domain.card.model.dto.CreateMyCardResponseDto;
 import com.moa.cardbank.domain.card.model.dto.ExecutePayRequestDto;
 import com.moa.cardbank.domain.card.model.dto.ExecutePayResponseDto;
 import com.moa.cardbank.domain.card.service.CardService;
@@ -28,6 +30,16 @@ public class CardController {
         // 한도초과 등, 결제에 실패한 경우 Exception 응답함
         ExecutePayResponseDto responseDto = cardService.executePay(dto);
         ResultResponse resultResponse = ResultResponse.of(HttpStatus.OK, "결제 정상 승인", responseDto);
+        return ResponseEntity.status(resultResponse.getStatus()).body(resultResponse);
+    }
+
+    @PostMapping("/my/create")
+    public ResponseEntity<ResultResponse> createMycard(@RequestBody CreateMyCardRequestDto dto) {
+        log.info("create my card");
+        log.info("WARNING :: This feature is not completed. It isn't including card product info");
+        // todo : 카드 상품 정보 포함하여 card entity 영속화하도록 변경 必
+        CreateMyCardResponseDto responseDto = cardService.createMyCard(dto);
+        ResultResponse resultResponse = ResultResponse.of(HttpStatus.OK, "개인 카드 생성됨", responseDto);
         return ResponseEntity.status(resultResponse.getStatus()).body(resultResponse);
     }
 

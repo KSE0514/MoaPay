@@ -1,12 +1,18 @@
 package com.moa.cardbank.domain.card.service;
 
+import com.moa.cardbank.domain.account.entity.Account;
+import com.moa.cardbank.domain.account.repository.AccountRepository;
 import com.moa.cardbank.domain.card.entity.MyCard;
 import com.moa.cardbank.domain.card.entity.PaymentLog;
 import com.moa.cardbank.domain.card.model.Status;
+import com.moa.cardbank.domain.card.model.dto.CreateMyCardRequestDto;
+import com.moa.cardbank.domain.card.model.dto.CreateMyCardResponseDto;
 import com.moa.cardbank.domain.card.model.dto.ExecutePayRequestDto;
 import com.moa.cardbank.domain.card.model.dto.ExecutePayResponseDto;
 import com.moa.cardbank.domain.card.repository.MyCardRepository;
 import com.moa.cardbank.domain.card.repository.PaymentLogRepository;
+import com.moa.cardbank.domain.member.entity.Member;
+import com.moa.cardbank.domain.member.repository.MemberRepository;
 import com.moa.cardbank.domain.store.entity.Merchant;
 import com.moa.cardbank.domain.store.repository.MerchantRepository;
 import com.moa.cardbank.global.exception.BusinessException;
@@ -16,6 +22,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.UUID;
 
 @Service
@@ -26,6 +34,8 @@ public class CardServiceImpl implements CardService {
     private final MyCardRepository myCardRepository;
     private final PaymentLogRepository paymentLogRepository;
     private final MerchantRepository merchantRepository;
+    private final MemberRepository memberRepository;
+    private final AccountRepository accountRepository;
 
     @Override
     @Transactional
@@ -77,6 +87,44 @@ public class CardServiceImpl implements CardService {
                 .amount(paymentLog.getAmount())
                 .benefitBalance(0)
                 .remainedBenefit(0)
+                .build();
+    }
+
+    @Override
+    public CreateMyCardResponseDto createMyCard(CreateMyCardRequestDto dto) {
+
+        Member member = memberRepository.findByUuid(dto.getMemberId())
+                .orElseThrow(() -> new BusinessException(HttpStatus.BAD_REQUEST, "유효하지 않은 입력입니다."));
+        Account account = accountRepository.findByUuid(dto.getAccountId())
+                .orElseThrow(() -> new BusinessException(HttpStatus.BAD_REQUEST, "유효하지 않은 입력입니다."));
+
+        // 카드번호와 cvc는 무작위 생성
+        // 카드 번호는 중복검사 이후 결정한다
+        String cardNumber;
+        while(true){
+            cardNumber = String.valueOf((int)(Math.random()*100000000))+String.valueOf((int)(Math.random()*100000000));
+            if(!myCardRepository.existsByCardNumber(cardNumber)) { // 안 겹치는 카드 번호가 나올 때까지 반복
+                break;
+            }
+        }
+        String cvc = String.valueOf((int)(Math.random()*1000));
+
+        MyCard newCard = MyCard.builder()
+                .cardNumber(cardNumber)
+                .cvc(cvc)
+                .performanceFlag(false)
+                .cardLimit(300000) // 임시로 임의의 값 지정
+                .amount(0)
+                .benefitUsage(0)
+                .memberId(member.getId())
+                .accountId(account.getId())
+                .build();
+
+        myCardRepository.save(newCard);
+
+        return CreateMyCardResponseDto.builder()
+                .myCardId(newCard.getUuid())
+                .myCardNumber(newCard.getCardNumber())
                 .build();
     }
 }
