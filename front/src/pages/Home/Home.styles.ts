@@ -47,7 +47,7 @@ export const ButtonArea = styled.div`
 
 export const Bottom = styled.div`
   position: relative;
-  padding: 20px 40px 113.5px 40px;
+  padding: 30px 40px var(--padding-bottom) 40px;
   /* height:100%; */
   overflow: hidden;
   border-top-left-radius: 48px;
@@ -77,7 +77,7 @@ export const Bottom = styled.div`
   }
   .tri {
     position: absolute;
-    bottom: 100.5px;
+    bottom: 80.5px;
     width: 0;
     height: 0;
     border-bottom: 100px solid rgba(84, 98, 255, 0.24);
