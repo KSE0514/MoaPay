@@ -21,11 +21,11 @@ export const Wrapper = styled.div`
   img {
     width: 216px;
     height: 343px;
-    margin-bottom: 78px;
   }
 `;
 export const Benefits = styled.div`
   header {
+    margin-top: 78px;
     margin-bottom: 28px;
     display: flex;
     justify-content: center;
@@ -55,12 +55,14 @@ export const Benefits = styled.div`
       border-radius: 50%;
       background-color: #676767;
       margin-right: 10px;
+      margin-top: 10px;
     }
     li {
       flex: 1;
       color: #676767;
       font-size: 20px;
       margin-bottom: 15px;
+      line-height: 25px;
     }
   }
 `;

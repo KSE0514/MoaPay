@@ -38,8 +38,8 @@ const CardDetail = ({ selectedCard }: Props) => {
           width: rotate ? "343px" : "216px", // 회전 여부에 따라 width와 height 변경
           height: rotate ? "216px" : "343px",
           transform: rotate ? "rotate(90deg)" : "none",
-          marginTop: rotate ? "37px" : "none",
-          marginBottom: rotate ? "78px" : "0px",
+          marginTop: rotate ? "60px" : "none",
+          marginBottom: rotate ? "59px" : "none",
         }}
         src={selectedCard.image_url}
       />
