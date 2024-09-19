@@ -8,7 +8,7 @@ import com.moa.cardbank.domain.card.entity.PaymentLog;
 import com.moa.cardbank.domain.card.model.BenefitType;
 import com.moa.cardbank.domain.card.model.BenefitUnit;
 import com.moa.cardbank.domain.card.model.PayStatus;
-import com.moa.cardbank.domain.card.model.PaymentLogStatus;
+import com.moa.cardbank.domain.card.model.ProcessingStatus;
 import com.moa.cardbank.domain.card.model.dto.CreateMyCardRequestDto;
 import com.moa.cardbank.domain.card.model.dto.CreateMyCardResponseDto;
 import com.moa.cardbank.domain.card.model.dto.ExecutePayRequestDto;
@@ -63,6 +63,8 @@ public class CardServiceImpl implements CardService {
         long benefitTotalLimit = myCard.getProduct().getBenefitTotalLimit();
         long usableBenefit = benefitTotalLimit - myCard.getBenefitUsage();
         long totalDiscount = 0;
+        long totalPoint = 0;
+        long totalCashback = 0;
         long totalEarning = 0;
         for(CardBenefit cardBenefit : benefitList) { // 거의 대부분 카테고리 하나당 혜택 하나겠지만, 확장성을 고려하여 반복문 작성
             if(cardBenefit.getBenefitType() == BenefitType.DISCOUNT) {
@@ -72,27 +74,35 @@ public class CardServiceImpl implements CardService {
                     // 고정할인값이 원래 amount 값보다 높다면 적용 불가
                     totalDiscount += (long) cardBenefit.getBenefitValue();
                 }
-            } else {
-                // 캐시백, 적립 모두 현금을 돌려주는 것으로 계산
+            } else if(cardBenefit.getBenefitType() == BenefitType.POINT) {
                 if(cardBenefit.getBenefitUnit() == BenefitUnit.PERCENTAGE) {
-                    totalEarning += (long)(dto.getAmount() * (cardBenefit.getBenefitValue()/100));
+                    totalPoint += (long)(dto.getAmount() * (cardBenefit.getBenefitValue()/100));
                 } else if(cardBenefit.getBenefitUnit() == BenefitUnit.FIX) {
-                    totalEarning += (long) cardBenefit.getBenefitValue();
+                    totalPoint += (long) cardBenefit.getBenefitValue();
+                }
+            } else {
+                if(cardBenefit.getBenefitUnit() == BenefitUnit.PERCENTAGE) {
+                    totalCashback += (long)(dto.getAmount() * (cardBenefit.getBenefitValue()/100));
+                } else if(cardBenefit.getBenefitUnit() == BenefitUnit.FIX) {
+                    totalCashback += (long) cardBenefit.getBenefitValue();
                 }
             }
         }
         // 혜택 계산 종료
         // 사용가능 혜택값과 현재 혜택값을 비교
-        if(usableBenefit < totalDiscount + totalEarning) {
-            if(usableBenefit < totalDiscount) {
-                // 적립을 다 차감한다 하더라도 여전히 usableBenefit 이상이라면 할인도 차감한다
-                totalDiscount = usableBenefit;
-                totalEarning = 0;
-            } else {
-                // 적립을 차감시키는 선에서 해결 가능하다면, 적립만 차감
-                // 사용 가능한 혜택보다 받은 혜택이 더 많다면, 적립/캐시백부터 차감
-                totalEarning = Math.max(0, usableBenefit - totalDiscount);
-            }
+        if(usableBenefit < totalDiscount + totalPoint + totalCashback) {
+            // 차감 우선순위 : 캐시백 -> 포인트 -> 할인
+            long exceeded = totalDiscount + totalPoint + totalCashback - usableBenefit;
+            long newTotalCashback = Math.max(totalCashback - exceeded, 0);
+            exceeded -= (totalCashback - newTotalCashback);
+            long newTotalPoint = Math.max(totalPoint - exceeded, 0);
+            exceeded -= (totalPoint - newTotalPoint);
+            long newTotalDiscount = Math.max(totalDiscount - exceeded, 0);
+            exceeded -= (totalDiscount - newTotalDiscount);
+            // 바뀐 혜택을 원래 변수에 적용
+            totalDiscount = newTotalDiscount;
+            totalPoint = newTotalPoint;
+            totalCashback = newTotalCashback;
         }
         // 최종적으로 결제될 금액을 정산
         long finalAmount = dto.getAmount() - totalDiscount;
@@ -114,7 +124,7 @@ public class CardServiceImpl implements CardService {
                 .cardId(myCard.getId())
                 .merchantId(merchant.getId())
                 .amount(finalAmount)
-                .paymentLogStatus(PaymentLogStatus.APPROVED)
+                .status(ProcessingStatus.APPROVED)
                 .build();
 
         paymentLogRepository.save(paymentLog);

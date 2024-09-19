@@ -1,22 +1,24 @@
 package com.moa.cardbank.domain.card.entity;
 
 import com.fasterxml.uuid.Generators;
+import com.moa.cardbank.domain.card.model.EarningType;
 import com.moa.cardbank.domain.card.model.ProcessingStatus;
-import com.moa.cardbank.domain.store.entity.Merchant;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import lombok.*;
+import org.hibernate.annotations.DynamicInsert;
 
 import java.time.LocalDateTime;
 import java.util.UUID;
 
 @Entity
-@Table(name = "payment_log")
+@Table(name = "earning_log")
 @Getter
 @Builder(toBuilder = true)
+@DynamicInsert
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
-public class PaymentLog {
+public class EarningLog {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
@@ -26,32 +28,24 @@ public class PaymentLog {
     @Column(name = "uuid", columnDefinition = "binary(16)", unique = true, nullable = false, updatable = false)
     private UUID uuid; // 고유 id는 수정 불가
 
-    @NotNull
+    // @ManyToOne으로 연결 : 결제 내역 ID
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "payment_log_id", insertable = false, updatable = false)
+    private PaymentLog paymentLog;
+
+    @Column(name = "payment_log_id")
+    private Long paymentLogId;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "type")
+    private EarningType type;
+
     @Column(name = "amount")
     private long amount;
 
-    @NotNull
     @Enumerated(EnumType.STRING)
     @Column(name = "status")
     private ProcessingStatus status;
-
-    // @ManyToOne으로 연결 : 결제 카드, 가맹점
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "card_id", updatable = false, insertable = false)
-    private MyCard card;
-
-    @NotNull
-    @Column(name = "card_id")
-    private long cardId;
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "merchant_id", updatable = false, insertable = false)
-    private Merchant merchant;
-
-    @NotNull
-    @Column(name = "merchant_id")
-    private long merchantId;
-
 
     @NotNull
     @Column(name = "create_time")
@@ -73,5 +67,4 @@ public class PaymentLog {
     private void preUpdate() {
         this.updateTime = LocalDateTime.now();
     }
-
 }
