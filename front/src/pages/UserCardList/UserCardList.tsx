@@ -59,6 +59,9 @@ const UserCardList = () => {
 
   const [startX, setStartX] = useState(0); // 터치 시작의 X 좌표를 저장
 
+  const [editMode, setEditMode] = useState(false); // 선택 삭제 모드
+  const [deleteList, setDeleteList] = useState<number[]>([]);
+
 
   const closeModal = () => {
     setIsOpen(false);
@@ -99,7 +102,9 @@ const UserCardList = () => {
   const handleTouchEnd = (index: number) => {
     if (swipeDistance[index] >= 100) {
       console.log(cardListData[index].name); // 100px 이상 밀렸을 경우카드 이름 console에 출력
-      setIsOpen(true);
+      if (!editMode) {
+        setIsOpen(true);
+      }
     }
     
     // 스와이프가 끝나면 초기화
@@ -121,7 +126,7 @@ const UserCardList = () => {
               onTouchMove={(e) => handleTouchMove(e, index)}
               onTouchEnd={() => handleTouchEnd(index)}
               style={{
-                transform: `translateX(-${swipeDistance[index] || 0}px)`,
+                transform: editMode? "none": `translateX(-${swipeDistance[index] || 0}px)`,
                 backgroundColor: "white", 
               }}
               >
@@ -140,9 +145,9 @@ const UserCardList = () => {
                 />
                 <div>{card.name}</div>
               </div>
-              <svg xmlns="http://www.w3.org/2000/svg" x="0px" y="0px" fill="#A1A1A1" width="30" height="30" viewBox="0 0 30 30">
+              {!editMode&&<svg xmlns="http://www.w3.org/2000/svg" x="0px" y="0px" fill="#A1A1A1" width="30" height="30" viewBox="0 0 30 30">
                 <path d="M 3 7 A 1.0001 1.0001 0 1 0 3 9 L 27 9 A 1.0001 1.0001 0 1 0 27 7 L 3 7 z M 3 14 A 1.0001 1.0001 0 1 0 3 16 L 27 16 A 1.0001 1.0001 0 1 0 27 14 L 3 14 z M 3 21 A 1.0001 1.0001 0 1 0 3 23 L 27 23 A 1.0001 1.0001 0 1 0 27 21 L 3 21 z"></path>
-              </svg>
+              </svg>}
             </Card>
             <CardBackground>삭제</CardBackground>
           </div>
