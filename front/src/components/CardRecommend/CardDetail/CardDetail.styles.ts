@@ -29,26 +29,28 @@ export const Wrapper = styled.div`
     width: 216px;
     height: 343px;
   }
-`;
-export const Benefits = styled.div`
   header {
-    margin-top: 78px;
-    margin-bottom: 28px;
     display: flex;
     justify-content: center;
     align-items: center;
-    .line {
-      width: 100px;
-      height: 2px;
-      background-color: #b97df9;
-      display: block;
-    }
-    span {
+    margin-bottom: 28px;
+
+    & > span {
       margin: 0px 10px;
       color: #b97df9;
       font-size: 20px;
       font-weight: 400;
     }
+  }
+  .line {
+    flex: 1;
+    height: 2px;
+    background-color: #b97df9;
+    display: block;
+  }
+`;
+export const Benefits = styled.div`
+  header {
   }
   ul {
     div {
@@ -71,5 +73,15 @@ export const Benefits = styled.div`
       margin-bottom: 15px;
       line-height: 25px;
     }
+  }
+`;
+export const CardInfoRow = styled.div`
+  width: 100%;
+  header {
+  }
+  .value {
+    text-align: center;
+    margin-bottom: 28px;
+    font-size: 20px;
   }
 `;

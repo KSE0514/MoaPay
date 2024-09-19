@@ -121,7 +121,8 @@ const CardRecommend = () => {
                       className="delete-btn"
                       onClick={() => {
                         deleteComparisonCard(0);
-                      }}>
+                      }}
+                    >
                       <FontAwesomeIcon icon={faX} />
                     </div>
                   </>
@@ -149,7 +150,8 @@ const CardRecommend = () => {
                       className="delete-btn"
                       onClick={() => {
                         deleteComparisonCard(1);
-                      }}>
+                      }}
+                    >
                       <FontAwesomeIcon icon={faX} />
                     </div>
                   </>
@@ -161,7 +163,8 @@ const CardRecommend = () => {
             <ComparisonView>
               <div
                 onClick={changeShowComparisonViewState}
-                className="comparison-view-header">
+                className="comparison-view-header"
+              >
                 <p>
                   {showComparisonView ? "비교 결과 닫기" : "비교 결과 펼치기"}
                 </p>
@@ -188,8 +191,8 @@ const CardRecommend = () => {
                         <p>
                           {comparisonCard[1]
                             ? comparisonCard[1].type == 0
-                              ? "체크카드"
-                              : "신용카드"
+                              ? "신용카드"
+                              : "체크카드"
                             : ""}
                         </p>
                       </div>
@@ -197,13 +200,17 @@ const CardRecommend = () => {
                       <div className="row">
                         <p>
                           {comparisonCard[0]
-                            ? comparisonCard[0].annual_fee
+                            ? comparisonCard[0].annual_fee !== 0
+                              ? `${comparisonCard[0].annual_fee}원`
+                              : "연회비 없음"
                             : ""}
-                        </p>{" "}
+                        </p>
                         <div className="line"></div>
                         <p>
                           {comparisonCard[1]
-                            ? comparisonCard[1].annual_fee
+                            ? comparisonCard[1].annual_fee !== 0
+                              ? `${comparisonCard[1].annual_fee}원`
+                              : "연회비 없음"
                             : ""}
                         </p>
                       </div>
@@ -211,13 +218,17 @@ const CardRecommend = () => {
                       <div className="row">
                         <p>
                           {comparisonCard[0]
-                            ? comparisonCard[0].performance
+                            ? comparisonCard[0].performance !== 0
+                              ? `${comparisonCard[0].performance}원`
+                              : "전월실적 없음"
                             : ""}
-                        </p>{" "}
+                        </p>
                         <div className="line"></div>
                         <p>
                           {comparisonCard[1]
-                            ? comparisonCard[1].performance
+                            ? comparisonCard[1].performance !== 0
+                              ? `${comparisonCard[1].performance}원`
+                              : "전월실적 없음"
                             : ""}
                         </p>
                       </div>
@@ -243,7 +254,8 @@ const CardRecommend = () => {
                           style={{
                             width: "1px",
                             backgroundColor: "#a097ff",
-                          }}></div>
+                          }}
+                        ></div>
                         <p className="benefit-row">
                           {comparisonCard[1]
                             ? comparisonCard[1].benefits.map(
@@ -273,18 +285,23 @@ const CardRecommend = () => {
                 onClick={() => {
                   setNavPosition(`calc(calc(100% / 2) *0)`);
                   setShowUserCard(false);
-                }}>
+                }}
+              >
                 추천카드
               </p>
               <p
                 onClick={() => {
                   setNavPosition(`calc(calc(100% / 2) * 1)`);
                   setShowUserCard(true);
-                }}>
+                }}
+              >
                 내카드
               </p>
               <div style={{ left: `${navPosition}` }}></div>
             </Toggle>
+            <div className="slide-nofity">
+              슬라이드 하면 상세정보를 볼 수 있어요.
+            </div>
             <CardList
               onCardClick={onCardClick}
               cardList={showUserCard ? userCardList : RecommendedCardList}

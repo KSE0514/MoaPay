@@ -27,6 +27,7 @@ const CardList = ({ cardList, onCardClick }: Props) => {
   const [startX, setStartX] = useState<number | null>(null); // 터치 시작 위치 저장
   const [showCardDetail, setShowCardDetail] = useState<boolean>(false); // 새로운 화면 표시 여부
   const [selectedCard, setSelectedCard] = useState<card | null>(null);
+  const [animation, setAnimation] = useState<boolean>(true);
 
   // 이미지 로드 시 회전 여부 설정
   const handleImageLoad = (
@@ -41,6 +42,7 @@ const CardList = ({ cardList, onCardClick }: Props) => {
 
   const handleTouchStart = (e: React.TouchEvent, index: number) => {
     setStartX(e.touches[0].clientX); // 터치 시작 X 좌표 기록
+    setAnimation(false);
   };
 
   const handleTouchMove = (e: React.TouchEvent, index: number) => {
@@ -62,6 +64,7 @@ const CardList = ({ cardList, onCardClick }: Props) => {
       }
       // 카드가 원래 위치로 복귀
       setTranslateX((prev) => ({ ...prev, [index]: 0 }));
+      setAnimation(true);
     }
 
     // 터치 시작 위치 초기화
@@ -83,11 +86,14 @@ const CardList = ({ cardList, onCardClick }: Props) => {
             transform: `translateX(-${translateX[index] || 0}px)`, // 오른쪽에서 왼쪽으로 이동
             transition: "transform 0.3s ease", // 부드러운 이동 애니메이션
           }}
-          className={index === 0 ? "active" : ""}
+          className={index === 0 && animation ? "active" : ""}
           onClick={() => onCardClick(card)}
           key={index}
-          rotate={rotate[index]}
+          // rotate={rotate[index]}
         >
+          {/* {index === 0 ? (
+            <div className="nofity">슬라이드 하면 상세정보를 볼 수 있어요.</div>
+          ) : null} */}
           {/* 회전 여부에 따라 스타일을 적용 */}
           <div>
             <img

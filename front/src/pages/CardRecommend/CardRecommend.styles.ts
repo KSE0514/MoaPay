@@ -9,6 +9,14 @@ export const Wrapper = styled.div`
   }
 
   scrollbar-width: none;
+  .slide-nofity {
+    width: 100%;
+    /* background-color: #ddc1fc; */
+    /* border-radius: 15px; */
+    border-bottom: 3px solid #ddc1fc;
+    padding: 5px 3px;
+    text-align: center;
+  }
 `;
 
 export const Loading = styled.div``;

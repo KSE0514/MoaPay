@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Benefits, Wrapper } from "./CardDetail.styles";
+import { Benefits, CardInfoRow, Wrapper } from "./CardDetail.styles";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faXmark } from "@fortawesome/free-solid-svg-icons";
 
@@ -53,6 +53,40 @@ const CardDetail = ({ selectedCard, closeCardDetail }: Props) => {
         }}
         src={selectedCard.image_url}
       />
+      <CardInfoRow>
+        <header style={{ marginTop: "78px" }}>
+          <div className="line"></div>
+          <span>카드종류</span>
+          <div className="line"></div>
+        </header>
+        <div className="value">
+          {selectedCard?.type == 0 ? "체크카드" : "신용카드"}
+        </div>
+      </CardInfoRow>
+      <CardInfoRow>
+        <header>
+          <div className="line"></div>
+          <span>연회비</span>
+          <div className="line"></div>
+        </header>
+        <div className="value">
+          {selectedCard?.annual_fee !== 0
+            ? `${selectedCard?.annual_fee}원`
+            : "연회비 없음"}
+        </div>
+      </CardInfoRow>
+      <CardInfoRow>
+        <header>
+          <div className="line"></div>
+          <span>전월실적</span>
+          <div className="line"></div>
+        </header>
+        <div className="value">
+          {selectedCard?.performance !== 0
+            ? `${selectedCard?.performance}원`
+            : "전월실적 없음"}
+        </div>
+      </CardInfoRow>
       <Benefits>
         <header>
           <div className="line"></div>
@@ -60,7 +94,7 @@ const CardDetail = ({ selectedCard, closeCardDetail }: Props) => {
           <div className="line"></div>
         </header>
         <ul>
-          {selectedCard.benefits.map((benefit) => (
+          {selectedCard?.benefits.map((benefit) => (
             <div>
               <p></p>
               <li>{benefit.explanation}</li>
