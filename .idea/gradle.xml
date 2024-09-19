@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="GradleMigrationSettings" migrationVersion="1" />
+  <component name="GradleSettings">
+    <option name="linkedExternalProjectsSettings">
+      <GradleProjectSettings>
+        <option name="externalProjectPath" value="$PROJECT_DIR$/back/cardbank" />
+        <option name="modules">
+          <set>
+            <option value="$PROJECT_DIR$/back/cardbank" />
+          </set>
+        </option>
+      </GradleProjectSettings>
+      <GradleProjectSettings>
+        <option name="externalProjectPath" value="$PROJECT_DIR$/back/eureka" />
+        <option name="modules">
+          <set>
+            <option value="$PROJECT_DIR$/back/eureka" />
+          </set>
+        </option>
+      </GradleProjectSettings>
+      <GradleProjectSettings>
+        <option name="externalProjectPath" value="$PROJECT_DIR$/back/gateway" />
+        <option name="modules">
+          <set>
+            <option value="$PROJECT_DIR$/back/gateway" />
+          </set>
+        </option>
+      </GradleProjectSettings>
+      <GradleProjectSettings>
+        <option name="externalProjectPath" value="$PROJECT_DIR$/back/member" />
+        <option name="modules">
+          <set>
+            <option value="$PROJECT_DIR$/back/member" />
+          </set>
+        </option>
+      </GradleProjectSettings>
+      <GradleProjectSettings>
+        <option name="externalProjectPath" value="$PROJECT_DIR$/back/moapay" />
+        <option name="modules">
+          <set>
+            <option value="$PROJECT_DIR$/back/moapay" />
+          </set>
+        </option>
+      </GradleProjectSettings>
+      <GradleProjectSettings>
+        <option name="externalProjectPath" value="$PROJECT_DIR$/back/payment" />
+        <option name="modules">
+          <set>
+            <option value="$PROJECT_DIR$/back/payment" />
+          </set>
+        </option>
+      </GradleProjectSettings>
+      <GradleProjectSettings>
+        <option name="externalProjectPath" value="$PROJECT_DIR$/back/settlement" />
+        <option name="modules">
+          <set>
+            <option value="$PROJECT_DIR$/back/settlement" />
+          </set>
+        </option>
+      </GradleProjectSettings>
+      <GradleProjectSettings>
+        <option name="externalProjectPath" value="$PROJECT_DIR$/back/store" />
+        <option name="modules">
+          <set>
+            <option value="$PROJECT_DIR$/back/store" />
+          </set>
+        </option>
+      </GradleProjectSettings>
+      <GradleProjectSettings>
+        <option name="externalProjectPath" value="$PROJECT_DIR$/../moa-config-server" />
+        <option name="modules">
+          <set>
+            <option value="$PROJECT_DIR$/../moa-config-server" />
+          </set>
+        </option>
+      </GradleProjectSettings>
+    </option>
+  </component>
+</project>
