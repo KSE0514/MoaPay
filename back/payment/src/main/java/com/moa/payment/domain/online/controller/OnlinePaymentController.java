@@ -1,5 +1,7 @@
 package com.moa.payment.domain.online.controller;
 
+import com.moa.payment.domain.online.model.PaymentCardInfoDto;
+import com.moa.payment.domain.online.model.dto.ExecuteOnlinePaymentRequestDto;
 import com.moa.payment.domain.online.model.dto.GetOnlinePaymentInfoResponseDto;
 import com.moa.payment.domain.online.model.dto.GetOnlineQRCodeRequestDto;
 import com.moa.payment.domain.online.model.dto.GetOnlineQRCodeResponseDto;
@@ -11,6 +13,11 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.client.RestTemplate;
+
+import javax.xml.transform.Result;
+import java.util.ArrayList;
+import java.util.List;
 
 @RestController
 @Slf4j
@@ -41,14 +48,17 @@ public class OnlinePaymentController {
         return ResponseEntity.status(resultResponse.getStatus()).body(resultResponse);
     }
 
-    @PostMapping("/payment/pay/online/info")
-    public ResponseEntity<ResultResponse> requestPayment(@RequestBody SendPaymentInfoRequestDto dto){
-        // [1] 멤버 서비스에서 인증 비밀번호 일치여부 확인(Kafka, 동기)
-        // 어차피 요청자 구분하는 매커니즘에서 확인할 수 있지 않나... 안해도 될지도 모른다
-        // 일단 나중에 하기로
-
-        // [2] 카드 서비스에서 어떤 카드를 사용해 결제할건지 정보 받아오기
-        //
+    @PostMapping("/info")
+    public ResponseEntity<ResultResponse> executeOnlinePayment(@RequestBody ExecuteOnlinePaymentRequestDto dto) {
+        // 일단은 카드를 받았다는 가정 하에 결제 부분만 구현 진행
+        List<PaymentCardInfoDto> cardList = new ArrayList<>();
+        if(dto.getCardId() == null) {
+            // 이 부분에서 추천카드와 사용금액 리스트를 가져온다
+        } else {
+            // 이미 카드가 있다면, 그 카드의 정보를 cardList에 담아서 가져옴
+            // 여기에서도 moapay에 물어보는 과정은 필요할듯?
+            // 우선은 테스트를 위해 하드코딩.
+        }
         return null;
     }
 
