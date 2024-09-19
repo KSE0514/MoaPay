@@ -6,7 +6,7 @@ export const Wrapper = styled.div`
   flex-direction: column;
   width: 100%;
   height: 100%;
-  padding: 0px 20px 113.5px 20px;
+  padding: 0px 20px var(--padding-bottom) 20px;
   font-family: "Reem Kufi Ink";
 `;
 

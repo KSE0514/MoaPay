@@ -1,36 +1,50 @@
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faHouse,
   faGear,
   faChartSimple,
+  faCreditCard,
 } from "@fortawesome/free-solid-svg-icons";
 import { Wrapper, StyledIcon } from "./Nav.stlyes";
-import wallet from "../../../assets/image/wallet.png";
-import purpleWallet from "../../../assets/image/purple-wallet.png";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation, useMatch } from "react-router-dom";
 import { PATH } from "../../../constants/path";
 
 const Nav = () => {
   const navigate = useNavigate();
+  const location = useLocation(); // 현재 경로를 가져옴
+  const match = useMatch(`${PATH.STATISTICS}/*`);
   const movePage = (page: string) => {
     navigate(page);
   };
 
   return (
     <Wrapper>
-      <div onClick={() => movePage(PATH.HOME)}>
+      <div
+        onClick={() => movePage(PATH.HOME)}
+        className={location.pathname === PATH.HOME ? "active" : ""}
+      >
         <StyledIcon icon={faHouse} />
+        <p>Home</p>
       </div>
-      <div onClick={() => movePage(PATH.CARD_RECOMMEND)}>
-        {true ? <img src={wallet} /> : <img src={purpleWallet} />}
+      <div
+        onClick={() => movePage(PATH.CARD_RECOMMEND)}
+        className={location.pathname === PATH.CARD_RECOMMEND ? "active" : ""}
+      >
+        <StyledIcon icon={faCreditCard} />
+        <p>카드추천</p>
       </div>
       <div
         onClick={() => movePage(PATH.STATISTICS + PATH.STATISTICS_CONSUMPTION)}
+        className={match ? "active" : ""}
       >
         <StyledIcon icon={faChartSimple} />
+        <p>통계</p>
       </div>
-      <div onClick={() => movePage(PATH.SETTING)}>
+      <div
+        onClick={() => movePage(PATH.SETTING)}
+        className={location.pathname === PATH.SETTING ? "active" : ""}
+      >
         <StyledIcon icon={faGear} />
+        <p>설정</p>
       </div>
     </Wrapper>
   );

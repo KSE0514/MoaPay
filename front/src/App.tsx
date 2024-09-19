@@ -23,6 +23,7 @@ const GlobalStyles = createGlobalStyle`
     --light-gray:rgb(217, 217, 217);
     --light-purple:#c473f6;
     --day-font:"Reem Kufi Ink", sans-serif;
+    --padding-bottom:93.5px;
   }
 
 

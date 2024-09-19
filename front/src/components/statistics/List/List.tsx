@@ -43,7 +43,7 @@ const List = ({ consumptionList }: Props) => {
               ) : (
                 <img
                   ref={(el) => (imgRefs.current[index] = el)} // 각 이미지를 참조 배열에 저장
-                  src={`/src/assets/image/category/${consumption.cateory}.png`}
+                  src={`/assets/image/category/${consumption.cateory}.png`}
                   alt={consumption.cateory}
                 />
               )}
