@@ -299,9 +299,7 @@ const CardRecommend = () => {
               </p>
               <div style={{ left: `${navPosition}` }}></div>
             </Toggle>
-            <div className="slide-nofity">
-              슬라이드 하면 상세정보를 볼 수 있어요.
-            </div>
+            {/* <div className="slide-nofity">밀어서 상세보기</div> */}
             <CardList
               onCardClick={onCardClick}
               cardList={showUserCard ? userCardList : RecommendedCardList}

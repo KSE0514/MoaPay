@@ -1,7 +1,7 @@
 import styled from "styled-components";
 
 export const Wrapper = styled.div`
-  padding: 30px 45px 113.5px 45px;
+  padding: 30px 45px var(--padding-bottom) 45px;
   height: 100vh;
   overflow-y: scroll;
   ::-webkit-scrollbar {
@@ -9,14 +9,6 @@ export const Wrapper = styled.div`
   }
 
   scrollbar-width: none;
-  .slide-nofity {
-    width: 100%;
-    /* background-color: #ddc1fc; */
-    /* border-radius: 15px; */
-    border-bottom: 3px solid #ddc1fc;
-    padding: 5px 3px;
-    text-align: center;
-  }
 `;
 
 export const Loading = styled.div``;
@@ -141,7 +133,7 @@ export const Toggle = styled.div`
   width: 100%;
   display: flex;
   position: relative;
-  margin-bottom: 34px;
+  margin-bottom: 54px;
   p {
     position: relative;
     z-index: 20;

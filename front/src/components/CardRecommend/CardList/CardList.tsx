@@ -86,29 +86,28 @@ const CardList = ({ cardList, onCardClick }: Props) => {
             transform: `translateX(-${translateX[index] || 0}px)`, // 오른쪽에서 왼쪽으로 이동
             transition: "transform 0.3s ease", // 부드러운 이동 애니메이션
           }}
-          className={index === 0 && animation ? "active" : ""}
           onClick={() => onCardClick(card)}
           key={index}
           // rotate={rotate[index]}
         >
-          {/* {index === 0 ? (
-            <div className="nofity">슬라이드 하면 상세정보를 볼 수 있어요.</div>
-          ) : null} */}
+          {index === 0 ? <div className="nofity">밀어서 상세보기</div> : null}
           {/* 회전 여부에 따라 스타일을 적용 */}
-          <div>
-            <img
-              src={card.image_url}
-              alt={card.name}
-              onLoad={(event) => handleImageLoad(event, index)} // 이미지가 로드되면 handleImageLoad 호출
-              style={{
-                width: rotate[index] ? "57px" : "90px", // 회전 여부에 따라 width와 height 변경
-                height: rotate[index] ? "90px" : "57px",
-                transform: rotate[index] ? "rotate(-90deg)" : "none",
-                marginLeft: rotate[index] ? "17.5px" : "0",
-              }}
-            />
+          <div className={index === 0 && animation ? "active row" : "row"}>
+            <div>
+              <img
+                src={card.image_url}
+                alt={card.name}
+                onLoad={(event) => handleImageLoad(event, index)} // 이미지가 로드되면 handleImageLoad 호출
+                style={{
+                  width: rotate[index] ? "57px" : "90px", // 회전 여부에 따라 width와 height 변경
+                  height: rotate[index] ? "90px" : "57px",
+                  transform: rotate[index] ? "rotate(-90deg)" : "none",
+                  marginLeft: rotate[index] ? "17.5px" : "0",
+                }}
+              />
+            </div>
+            <h3>{card.name}</h3> {/* 카드명 */}
           </div>
-          <h3>{card.name}</h3> {/* 카드명 */}
         </CardInfo>
       ))}
 
