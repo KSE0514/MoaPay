@@ -22,6 +22,17 @@ export const Title = styled.div`
   margin: 0 auto;
 `
 
+export const CopyIcon = styled.div`
+  position: absolute;
+  right: 22px;
+`
+
+export const ShareUrl = styled.div`
+  // text-align: center;
+  margin: 0 auto;
+  font-weight: 700;
+`
+
 export const Main = styled.div`
   position: relative;
   width: 85%;
@@ -44,6 +55,7 @@ export const LinkBox = styled.div`
   padding: 4px 5px;
   padding-left: 21.704px;
   margin: 0 auto;
+  height: 36px;
   font-size: 18px;
   font-weight: 100;
 

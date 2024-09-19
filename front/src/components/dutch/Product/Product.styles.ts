@@ -6,6 +6,7 @@ export const ProductCard = styled.div`
   border-radius: 10px;
   padding: 10px;
   word-break: break-all;
+  background-color: rgba(255,255,255, 0.7);
   // display: flex;
 
   & > div:nth-of-type(1){
@@ -13,6 +14,11 @@ export const ProductCard = styled.div`
     width: 80px;
     border-radius: 8px;
     background-color: gray;
+  }
+
+  & > div > img {
+    height: 100%;
+    border-radius: 8px;
   }
 `
 

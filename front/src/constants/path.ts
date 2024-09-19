@@ -16,6 +16,7 @@ const PATH = {
   USER_CARD_DETAIL: "/card/:card_id", //nonav
 
   DUTCHPAY: "/dutchpay", //nonav
+  DUTCHINVITE: "/dutchpay/invite", //nonav
 } as const;
 
 export { PATH };
