@@ -1,6 +1,5 @@
 version: "3"
 services:
-  # frontend / blue, green
   frontend-blue:
     build:
       context: ./front
@@ -8,17 +7,6 @@ services:
     container_name: frontend-blue
     ports:
       - "3000:3000"
-    networks:
-      - webnet
-    restart: always
-
-  frontend-green:
-    build:
-      context: ./front
-      dockerfile: Dockerfile
-    container_name: frontend-green
-    ports:
-      - "3001:3000"
     networks:
       - webnet
     restart: always
@@ -66,23 +54,6 @@ services:
     environment:
       - SPRING_PROFILES_ACTIVE=prod
 
-  payment-green:
-    build:
-      context: ./back/payment
-      dockerfile: Dockerfile
-    container_name: payment-green
-    ports:
-      - "18011:8080"
-    networks:
-      - webnet
-    depends_on:
-      - eureka-server
-      - api-gateway
-      - payment-mysql
-      - payment-redis
-    environment:
-      - SPRING_PROFILES_ACTIVE=prod
-
   # moapay / blue, green
   moapay-blue:
     build:
@@ -91,23 +62,6 @@ services:
     container_name: moapay-blue
     ports:
       - "18020:8080"
-    networks:
-      - webnet
-    depends_on:
-      - eureka-server
-      - api-gateway
-      - moapay-mysql
-      - moapay-redis
-    environment:
-      - SPRING_PROFILES_ACTIVE=prod
-
-  moapay-green:
-    build:
-      context: ./back/moapay
-      dockerfile: Dockerfile
-    container_name: moapay-green
-    ports:
-      - "18021:8080"
     networks:
       - webnet
     depends_on:
@@ -136,23 +90,6 @@ services:
     environment:
       - SPRING_PROFILES_ACTIVE=prod
 
-  member-green:
-    build:
-      context: ./back/member
-      dockerfile: Dockerfile
-    container_name: member-green
-    ports:
-      - "18041:8080"
-    networks:
-      - webnet
-    depends_on:
-      - eureka-server
-      - api-gateway
-      - member-mysql
-      - member-redis
-    environment:
-      - SPRING_PROFILES_ACTIVE=prod
-
   # notification / blue, green
   # notification-blue:
   #   build:
@@ -161,21 +98,6 @@ services:
   #   container_name: notification-blue
   #   ports:
   #     - "18060:8080"
-  #   networks:
-  #     - webnet
-  #   depends_on:
-  #     - eureka-server
-  #     - api-gateway
-  #   environment:
-  #     - SPRING_PROFILES_ACTIVE=prod
-
-  # notification-green:
-  #   build:
-  #     context: ./back/notification
-  #     dockerfile: Dockerfile
-  #   container_name: notification-green
-  #   ports:
-  #     - "18061:8080"
   #   networks:
   #     - webnet
   #   depends_on:
