@@ -1,7 +1,7 @@
 import styled from "styled-components";
 
 export const Wrapper = styled.div`
-  padding: 30px 45px var(--padding-bottom) 45px;
+  padding: 80px 45px var(--padding-bottom) 45px;
   height: 100vh;
   overflow-y: scroll;
   ::-webkit-scrollbar {
@@ -27,11 +27,14 @@ export const CardView = styled.div`
       height: 100%;
       width: 100%;
       border-radius: 10px;
-      border: 3px dotted black;
+      /* border: 3px dotted black; */
     }
     & > img {
+      width: 100%;
+      height: 100%;
       position: absolute;
       z-index: 20;
+      object-fit: cover;
     }
     .delete-btn {
       display: flex;
@@ -61,7 +64,7 @@ export const ComparisonView = styled.div`
     gap: 10px;
     padding-bottom: 12px;
     border-bottom: 1px solid black;
-    margin-top: 23px;
+    margin-top: 34px;
     margin-bottom: 34px;
   }
 `;

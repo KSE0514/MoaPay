@@ -11,7 +11,12 @@ import {
 import CardList from "../../components/CardRecommend/CardList/CardList";
 import { userCardList, RecommendedCardList } from "../../constants/card";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faCaretDown, faCaretUp, faX } from "@fortawesome/free-solid-svg-icons";
+import {
+  faCaretDown,
+  faCaretUp,
+  faX,
+  faCreditCard,
+} from "@fortawesome/free-solid-svg-icons";
 interface benefit {
   category: string;
   explanation: string;
@@ -127,7 +132,7 @@ const CardRecommend = () => {
                     </div>
                   </>
                 ) : (
-                  <div></div>
+                  <img src="\src\assets\image\recommendedcard.png" />
                 )}
               </div>
               <div>vs</div>
@@ -156,7 +161,7 @@ const CardRecommend = () => {
                     </div>
                   </>
                 ) : (
-                  <div></div>
+                  <img src="\src\assets\image\recommendedcard.png" />
                 )}
               </div>
             </CardView>
