@@ -1,8 +1,9 @@
 package com.moa.cardbank.domain.account.service;
 
-import com.moa.cardbank.domain.account.model.dto.CreateAccountRequestDto;
-import com.moa.cardbank.domain.account.model.dto.CreateAccountResponseDto;
+import com.moa.cardbank.domain.account.model.dto.*;
 
 public interface AccountService {
     CreateAccountResponseDto createAccount(CreateAccountRequestDto dto);
+    DepositAccountResponseDto depositAccount(DepositAccountRequestDto dto);
+    WithdrawAccountResponseDto withdrawAccount(WithdrawAccountRequestDto dto);
 }

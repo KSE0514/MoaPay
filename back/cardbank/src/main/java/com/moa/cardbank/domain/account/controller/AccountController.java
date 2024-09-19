@@ -1,11 +1,11 @@
 package com.moa.cardbank.domain.account.controller;
 
-import com.moa.cardbank.domain.account.model.dto.CreateAccountRequestDto;
-import com.moa.cardbank.domain.account.model.dto.CreateAccountResponseDto;
+import com.moa.cardbank.domain.account.model.dto.*;
 import com.moa.cardbank.domain.account.service.AccountService;
 import com.moa.cardbank.global.response.ResultResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.coyote.Response;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -25,6 +25,22 @@ public class AccountController {
     public ResponseEntity<ResultResponse> createAccount(@RequestBody CreateAccountRequestDto dto) {
         CreateAccountResponseDto responseDto =  accountService.createAccount(dto);
         ResultResponse resultResponse = ResultResponse.of(HttpStatus.OK, "계좌를 생성했습니다.", responseDto);
+        return ResponseEntity.status(resultResponse.getStatus()).body(resultResponse);
+    }
+
+    @PostMapping("/deposit")
+    public ResponseEntity<ResultResponse> depositAccount(@RequestBody DepositAccountRequestDto dto) {
+        log.info("deposit account from {} | value : {}", dto.getAccountId(), dto.getValue());
+        DepositAccountResponseDto responseDto =  accountService.depositAccount(dto);
+        ResultResponse resultResponse = ResultResponse.of(HttpStatus.OK, "입금을 완료했습니다.", responseDto);
+        return ResponseEntity.status(resultResponse.getStatus()).body(resultResponse);
+    }
+
+    @PostMapping("/withdraw")
+    public ResponseEntity<ResultResponse> withdrawAccount(@RequestBody WithdrawAccountRequestDto dto)  {
+        log.info("withdraw account from {} | value : {}", dto.getAccountId(), dto.getValue());
+        WithdrawAccountResponseDto responseDto =  accountService.withdrawAccount(dto);
+        ResultResponse resultResponse = ResultResponse.of(HttpStatus.OK, "출금을 완료했습니다.", responseDto);
         return ResponseEntity.status(resultResponse.getStatus()).body(resultResponse);
     }
 }
