@@ -7,7 +7,7 @@ import testImg from './../../../assets/image/testImg.png'
 
 const Product = ({productName, productUrl}) => {
   return (
-    <ProductCard>
+    <ProductCard onClick={() => {window.open(productUrl)}}>
       {/* 상품 미리보기 사진 */}
       <div>
         <img src={testImg} />
