@@ -1,7 +1,7 @@
 import styled from "styled-components";
 
 export const Wrapper = styled.div`
-  padding: 78px 47px 191px 47px;
+  padding: 98px 47px 191px 47px;
   z-index: 50;
   position: absolute;
   top: 0;
@@ -13,6 +13,13 @@ export const Wrapper = styled.div`
   flex-direction: column;
   align-items: center;
   background-color: white;
+  .delete-btn {
+    position: absolute;
+    top: 30px;
+    left: 5%;
+    width: 30px;
+    height: 30px;
+  }
   h1 {
     font-size: 36px;
     font-weight: 400;

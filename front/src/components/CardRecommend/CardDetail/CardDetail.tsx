@@ -1,5 +1,7 @@
 import { useState } from "react";
 import { Benefits, Wrapper } from "./CardDetail.styles";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faXmark } from "@fortawesome/free-solid-svg-icons";
 
 interface benefit {
   category: string;
@@ -17,8 +19,9 @@ interface card {
 
 interface Props {
   selectedCard: card | null;
+  closeCardDetail: () => void;
 }
-const CardDetail = ({ selectedCard }: Props) => {
+const CardDetail = ({ selectedCard, closeCardDetail }: Props) => {
   const [rotate, setRotate] = useState<boolean>();
   // 이미지 로드 시 회전 여부 설정
   const handleImageLoad = (
@@ -29,8 +32,15 @@ const CardDetail = ({ selectedCard }: Props) => {
       setRotate(() => true);
     }
   };
+
   return (
     <Wrapper>
+      <div className="delete-btn" onClick={closeCardDetail}>
+        <FontAwesomeIcon
+          style={{ width: "100%", height: "100%" }}
+          icon={faXmark}
+        />
+      </div>
       <h1>{selectedCard.name}</h1>
       <img
         onLoad={(event) => handleImageLoad(event)}

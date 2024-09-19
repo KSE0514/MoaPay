@@ -68,6 +68,10 @@ const CardList = ({ cardList, onCardClick }: Props) => {
     setStartX(null);
   };
 
+  const closeCardDetail = () => {
+    setShowCardDetail(false);
+  };
+
   return (
     <>
       {cardList.map((card, index) => (
@@ -82,7 +86,8 @@ const CardList = ({ cardList, onCardClick }: Props) => {
           className={index === 0 ? "active" : ""}
           onClick={() => onCardClick(card)}
           key={index}
-          rotate={rotate[index]}>
+          rotate={rotate[index]}
+        >
           {/* 회전 여부에 따라 스타일을 적용 */}
           <div>
             <img
@@ -104,7 +109,10 @@ const CardList = ({ cardList, onCardClick }: Props) => {
       {/* 새로운 화면 표시 */}
       {showCardDetail && (
         <>
-          <CardDetail selectedCard={selectedCard} />
+          <CardDetail
+            selectedCard={selectedCard}
+            closeCardDetail={closeCardDetail}
+          />
         </>
       )}
     </>
