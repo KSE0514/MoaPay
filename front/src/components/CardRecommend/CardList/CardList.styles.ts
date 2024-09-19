@@ -3,7 +3,13 @@ const slide = keyframes`
   0% {
     transform: translateX(0px);
   }
+  25% {
+    transform: translateX(-30px);
+  }
   50% {
+    transform: translateX(0px);
+  }
+  75% {
     transform: translateX(-30px);
   }
   100% {
@@ -36,17 +42,17 @@ export const CardInfo = styled.div`
   &.active = CardInfo 자신을 참조
   */
   .active {
-    animation: ${slide} 1s ease-in-out infinite;
+    animation: ${slide} 3s ease-in-out;
   }
   .nofity {
-    position: absolute;
-    right: 0;
-    width: fit-content;
-    top: -30px;
-    border-bottom: 3px solid #ddc1fc;
+    /* position: absolute; */
+    /* right: 0; */
+    /* width: fit-content; */
+    /* top: -30px; */
+    /* border-bottom: 3px solid #ddc1fc; */
     /* background-color: #ddc1fc; */
-    padding: 10px 15px;
-    text-align: center;
+    /* padding: 10px 15px; */
+    /* text-align: center; */
     /* border-radius: 10px; */
   }
 `;

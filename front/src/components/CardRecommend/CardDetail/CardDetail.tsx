@@ -41,7 +41,7 @@ const CardDetail = ({ selectedCard, closeCardDetail }: Props) => {
           icon={faXmark}
         />
       </div>
-      <h1>{selectedCard.name}</h1>
+      <h1>{selectedCard?.name}</h1>
       <img
         onLoad={(event) => handleImageLoad(event)}
         style={{
@@ -51,7 +51,7 @@ const CardDetail = ({ selectedCard, closeCardDetail }: Props) => {
           marginTop: rotate ? "60px" : "none",
           marginBottom: rotate ? "59px" : "none",
         }}
-        src={selectedCard.image_url}
+        src={selectedCard?.image_url}
       />
       <CardInfoRow>
         <header style={{ marginTop: "78px" }}>

@@ -17,7 +17,7 @@ export const Wrapper = styled.div`
     gap: 7px;
     & p {
       font-weight: 500;
-      font-size: 17px;
+      font-size: 15px;
       text-align: center;
     }
   }
@@ -28,7 +28,7 @@ export const Wrapper = styled.div`
   }
 `;
 export const StyledIcon = styled(FontAwesomeIcon)`
-  width: 30px;
-  height: 30px;
+  width: 25px;
+  height: 25px;
   color: #4a4a4a;
 `;

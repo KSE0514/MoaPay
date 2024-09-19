@@ -206,8 +206,8 @@ const Statistics = () => {
                 <img
                   src={
                     true
-                      ? "/src/assets/image/good-pig.png"
-                      : "/src/assets/image/sad-pig.png"
+                      ? "/assets/image/good-pig.png"
+                      : "/assets/image/sad-pig.png"
                   }
                 ></img>
               </ImageBox>

@@ -1,14 +1,34 @@
 import styled from "styled-components";
-
 export const Wrapper = styled.div`
-  padding: 80px 45px var(--padding-bottom) 45px;
+  /* padding: 80px 45px var(--padding-bottom) 45px; */
   height: 100vh;
   overflow-y: scroll;
   ::-webkit-scrollbar {
     display: none;
   }
-
   scrollbar-width: none;
+  .top {
+    padding: 80px 45px 10px 45px;
+    margin-bottom: 34px;
+    background-clip: padding-box;
+  }
+  .bottom {
+    padding: 0px 45px var(--padding-bottom) 45px;
+  }
+  .slide-notify-parent {
+    position: relative;
+    width: 100%;
+  }
+  .slide-notify {
+    height: fit-content;
+    position: absolute;
+    right: 0;
+    top: -25px;
+    width: fit-content;
+    border-bottom: 3px solid #ddc1fc;
+    padding: 10px 15px;
+    text-align: center;
+  }
 `;
 
 export const Loading = styled.div``;

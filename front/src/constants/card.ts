@@ -1,7 +1,7 @@
 const userCardList = [
   {
     name: "신한카드 Mr.Life",
-    image_url: "/src/assets/image/cards/신용카드이미지/1_신한카드_Mr.Life.png", // 이미지 URL을 추가할 수 있습니다.
+    image_url: "/assets/image/cards/신용카드이미지/1_신한카드_Mr.Life.png", // 이미지 URL을 추가할 수 있습니다.
     type: 0, // 카드 종류가 명시되지 않았으므로 가정했습니다.
     annual_fee: 15000,
     performance: 500000, // 전월실적
@@ -51,7 +51,7 @@ const userCardList = [
   {
     name: "삼성카드 & MILEAGE PLATINUM (스카이패스)",
     image_url:
-      "/src/assets/image/cards/신용카드이미지/2_삼성카드_&_MILEAGE_PLATINUM_(스카이패스).png", // 이미지 URL을 추가할 수 있습니다.
+      "/assets/image/cards/신용카드이미지/2_삼성카드_&_MILEAGE_PLATINUM_(스카이패스).png", // 이미지 URL을 추가할 수 있습니다.
     type: 0, // 카드 종류가 명시되지 않았으므로 가정했습니다.
     annual_fee: 47000,
     performance: 0, // 전월실적
@@ -84,8 +84,7 @@ const userCardList = [
   },
   {
     name: "KB국민 My WE:SH 카드",
-    image_url:
-      "/src/assets/image/cards/신용카드이미지/3_KB국민_My_WE_SH_카드.png", // 이미지 URL을 추가할 수 있습니다.
+    image_url: "/assets/image/cards/신용카드이미지/3_KB국민_My_WE_SH_카드.png", // 이미지 URL을 추가할 수 있습니다.
     type: 0, // 카드 종류가 명시되지 않았으므로 가정했습니다.
     annual_fee: 15000,
     performance: 400000, // 전월실적
@@ -114,7 +113,7 @@ const userCardList = [
   },
   {
     name: "삼성카드 taptap O",
-    image_url: "/src/assets/image/cards/신용카드이미지/5_삼성카드_taptap_O.png", // 이미지 URL을 추가할 수 있습니다.
+    image_url: "/assets/image/cards/신용카드이미지/5_삼성카드_taptap_O.png", // 이미지 URL을 추가할 수 있습니다.
     type: 0, // 카드 종류가 명시되지 않았으므로 가정했습니다.
     annual_fee: 10000,
     performance: 300000, // 전월실적
@@ -137,7 +136,7 @@ const userCardList = [
 const RecommendedCardList = [
   {
     name: "현대카드 Summit",
-    image_url: "/src/assets/image/cards/신용카드이미지/17_현대카드_Summit.png", // 이미지 URL을 추가할 수 있습니다.
+    image_url: "/assets/image/cards/신용카드이미지/17_현대카드_Summit.png", // 이미지 URL을 추가할 수 있습니다.
     type: 0, // 카드 종류 가정
     annual_fee: 200000,
     performance: 500000,
@@ -163,7 +162,7 @@ const RecommendedCardList = [
   },
   {
     name: "LOCA 365 카드",
-    image_url: "/src/assets/image/cards/신용카드이미지/18_LOCA_365_카드.png",
+    image_url: "/assets/image/cards/신용카드이미지/18_LOCA_365_카드.png",
     type: 0,
     annual_fee: 20000,
     performance: 500000,
@@ -197,7 +196,7 @@ const RecommendedCardList = [
   {
     name: "현대카드Z family Edition2",
     image_url:
-      "/src/assets/image/cards/신용카드이미지/19_현대카드Z_family_Edition2.png",
+      "/assets/image/cards/신용카드이미지/19_현대카드Z_family_Edition2.png",
     type: 0,
     annual_fee: 20000,
     performance: 500000,
@@ -214,7 +213,7 @@ const RecommendedCardList = [
   },
   {
     name: "다담카드",
-    image_url: "/src/assets/image/cards/신용카드이미지/21_다담카드.png",
+    image_url: "/assets/image/cards/신용카드이미지/21_다담카드.png",
     type: 0,
     annual_fee: 15000,
     performance: 300000,
@@ -242,8 +241,7 @@ const RecommendedCardList = [
   },
   {
     name: "신한카드 The BEST-F",
-    image_url:
-      "/src/assets/image/cards/신용카드이미지/22_신한카드_The_BEST-F.png",
+    image_url: "/assets/image/cards/신용카드이미지/22_신한카드_The_BEST-F.png",
     type: 0,
     annual_fee: 202000,
     performance: 300000,
@@ -262,8 +260,7 @@ const RecommendedCardList = [
   },
   {
     name: "신한카드 The BEST-F",
-    image_url:
-      "/src/assets/image/cards/신용카드이미지/22_신한카드_The_BEST-F.png",
+    image_url: "/assets/image/cards/신용카드이미지/22_신한카드_The_BEST-F.png",
     type: 0,
     annual_fee: 202000,
     performance: 300000,

@@ -24,11 +24,11 @@ export const WaveDiv = styled.div`
   }
   .second-wave {
     z-index: 1;
-    background: url("/src/assets/image/secondWave.png") repeat-x;
+    background: url("/assets/image/secondWave.png") repeat-x;
     animation: first-wave 10s cubic-bezier(0.36, 0.45, 0.63, 0.53) infinite;
   }
   .last-wave {
-    background: url("/src/assets/image/lastWave.png") repeat-x;
+    background: url("/assets/image/lastWave.png") repeat-x;
     z-index: 0;
     animation: second-wave 30s cubic-bezier(0.36, 0.45, 0.63, 0.53) infinite;
   }
