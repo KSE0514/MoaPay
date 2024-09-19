@@ -6,15 +6,29 @@ export const Wrapper = styled.div`
   bottom: 0;
   z-index: 100;
   width: 100%;
-  justify-content: space-around;
-  padding: 30px 20px;
-  border-top: 3px solid #4a4a4a;
-  border-top-right-radius: 20px;
-  border-top-left-radius: 20px;
   background-color: white;
+  div {
+    flex: 1;
+    padding: 20px 10px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 7px;
+    & p {
+      font-weight: 500;
+      font-size: 15px;
+      text-align: center;
+    }
+  }
+  .active {
+    & > * {
+      color: #c473f6;
+    }
+  }
 `;
 export const StyledIcon = styled(FontAwesomeIcon)`
-  width: 48px;
-  height: 48px;
+  width: 25px;
+  height: 25px;
   color: #4a4a4a;
 `;
