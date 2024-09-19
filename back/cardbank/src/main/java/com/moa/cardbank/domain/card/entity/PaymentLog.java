@@ -1,7 +1,7 @@
 package com.moa.cardbank.domain.card.entity;
 
 import com.fasterxml.uuid.Generators;
-import com.moa.cardbank.domain.card.model.Status;
+import com.moa.cardbank.domain.card.model.PaymentLogStatus;
 import com.moa.cardbank.domain.store.entity.Merchant;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
@@ -33,7 +33,7 @@ public class PaymentLog {
     @NotNull
     @Enumerated(EnumType.STRING)
     @Column(name = "status")
-    private Status status;
+    private PaymentLogStatus paymentLogStatus;
 
     // @ManyToOne으로 연결 : 결제 카드, 가맹점
     @ManyToOne(fetch = FetchType.LAZY)

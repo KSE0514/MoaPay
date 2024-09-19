@@ -67,6 +67,14 @@ public class MyCard {
     @Column(name = "account_id")
     private long accountId;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "product_id", insertable = false, updatable = false)
+    private CardProduct product;
+
+    @NotNull
+    @Column(name = "product_id")
+    private long productId;
+
     @PrePersist
     public void prePersist() {
         this.uuid = Generators.timeBasedEpochGenerator().generate();

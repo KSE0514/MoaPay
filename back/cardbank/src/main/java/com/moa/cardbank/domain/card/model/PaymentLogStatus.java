@@ -1,5 +1,5 @@
 package com.moa.cardbank.domain.card.model;
 
-public enum Status {
+public enum PaymentLogStatus {
     APPROVED, CANCELED, SETTLED;
 }
