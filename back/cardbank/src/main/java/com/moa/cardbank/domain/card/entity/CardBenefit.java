@@ -1,20 +1,22 @@
-package com.moa.cardbank.domain.store.entity;
+package com.moa.cardbank.domain.card.entity;
 
 import com.fasterxml.uuid.Generators;
-import com.moa.cardbank.domain.account.entity.Account;
+import com.moa.cardbank.domain.card.model.BenefitType;
+import com.moa.cardbank.domain.card.model.BenefitUnit;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import lombok.*;
+import org.hibernate.annotations.DynamicInsert;
 
 import java.util.UUID;
 
 @Entity
-@Table(name = "merchant")
+@Table(name = "card_benefit")
 @Getter
 @Builder(toBuilder = true)
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
-public class Merchant {
+public class CardBenefit {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
@@ -24,17 +26,31 @@ public class Merchant {
     @Column(name = "uuid", columnDefinition = "binary(16)", unique = true, nullable = false, updatable = false)
     private UUID uuid; // 고유 id는 수정 불가
 
-    @Column(name = "name", length = 50)
-    private String name;
-
-    // @ManyToOne으로 연결 : 계좌
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "account_id", insertable = false, updatable = false)
-    private Account account;
+    @NotNull
+    @Enumerated(EnumType.STRING)
+    @Column(name = "benefit_type")
+    private BenefitType benefitType;
 
     @NotNull
-    @Column(name = "account_id")
-    private long accountId;
+    @Enumerated(EnumType.STRING)
+    @Column(name = "benefit_unit")
+    private BenefitUnit benefitUnit;
+
+    @NotNull
+    @Column(name = "benefit_value", columnDefinition = "float(20, 2)")
+    private double benefitValue;
+
+    @Column(name = "benefit_desc", length = 300)
+    private String benefitDesc;
+
+    // @ManyToOne으로 연결 : 카드 상품 ID
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "product_id", insertable = false, updatable = false)
+    private CardProduct product;
+
+    @NotNull
+    @Column(name = "product_id")
+    private long productId;
 
     // 카테고리 ID는 표기하되, 직접 참조관계로 삼지는 않는다
     @NotNull
@@ -45,5 +61,4 @@ public class Merchant {
     public void prePersist() {
         this.uuid = Generators.timeBasedEpochGenerator().generate();
     }
-
 }

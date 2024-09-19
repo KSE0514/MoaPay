@@ -9,4 +9,5 @@ import java.util.UUID;
 public interface AccountRepository extends JpaRepository<Account, Long> {
     <S extends Account> S save(S account);
     Optional<Account> findByUuid(UUID uuid);
+    Optional<Account> findByNumber(String Number);
 }

@@ -8,4 +8,5 @@ import java.util.UUID;
 
 public interface MerchantRepository extends CrudRepository<Merchant, Long> {
     Optional<Merchant> findByUuid(UUID uuid);
+    <S extends Merchant> S save(S merchant);
 }
