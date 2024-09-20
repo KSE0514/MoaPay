@@ -1,8 +1,30 @@
+import axios from "axios";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { Button, Header, Wrapper } from "./SettingBiometricsLogin.styles";
 import { faFingerprint } from "@fortawesome/free-solid-svg-icons";
+import { startRegistration } from "@simplewebauthn/browser";
 
 const SettingBiometricsLogin = () => {
+  const biometricsRegister = async () => {
+    // 1. 서버로부터 WebAuthn 등록 옵션을 가져옴
+    //    이 단계에서는 사용자 생체 인증 등록을 위한 챌린지와 공개키 정보가 포함된 옵션을 서버에서 제공.
+
+    const options = await axios
+      .get("/api/auth/webauthn/register/options")
+      .then((res) => res.data);
+
+    // 2.     //    navigator.credentials.create() 또는 라이브러리에서 제공하는 startRegistration 사용
+    //    서버에서 받은 등록 옵션을 사용해 WebAuthn 등록을 진행
+    //    WebAuthn API는 사용자의 지문/얼굴 인식 장치에 등록하는 과정을 수행.
+    //    서버로부터 받은 옵션을 사용하여 사용자의 인증 장치를 등록함.
+    //    사용자가 지문이나 얼굴을 인식하면, attestationResponse에 결과가 저장됨.
+    const attestationResponse = await startRegistration(options);
+
+    // 3. 등록된 생체인증 정보를 서버에 전송하여 저장함
+    //    서버는 이 정보를 통해 사용자의 인증 장치를 등록하고, 나중에 인증 시 사용할 수 있도록 함.
+    //    등록된 생체인증 정보는 서버에 안전하게 저장되며, 이후 로그인에 사용됨.
+    await axios.post("/api/auth/webauthn/register", attestationResponse);
+  };
   return (
     <Wrapper>
       <div className="area">
@@ -16,7 +38,8 @@ const SettingBiometricsLogin = () => {
               viewBox="0 0 24 24"
               stroke-width="1.5"
               stroke="currentColor"
-              className="size-6">
+              className="size-6"
+            >
               <path
                 stroke-linecap="round"
                 stroke-linejoin="round"
@@ -31,7 +54,13 @@ const SettingBiometricsLogin = () => {
             /> */}
           </div>
         </Header>
-        <Button>등록하기</Button>
+        <Button
+          onClick={() => {
+            biometricsRegister();
+          }}
+        >
+          등록하기
+        </Button>
       </div>
     </Wrapper>
   );
