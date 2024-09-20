@@ -49,10 +49,8 @@ services:
     depends_on:
       - eureka-server
       - api-gateway
-      - payment-mysql
-      - payment-redis
     environment:
-      - SPRING_PROFILES_ACTIVE=prod
+      - SPRING_PROFILES_ACTIVE=blue
 
   # moapay / blue, green
   moapay-blue:
@@ -67,10 +65,8 @@ services:
     depends_on:
       - eureka-server
       - api-gateway
-      - moapay-mysql
-      - moapay-redis
     environment:
-      - SPRING_PROFILES_ACTIVE=prod
+      - SPRING_PROFILES_ACTIVE=blue
 
   # member / blue, green
   member-blue:
@@ -85,10 +81,8 @@ services:
     depends_on:
       - eureka-server
       - api-gateway
-      - member-mysql
-      - member-redis
     environment:
-      - SPRING_PROFILES_ACTIVE=prod
+      - SPRING_PROFILES_ACTIVE=blue
 
   # notification / blue, green
   # notification-blue:
@@ -119,7 +113,6 @@ services:
     depends_on:
       - eureka-server
       - api-gateway
-      - cardbank-mysql
     environment:
       - SPRING_PROFILES_ACTIVE=prod
 
@@ -136,7 +129,6 @@ services:
     depends_on:
       - eureka-server
       - api-gateway
-      - store-mysql
     environment:
       - SPRING_PROFILES_ACTIVE=prod
 
