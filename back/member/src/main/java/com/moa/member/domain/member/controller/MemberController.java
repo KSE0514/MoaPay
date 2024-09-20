@@ -10,7 +10,6 @@ import org.springframework.web.bind.annotation.RestController;
 import com.moa.member.domain.member.model.dto.JoinRequestDto;
 import com.moa.member.domain.member.model.dto.JoinResponseDto;
 import com.moa.member.domain.member.service.MemberService;
-import com.moa.member.global.exception.MemberAlreadyExistsException;
 import com.moa.member.global.response.ResultResponse;
 
 import lombok.RequiredArgsConstructor;
@@ -25,10 +24,9 @@ public class MemberController {
 	private final MemberService memberService;
 
 	@PostMapping("/join")
-	public ResponseEntity<ResultResponse> join(@RequestBody JoinRequestDto dto) throws MemberAlreadyExistsException {
+	public ResponseEntity<ResultResponse> join(@RequestBody JoinRequestDto dto) throws Exception {
 		JoinResponseDto member=memberService.join(dto);
 		ResultResponse resultResponse = ResultResponse.of(HttpStatus.OK, "회원가입을 완료했습니다.", member);
 		return ResponseEntity.status(resultResponse.getStatus()).body(resultResponse);
-
 	}
 }
