@@ -9,10 +9,9 @@ import java.util.UUID;
 
 @Getter
 @Builder
-@NoArgsConstructor
 @AllArgsConstructor
-public class WithdrawAccountRequestDto {
-    private UUID memberId;
+@NoArgsConstructor
+public class WithdrawByDebitCardDto {
     private UUID accountId;
     private long value;
     private String memo;

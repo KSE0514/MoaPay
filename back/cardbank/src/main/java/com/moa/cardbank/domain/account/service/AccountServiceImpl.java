@@ -109,4 +109,30 @@ public class AccountServiceImpl implements AccountService {
                 .accountBalance(newBalance)
                 .build();
     }
+
+    @Override
+    public boolean WithdrawByDebitCard(WithdrawByDebitCardDto dto) {
+        // 출금 처리를 위해, 현재 account 잔액을 조회
+        Account account = accountRepository.findByUuid(dto.getAccountId())
+                .orElseThrow(() -> new BusinessException(HttpStatus.BAD_REQUEST, "유효하지 않은 정보입니다."));
+        if(account.getBalance() < dto.getValue()) {
+            throw new BusinessException(HttpStatus.BAD_REQUEST, "잔액이 부족합니다.");
+        }
+        if(dto.getValue() <= 0) {
+            throw new BusinessException(HttpStatus.BAD_REQUEST, "유효하지 않은 정보입니다.");
+        }
+        long newBalance = account.getBalance() - dto.getValue();
+        Account newAccount = account.toBuilder()
+                .balance(newBalance)
+                .build();
+        accountRepository.save(newAccount);
+        AccountLog accountLog = AccountLog.builder()
+                .accountId(newAccount.getId())
+                .type(AccountLogType.WITHDRAWAL)
+                .value(dto.getValue())
+                .memo(dto.getMemo())
+                .build();
+        accountLogRepository.save(accountLog);
+        return true;
+    }
 }
