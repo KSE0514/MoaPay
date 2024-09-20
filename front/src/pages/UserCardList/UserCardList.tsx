@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Modal from "../../components/dutch/Modal/Modal";
 import axios from "axios";
 
@@ -8,6 +8,7 @@ import testcard3 from "./../../assets/image/cards/신용카드이미지/11_삼�
 import {
   Wrapper,
   Top,
+  EditMode,
   Main,
   Card,
   CardBackground,
@@ -58,12 +59,14 @@ const UserCardList = () => {
   const [swipeDistance, setSwipeDistance] = useState<{[key: number]:number}>({}) // {key(index): key번째 카드가 왼쪽으로 밀린 거리}
 
   const [startX, setStartX] = useState(0); // 터치 시작의 X 좌표를 저장
+  const [swipeCard, setSwipeCard] = useState<number | null>(null) // 스와이프 된 카드의 index 값을 저장(스와이프 삭제시 모달에 정보 전달하는 용)
 
   const [editMode, setEditMode] = useState(false); // 선택 삭제 모드
-  const [deleteList, setDeleteList] = useState<number[]>([]);
+  const [selectedCards, setSelectedCards] = useState<number[]>([]); // 선택된 카드 목록
 
 
   const closeModal = () => {
+    setSwipeCard(null) // 모달에 전달됐던 카드 index값 다시 비우기
     setIsOpen(false);
   };
 
@@ -103,7 +106,13 @@ const UserCardList = () => {
     if (swipeDistance[index] >= 100) {
       console.log(cardListData[index].name); // 100px 이상 밀렸을 경우카드 이름 console에 출력
       if (!editMode) {
-        setIsOpen(true);
+        // console.log("삭제되어야 할 카드 인덱스", swipeCard)
+        // console.log("인덱스 확인용", index)
+        setSwipeCard(index)
+        // setSwipeCard(3)
+        // console.log("삭제되어야 할 카드 인덱스", swipeCard)
+
+        // setIsOpen(true);
       }
     }
     
@@ -111,12 +120,26 @@ const UserCardList = () => {
     setSwipeDistance((prev) => ({...prev, [index]: 0}))
   }
   
+  useEffect(() => {
+    if (swipeCard !== null) {
+      console.log("삭제되어야 할 카드 인덱스", swipeCard); 
+      setIsOpen(true);
+    }
+  }, [swipeCard]);
+  
   return (
     <Wrapper>
       <Top>
         전체 카드 목록
       </Top>
       <Main>
+        {editMode? 
+          <EditMode>
+            <div>전체 선택</div>
+            <div>삭제</div>
+          </EditMode>
+        : 
+        null}
         {cardListData.map((card, index) => (
           <div key={card.name}>
             
@@ -130,7 +153,15 @@ const UserCardList = () => {
                 backgroundColor: "white", 
               }}
               >
-              <div>
+              {editMode? 
+              <input type="radio" />
+              : 
+              null }
+              <div
+                style={{
+                  paddingLeft: editMode ? "15px" : "none",
+                }}
+              >
                 <img 
                   src={card.img}
                   alt={card.name}
@@ -161,10 +192,30 @@ const UserCardList = () => {
         {/* 카드 옆으로 밀었을 시 나오는 삭제 모달 */}
         {isOpen && (
           <Modal isOpen={isOpen} onClose={closeModal}>
-            <div>'카드 이름'카드를 삭제하시겠습니까?</div>
-            <div>
-              <button onClick={deleteCard}>삭제</button>
-              <button onClick={closeModal}>취소</button>
+            <div style={{
+              fontSize: '18px',
+              paddingTop: "25px",
+              }}>'{cardListData[swipeCard].name}'
+              <br />
+              <br />
+              해당 카드를 삭제하시겠습니까?</div>
+            <div
+              style={{
+                gap: '50px',
+              }}
+            >
+              <button onClick={deleteCard}
+                style={{
+                  fontSize: '18px',
+                  width: '95px',
+                }}
+              >삭제</button>
+              <button onClick={closeModal}
+                style={{
+                  fontSize: '18px',
+                  width: '95px',
+                }}
+              >취소</button>
             </div>
           </Modal>
         )} 

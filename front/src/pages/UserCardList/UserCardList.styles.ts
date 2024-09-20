@@ -20,6 +20,18 @@ export const Main = styled.div`
   }
 `
 
+export const EditMode = styled.div`
+  display: flex;
+  justify-content: space-between;
+  padding: 0px 20px 10px;
+
+  & > div:nth-of-type(2){
+   color: #8748F3;
+  text-decoration-line: underline;
+  text-decoration-color: #8748F3;
+  }
+`
+
 export const Card = styled.div`
 
   display: flex;
