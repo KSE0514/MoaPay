@@ -1,19 +1,19 @@
 package com.moa.cardbank.domain.card.service;
 
 import com.moa.cardbank.domain.account.entity.Account;
+import com.moa.cardbank.domain.account.entity.AccountLog;
 import com.moa.cardbank.domain.account.model.dto.WithdrawAccountRequestDto;
 import com.moa.cardbank.domain.account.model.dto.WithdrawByDebitCardDto;
+import com.moa.cardbank.domain.account.repository.AccountLogRepository;
 import com.moa.cardbank.domain.account.repository.AccountRepository;
 import com.moa.cardbank.domain.account.service.AccountService;
-import com.moa.cardbank.domain.card.entity.CardBenefit;
-import com.moa.cardbank.domain.card.entity.CardProduct;
-import com.moa.cardbank.domain.card.entity.MyCard;
-import com.moa.cardbank.domain.card.entity.PaymentLog;
+import com.moa.cardbank.domain.card.entity.*;
 import com.moa.cardbank.domain.card.model.*;
 import com.moa.cardbank.domain.card.model.dto.CreateMyCardRequestDto;
 import com.moa.cardbank.domain.card.model.dto.CreateMyCardResponseDto;
 import com.moa.cardbank.domain.card.model.dto.ExecutePayRequestDto;
 import com.moa.cardbank.domain.card.model.dto.ExecutePayResponseDto;
+import com.moa.cardbank.domain.card.repository.EarningLogRepository;
 import com.moa.cardbank.domain.card.repository.MyCardRepository;
 import com.moa.cardbank.domain.card.repository.PaymentLogRepository;
 import com.moa.cardbank.domain.card.repository.PaymentQueryRepository;
@@ -42,6 +42,7 @@ public class CardServiceImpl implements CardService {
     private final MerchantRepository merchantRepository;
     private final MemberRepository memberRepository;
     private final AccountRepository accountRepository;
+    private final EarningLogRepository earningLogRepository;
     private final PaymentQueryRepository paymentQueryRepository;
 
     @Override
@@ -161,7 +162,26 @@ public class CardServiceImpl implements CardService {
                 .benefitUsage(newBenefitUsage)
                 .build();
         myCardRepository.save(newCard);
-        // todo : 적립 내역 table 갱신
+
+        if(totalPoint > 0) {
+            EarningLog earningLog = EarningLog.builder()
+                    .paymentLogId(paymentLog.getId())
+                    .type(EarningType.POINT)
+                    .amount(totalPoint)
+                    .status(ProcessingStatus.APPROVED)
+                    .build();
+            earningLogRepository.save(earningLog);
+        }
+
+        if(totalCashback > 0) {
+            EarningLog earningLog = EarningLog.builder()
+                    .paymentLogId(paymentLog.getId())
+                    .type(EarningType.CASHBACK)
+                    .amount(totalPoint)
+                    .status(ProcessingStatus.APPROVED)
+                    .build();
+            earningLogRepository.save(earningLog);
+        }
 
         return ExecutePayResponseDto.builder()
                 .status(PayStatus.APPROVED)
@@ -174,7 +194,6 @@ public class CardServiceImpl implements CardService {
 
     @Override
     public CreateMyCardResponseDto createMyCard(CreateMyCardRequestDto dto) {
-
         Member member = memberRepository.findByUuid(dto.getMemberId())
                 .orElseThrow(() -> new BusinessException(HttpStatus.BAD_REQUEST, "유효하지 않은 입력입니다."));
         Account account = accountRepository.findByUuid(dto.getAccountId())
