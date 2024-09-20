@@ -199,8 +199,7 @@ const PasswordLogin: React.FC = () => {
                   : password.length)
                   ? "full"
                   : ""
-              }
-            >
+              }>
               <FontAwesomeIcon
                 style={{ width: "30px", height: "30px" }}
                 icon={faAsterisk}
@@ -213,9 +212,9 @@ const PasswordLogin: React.FC = () => {
             <button key={num} onClick={() => handleKeypadClick(num)}>
               {num === "-" ? (
                 <FontAwesomeIcon icon={faArrowLeft} />
-              ) : num === "+" ? (
+              ) : mode !== "Join" && num === "+" ? (
                 <FontAwesomeIcon icon={faFingerprint} />
-              ) : (
+              ) : mode === "Join" && num === "+" ? null : (
                 num
               )}
             </button>

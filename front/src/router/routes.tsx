@@ -18,6 +18,8 @@ import Benefits from "../pages/Statistics/Benefits/Benefits.tsx";
 import Consumption from "../pages/Statistics/Consumption/Consumption.tsx";
 import PaymentRecommendation from "../pages/PaymentRecommendation/PaymentRecommendation.tsx";
 import UserCardDetail from "../pages/UserCardDetail/UserCardDetail.tsx";
+import { elements } from "chart.js";
+import SettingBiometricsLogin from "../pages/SettingBiometricsLogin/SettingBiometricsLogin.tsx";
 const router = createBrowserRouter([
   {
     element: <AppAuthHandler />, // 최상위 레이아웃으로 AppAuthHandler 설정
@@ -87,7 +89,10 @@ const router = createBrowserRouter([
         element: <CreateAccount />,
       },
       { path: PATH.PASSWORD_LOGIN, element: <PasswordLogin /> },
-      {},
+      {
+        path: PATH.SETTING_BIOMETRICS_LOGIN,
+        element: <SettingBiometricsLogin />,
+      },
     ],
   },
 ]);

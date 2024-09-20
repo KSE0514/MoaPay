@@ -69,9 +69,19 @@ const CreateAccount = () => {
       errors = { ...errors, name: true };
     if (!userInfo.birth_date || userInfo.birth_date.length !== 6)
       errors = { ...errors, birth_date: true };
-    if (!userInfo.gender) errors = { ...errors, gender: true };
+    if (
+      !userInfo.gender ||
+      userInfo.gender.length !== 1 ||
+      !/^\d+$/.test(userInfo.gender)
+    )
+      errors = { ...errors, gender: true };
     if (!userInfo.telecom) errors = { ...errors, telecom: true };
-    if (!userInfo.phone_number) errors = { ...errors, phone_number: true };
+    if (
+      !userInfo.phone_number ||
+      userInfo.phone_number.length !== 11 ||
+      !/^\d+$/.test(userInfo.phone_number)
+    )
+      errors = { ...errors, phone_number: true };
 
     setValidationErrors(errors);
     return Object.keys(errors).length === 0;
@@ -81,10 +91,13 @@ const CreateAccount = () => {
    * 존재하는 유저인지 판단
    */
   const checkUser = () => {
+    if (!validateFields()) {
+      return; // 유효성 검사 통과하지 못하면 중단
+    }
     //회원 여부 판단 요청
 
     //요청 결과에 따라 비밀번호 로그인 또는 회원가입으로 전달
-    if(true) {
+    if (true) {
       //회원가입
       setIsAuth(true);
     } else {
@@ -115,18 +128,17 @@ const CreateAccount = () => {
    * 회원가입
    */
   const join = () => {
-    //인증 번호가 일치하는지 확인
-    
+    //인증 번호가 일치하는지 확인 - 일치하지않으면 오류
     //회원 가입 요청 보내기
-
-    //응답 받으면 PasswordLogin로 이동시키기
-    navigate(PATH.PASSWORD_LOGIN, {
-        state: {
-          ment: `간편 비밀번호를\n입력해주세요`,
-          back: false,
-          mode: "Join",
-        },
-      });
+    //응답 받으면 생체인식 설정으로 이동시키기
+    // navigate(PATH.PASSWORD_LOGIN, {
+    //   state: {
+    //     ment: `간편 비밀번호를\n입력해주세요`,
+    //     back: false,
+    //     mode: "Join",
+    //   },
+    // });
+    navigate(PATH.SETTING_BIOMETRICS_LOGIN);
   };
 
   return (
@@ -137,8 +149,7 @@ const CreateAccount = () => {
           <button
             onClick={() => {
               setBeforeStarting(false);
-            }}
-          >
+            }}>
             시작하기
           </button>
         </LogoView>
@@ -175,9 +186,18 @@ const CreateAccount = () => {
                 }}
               />
             </div>
-            {validationErrors.birth_date && (
-              <p className="error">생년월일은 6자리여야 합니다.</p>
-            )}
+            <div style={{ display: "flex" }}>
+              {validationErrors.birth_date && (
+                <p style={{ width: "50%" }} className="error">
+                  생년월일은 6자리여야 합니다.
+                </p>
+              )}
+              {validationErrors.gender && (
+                <p style={{ width: "50%" }} className="error">
+                  올바른 숫자를 입력하세요
+                </p>
+              )}
+            </div>
             <div className="form-row birth">
               <input
                 type="text"
@@ -223,8 +243,7 @@ const CreateAccount = () => {
                 disabled={authSent}
                 style={{
                   borderColor: validationErrors.telecom ? "red" : "",
-                }}
-              >
+                }}>
                 <option value="" disabled>
                   통신사를 선택해주세요
                 </option>
@@ -237,7 +256,7 @@ const CreateAccount = () => {
               </select>
             </div>
             {validationErrors.phone_number && (
-              <p className="error">전화번호를 입력하세요.</p>
+              <p className="error">올바른 전화번호를 입력하세요.</p>
             )}
             <div className="form-row">
               <input
@@ -288,8 +307,7 @@ const CreateAccount = () => {
             )}
             <button
               className={isAuth ? "join-btn" : "ready-btn"}
-              onClick={isAuth ? join : checkUser}
-            >
+              onClick={isAuth ? join : checkUser}>
               {isAuth ? "회원가입" : "확인"}
             </button>
           </Form>

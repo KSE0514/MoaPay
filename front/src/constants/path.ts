@@ -2,6 +2,7 @@ const PATH = {
   ROOT: "/",
   HOME: "/home",
   BIOMETRICS_LOGIN: "/biometrics-login", //nonav
+  SETTING_BIOMETRICS_LOGIN: "/setting-biometrics-login",
   CREATE_ACCOUNT: "/create-account", //nonav
   PASSWORD_LOGIN: "/password-login", //nonav
   CARD_RECOMMEND: "/card-recommend",
