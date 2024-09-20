@@ -1,4 +1,4 @@
-package com.moa.member.model;
+package com.moa.member.domain.member.model;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -6,6 +6,8 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Lob;
+import jakarta.persistence.PrePersist;
+import jakarta.persistence.PreUpdate;
 import jakarta.persistence.Table;
 import jakarta.persistence.Temporal;
 import jakarta.persistence.TemporalType;
@@ -15,10 +17,10 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.RequiredArgsConstructor;
+import com.fasterxml.uuid.Generators;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.Date;
 import java.util.UUID;
 
 import org.antlr.v4.runtime.misc.NotNull;
@@ -50,7 +52,7 @@ public class Member {
 	private LocalDate birthDate;
 
 	@Column(name="gender",nullable=false)
-	private char gender;
+	private String gender;
 
 	@NotNull
 	@Column(name="phone_number",nullable=false)
@@ -76,6 +78,20 @@ public class Member {
 
 	@Column(name="address",nullable=false)
 	private String address;
+
+	@PrePersist
+	private void prePersist() {
+		LocalDateTime now = LocalDateTime.now();
+		this.uuid = Generators.timeBasedGenerator().generate();
+		this.createTime = now;
+		this.updateTime = now;
+	}
+
+	@PreUpdate
+	private void preUpdate() {
+		this.updateTime = LocalDateTime.now();
+	}
+
 
 
 }
