@@ -13,10 +13,7 @@ import com.moa.cardbank.domain.card.model.dto.CreateMyCardRequestDto;
 import com.moa.cardbank.domain.card.model.dto.CreateMyCardResponseDto;
 import com.moa.cardbank.domain.card.model.dto.ExecutePayRequestDto;
 import com.moa.cardbank.domain.card.model.dto.ExecutePayResponseDto;
-import com.moa.cardbank.domain.card.repository.EarningLogRepository;
-import com.moa.cardbank.domain.card.repository.MyCardRepository;
-import com.moa.cardbank.domain.card.repository.PaymentLogRepository;
-import com.moa.cardbank.domain.card.repository.PaymentQueryRepository;
+import com.moa.cardbank.domain.card.repository.*;
 import com.moa.cardbank.domain.member.entity.Member;
 import com.moa.cardbank.domain.member.repository.MemberRepository;
 import com.moa.cardbank.domain.store.entity.Merchant;
@@ -43,6 +40,7 @@ public class CardServiceImpl implements CardService {
     private final MemberRepository memberRepository;
     private final AccountRepository accountRepository;
     private final EarningLogRepository earningLogRepository;
+    private final CardProductRepository cardProductRepository;
     private final PaymentQueryRepository paymentQueryRepository;
 
     @Override
@@ -198,7 +196,8 @@ public class CardServiceImpl implements CardService {
                 .orElseThrow(() -> new BusinessException(HttpStatus.BAD_REQUEST, "유효하지 않은 입력입니다."));
         Account account = accountRepository.findByUuid(dto.getAccountId())
                 .orElseThrow(() -> new BusinessException(HttpStatus.BAD_REQUEST, "유효하지 않은 입력입니다."));
-
+        CardProduct cardProduct = cardProductRepository.findByUuid(dto.getCardProductId())
+                .orElseThrow(() -> new BusinessException(HttpStatus.BAD_REQUEST, "유효하지 않은 입력입니다."));
         // 카드번호와 cvc는 무작위 생성
         // 카드 번호는 중복검사 이후 결정한다
         String cardNumber;
@@ -214,11 +213,12 @@ public class CardServiceImpl implements CardService {
                 .cardNumber(cardNumber)
                 .cvc(cvc)
                 .performanceFlag(false)
-                .cardLimit(300000) // 임시로 임의의 값 지정
+                .cardLimit(1000000) // 임시로 임의의 값 지정
                 .amount(0)
                 .benefitUsage(0)
                 .memberId(member.getId())
                 .accountId(account.getId())
+                .productId(cardProduct.getId())
                 .build();
 
         myCardRepository.save(newCard);

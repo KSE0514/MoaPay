@@ -48,9 +48,8 @@ public class MyCard {
     @NotNull
     @Column(name = "benefit_usage")
     private long benefitUsage;
-
-    // todo : 카드 상품 연결 필요!
-    // @ManyToOne으로 연결 : 소유자, 대금계좌
+    
+    // @ManyToOne으로 연결 : 소유자, 대금계좌, 카드상품
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "member_id", insertable = false, updatable = false)
     private Member member;

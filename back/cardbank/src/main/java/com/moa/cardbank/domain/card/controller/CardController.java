@@ -37,7 +37,6 @@ public class CardController {
     public ResponseEntity<ResultResponse> createMycard(@RequestBody CreateMyCardRequestDto dto) {
         log.info("create my card");
         log.info("WARNING :: This feature is not completed. It isn't including card product info");
-        // todo : 카드 상품 정보 포함하여 card entity 영속화하도록 변경 必
         CreateMyCardResponseDto responseDto = cardService.createMyCard(dto);
         ResultResponse resultResponse = ResultResponse.of(HttpStatus.OK, "개인 카드 생성됨", responseDto);
         return ResponseEntity.status(resultResponse.getStatus()).body(resultResponse);
