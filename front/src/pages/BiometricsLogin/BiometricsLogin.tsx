@@ -1,4 +1,5 @@
 import axios from "axios"; // axios 임포트
+import { AxiosResponse } from "axios";
 const BiometricsLogin = () => {
   const handleBiometricLogin = async () => {
     try {
@@ -7,7 +8,7 @@ const BiometricsLogin = () => {
       //    - 이 옵션에는 인증에 필요한 '챌린지'(서버가 제공하는 일회용 코드)와 공용키 정보가 포함됨.
       const options = await axios
         .get("/api/auth/webauthn/options")
-        .then((res) => res.data);
+        .then((res: AxiosResponse) => res.data);
       //    - res.data: 서버에서 응답한 데이터를 받아오는 부분.
 
       // 3. 사용자에게 생체 인증을 요청하는 부분
