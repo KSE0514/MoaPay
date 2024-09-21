@@ -11,15 +11,6 @@
       </profile>
     </annotationProcessing>
     <bytecodeTargetLevel>
-      <module name="cardbank" target="17" />
-      <module name="cardbank.main" target="17" />
-      <module name="cardbank.test" target="17" />
-      <module name="config" target="17" />
-      <module name="config.main" target="17" />
-      <module name="config.test" target="17" />
-      <module name="eureka" target="17" />
-      <module name="eureka.main" target="17" />
-      <module name="eureka.test" target="17" />
       <module name="moapay" target="17" />
       <module name="moapay.main" target="17" />
       <module name="moapay.test" target="17" />
