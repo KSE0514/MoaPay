@@ -22,6 +22,9 @@ services:
     networks:
       - webnet
     restart: always
+    environment:
+      - SPRING_PROFILES_ACTIVE=prod
+      - SPRING_CLOUD_CONFIG_URI=http://config-server:8888
 
   api-gateway:
     build:
@@ -35,6 +38,9 @@ services:
     networks:
       - webnet
     restart: always
+    environment:
+      - SPRING_PROFILES_ACTIVE=prod
+      - SPRING_CLOUD_CONFIG_URI=http://config-server:8888
 
   # payment / blue, green
   payment-blue:
@@ -51,6 +57,7 @@ services:
       - api-gateway
     environment:
       - SPRING_PROFILES_ACTIVE=prod, blue
+      - SPRING_CLOUD_CONFIG_URI=http://config-server:8888
 
   # moapay / blue, green
   moapay-blue:
@@ -67,6 +74,7 @@ services:
       - api-gateway
     environment:
       - SPRING_PROFILES_ACTIVE=prod, blue
+      - SPRING_CLOUD_CONFIG_URI=http://config-server:8888
 
   # settlement / blue, green
   settlement-blue:
@@ -83,6 +91,7 @@ services:
       - api-gateway
     environment:
       - SPRING_PROFILES_ACTIVE=prod, blue
+      - SPRING_CLOUD_CONFIG_URI=http://config-server:8888
 
   # member / blue, green
   member-blue:
@@ -99,6 +108,7 @@ services:
       - api-gateway
     environment:
       - SPRING_PROFILES_ACTIVE=prod, blue
+      - SPRING_CLOUD_CONFIG_URI=http://config-server:8888
 
   # notification / blue, green
   # notification-blue:
@@ -131,7 +141,7 @@ services:
       - api-gateway
     environment:
       - SPRING_PROFILES_ACTIVE=prod
-
+      - SPRING_CLOUD_CONFIG_URI=http://config-server:8888
   # store는 moapay 서비스가 아니므로, blue-green 전략을 사용하지 않는다.
   store:
     build:
@@ -147,6 +157,7 @@ services:
       - api-gateway
     environment:
       - SPRING_PROFILES_ACTIVE=prod
+      - SPRING_CLOUD_CONFIG_URI=http://config-server:8888
 
 networks:
   webnet:
