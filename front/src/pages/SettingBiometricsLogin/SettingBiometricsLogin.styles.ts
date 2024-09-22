@@ -1,4 +1,5 @@
 import styled, { keyframes } from "styled-components";
+import MediaQuery from "../../constants/styles";
 
 const fadeOutAndIn = keyframes`
   0% {
@@ -32,15 +33,16 @@ const fadeInAndOut = keyframes`
 
 export const Wrapper = styled.div`
   background-color: var(--light-purple);
-  padding: 30% 0% 0% 0%;
+  padding: 30% 0% 30% 0%;
   width: 100%;
   height: 100vh;
   display: flex;
   justify-content: center;
   .area {
     background-color: white;
-    border-top-right-radius: 50px;
-    border-top-left-radius: 50px;
+    border-radius: 50px;
+    /* border-top-right-radius: 50px;
+    border-top-left-radius: 50px; */
     height: 100%;
     width: 100%;
     display: flex;
@@ -82,6 +84,35 @@ export const Header = styled.div`
       animation: ${fadeInAndOut} 4s infinite;
     }
   }
+  @media screen {
+    h1 {
+      text-align: center;
+      font-size: 30px;
+      font-weight: 800;
+      margin-bottom: 20px;
+    }
+    p {
+      font-size: 15px;
+      margin-bottom: 30px;
+    }
+    div {
+      position: relative;
+      width: 60px;
+      height: 60px;
+      & > svg,
+      & > img {
+        position: absolute;
+        width: 100%;
+        height: 100%;
+      }
+      svg {
+        animation: ${fadeOutAndIn} 4s infinite;
+      }
+      img {
+        animation: ${fadeInAndOut} 4s infinite;
+      }
+    }
+  }
 `;
 export const Button = styled.button`
   width: 70%;
@@ -92,6 +123,13 @@ export const Button = styled.button`
   margin-top: 30px;
   font-size: 20px;
   color: white;
+  margin-bottom: 30px;
+  ${MediaQuery.small} {
+    height: 45px;
+    font-size: 15px;
+    width: 70%;
+    margin-bottom: 20px;
+  }
 `;
 
 export const Modal = styled.div`
@@ -117,17 +155,24 @@ export const Modal = styled.div`
   .ment {
     width: 80%;
     text-align: center;
-    font-size: 20px;
     margin-bottom: 10%;
   }
   button {
+    font-size: 20px;
     width: 80%;
     height: 50px;
     border: none;
-    font-size: 20px;
     border-radius: 20px;
     color: white;
     background-color: var(--light-purple);
+  }
+  ${MediaQuery.small} {
+    font-size: 15px;
+    button {
+      font-size: 15px;
+      width: 70%;
+      height: 40px;
+    }
   }
 `;
 const drawCheck = keyframes`
@@ -145,6 +190,10 @@ export const CheckMarkContainer = styled.div`
   align-items: center;
   width: 100px;
   height: 100px;
+  ${MediaQuery.small} {
+    width: 80px;
+    height: 80px;
+  }
 `;
 
 export const StyledSvg = styled.svg`

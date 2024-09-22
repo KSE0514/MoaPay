@@ -1,4 +1,5 @@
 import styled from "styled-components";
+import MediaQuery from "../../constants/styles";
 export const Wrapper = styled.div`
   /* @keyframes fadeIn {
     from {
@@ -9,7 +10,7 @@ export const Wrapper = styled.div`
     }
   } */
   background-color: var(--light-purple);
-  padding: 30% 10% 0% 10%;
+  padding: 20% 10% 20% 10%;
   width: 100%;
   height: 100vh;
   display: flex;
@@ -21,13 +22,16 @@ export const Container = styled.div`
   height: 100%;
   width: 100%;
   border-radius: 50px;
-  border-bottom-right-radius: 0;
-  border-bottom-left-radius: 0;
-  padding: 20px 30px;
+  /* border-bottom-right-radius: 0;
+  border-bottom-left-radius: 0; */
+  padding: 30% 30px;
   background-color: white;
   display: flex;
   flex-direction: column;
   align-items: center;
+  ${MediaQuery.small} {
+    padding: 20% 30px;
+  }
 `;
 export const Ment = styled.div`
   text-align: center;
@@ -35,7 +39,6 @@ export const Ment = styled.div`
   line-height: 30px;
   font-size: 19px;
   font-weight: 560;
-  padding-top: 40px;
   @media screen and (max-width: 400px) {
     font-size: 17px;
   }
@@ -49,7 +52,7 @@ export const PasswordView = styled.div`
     100% {
     }
   }
-  padding: 40px 0px;
+  padding: 10% 0px;
   display: flex;
   justify-content: center;
   width: 100%;
@@ -64,25 +67,35 @@ export const PasswordView = styled.div`
 `;
 export const KeyPad = styled.div`
   width: 100%;
-  height: 50%;
+  flex: 1;
   display: grid;
   grid-template-columns: repeat(3, 1fr);
   grid-template-rows: repeat(4, 1fr);
   place-items: center;
   button {
-    width: 75px;
-    height: 75px;
+    width: 60px;
+    height: 60px;
     border: none;
     border-radius: 10px;
     font-size: 20px;
     font-weight: 800;
-    @media screen and (max-width: 400px) {
-      width: 55px;
-      height: 55px;
+    @media screen and (min-width: 400px) {
+      width: 70px;
+      height: 70px;
     }
   }
   button:active {
     background-color: var(--light-purple);
     color: white;
+  }
+  ${MediaQuery.small} {
+    button {
+      width: 50px;
+      height: 50px;
+      border: none;
+      border-radius: 10px;
+      font-size: 20px;
+      font-weight: 800;
+    }
   }
 `;

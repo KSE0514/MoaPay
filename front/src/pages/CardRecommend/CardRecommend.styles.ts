@@ -1,4 +1,5 @@
 import styled from "styled-components";
+import MediaQuery from "../../constants/styles";
 export const Wrapper = styled.div`
   /* padding: 80px 45px var(--padding-bottom) 45px; */
   height: 100vh;
@@ -10,7 +11,6 @@ export const Wrapper = styled.div`
   .top {
     padding: 80px 45px 10px 45px;
     margin-bottom: 34px;
-    background-clip: padding-box;
   }
   .bottom {
     padding: 0px 45px var(--padding-bottom) 45px;
@@ -28,6 +28,12 @@ export const Wrapper = styled.div`
     border-bottom: 3px solid #ddc1fc;
     padding: 10px 15px;
     text-align: center;
+  }
+  ${MediaQuery.small} {
+    .top {
+      padding: 50px 45px 0px 35px;
+      /* margin-bottom: 34px; */
+    }
   }
 `;
 

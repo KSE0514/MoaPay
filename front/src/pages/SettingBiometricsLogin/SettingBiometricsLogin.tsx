@@ -153,7 +153,6 @@ const SettingBiometricsLogin = () => {
         </Button>
         {mode == "Join" || mode == "NewLogin" ? (
           <div
-            style={{ marginTop: "30px" }}
             onClick={() => {
               skipSettingBiometrics();
               navigate(PATH.HOME);

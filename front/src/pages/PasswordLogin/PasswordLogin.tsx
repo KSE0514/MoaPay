@@ -51,7 +51,7 @@ const PasswordLogin: React.FC = () => {
    */
   const handleKeypadClick = (value: string) => {
     if (value == "+") {
-      if (mode != "Join" || mode != "NewLogin") {
+      if (mode != "Join" && mode != "NewLogin") {
         navigate(PATH.BIOMETRICS_LOGIN);
       } else {
         return;

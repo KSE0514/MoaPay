@@ -1,5 +1,5 @@
 import styled from "styled-components";
-
+import MediaQuery from "../../constants/styles";
 export const Wrapper = styled.div``;
 export const MessageAuthenticationForm = styled.div`
   @keyframes fadeIn {
@@ -13,13 +13,16 @@ export const MessageAuthenticationForm = styled.div`
   &.fade-in {
     animation: fadeIn 1.2s ease forwards;
   }
-  @media screen and (max-width: 375px) and (max-height: 667px) {
+  ${MediaQuery.small} {
     padding: 20% 50px 20% 50px;
+    .error {
+      font-size: 11px;
+    }
   }
   padding: 25% 40px 25% 40px;
 `;
 export const Header = styled.div`
-  @media screen and (max-width: 375px) and (max-height: 667px) {
+  ${MediaQuery.small} {
     font-size: 20px;
     line-height: 30px;
     margin-bottom: 15px;
@@ -111,6 +114,87 @@ export const Form = styled.div`
   .join-btn {
     background-color: var(--light-purple);
     color: white;
+  }
+  ${MediaQuery.small} {
+    .form-row {
+      width: 100%;
+      height: 45px;
+      margin-bottom: 15px;
+      input,
+      select {
+        font-size: 15px;
+        padding-left: 15px;
+        width: 100%;
+        height: 100%;
+        border-radius: 10px;
+        border: 1px solid var(--light-gray);
+      }
+    }
+    //생년월일 파트
+    .birth {
+      display: flex;
+      //주민번호 앞자리와 뒷자리 파트가 40% 60%의 크기를 각자 가져감
+      & > *:nth-child(1) {
+        width: 35%;
+      }
+      & > *:nth-child(2) {
+        width: 65%;
+      }
+      //주민번호 뒷자리 파트
+      & > div:nth-child(2) {
+        display: flex;
+        input {
+          width: 35px;
+          padding-left: 3px;
+          text-align: center;
+        }
+        .masking-part {
+          display: flex;
+          align-items: center;
+          & > div {
+            border-radius: 50%;
+            height: 13px;
+            width: 13px;
+            margin-left: 5px;
+            background-color: var(--light-gray);
+          }
+        }
+        .line {
+          background-color: var(--light-gray);
+          width: 15px;
+          height: 2px;
+          margin: 0px 10px;
+          align-self: center;
+        }
+      }
+    }
+    //인증번호 파트
+    .auth-btn {
+      display: flex;
+      & > button {
+        border-radius: 10px;
+        border: none;
+        width: 50%;
+        margin-left: 10px;
+        font-weight: 800;
+        color: white;
+        background-color: var(--light-purple);
+      }
+    }
+    //확인버튼
+    .ready-btn,
+    .join-btn {
+      border-radius: 10px;
+      border: none;
+      width: 100%;
+      height: 50px;
+      font-size: 18px;
+      color: gray;
+    }
+    .join-btn {
+      background-color: var(--light-purple);
+      color: white;
+    }
   }
 `;
 

@@ -9,10 +9,12 @@ import AppAuthHandler from "./pages/AppAuthHandler";
 const GlobalStyles = createGlobalStyle`
   ${reset};
 
+  body,html{
+    height: 100vh;
+  }
  *{
   box-sizing: border-box;
   font-family: 'Pretendard-Regular';
-  
   }
   .error {
   color: red;
