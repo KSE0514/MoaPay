@@ -50,6 +50,9 @@ const PasswordLogin: React.FC = () => {
    * 비밀번호 입력
    */
   const handleKeypadClick = (value: string) => {
+    if (value == "+") {
+      navigate(PATH.BIOMETRICS_LOGIN);
+    }
     if (value == "-") {
       if (!isDoubleCheck)
         setPassword(password.slice(0, -1)); //startIndex에서 endIndex전까지

@@ -6,7 +6,6 @@ import { startRegistration } from "@simplewebauthn/browser";
 import {
   Button,
   CheckMarkContainer,
-  CircleContainer,
   Header,
   Modal,
   StyledSvg,

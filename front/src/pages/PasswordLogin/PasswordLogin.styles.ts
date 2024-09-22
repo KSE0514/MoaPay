@@ -1,20 +1,20 @@
 import styled from "styled-components";
 export const Wrapper = styled.div`
-  @keyframes fadeIn {
+  /* @keyframes fadeIn {
     from {
       opacity: 0;
     }
     to {
       opacity: 1;
     }
-  }
+  } */
   background-color: var(--light-purple);
   padding: 30% 10% 0% 10%;
   width: 100%;
   height: 100vh;
   display: flex;
   justify-content: center;
-  animation: fadeIn 0.5s forwards;
+  /* animation: fadeIn 0.5s forwards; */
 `;
 export const Nav = styled.div``;
 export const Container = styled.div`

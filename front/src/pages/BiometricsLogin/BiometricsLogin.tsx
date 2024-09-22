@@ -1,6 +1,12 @@
 import axios from "axios"; // axios 임포트
 import { AxiosResponse } from "axios";
+import { Button, Header, Wrapper } from "./BiometricsLogin.styles";
+import { useNavigate } from "react-router-dom";
+import { PATH } from "../../constants/path";
+import { useState } from "react";
 const BiometricsLogin = () => {
+  const navigate = useNavigate();
+  const [error, setError] = useState<boolean>(false);
   const handleBiometricLogin = async () => {
     try {
       // 2. 서버로부터 WebAuthn 인증 옵션(챌린지 포함)을 가져옴
@@ -34,6 +40,9 @@ const BiometricsLogin = () => {
       if (verification.data.verified) {
         // 서버로부터 verified 값이 true이면, 인증이 성공한 것
         console.log("생체 인증 성공");
+        navigate(PATH.HOME);
+      } else {
+        setError(true);
       }
     } catch (err) {
       // 6. 오류가 발생한 경우
@@ -41,6 +50,98 @@ const BiometricsLogin = () => {
       console.error("인증 중 오류 발생:", err);
     }
   };
-  return <></>;
+
+  // //test 코드
+  // const handleBiometricLogin = async () => {
+  //   try {
+  //     // 2. 임의로 WebAuthn 인증 옵션 생성
+  //     const options: PublicKeyCredentialRequestOptions = {
+  //       challenge: Uint8Array.from("test-challenge", (c) => c.charCodeAt(0)), // 임의의 챌린지
+  //       rpId: window.location.hostname, // Relying Party ID (테스트에서는 localhost)
+  //       allowCredentials: [
+  //         {
+  //           id: new Uint8Array(16), // 임의의 credential ID
+  //           type: "public-key" as const, // 타입을 명시적으로 "public-key"로 설정
+  //         },
+  //       ],
+  //       userVerification: "preferred", // 사용자 검증
+  //       timeout: 60000, // 60초 대기
+  //     };
+
+  //     // 3. 사용자에게 생체 인증을 요청
+  //     const authenticationResponse = await navigator.credentials.get({
+  //       publicKey: options,
+  //     });
+
+  //     // 4. 인증 결과 서버에 전송
+  //     const verification = await axios.post(
+  //       "/api/auth/webauthn/verify",
+  //       authenticationResponse
+  //     );
+
+  //     // 5. 서버로부터 받은 인증 결과 처리
+  //     if (verification.data.verified) {
+  //       console.log("생체 인증 성공");
+  //       navigate(PATH.HOME);
+  //     }
+  //   } catch (err) {
+  //     console.error("인증 중 오류 발생:", err);
+  //   }
+  // };
+
+  return (
+    <Wrapper>
+      <div className="area">
+        <Header>
+          <h1>생체 로그인</h1>
+          <p>
+            {!error
+              ? "잘못된 인증입니다. 다시 시도하세요"
+              : "생체 인증을 진행해주세요"}
+          </p>
+          <div>
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke-width="1.5"
+              stroke="currentColor"
+              className="size-6">
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                d="M7.864 4.243A7.5 7.5 0 0 1 19.5 10.5c0 2.92-.556 5.709-1.568 8.268M5.742 6.364A7.465 7.465 0 0 0 4.5 10.5a7.464 7.464 0 0 1-1.15 3.993m1.989 3.559A11.209 11.209 0 0 0 8.25 10.5a3.75 3.75 0 1 1 7.5 0c0 .527-.021 1.049-.064 1.565M12 10.5a14.94 14.94 0 0 1-3.6 9.75m6.633-4.596a18.666 18.666 0 0 1-2.485 5.33"
+              />
+            </svg>
+            <img
+              width="96"
+              height="96"
+              src="https://img.icons8.com/external-tanah-basah-basic-outline-tanah-basah/96/external-face-scan-smart-home-tanah-basah-basic-outline-tanah-basah.png"
+              alt="external-face-scan-smart-home-tanah-basah-basic-outline-tanah-basah"
+            />
+          </div>
+        </Header>
+        <Button
+          onClick={() => {
+            handleBiometricLogin();
+          }}>
+          인증하기
+        </Button>
+        <div
+          style={{ marginTop: "20px" }}
+          onClick={() => {
+            navigate(PATH.PASSWORD_LOGIN, {
+              state: {
+                ment: `로그인을 위해.\n비밀번호를 입력해주세요`,
+                back: false,
+                mode: "Login",
+              },
+            });
+          }}>
+          간편 비밀번호로 로그인
+        </div>
+      </div>
+    </Wrapper>
+  );
 };
 export default BiometricsLogin;

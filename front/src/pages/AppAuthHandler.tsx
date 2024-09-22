@@ -19,7 +19,7 @@ const AppAuthHandler: React.FC = () => {
       else {
         //마지막 활성시간 가져오기 = 백그라운드로 가기 전의 시간 가져오기
         const lastBackgroundTime = localStorage.getItem("lastBackgroundTime");
-        //백그라운드로 가기 전의 시간이 있는 경우 - 앱 백그라운드 에서 되돌아온 경우 / 이게 없으면 앱을 아예 꺼버린 것
+        //백그라운드로 가기 전의 시간이 있는 경우 - 앱 백그라운드 에서 되돌아온 경우로 이게 없으면 앱을 아예 꺼버린 것
         if (lastBackgroundTime) {
           const timeDiff = Date.now() - parseInt(lastBackgroundTime, 10);
           const hasLoggedInBefore =
@@ -28,7 +28,7 @@ const AppAuthHandler: React.FC = () => {
           if (timeDiff > 60000) {
             //이전 로그인 기록이 있는 경우
             if (hasLoggedInBefore) {
-              requestBiometricsLogin();
+              requestLogin();
             }
             //이전 로그인 기록이 없는 경우
             else {
@@ -53,7 +53,7 @@ const AppAuthHandler: React.FC = () => {
       if (!lastActiveTime) {
         // 사용자가 이전에 로그인한 적이 있는 경우, 간편 로그인 화면으로 이동합니다.
         if (hasLoggedInBefore) {
-          requestBiometricsLogin();
+          requestLogin();
         }
         // 사용자가 이전에 로그인한 적이 없으면 회원가입 페이지로 이동합니다.
         else {
@@ -70,13 +70,21 @@ const AppAuthHandler: React.FC = () => {
       localStorage.setItem("lastActiveTime", Date.now().toString());
     };
 
-    const requestBiometricsLogin = () => {
-      console.log("로그인");
-      navigate(PATH.BIOMETRICS_LOGIN);
+    //로그인
+    const requestLogin = () => {
+      const settingBioLogin = localStorage.getItem("settingBioLogin");
+      //생체정보가 있는 경우 생체 인식으로
+      if (settingBioLogin == "true") {
+        navigate(PATH.BIOMETRICS_LOGIN);
+      }
+      //생체정보가 없는 경우 비밀번호 입력으로
+      else {
+        navigate(PATH.PASSWORD_LOGIN);
+      }
     };
 
+    //회원가입
     const requestCreateAccount = () => {
-      console.log("회원가입");
       navigate(PATH.CREATE_ACCOUNT);
     };
 
