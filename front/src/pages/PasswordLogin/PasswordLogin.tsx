@@ -51,7 +51,11 @@ const PasswordLogin: React.FC = () => {
    */
   const handleKeypadClick = (value: string) => {
     if (value == "+") {
-      navigate(PATH.BIOMETRICS_LOGIN);
+      if (mode != "Join" || mode != "NewLogin") {
+        navigate(PATH.BIOMETRICS_LOGIN);
+      } else {
+        return;
+      }
     }
     if (value == "-") {
       if (!isDoubleCheck)
@@ -96,7 +100,22 @@ const PasswordLogin: React.FC = () => {
       if (mode === "Login") {
         //비밀번호 일치 시 로그인 시키고 홈으로 이동
         if (true) {
-          navigate("/home");
+          navigate(PATH.HOME);
+        }
+        //일치안할경우
+        else {
+          suffleKeysPad();
+          setMent(
+            "일치하지 않는 비밀번호입니다.\n다시 비밀번호를 입력해주세요."
+          );
+          setPassword("");
+        }
+      } else if (mode === "NewLogin") {
+        //비밀번호 일치 시 로그인 시키고 홈으로 이동
+        if (true) {
+          navigate(PATH.SETTING_BIOMETRICS_LOGIN, {
+            state: { mode: "NewLogin" },
+          });
         }
         //일치안할경우
         else {
@@ -152,15 +171,16 @@ const PasswordLogin: React.FC = () => {
    */
   useEffect(() => {
     if (isDoubleCheck && doubleCheckPassword.length === 6) {
+      console.log(password + " " + doubleCheckPassword);
       if (doubleCheckPassword === password) {
         //비밀번호 설정 후 저장 요청보내기
         //단 Join일때와 SettingPassword일때는 다른 요청을 보내야한다.
         if (mode == "Join") {
+          console.log("hello");
+          //생체정보 설정을 위해 이동 - 선택 가능
+          navigate(PATH.SETTING_BIOMETRICS_LOGIN, { state: { mode: "Join" } });
         } else if (mode == "SettingPassword") {
         }
-        setDoubleCheckPassword("");
-        setPassword("");
-        navigate(PATH.HOME);
       } else {
         suffleKeysPad();
         setMent("일치하지 않는 비밀번호입니다.\n다시 비밀번호를 입력해주세요.");

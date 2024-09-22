@@ -11,18 +11,21 @@ import {
   StyledSvg,
   Wrapper,
 } from "./SettingBiometricsLogin.styles";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { PATH } from "../../constants/path";
 import { useState } from "react";
 
 const SettingBiometricsLogin = () => {
   const [settingFinish, setSettingFinish] = useState<boolean>(false);
   const navigate = useNavigate();
+  const location = useLocation();
+  const mode = location.state?.mode; // "join" 값에 접근
   // const biometricsRegister = async () => {
   //   try {
   //     // 1. 서버로부터 WebAuthn 등록 옵션을 가져옴
   //     //    이 단계에서는 사용자 생체 인증 등록을 위한 챌린지와 공개키 정보가 포함된 옵션을 서버에서 제공.
-  //    const options = (await axios.get("/api/auth/webauthn/register/options")).data;
+  //     const options = (await axios.get("/api/auth/webauthn/register/options"))
+  //       .data;
 
   //     // 2. navigator.credentials.create() 또는 라이브러리에서 제공하는 startRegistration 사용
   //     //    서버에서 받은 등록 옵션을 사용해 WebAuthn 등록을 진행
@@ -39,14 +42,8 @@ const SettingBiometricsLogin = () => {
   //       attestationResponse
   //     );
   //     if (registerResult.data.success) {
-  //        setSettingFinish(true);
-  // navigate(PATH.PASSWORD_LOGIN, {
-  //   state: {
-  //     ment: `간편 비밀번호를 설정합니다.\n 6자리 비밀번호를 입력해주세요`,
-  //     back: false,
-  //     mode: "Join",
-  //   },
-  // });
+  //       setSettingFinish(true);
+  //       localStorage.setItem("settingBioLogin", "true");
   //     }
   //   } catch (e) {
   //     console.log(e);
@@ -109,10 +106,15 @@ const SettingBiometricsLogin = () => {
 
       if (attestationResponse) {
         setSettingFinish(true);
+        localStorage.setItem("settingBioLogin", "true");
       }
     } catch (e) {
       console.error("WebAuthn 등록 중 오류 발생:", e);
     }
+  };
+
+  const skipSettingBiometrics = () => {
+    localStorage.setItem("settingBioLogin", "false");
   };
 
   return (
@@ -149,6 +151,16 @@ const SettingBiometricsLogin = () => {
           }}>
           등록하기
         </Button>
+        {mode == "Join" || mode == "NewLogin" ? (
+          <div
+            style={{ marginTop: "30px" }}
+            onClick={() => {
+              skipSettingBiometrics();
+              navigate(PATH.HOME);
+            }}>
+            다음에 설정하기
+          </div>
+        ) : null}
       </div>
       {settingFinish ? (
         <Modal>
@@ -161,13 +173,7 @@ const SettingBiometricsLogin = () => {
             <p className="ment">등록이 완료되었습니다.</p>
             <button
               onClick={() => {
-                navigate(PATH.PASSWORD_LOGIN, {
-                  state: {
-                    ment: `간편 비밀번호를 설정합니다.\n 6자리 비밀번호를 입력해주세요`,
-                    back: false,
-                    mode: "Join",
-                  },
-                });
+                navigate(PATH.HOME);
               }}>
               확인
             </button>
