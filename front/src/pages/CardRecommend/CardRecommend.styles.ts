@@ -9,7 +9,7 @@ export const Wrapper = styled.div`
   }
   scrollbar-width: none;
   .top {
-    padding: 80px 45px 10px 45px;
+    padding: 70px 45px 0px 45px;
     margin-bottom: 34px;
   }
   .bottom {
@@ -74,12 +74,39 @@ export const CardView = styled.div`
       background-color: #ccd1ff;
       border: none;
       border-radius: 50%;
-      right: -10px;
+      right: -15px;
       top: -5px;
     }
   }
   & > div:nth-child(2) {
     margin: 20px;
+  }
+  ${MediaQuery.small} {
+    .cardimg {
+      & > img {
+        position: absolute;
+        z-index: 20;
+        object-fit: cover;
+      }
+      .delete-btn {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        width: 30px;
+        height: 30px;
+        position: absolute;
+        z-index: 30;
+        color: white;
+        background-color: #ccd1ff;
+        border: none;
+        border-radius: 50%;
+        right: -20px;
+        top: -5px;
+      }
+    }
+    & > div:nth-child(2) {
+      margin: 20px;
+    }
   }
 `;
 
