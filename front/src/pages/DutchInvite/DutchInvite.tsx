@@ -12,7 +12,7 @@ const DutchInvite = () => {
   const nav = useNavigate()
 
   const onClickAccept = () =>[
-    nav('/dutchpay')
+    nav('/dutchpay/participation')
   ]
 
   const goHome = () => {

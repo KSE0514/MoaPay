@@ -18,7 +18,7 @@ import {
 //   // 참가자 목록 불러오기_참가자가 새로 들어올 때마다 리스트 조회가 이루어져야함?
 // }, [])
 
-const Participant = ({maxNum}) => {
+const Participant = ({maxNum=null}) => {
   // const [participants, setParticipants] = useState([])
   const [dutchStart, setDutchStart] = useState(false)
 

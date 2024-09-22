@@ -22,6 +22,7 @@ import UserCardList from "../pages/UserCardList/UserCardList.tsx";
 
 import Dutchpay from "../pages/Dutchpay/Dutchpay.tsx";
 import DutchInvite from "../pages/DutchInvite/DutchInvite.tsx";
+import DutchParticipation from "../pages/DutchParticipation/DutchParticipation.tsx";
 const router = createBrowserRouter([
   {
     element: <AppAuthHandler />, // 최상위 레이아웃으로 AppAuthHandler 설정
@@ -99,6 +100,10 @@ const router = createBrowserRouter([
         path: PATH.DUTCHINVITE,
         element: <DutchInvite />,
       },
+      {
+        path: PATH.DUTCHPARTICIPATION,
+        element: <DutchParticipation />
+      }
     ],
   },
 ]);

@@ -3,6 +3,7 @@ import styled from "styled-components";
 export const Wrapper = styled.div`
   height: 100vh;
   position: relative;
+    
 `
 
 export const BackImg = styled.div`
@@ -39,7 +40,8 @@ export const Month = styled.div`
 
 export const CardInfo = styled.div`
   display: flex;
-  gap: 30px;
+  // gap: 30px;
+  width: 100%;
   padding-left: 9%;
   padding-right: 5%;
   align-items: center;
@@ -54,7 +56,7 @@ export const CardInfo = styled.div`
   }
 
   & > div {
-  
+    padding-left: 30px;
     display: flex;
     flex-direction: column;
     gap: 7px;
@@ -69,9 +71,13 @@ export const CardInfo = styled.div`
     text-shadow: -1px 0 rgba(255, 255, 255, 0.7), 0 1px rgba(255, 255, 255, 0.7), 1px 0 rgba(255, 255, 255, 0.7), 0 -1px rgba(255, 255, 255, 0.7);
 
   }
+
 `
 
 export const Main= styled.div`
+  height: 75%;
+  padding: 7% 10%;
+  overflow: auto;
 
 `
 
