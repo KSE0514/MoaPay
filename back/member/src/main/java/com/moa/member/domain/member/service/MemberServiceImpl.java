@@ -3,6 +3,7 @@ package com.moa.member.domain.member.service;
 import java.io.IOException;
 import java.util.Optional;
 
+import org.springframework.context.annotation.PropertySource;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -22,12 +23,11 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class MemberServiceImpl implements MemberService{
 
-	private final MemberRepository memberRepositoryp;
 	private final MemberRepository memberRepository;
 
 	@Override
 	@Transactional
-	public JoinResponseDto join(JoinRequestDto joinRequestDto) throws IOException{
+	public JoinResponseDto join(JoinRequestDto joinRequestDto){
 
 		//join하기 전에 문자인증 마쳐야한다
 		//핸드폰 번호 존재하면 실패 -> 이게 번호 인증에 있어야 될것같기도하고????
@@ -53,6 +53,7 @@ public class MemberServiceImpl implements MemberService{
 			.build();
 
 	}
+
 
 
 
