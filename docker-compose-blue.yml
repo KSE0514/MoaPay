@@ -71,7 +71,7 @@ services:
   # settlement / blue, green
   settlement-blue:
     build:
-      context: ./back/settlmeent
+      context: ./back/settlement
       dockerfile: Dockerfile
     container_name: settlement-blue
     ports:
