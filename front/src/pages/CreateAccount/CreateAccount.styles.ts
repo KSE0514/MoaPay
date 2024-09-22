@@ -13,12 +13,20 @@ export const MessageAuthenticationForm = styled.div`
   &.fade-in {
     animation: fadeIn 1.2s ease forwards;
   }
-  padding: 30% 40px 30% 40px;
+  @media screen and (max-width: 375px) and (max-height: 667px) {
+    padding: 20% 50px 20% 50px;
+  }
+  padding: 25% 40px 25% 40px;
 `;
 export const Header = styled.div`
-  font-size: 28px;
-  line-height: 35px;
-  margin-bottom: 30px;
+  @media screen and (max-width: 375px) and (max-height: 667px) {
+    font-size: 20px;
+    line-height: 30px;
+    margin-bottom: 15px;
+  }
+  font-size: 23px;
+  line-height: 33px;
+  margin-bottom: 20px;
 `;
 export const BoldText = styled.span`
   font-weight: bold;
@@ -27,8 +35,8 @@ export const Form = styled.div`
   width: 100%;
   .form-row {
     width: 100%;
-    height: 60px;
-    margin-bottom: 18px;
+    height: 50px;
+    margin-bottom: 15px;
     input,
     select {
       font-size: 15px;
@@ -36,7 +44,7 @@ export const Form = styled.div`
       width: 100%;
       height: 100%;
       border-radius: 10px;
-      border: 2px solid var(--light-gray);
+      border: 1px solid var(--light-gray);
     }
   }
   //생년월일 파트
@@ -132,22 +140,26 @@ export const LogoView = styled.div`
   align-items: center;
   justify-content: center;
   height: 100vh;
-
+  background: linear-gradient(to bottom, var(--light-purple) 0%, white 100%);
   & > div {
-    font-size: 30px;
     font-weight: 800;
     padding: 0px 0px 25% 0px;
     animation: down 2.5s forwards;
+    font-family: "Arial Rounded MT Bold", "Helvetica Rounded", Arial, sans-serif;
+    font-size: 15vw;
+    color: #f4eaf9;
+    text-shadow: 0 8px 9px var(--light-purple), 0px -2px 1px white;
+    letter-spacing: -4px;
   }
 
   button {
-    background-color: var(--light-purple);
+    background-color: white;
     position: relative;
     padding: 12px 35px;
     font-size: 17px;
     font-weight: 800;
-    color: #181818;
-    border: 3px solid var(--light-purple);
+    color: var(--light-purple);
+    border: none;
     border-radius: 8px;
     box-shadow: 0 0 0 #fec1958c;
     transition: all 0.2.5s ease-in-out;
@@ -157,12 +169,6 @@ export const LogoView = styled.div`
       width: 15px;
       height: 20px;
     }
-  }
-
-  button:hover {
-    background: transparent;
-    color: #181818;
-    box-shadow: 0 0 25px var(--light-purple);
   }
 
   .fil0 {

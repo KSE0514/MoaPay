@@ -9,6 +9,7 @@ import {
   LogoView,
 } from "./CreateAccount.styles";
 import { PATH } from "../../constants/path";
+import axios from "axios";
 
 interface JoinUserInfo {
   name: string;
@@ -18,11 +19,13 @@ interface JoinUserInfo {
   telecom: string;
   email: string;
   address: string;
+  code: string;
 }
 
 const CreateAccount = () => {
+  const baseUrl = import.meta.env.VITE_BASE_URL;
   const navigate = useNavigate();
-  const [isAuth, setIsAuth] = useState<boolean>(false);
+  const [isAuth, setIsAuth] = useState<boolean>(false); //인증 여부
   const [beforeStarting, setBeforeStarting] = useState<boolean>(true);
   const [btnMent, setBtnMent] = useState<string>("인증번호 받기");
   const [validationErrors, setValidationErrors] = useState<{
@@ -37,6 +40,7 @@ const CreateAccount = () => {
     telecom: "",
     email: "",
     address: "",
+    code: "",
   });
 
   const handleChange = (
@@ -86,15 +90,47 @@ const CreateAccount = () => {
     setValidationErrors(errors);
     return Object.keys(errors).length === 0;
   };
-
   /**
-   * 존재하는 유저인지 판단
+   * 1. 인증번호 받아오기
    */
-  const checkUser = () => {
+  const getAuthNumber = async () => {
     if (!validateFields()) {
       return; // 유효성 검사 통과하지 못하면 중단
     }
-    //회원 여부 판단 요청
+    // 인증번호 발급하기
+    try {
+      const response = await axios.post(
+        `http://localhost:18040/payment/member/sendSMS`,
+        {
+          phoneNumber: userInfo.phone_number,
+        }
+      );
+      console.log(response);
+      setAuthSent(true); // 인증번호 발급됨
+      setBtnMent("인증번호 재발송");
+    } catch (e) {
+      console.log(e);
+    }
+  };
+
+  /**
+   * 2. 존재하는 유저인지 판단
+   */
+  const checkUser = async () => {
+    // 유효성 검사 통과하지 못한 경우
+    if (!validateFields()) {
+      return;
+    }
+    //인증번호 확인하기
+    const response = await axios.post(
+      `http://localhost:18040/payment/member/verification`,
+      {
+        phoneNumber: userInfo.phone_number,
+        code: userInfo.code,
+      }
+    );
+    console.log(response);
+    //인증번호가 일치하면 존재하는 멤버인지 확인해야함
 
     //요청 결과에 따라 비밀번호 로그인 또는 회원가입으로 전달
     if (true) {
@@ -112,20 +148,7 @@ const CreateAccount = () => {
   };
 
   /**
-   * 인증번호 받아오기
-   */
-  const getAuthNumber = () => {
-    if (!validateFields()) {
-      return; // 유효성 검사 통과하지 못하면 중단
-    }
-
-    // 인증번호 발급하기
-    setAuthSent(true); // 인증번호 발급됨
-    setBtnMent("인증번호 재발송");
-  };
-
-  /**
-   * 회원가입
+   * 3. 회원가입
    */
   const join = () => {
     //인증 번호가 일치하는지 확인 - 일치하지않으면 오류
