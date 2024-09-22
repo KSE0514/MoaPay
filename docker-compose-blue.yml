@@ -6,7 +6,7 @@ services:
       dockerfile: Dockerfile
     container_name: frontend-blue
     ports:
-      - "3000:3000"
+      - "3001:3000"
     networks:
       - webnet
     restart: always
@@ -43,7 +43,7 @@ services:
       dockerfile: Dockerfile
     container_name: payment-blue
     ports:
-      - "18010:8080"
+      - "18011:8080"
     networks:
       - webnet
     depends_on:
@@ -61,7 +61,7 @@ services:
       dockerfile: Dockerfile
     container_name: moapay-blue
     ports:
-      - "18020:8080"
+      - "18021:8080"
     networks:
       - webnet
     depends_on:
@@ -79,7 +79,7 @@ services:
       dockerfile: Dockerfile
     container_name: settlement-blue
     ports:
-      - "18030:8080"
+      - "18031:8080"
     networks:
       - webnet
     depends_on:
@@ -96,7 +96,7 @@ services:
       dockerfile: Dockerfile
     container_name: member-blue
     ports:
-      - "18040:8080"
+      - "18041:8080"
     networks:
       - webnet
     depends_on:
@@ -114,7 +114,7 @@ services:
   #     dockerfile: Dockerfile
   #   container_name: notification-blue
   #   ports:
-  #     - "18060:8080"
+  #     - "18061:8080"
   #   networks:
   #     - webnet
   #   depends_on:
