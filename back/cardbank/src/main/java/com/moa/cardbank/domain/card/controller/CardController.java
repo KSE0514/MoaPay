@@ -1,9 +1,6 @@
 package com.moa.cardbank.domain.card.controller;
 
-import com.moa.cardbank.domain.card.model.dto.CreateMyCardRequestDto;
-import com.moa.cardbank.domain.card.model.dto.CreateMyCardResponseDto;
-import com.moa.cardbank.domain.card.model.dto.ExecutePayRequestDto;
-import com.moa.cardbank.domain.card.model.dto.ExecutePayResponseDto;
+import com.moa.cardbank.domain.card.model.dto.*;
 import com.moa.cardbank.domain.card.service.CardService;
 import com.moa.cardbank.global.response.ResultResponse;
 import lombok.RequiredArgsConstructor;
@@ -23,15 +20,27 @@ public class CardController {
 
     private final CardService cardService;
 
+    /* 일반 카드 API */
+
+    @PostMapping("/create")
+    public ResponseEntity<ResultResponse> createCardProduct(@RequestBody CreateCardProductRequestDto dto){
+        log.info("create card product : {}", dto.getName());
+        CreateCardProductResponseDto responseDto = cardService.createCardProduct(dto);
+        ResultResponse resultResponse = ResultResponse.of(HttpStatus.OK, "카드 상품을 추가했습니다.", responseDto);
+        return ResponseEntity.status(resultResponse.getStatus()).body(resultResponse);
+    }
+
     @PostMapping("/pay")
     public ResponseEntity<ResultResponse> executePay(@RequestBody ExecutePayRequestDto dto) {
         log.info("payment request : {}", dto.getCardNumber());
         // 주어진 정보를 기반으로 결제 승인 처리 후, 응답한다
         // 한도초과 등, 결제에 실패한 경우 Exception 응답함
         ExecutePayResponseDto responseDto = cardService.executePay(dto);
-        ResultResponse resultResponse = ResultResponse.of(HttpStatus.OK, "결제 정상 승인", responseDto);
+        ResultResponse resultResponse = ResultResponse.of(HttpStatus.OK, "결제 처리 완료", responseDto);
         return ResponseEntity.status(resultResponse.getStatus()).body(resultResponse);
     }
+
+    /* 개인 카드 관련 API */
 
     @PostMapping("/my/create")
     public ResponseEntity<ResultResponse> createMycard(@RequestBody CreateMyCardRequestDto dto) {

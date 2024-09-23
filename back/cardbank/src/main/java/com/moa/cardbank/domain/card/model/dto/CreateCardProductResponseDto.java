@@ -1,5 +1,6 @@
 package com.moa.cardbank.domain.card.model.dto;
 
+import com.moa.cardbank.domain.card.model.CardType;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -9,10 +10,8 @@ import java.util.UUID;
 
 @Getter
 @Builder
-@NoArgsConstructor
 @AllArgsConstructor
-public class CreateMyCardResponseDto {
-    private UUID myCardId;
-    private String myCardNumber;
-    private String cvc;
+@NoArgsConstructor
+public class CreateCardProductResponseDto {
+    private UUID cardId;
 }

@@ -7,5 +7,6 @@ import java.util.Optional;
 import java.util.UUID;
 
 public interface CardProductRepository extends JpaRepository<CardProduct, Long> {
+    <S extends CardProduct> S save(S cardProduct);
     Optional<CardProduct> findByUuid(UUID uuid);
 }

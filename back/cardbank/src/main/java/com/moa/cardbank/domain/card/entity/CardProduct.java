@@ -46,11 +46,11 @@ public class CardProduct {
 
     @ColumnDefault("0")
     @Column(name = "annual_fee")
-    private long annualFee;
+    private Long annualFee;
 
     @ColumnDefault("0")
     @Column(name = "annual_fee_foreign")
-    private long annualFeeForeign;
+    private Long annualFeeForeign;
 
     @ColumnDefault("0")
     @Column(name = "performance")

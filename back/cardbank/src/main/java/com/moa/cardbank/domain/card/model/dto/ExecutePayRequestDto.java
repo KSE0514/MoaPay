@@ -9,7 +9,6 @@ import java.util.UUID;
 @Builder
 public class ExecutePayRequestDto {
     private UUID merchantId;
-    private String categoryId;
     private UUID cardId;
     private String cardNumber;
     private String cvc;

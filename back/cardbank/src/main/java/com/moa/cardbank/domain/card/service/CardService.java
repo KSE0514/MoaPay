@@ -1,12 +1,9 @@
 package com.moa.cardbank.domain.card.service;
 
-import com.moa.cardbank.domain.card.model.dto.CreateMyCardRequestDto;
-import com.moa.cardbank.domain.card.model.dto.CreateMyCardResponseDto;
-import com.moa.cardbank.domain.card.model.dto.ExecutePayRequestDto;
-import com.moa.cardbank.domain.card.model.dto.ExecutePayResponseDto;
+import com.moa.cardbank.domain.card.model.dto.*;
 
 public interface CardService {
-
+    CreateCardProductResponseDto createCardProduct(CreateCardProductRequestDto dto);
     ExecutePayResponseDto executePay(ExecutePayRequestDto dto);
     CreateMyCardResponseDto createMyCard(CreateMyCardRequestDto dto);
 }
