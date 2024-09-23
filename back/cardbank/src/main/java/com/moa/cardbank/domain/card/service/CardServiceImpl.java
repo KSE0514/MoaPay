@@ -1,10 +1,7 @@
 package com.moa.cardbank.domain.card.service;
 
 import com.moa.cardbank.domain.account.entity.Account;
-import com.moa.cardbank.domain.account.entity.AccountLog;
-import com.moa.cardbank.domain.account.model.dto.WithdrawAccountRequestDto;
 import com.moa.cardbank.domain.account.model.dto.WithdrawByDebitCardDto;
-import com.moa.cardbank.domain.account.repository.AccountLogRepository;
 import com.moa.cardbank.domain.account.repository.AccountRepository;
 import com.moa.cardbank.domain.account.service.AccountService;
 import com.moa.cardbank.domain.card.entity.*;
@@ -230,7 +227,7 @@ public class CardServiceImpl implements CardService {
             EarningLog earningLog = EarningLog.builder()
                     .paymentLogId(paymentLog.getId())
                     .type(EarningType.CASHBACK)
-                    .amount(totalPoint)
+                    .amount(totalCashback)
                     .status(ProcessingStatus.APPROVED)
                     .build();
             earningLogRepository.save(earningLog);
@@ -240,6 +237,7 @@ public class CardServiceImpl implements CardService {
                 .status(PayStatus.APPROVED)
                 .paymentId(paymentLog.getUuid())
                 .amount(paymentLog.getAmount())
+                .benefitActivated(myCard.getPerformanceFlag())
                 .benefitBalance(totalDiscount + totalPoint + totalCashback)
                 .remainedBenefit(benefitTotalLimit - newBenefitUsage)
                 .build();
@@ -262,7 +260,7 @@ public class CardServiceImpl implements CardService {
                 break;
             }
         }
-        String cvc = String.valueOf((int)(Math.random()*1000));
+        String cvc = String.valueOf((int)(Math.random()*900)+100);
 
         MyCard newCard = MyCard.builder()
                 .cardNumber(cardNumber)

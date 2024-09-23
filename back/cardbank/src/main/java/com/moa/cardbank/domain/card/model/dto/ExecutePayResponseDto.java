@@ -13,6 +13,7 @@ public class ExecutePayResponseDto {
     private PayStatus status;
     private UUID paymentId;
     private long amount;
+    private boolean benefitActivated;
     private long benefitBalance;
     private long remainedBenefit;
 }

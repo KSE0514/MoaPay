@@ -33,8 +33,6 @@ public class CardController {
     @PostMapping("/pay")
     public ResponseEntity<ResultResponse> executePay(@RequestBody ExecutePayRequestDto dto) {
         log.info("payment request : {}", dto.getCardNumber());
-        // 주어진 정보를 기반으로 결제 승인 처리 후, 응답한다
-        // 한도초과 등, 결제에 실패한 경우 Exception 응답함
         ExecutePayResponseDto responseDto = cardService.executePay(dto);
         ResultResponse resultResponse = ResultResponse.of(HttpStatus.OK, "결제 처리 완료", responseDto);
         return ResponseEntity.status(resultResponse.getStatus()).body(resultResponse);
@@ -45,7 +43,6 @@ public class CardController {
     @PostMapping("/my/create")
     public ResponseEntity<ResultResponse> createMycard(@RequestBody CreateMyCardRequestDto dto) {
         log.info("create my card");
-        log.info("WARNING :: This feature is not completed. It isn't including card product info");
         CreateMyCardResponseDto responseDto = cardService.createMyCard(dto);
         ResultResponse resultResponse = ResultResponse.of(HttpStatus.OK, "개인 카드 생성됨", responseDto);
         return ResponseEntity.status(resultResponse.getStatus()).body(resultResponse);
