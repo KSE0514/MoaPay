@@ -1,4 +1,4 @@
-package com.moa.payment.domain.online.model;
+package com.moa.payment.domain.online.model.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
