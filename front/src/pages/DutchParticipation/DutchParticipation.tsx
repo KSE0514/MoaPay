@@ -13,7 +13,7 @@ const DutchParticipation = () => {
   const [memberNum, setMemberNum] = useState(''); // 참여자 수 입력 받는 변수
   const [isOpen, setIsOpen] = useState(false); // 더치페이 나가기 모달 상태 관리
   const [timeLeft, setTimeLeft] = useState(600); // 10분(600초) 카운트다운을 위한 상태 관리
-  const [process, setProcess] = useState(4) // 진행 단계
+  const [process, setProcess] = useState(2) // 진행 단계
 
   const goHome = () => {
     nav("/home");
@@ -154,7 +154,11 @@ const DutchParticipation = () => {
 
       </Top>
 
-      <Main>
+      <Main
+        style={{
+          backgroundColor: process === 2 ? "#B6BCFF" : "none"
+        }}
+      >
         {/* 3. 더치페이하는 상품 정보 */}
         {/* 2. 참여자 목록 컴포넌트_2단계인지 판단 기준: memberSetComplete === true */}
         {process <2 ? <Participant /> : null}
