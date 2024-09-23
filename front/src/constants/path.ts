@@ -15,6 +15,9 @@ const PATH = {
   STATISTICS_CONSUMPTION: "consumption",
   USER_CARD_LIST: "/card-list", //nonav
   USER_CARD_DETAIL: "/card/:card_id", //nonav
+  DUTCHPAY: "/dutchpay", //nonav
+  DUTCHINVITE: "/dutchpay/invite", //nonav
+  DUTCHPARTICIPATION: "/dutchpay/participation", //nonav
 } as const;
 
 export { PATH };
