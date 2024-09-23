@@ -42,7 +42,6 @@ const AppAuthHandler: React.FC = () => {
 
     //앱이 시작될 때 실행될 함수
     const handleAppStart = () => {
-      console.log("hi");
       // 마지막 활성화 시간을 localStorage에서 가져옵니다.
       const lastActiveTime = localStorage.getItem("lastActiveTime");
 
