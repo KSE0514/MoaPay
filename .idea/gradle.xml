@@ -20,38 +20,6 @@
         </option>
       </GradleProjectSettings>
       <GradleProjectSettings>
-        <option name="externalProjectPath" value="$PROJECT_DIR$/back/gateway" />
-        <option name="modules">
-          <set>
-            <option value="$PROJECT_DIR$/back/gateway" />
-          </set>
-        </option>
-      </GradleProjectSettings>
-      <GradleProjectSettings>
-        <option name="externalProjectPath" value="$PROJECT_DIR$/back/member" />
-        <option name="modules">
-          <set>
-            <option value="$PROJECT_DIR$/back/member" />
-          </set>
-        </option>
-      </GradleProjectSettings>
-      <GradleProjectSettings>
-        <option name="externalProjectPath" value="$PROJECT_DIR$/back/payment" />
-        <option name="modules">
-          <set>
-            <option value="$PROJECT_DIR$/back/payment" />
-          </set>
-        </option>
-      </GradleProjectSettings>
-      <GradleProjectSettings>
-        <option name="externalProjectPath" value="$PROJECT_DIR$/back/store" />
-        <option name="modules">
-          <set>
-            <option value="$PROJECT_DIR$/back/store" />
-          </set>
-        </option>
-      </GradleProjectSettings>
-      <GradleProjectSettings>
         <option name="externalProjectPath" value="$PROJECT_DIR$/../moa-config-server" />
         <option name="modules">
           <set>

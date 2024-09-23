@@ -69,7 +69,7 @@ const Home = () => {
   }, []);
   return (
     <Wrapper>
-      <Top>
+      <Top className="top">
         <BarcordArea>
           <Barcord>
             <img src={barcode} alt="barcode" />
