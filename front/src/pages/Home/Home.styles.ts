@@ -7,19 +7,27 @@ export const Wrapper = styled.div`
   flex-direction: column;
   height: 100vh;
   background-color: #db80e5;
-  ${MediaQuery.small} {
-    .top {
-      padding: 20px 41px;
-      height: 33%;
-    }
-  }
 `;
 export const Top = styled.div`
-  height: 30%;
-  padding: 30px 41px;
+  padding: 20px 41px;
   & button {
     border: none;
     background-color: white;
+  }
+  ${MediaQuery.small} {
+    & {
+      padding: 20px 41px 15px 41px;
+    }
+  }
+  ${MediaQuery.medium} {
+    & {
+      padding: 30px 41px 15px 41px;
+    }
+  }
+  @media screen and (min-height: 840px) {
+    & {
+      padding: 10% 41px 8% 41px;
+    }
   }
 `;
 
@@ -28,17 +36,29 @@ export const BarcordArea = styled.div`
   padding: 18px 30px 10px 30px;
   background-color: white;
   border-radius: 19px;
+  ${MediaQuery.small} {
+    padding: 10px 20px 10px 20px;
+  }
+  @media screen and (min-height: 840px) {
+    padding: 18px 20px 10px 20px;
+  }
 `;
 export const Barcord = styled.div`
   img {
     width: 100%;
     height: 80px;
   }
+  @media screen and (min-height: 840px) {
+    img {
+      height: 100px;
+    }
+  }
 `;
 export const Time = styled.div`
   padding-top: 5px;
   display: flex;
-  justify-content: center;
+  justify-content: end;
+  /* justify-content: center; */
   gap: 5px;
 `;
 export const ButtonArea = styled.div`
@@ -47,10 +67,18 @@ export const ButtonArea = styled.div`
   button {
     width: 47%;
     border-radius: 10px;
-    padding: 6px 23px;
+    padding: 10px 15px;
   }
   ${MediaQuery.small} {
     button {
+      padding: 8px 15px;
+      font-size: 12px;
+    }
+  }
+
+  ${MediaQuery.medium} {
+    button {
+      padding: 8px 15px;
       font-size: 12px;
     }
   }
@@ -58,7 +86,7 @@ export const ButtonArea = styled.div`
 
 export const Bottom = styled.div`
   position: relative;
-  padding: 30px 40px var(--padding-bottom) 40px;
+  padding: 25px 40px var(--padding-bottom) 40px;
   /* height:100%; */
   overflow: hidden;
   border-top-left-radius: 48px;
@@ -84,7 +112,7 @@ export const Bottom = styled.div`
     padding: 5px 31px;
     background-color: rgba(214, 125, 249, 0.62);
     border-radius: 21px;
-    margin: 32px 0px 55px 0px;
+    margin: 12px 0px 45px 0px;
   }
   .tri {
     position: absolute;
@@ -104,19 +132,53 @@ export const Bottom = styled.div`
   }
 
   ${MediaQuery.small} {
+    & {
+      padding-top: 20px;
+    }
     .remaining-performance {
       width: 80%;
       text-align: center;
+      font-size: 14px;
+      font-weight: 400;
+      padding: 8px 31px;
+      background-color: rgba(214, 125, 249, 0.62);
+      border-radius: 21px;
+      margin: 10px 0px 15px 0px;
+    }
+    .tri {
+      position: absolute;
+      bottom: 55.5px;
+      width: 0;
+      height: 0;
+      border-bottom: 100px solid rgba(84, 98, 255, 0.24);
+      border-top: 100px solid transparent;
+      border-left: 100px solid transparent;
+      border-right: 100px solid transparent;
+    }
+    .tri-left {
+      left: -100px;
+    }
+    .tri-right {
+      right: -100px;
+    }
+  }
+  ${MediaQuery.medium} {
+    & {
+      padding-top: 25px;
+    }
+    .remaining-performance {
+      width: 90%;
+      text-align: center;
       font-size: 16px;
       font-weight: 400;
-      padding: 5px 31px;
+      padding: 8px 31px;
       background-color: rgba(214, 125, 249, 0.62);
       border-radius: 21px;
       margin: 10px 0px 35px 0px;
     }
     .tri {
       position: absolute;
-      bottom: 70.5px;
+      bottom: 55.5px;
       width: 0;
       height: 0;
       border-bottom: 100px solid rgba(84, 98, 255, 0.24);
@@ -152,18 +214,9 @@ export const CardList = styled.div`
     width: 100%;
   }
   .card {
-    @media screen and (max-width: 399px) {
-      width: 300px;
-      height: 189.87px;
-    }
-    @media screen and (min-width: 400px) {
-      width: 330px;
-      height: 208.86px;
-    }
-    @media screen and (max-height: 680px) {
-      width: 260px;
-      height: 164.56px;
-    }
+    width: 100%; /* 원하는 너비로 설정 */
+    aspect-ratio: 1.58 / 1; /* 1.58:1 비율 유지 */
+
     transition: 0.5s;
     position: absolute;
     & > img {
@@ -172,34 +225,44 @@ export const CardList = styled.div`
     }
   }
   .card:nth-of-type(1) {
-    @media screen and (max-width: 399px) {
-      transform: translateY(-30px) translateZ(-0.2px);
-      width: 260px;
-    }
-    @media screen and (min-width: 400px) {
-      transform: translateY(-50px) translateZ(-0.2px);
-      width: 290px;
-    }
-    @media screen and (max-height: 680px) {
-      transform: translateY(-20px) translateZ(-0.2px);
-      width: 230px;
-    }
+    transform: translateY(-23%) translateZ(-0.2px);
+    width: 85%;
   }
   .card:nth-of-type(2) {
     z-index: 10;
   }
   .card:nth-of-type(3) {
-    @media screen and (max-width: 399px) {
-      transform: translateY(30px) translateZ(-0.2px);
-      width: 260px;
+    width: 85%;
+    transform: translateY(23%) translateZ(-0.2px);
+  }
+  ${MediaQuery.small} {
+    .card:nth-of-type(1) {
+      transform: translateY(-23%) translateZ(-0.2px);
+      width: 85%;
     }
-    @media screen and (min-width: 400px) {
-      transform: translateY(50px) translateZ(-0.2px);
-      width: 290px;
+    .card:nth-of-type(3) {
+      width: 85%;
+      transform: translateY(23%) translateZ(-0.2px);
     }
-    @media screen and (max-height: 680px) {
-      width: 230px;
-      transform: translateY(20px) translateZ(-0.2px);
+  }
+  ${MediaQuery.medium} {
+    .card:nth-of-type(1) {
+      transform: translateY(-28%) translateZ(-0.2px);
+      width: 85%;
+    }
+    .card:nth-of-type(3) {
+      width: 85%;
+      transform: translateY(28%) translateZ(-0.2px);
+    }
+  }
+  @media screen and (min-height: 800px) {
+    .card:nth-of-type(1) {
+      transform: translateY(-35%) translateZ(-0.2px);
+      width: 85%;
+    }
+    .card:nth-of-type(3) {
+      width: 85%;
+      transform: translateY(35%) translateZ(-0.2px);
     }
   }
   .card:nth-of-type(n + 4) {
