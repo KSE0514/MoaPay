@@ -4,7 +4,7 @@ export const Layout = styled.div`
   width: 100%;
   .first-wave {
     position: absolute;
-    background-color: #a26eef;
+    background-color: #a875f4;
     border: none;
     z-index: 2;
     border-radius: 50%;
