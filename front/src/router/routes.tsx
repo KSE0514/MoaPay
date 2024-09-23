@@ -92,13 +92,11 @@ const router = createBrowserRouter([
         element: <CreateAccount />,
       },
       { path: PATH.PASSWORD_LOGIN, element: <PasswordLogin /> },
-<<<<<<< HEAD
       {
         path: PATH.SETTING_BIOMETRICS_LOGIN,
         element: <SettingBiometricsLogin />,
       },
-=======
-      { 
+      {
         path: PATH.DUTCHPAY,
         element: <Dutchpay />,
       },
@@ -108,9 +106,8 @@ const router = createBrowserRouter([
       },
       {
         path: PATH.DUTCHPARTICIPATION,
-        element: <DutchParticipation />
-      }
->>>>>>> dev
+        element: <DutchParticipation />,
+      },
     ],
   },
 ]);

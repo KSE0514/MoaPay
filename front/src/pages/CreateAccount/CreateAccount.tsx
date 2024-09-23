@@ -247,7 +247,8 @@ const CreateAccount = () => {
           <button
             onClick={() => {
               setBeforeStarting(false);
-            }}>
+            }}
+          >
             시작하기
           </button>
         </LogoView>
@@ -341,7 +342,8 @@ const CreateAccount = () => {
                 disabled={authSent}
                 style={{
                   borderColor: validationErrors.telecom ? "red" : "",
-                }}>
+                }}
+              >
                 <option value="" disabled>
                   통신사를 선택해주세요
                 </option>
@@ -413,7 +415,8 @@ const CreateAccount = () => {
             )}
             <button
               className={isAuth ? "join-btn" : "ready-btn"}
-              onClick={isAuth ? join : checkUser}>
+              onClick={isAuth ? join : checkUser}
+            >
               {isAuth ? "회원가입" : "확인"}
             </button>
           </Form>

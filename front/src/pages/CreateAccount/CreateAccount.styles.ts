@@ -13,13 +13,13 @@ export const MessageAuthenticationForm = styled.div`
   &.fade-in {
     animation: fadeIn 1.2s ease forwards;
   }
+  padding: 25% 40px 25% 40px;
   ${MediaQuery.small} {
     padding: 20% 50px 20% 50px;
     .error {
       font-size: 11px;
     }
   }
-  padding: 25% 40px 25% 40px;
 `;
 export const Header = styled.div`
   ${MediaQuery.small} {
