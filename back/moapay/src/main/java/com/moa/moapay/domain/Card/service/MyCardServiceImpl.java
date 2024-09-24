@@ -24,14 +24,12 @@ import java.util.stream.Collectors;
 @Slf4j
 public class MyCardServiceImpl implements MyCardService {
 
-    private final MyCardRepository myCardRepository;
     private final MyCardQueryRepository myCardQueryRepository;
 
     @Override
-    public List<MyCardInfoDto> getMyCardInfo(HttpServletRequest request) {
-        UUID memberSample = UUID.fromString("550e8400-e29b-41d4-a716-446655440000");
+    public List<MyCardInfoDto> getMyCardInfo(UUID memberId) {
 
-        List<MyCard> myCards = myCardRepository.findAllByMemberId(memberSample);
+        List<MyCard> myCards = myCardQueryRepository.findAllByMemberIdWithBenefits(memberId);
 
         if (myCards.isEmpty()) {
             throw new BusinessException(HttpStatus.NOT_FOUND, "등록된 카드가 없어요");
@@ -74,7 +72,7 @@ public class MyCardServiceImpl implements MyCardService {
                 }).collect(Collectors.toList());
 
         log.info("myCards size {}", myCards.size());
-        return myCardsDto; // DTO 리스트 반환
+        return myCardsDto; 
     }
 }
 

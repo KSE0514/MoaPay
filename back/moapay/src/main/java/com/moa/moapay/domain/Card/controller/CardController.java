@@ -6,15 +6,18 @@ import com.moa.moapay.domain.Card.service.MyCardService;
 import com.moa.moapay.domain.Card.service.RecommendCardService;
 import com.moa.moapay.global.response.ResultResponse;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
+import java.util.UUID;
 
 @RestController
 @RequiredArgsConstructor
@@ -33,8 +36,8 @@ public class CardController {
     }
 
     @GetMapping("/mycard")
-    public ResponseEntity<ResultResponse> mycard(HttpServletRequest request) {
-        List<MyCardInfoDto> myCardInfo = myCardService.getMyCardInfo(request);
+    public ResponseEntity<ResultResponse> mycard(@RequestParam UUID memberId) {
+        List<MyCardInfoDto> myCardInfo = myCardService.getMyCardInfo(memberId);
         ResultResponse resultResponse = ResultResponse.of(HttpStatus.OK, "나의 카드 조회", myCardInfo);
         return ResponseEntity.status(resultResponse.getStatus()).body(resultResponse);
     }
