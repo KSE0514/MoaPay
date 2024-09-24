@@ -12,13 +12,13 @@ services:
     restart: always
 
   # eureka, api-gateway는 blue-green 전략을 사용하지 않는다.
-  eureka-server:
+  eureka-server-green:
     build:
       context: ./back/eureka
       dockerfile: Dockerfile
     container_name: eureka-server
     ports:
-      - "8761:8761"
+      - "8762:8761"
     networks:
       - webnet
     restart: always
@@ -26,13 +26,13 @@ services:
       - SPRING_PROFILES_ACTIVE=prod
       - SPRING_CLOUD_CONFIG_URI=http://config-server:8888
 
-  api-gateway:
+  api-gateway-green:
     build:
       context: ./back/gateway
       dockerfile: Dockerfile
     container_name: api-gateway
     ports:
-      - "8765:8765"
+      - "8766:8765"
     depends_on:
       - eureka-server
     networks:
@@ -131,7 +131,7 @@ services:
   #     - SPRING_PROFILES_ACTIVE=prod
 
   # cardbank는 moapay 서비스가 아니므로, blue-green 전략을 사용하지 않는다.
-  cardbank:
+  cardbank-green:
     build:
       context: ./back/cardbank
       dockerfile: Dockerfile
@@ -148,7 +148,7 @@ services:
       - SPRING_CLOUD_CONFIG_URI=http://config-server:8888
 
   # store는 moapay 서비스가 아니므로, blue-green 전략을 사용하지 않는다.
-  store:
+  store-green:
     build:
       context: ./back/store
       dockerfile: Dockerfile
