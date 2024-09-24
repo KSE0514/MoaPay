@@ -236,6 +236,11 @@ public class CardServiceImpl implements CardService {
                     .build();
             earningLogRepository.save(earningLog);
         }
+        BenefitDetailDto benefitDetailDto = BenefitDetailDto.builder()
+                .discount(totalDiscount)
+                .point(totalPoint)
+                .cashback(totalCashback)
+                .build();
 
         return ExecutePayResponseDto.builder()
                 .merchantName(merchant.getName())
@@ -245,6 +250,7 @@ public class CardServiceImpl implements CardService {
                 .benefitActivated(myCard.getPerformanceFlag())
                 .benefitBalance(totalDiscount + totalPoint + totalCashback)
                 .remainedBenefit(benefitTotalLimit - newBenefitUsage)
+                .benefitDetail(benefitDetailDto)
                 .build();
     }
 
