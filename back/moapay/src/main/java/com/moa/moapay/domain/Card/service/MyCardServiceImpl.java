@@ -1,21 +1,20 @@
 package com.moa.moapay.domain.Card.service;
 
+import com.moa.moapay.domain.Card.entity.CardProduct;
 import com.moa.moapay.domain.Card.entity.MyCard;
 import com.moa.moapay.domain.Card.model.dto.CardBenefitDto;
 import com.moa.moapay.domain.Card.model.dto.CardInfoResponseDto;
 import com.moa.moapay.domain.Card.model.dto.MyCardInfoDto;
+import com.moa.moapay.domain.Card.repository.CardProductRepository;
 import com.moa.moapay.domain.Card.repository.MyCardQueryRepository;
-import com.moa.moapay.domain.Card.repository.MyCardRepository;
 import com.moa.moapay.global.exception.BusinessException;
-import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
-import java.nio.ByteBuffer;
+import java.util.Collections;
 import java.util.List;
-import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
@@ -24,6 +23,7 @@ import java.util.stream.Collectors;
 @Slf4j
 public class MyCardServiceImpl implements MyCardService {
 
+    private final CardProductRepository cardProductRepository;
     private final MyCardQueryRepository myCardQueryRepository;
 
     @Override
@@ -72,7 +72,44 @@ public class MyCardServiceImpl implements MyCardService {
                 }).collect(Collectors.toList());
 
         log.info("myCards size {}", myCards.size());
-        return myCardsDto; 
+        return myCardsDto;
+    }
+
+    @Override
+    public List<CardInfoResponseDto> getAllCard() {
+
+//        List<CardProduct> cards = cardProductRepository.findAll();
+        List<CardProduct> cards = myCardQueryRepository.findAll();
+
+        List<CardInfoResponseDto> cardsDto = cards.stream().map(
+                cardProduct -> {
+                    List<CardBenefitDto> benefitDtos = cardProduct.getBenefits().stream()
+                            .map(benefit -> CardBenefitDto
+                                    .builder()
+                                    .categoryName(benefit.getCardBenefitCategory().getName())
+                                    .categoryType(String.valueOf(benefit.getCategoryType()))
+                                    .benefitDesc(benefit.getBenefitDesc())
+                                    .benefitValue(benefit.getBenefitValue())
+                                    .benefitType(benefit.getBenefitType())
+                                    .benefitPoint(benefit.getBenefitPoint())
+                                    .build())
+                            .collect(Collectors.toList());
+
+                    return CardInfoResponseDto.builder()
+                            .cardName(cardProduct.getName())
+                            .cardType(cardProduct.getType())
+                            .annualFee(cardProduct.getAnnualFee())
+                            .annualFeeForeign(cardProduct.getAnnualFeeForeign())
+                            .performance(cardProduct.getPerformance())
+                            .companyName(cardProduct.getCompanyName())
+                            .benefitTotalLimit(cardProduct.getBenefitTotalLimit())
+                            .imageUrl(cardProduct.getImageUrl())
+                            .benefits(benefitDtos)
+                            .build();
+                }
+        ).collect(Collectors.toList());
+
+        return cardsDto;
     }
 }
 

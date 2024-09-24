@@ -41,4 +41,11 @@ public class CardController {
         ResultResponse resultResponse = ResultResponse.of(HttpStatus.OK, "나의 카드 조회", myCardInfo);
         return ResponseEntity.status(resultResponse.getStatus()).body(resultResponse);
     }
+
+    @GetMapping("/cardList")
+    public ResponseEntity<ResultResponse> cardList() {
+        List<CardInfoResponseDto> allCard = myCardService.getAllCard();
+        ResultResponse resultResponse = ResultResponse.of(HttpStatus.OK, "카드 전체 조회", allCard);
+        return ResponseEntity.status(resultResponse.getStatus()).body(resultResponse);
+    }
 }
