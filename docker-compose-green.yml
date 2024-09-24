@@ -25,8 +25,6 @@ services:
     environment:
       - SPRING_PROFILES_ACTIVE=prod
       - SPRING_CLOUD_CONFIG_URI=http://config-server:8888
-    depends_on:
-      - config-server
 
   api-gateway:
     build:
@@ -36,7 +34,6 @@ services:
     ports:
       - "8765:8765"
     depends_on:
-      - config-server
       - eureka-server
     networks:
       - webnet
@@ -56,12 +53,12 @@ services:
     networks:
       - webnet
     depends_on:
-      - config-server
       - eureka-server
       - api-gateway
     environment:
-      - SPRING_PROFILES_ACTIVE=prod, green
+      - SPRING_PROFILES_ACTIVE=prod
       - SPRING_CLOUD_CONFIG_URI=http://config-server:8888
+      - SPRING_PROFILES_COLOR=green
 
   # moapay / blue, green
   moapay-green:
@@ -74,12 +71,12 @@ services:
     networks:
       - webnet
     depends_on:
-      - config-server
       - eureka-server
       - api-gateway
     environment:
-      - SPRING_PROFILES_ACTIVE=prod, green
+      - SPRING_PROFILES_ACTIVE=prod
       - SPRING_CLOUD_CONFIG_URI=http://config-server:8888
+      - SPRING_PROFILES_COLOR=green
 
   # settlement / blue, green
   settlement-green:
@@ -92,12 +89,12 @@ services:
     networks:
       - webnet
     depends_on:
-      - config-server
       - eureka-server
       - api-gateway
     environment:
-      - SPRING_PROFILES_ACTIVE=prod, green
+      - SPRING_PROFILES_ACTIVE=prod
       - SPRING_CLOUD_CONFIG_URI=http://config-server:8888
+      - SPRING_PROFILES_COLOR=green
 
   # member / blue, green
   member-green:
@@ -110,12 +107,12 @@ services:
     networks:
       - webnet
     depends_on:
-      - config-server
       - eureka-server
       - api-gateway
     environment:
       - SPRING_PROFILES_ACTIVE=prod, green
       - SPRING_CLOUD_CONFIG_URI=http://config-server:8888
+      - SPRING_PROFILES_COLOR=green
 
   # notification / blue, green
   # notification-green:
@@ -144,7 +141,6 @@ services:
     networks:
       - webnet
     depends_on:
-      - config-server
       - eureka-server
       - api-gateway
     environment:
@@ -162,7 +158,6 @@ services:
     networks:
       - webnet
     depends_on:
-      - config-server
       - eureka-server
       - api-gateway
     environment:

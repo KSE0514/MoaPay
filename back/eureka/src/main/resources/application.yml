@@ -1,9 +1,7 @@
-server:
-  port: 8761
-
 spring:
   application:
-    name: eureka
+    name: eureka-server
+
   config:
     import: "configserver:${SPRING_CLOUD_CONFIG_URI:http://localhost:8888}"
 
