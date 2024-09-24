@@ -48,11 +48,6 @@
         private BenefitType benefitType;
 
         @NotNull
-        @Enumerated(EnumType.STRING)
-        @Column(name = "benefit_unit")
-        private BenefitUnit benefitUnit;
-
-        @NotNull
         @Column(name = "benefit_value")
         private float benefitValue;
 

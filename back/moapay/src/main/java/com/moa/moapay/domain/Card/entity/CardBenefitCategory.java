@@ -19,8 +19,8 @@ import java.util.List;
 public class CardBenefitCategory {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long id;
+    @Column(name = "id", columnDefinition = "char(5)")
+    private String id;
 
     @NotNull
     @Column(name = "name")

@@ -35,7 +35,7 @@ public class CardProduct {
     @Column(name = "company_name")
     private String companyName;
 
-    @ColumnDefault("1000000000") // 기본값 어떻게 할까?
+    @ColumnDefault("9223372036854775807") // 기본값 어떻게 할까?
     @Column(name = "benefit_total_limit")
     private Long benefitTotalLimit;
 

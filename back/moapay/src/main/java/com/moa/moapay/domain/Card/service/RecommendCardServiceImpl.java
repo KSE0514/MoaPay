@@ -4,11 +4,11 @@ import com.moa.moapay.domain.Card.entity.CardBenefit;
 import com.moa.moapay.domain.Card.entity.CardBenefitCategory;
 import com.moa.moapay.domain.Card.entity.CardProduct;
 import com.moa.moapay.domain.Card.model.dto.CardBenefitDto;
-import com.moa.moapay.domain.Card.model.dto.RecommendCardRequestDto;
 import com.moa.moapay.domain.Card.model.dto.RecommendCardResponseDto;
 import com.moa.moapay.domain.Card.repository.CardBenefigCategoryRepository;
 import com.moa.moapay.domain.Card.repository.CardProductRepository;
 import com.moa.moapay.global.exception.BusinessException;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -28,17 +28,19 @@ public class RecommendCardServiceImpl implements RecommendCardService {
     /**
      * 카드 상품 추천 로직
      *
-     * @param recommendCardRequestDto
+     * @param request
      * @return
      */
     @Override
-    public List<RecommendCardResponseDto> recommendCard(RecommendCardRequestDto recommendCardRequestDto) {
+    public List<RecommendCardResponseDto> recommendCard(HttpServletRequest request) {
 
         // TODO: 1. 소비 패턴 분석 자료 가져오기
 
         // 필요 데이터 조회
         List<CardBenefitCategory> allCategory = benefigCategoryRepository.findAll();
         List<CardProduct> allProducts = productRepository.findAllWithBenefits();
+
+        log.info("allProducs size {}", allProducts.size());
 
         // 점수 계산 (여기에 소비패턴 분석정보 같이 넘겨주기)
         List<Optional<CardProduct>> recomendCards = calculateScore(allProducts);
@@ -65,7 +67,6 @@ public class RecommendCardServiceImpl implements RecommendCardService {
                                         .categoryName(categoryName)
                                         .categoryType(String.valueOf(benefit.getCategoryType()))
                                         .benefitDesc(benefit.getBenefitDesc())
-                                        .benefitUnit(benefit.getBenefitUnit())
                                         .benefitValue(benefit.getBenefitValue())
                                         .benefitType(benefit.getBenefitType())
                                         .benefitPoint(benefit.getBenefitPoint())
@@ -106,7 +107,7 @@ public class RecommendCardServiceImpl implements RecommendCardService {
             // 각 카드의 혜택별 점수 계산
             for (CardBenefit cardBenefit : cardProduct.getBenefits()) {
                 int benefitPoint = cardBenefit.getBenefitPoint();
-                // 가중치 계산 (필요 시 추가)
+                // TODO : 가중치 계산
                 score += benefitPoint;
             }
 
@@ -130,7 +131,7 @@ public class RecommendCardServiceImpl implements RecommendCardService {
         List<CardProduct> topCardProducts = sortedCardScores.stream()
                 .map(Map.Entry::getKey)
                 .collect(Collectors.toList())
-                .subList(0, Math.min(10, sortedCardScores.size()));
+                .subList(0, Math.min(9, sortedCardScores.size()));
 
         // 리스트에 Optional로 변환해서 추가
         cardProducts.addAll(topCardProducts.stream()

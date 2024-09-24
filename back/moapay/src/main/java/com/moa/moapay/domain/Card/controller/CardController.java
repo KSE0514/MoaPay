@@ -1,9 +1,9 @@
 package com.moa.moapay.domain.Card.controller;
 
-import com.moa.moapay.domain.Card.model.dto.RecommendCardRequestDto;
 import com.moa.moapay.domain.Card.model.dto.RecommendCardResponseDto;
 import com.moa.moapay.domain.Card.service.RecommendCardService;
 import com.moa.moapay.global.response.ResultResponse;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -17,18 +17,14 @@ import java.util.List;
 @RestController
 @RequiredArgsConstructor
 @Slf4j
-@RequestMapping("/card")
+@RequestMapping("/payment/card")
 public class CardController {
 
     private final RecommendCardService recommendCardService;
 
     @GetMapping("/recommend")
-    public ResponseEntity<ResultResponse> recommend() {
-
-        // 임시 request
-        RecommendCardRequestDto recommendCardRequestDto = new RecommendCardRequestDto();
-
-        List<RecommendCardResponseDto> recommendCardResponseDtos = recommendCardService.recommendCard(recommendCardRequestDto);
+    public ResponseEntity<ResultResponse> recommend(HttpServletRequest request) {
+        List<RecommendCardResponseDto> recommendCardResponseDtos = recommendCardService.recommendCard(request);
         ResultResponse resultResponse = ResultResponse.of(HttpStatus.OK, "카드 상품 추천", recommendCardResponseDtos);
         return ResponseEntity.status(resultResponse.getStatus()).body(resultResponse);
     }
