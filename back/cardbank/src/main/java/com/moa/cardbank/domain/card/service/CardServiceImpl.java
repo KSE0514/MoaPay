@@ -309,7 +309,7 @@ public class CardServiceImpl implements CardService {
         // [4] 사용 혜택량 변경
         // 환불한만큼 사용 혜택 현황을 돌려놓는다. < 일단은 그냥 진행...
         // 단, 현재 혜택한도를 넘는 이상으로 돌려주지는 않는다
-        // todo : 할인내역 기록해서 그 값 기반으로 사용 혜택량(my_card) 변동시키기
+        // todo : 할인내역 기록해서 그 값 기반으로 사용 혜택량(my_card), 카드 총 사용량 변동시키기
         return CancelPayResponseDto.builder()
                 .amount(newPaymentLog.getAmount())
                 .benefitBalance(0)

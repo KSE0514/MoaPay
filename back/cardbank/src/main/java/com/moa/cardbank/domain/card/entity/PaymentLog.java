@@ -6,6 +6,8 @@ import com.moa.cardbank.domain.store.entity.Merchant;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import lombok.*;
+import org.hibernate.annotations.ColumnDefault;
+import org.hibernate.annotations.DynamicInsert;
 
 import java.time.LocalDateTime;
 import java.util.UUID;
@@ -13,6 +15,7 @@ import java.util.UUID;
 @Entity
 @Table(name = "payment_log")
 @Getter
+@DynamicInsert
 @Builder(toBuilder = true)
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
@@ -29,6 +32,10 @@ public class PaymentLog {
     @NotNull
     @Column(name = "amount")
     private long amount;
+
+    @ColumnDefault("0")
+    @Column(name = "discount_amount")
+    private Long discountAmount;
 
     @NotNull
     @Enumerated(EnumType.STRING)
@@ -51,7 +58,6 @@ public class PaymentLog {
     @NotNull
     @Column(name = "merchant_id")
     private long merchantId;
-
 
     @NotNull
     @Column(name = "create_time")
