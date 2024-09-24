@@ -8,7 +8,7 @@ import {
 const Payment = () => {
   return (
     <Wrapper>
-
+      
     </Wrapper>
   )
 }
