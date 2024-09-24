@@ -6,6 +6,9 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.BatchSize;
+
+import java.util.List;
 
 @Entity
 @Getter
@@ -22,4 +25,5 @@ public class CardBenefitCategory {
     @NotNull
     @Column(name = "name")
     private String name;
+
 }

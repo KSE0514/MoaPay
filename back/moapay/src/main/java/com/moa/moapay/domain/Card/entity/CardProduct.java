@@ -8,6 +8,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.ColumnDefault;
 
+import java.util.List;
 import java.util.UUID;
 
 @Entity
@@ -56,5 +57,9 @@ public class CardProduct {
 
     @Column(name = "image_url")
     private String imageUrl;
+
+    // 혜택과의 관계 설정 (CardBenefit과의 일대다 관계)
+    @OneToMany(mappedBy = "cardProduct", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    private List<CardBenefit> benefits;
 
 }

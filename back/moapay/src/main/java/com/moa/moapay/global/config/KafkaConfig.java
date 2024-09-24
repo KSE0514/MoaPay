@@ -1,4 +1,4 @@
-package com.moa.moapay.config;
+package com.moa.moapay.global.config;
 
 import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.common.serialization.StringDeserializer;
