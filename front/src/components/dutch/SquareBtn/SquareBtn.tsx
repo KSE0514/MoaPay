@@ -2,7 +2,13 @@ import {
   Btn
 } from './SquareBtn.styles'
 
-const SquareBtn = ({text, color, onClick}) => {
+interface SquareBtnProps {
+  text: string;
+  color: string;
+  onClick: () => void;
+}
+
+const SquareBtn = ({text, color, onClick}:SquareBtnProps) => {
   return (
     <Btn
       style={{

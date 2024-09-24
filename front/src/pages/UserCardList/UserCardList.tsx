@@ -13,7 +13,6 @@ import {
   Card,
   CardBackground,
   Btn,
-  Bottom,
 } from "./UserCardList.styles";
 
 const UserCardList = () => {

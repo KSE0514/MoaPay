@@ -25,7 +25,7 @@ const Dutchpay = () => {
   const [memberSetComplete, setMemberSetComplete] = useState(false) // 참여자수 설정 완료 여부 판단용
 
   // 참여자 수 바인딩
-  const onChangeMember = (e) => {
+  const onChangeMember = (e: React.ChangeEvent<HTMLInputElement>) => {
     console.log("확인용",e.target.value)
     setMemberNum(e.target.value)
   }
@@ -131,7 +131,7 @@ const Dutchpay = () => {
       <Main>
         {/* 3. 더치페이하는 상품 정보 */}
         {/* 2. 참여자 목록 컴포넌트_2단계인지 판단 기준: memberSetComplete === true */}
-        {memberSetComplete&&<Participant maxNum={memberNum} />}
+        {memberSetComplete&&<Participant maxNum={Number(memberNum)} />}
       </Main>
 
       {/* 배경 도형 */}
