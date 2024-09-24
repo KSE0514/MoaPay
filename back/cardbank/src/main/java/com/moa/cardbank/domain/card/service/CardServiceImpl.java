@@ -1,6 +1,8 @@
 package com.moa.cardbank.domain.card.service;
 
 import com.moa.cardbank.domain.account.entity.Account;
+import com.moa.cardbank.domain.account.model.dto.RefundByCardDto;
+import com.moa.cardbank.domain.account.model.dto.RefundEarningDto;
 import com.moa.cardbank.domain.account.model.dto.WithdrawByDebitCardDto;
 import com.moa.cardbank.domain.account.repository.AccountRepository;
 import com.moa.cardbank.domain.account.service.AccountService;
@@ -234,12 +236,84 @@ public class CardServiceImpl implements CardService {
         }
 
         return ExecutePayResponseDto.builder()
+                .merchantName(merchant.getName())
                 .status(PayStatus.APPROVED)
                 .paymentId(paymentLog.getUuid())
                 .amount(paymentLog.getAmount())
                 .benefitActivated(myCard.getPerformanceFlag())
                 .benefitBalance(totalDiscount + totalPoint + totalCashback)
                 .remainedBenefit(benefitTotalLimit - newBenefitUsage)
+                .build();
+    }
+
+    @Override
+    @Transactional
+    public CancelPayResponseDto cancelPay(CancelPayRequestDto dto) {
+        // [1] 요청 카드 정보가 유효한지 검사
+        PaymentLog paymentLog = paymentLogRepository.findByUuid(dto.getPaymentId())
+                .orElseThrow(() -> new BusinessException(HttpStatus.BAD_REQUEST, "유효하지 않은 입력입니다."));
+        if(paymentLog.getStatus() == ProcessingStatus.CANCELED) {
+            throw new BusinessException(HttpStatus.BAD_REQUEST, "이미 취소된 결제입니다.");
+        }
+        MyCard myCard = myCardRepository.findByUuid(dto.getCardId())
+                .orElseThrow(() -> new BusinessException(HttpStatus.BAD_REQUEST, "유효하지 않은 입력입니다."));
+        if(paymentLog.getCardId() != myCard.getId()) {
+            throw new BusinessException(HttpStatus.BAD_REQUEST, "유효하지 않은 정보입니다.");
+        }
+        if(!myCard.getCardNumber().equals(dto.getCardNumber()) || !myCard.getCvc().equals(dto.getCvc())) {
+            // 카드 정보가 틀린 경우, 결제 취소 불가
+            throw new BusinessException(HttpStatus.BAD_REQUEST, "유효하지 않은 카드 정보입니다.");
+        }
+
+        // 정보가 유효함을 확인했다면 결제 취소 진행
+        // [2] 환불 처리
+        // 이미 정산된 값이라면, 환불 처리 필요
+        UUID accountId = myCard.getAccount().getUuid();
+        String merchantName = paymentLog.getMerchant().getName();
+        if(paymentLog.getStatus() == ProcessingStatus.SETTLED && paymentLog.getAmount() > 0) {
+            log.info("payment status : settled -> processing refund...");
+            RefundByCardDto refundDto = RefundByCardDto.builder()
+                    .accountId(accountId)
+                    .value(paymentLog.getAmount())
+                    .memo(merchantName)
+                    .build();
+            accountService.RefundByCard(refundDto);
+        }
+        // [3] 결제 무효화
+        // 적립과 결제의 status를 변경
+        List<EarningLog> earningLogList = earningLogRepository.findByPaymentLogId(paymentLog.getId());
+        for(EarningLog earningLog : earningLogList) {
+            if(earningLog.getStatus() == ProcessingStatus.SETTLED) {
+                // 정산된 적립금이나 캐시백이었다면, 다시 뺏어갈 필요가 있다
+                String comment;
+                if(earningLog.getType() == EarningType.POINT) {
+                    comment = "포인트 ";
+                } else comment = "캐시백 ";
+                RefundEarningDto earningDto = RefundEarningDto.builder()
+                        .accountId(accountId)
+                        .value(earningLog.getAmount())
+                        .memo(comment+"취소")
+                        .build();
+                accountService.RefundEarning(earningDto);
+            }
+            EarningLog newEarningLog = earningLog.toBuilder()
+                    .status(ProcessingStatus.CANCELED)
+                    .build();
+            earningLogRepository.save(newEarningLog);
+        }
+        PaymentLog newPaymentLog = paymentLog.toBuilder()
+                .status(ProcessingStatus.CANCELED)
+                .build();
+        paymentLogRepository.save(newPaymentLog);
+
+        // [4] 사용 혜택량 변경
+        // 환불한만큼 사용 혜택 현황을 돌려놓는다. < 일단은 그냥 진행...
+        // 단, 현재 혜택한도를 넘는 이상으로 돌려주지는 않는다
+        // todo : 할인내역 기록해서 그 값 기반으로 사용 혜택량(my_card) 변동시키기
+        return CancelPayResponseDto.builder()
+                .amount(newPaymentLog.getAmount())
+                .benefitBalance(0)
+                .remainedBenefit(myCard.getProduct().getBenefitTotalLimit()-myCard.getBenefitUsage())
                 .build();
     }
 

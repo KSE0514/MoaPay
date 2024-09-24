@@ -49,10 +49,6 @@ public class PaymentLog {
     @Column(name = "category_id", columnDefinition = "char(5)")
     private String categoryId;
 
-    @NotNull
-    @Column(name = "category_name")
-    private String categoryName;
-
     @Column(name = "transaction_date")
     private LocalDateTime transactionDate;
 
@@ -70,6 +66,7 @@ public class PaymentLog {
 
     @PrePersist
     private void prePersist() {
+        this.uuid = Generators.timeBasedEpochGenerator().generate();
         LocalDateTime now = LocalDateTime.now();
         this.createTime = now;
         this.updateTime = now;
@@ -78,7 +75,6 @@ public class PaymentLog {
     @PreUpdate
     private void preUpdate() {
         this.updateTime = LocalDateTime.now();
-        this.uuid = Generators.timeBasedEpochGenerator().generate();
     }
 
 }

@@ -30,11 +30,21 @@ public class CardController {
         return ResponseEntity.status(resultResponse.getStatus()).body(resultResponse);
     }
 
+    /* 결제 관련 API */
+
     @PostMapping("/pay")
     public ResponseEntity<ResultResponse> executePay(@RequestBody ExecutePayRequestDto dto) {
         log.info("payment request : {}", dto.getCardNumber());
         ExecutePayResponseDto responseDto = cardService.executePay(dto);
         ResultResponse resultResponse = ResultResponse.of(HttpStatus.OK, "결제 처리 완료", responseDto);
+        return ResponseEntity.status(resultResponse.getStatus()).body(resultResponse);
+    }
+
+    @PostMapping("/cancel")
+    public ResponseEntity<ResultResponse> canclePay(@RequestBody CancelPayRequestDto dto) {
+        log.info("cancel payment : {}", dto.getPaymentId());
+        CancelPayResponseDto responseDto  = cardService.cancelPay(dto);
+        ResultResponse resultResponse = ResultResponse.of(HttpStatus.OK, "결제 취소 완료", responseDto);
         return ResponseEntity.status(resultResponse.getStatus()).body(resultResponse);
     }
 

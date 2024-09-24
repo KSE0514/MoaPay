@@ -10,6 +10,7 @@ import java.util.UUID;
 @NoArgsConstructor
 @AllArgsConstructor
 public class ExecutePayResponseDto {
+    private String merchantName;
     private PayStatus status;
     private UUID paymentId;
     private long amount;

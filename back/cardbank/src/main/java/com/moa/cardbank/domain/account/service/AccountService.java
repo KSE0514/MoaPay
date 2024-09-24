@@ -7,4 +7,6 @@ public interface AccountService {
     DepositAccountResponseDto depositAccount(DepositAccountRequestDto dto);
     WithdrawAccountResponseDto withdrawAccount(WithdrawAccountRequestDto dto);
     boolean WithdrawByDebitCard(WithdrawByDebitCardDto dto);
+    boolean RefundByCard(RefundByCardDto dto);
+    boolean RefundEarning(RefundEarningDto dto);
 }

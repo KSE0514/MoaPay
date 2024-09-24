@@ -135,4 +135,47 @@ public class AccountServiceImpl implements AccountService {
         accountLogRepository.save(accountLog);
         return true;
     }
+
+    @Override
+    public boolean RefundByCard(RefundByCardDto dto) {
+        // 입금 처리를 위한 정보 불러오기
+        Account account = accountRepository.findByUuid(dto.getAccountId())
+                .orElseThrow(() -> new BusinessException(HttpStatus.BAD_REQUEST, "유효하지 않은 정보입니다."));
+        if(dto.getValue() <= 0) {
+            throw new BusinessException(HttpStatus.BAD_REQUEST, "유효하지 않은 정보입니다.");
+        }
+        long newBalance = account.getBalance() + dto.getValue();
+        Account newAccount = account.toBuilder()
+                .balance(newBalance)
+                .build();
+        accountRepository.save(newAccount);
+        AccountLog accountLog = AccountLog.builder()
+                .accountId(newAccount.getId())
+                .type(AccountLogType.DEPOSIT)
+                .value(dto.getValue())
+                .memo(dto.getMemo())
+                .build();
+        accountLogRepository.save(accountLog);
+        return true;
+    }
+
+    @Override
+    public boolean RefundEarning(RefundEarningDto dto) {
+        Account account = accountRepository.findByUuid(dto.getAccountId())
+                .orElseThrow(() -> new BusinessException(HttpStatus.BAD_REQUEST, "유효하지 않은 정보입니다."));
+        // 포인트, 캐시백 환불은 마이너스 통장을 만들 수 있음...
+        long newBalance = account.getBalance() - dto.getValue();
+        Account newAccount = account.toBuilder()
+                .balance(newBalance)
+                .build();
+        accountRepository.save(newAccount);
+        AccountLog accountLog = AccountLog.builder()
+                .accountId(newAccount.getId())
+                .type(AccountLogType.WITHDRAWAL)
+                .value(dto.getValue())
+                .memo(dto.getMemo())
+                .build();
+        accountLogRepository.save(accountLog);
+        return true;
+    }
 }

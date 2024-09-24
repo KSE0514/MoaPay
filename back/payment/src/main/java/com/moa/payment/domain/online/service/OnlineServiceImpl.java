@@ -1,8 +1,11 @@
 package com.moa.payment.domain.online.service;
 
+import com.moa.payment.domain.online.entity.PaymentLog;
 import com.moa.payment.domain.online.model.CardSelectionType;
+import com.moa.payment.domain.online.model.Status;
 import com.moa.payment.domain.online.model.dto.*;
 import com.moa.payment.domain.online.repository.OnlinePaymentRedisRepository;
+import com.moa.payment.domain.online.repository.PaymentLogRepository;
 import com.moa.payment.global.exception.BusinessException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -10,6 +13,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.client.RestClient;
 
 import java.util.*;
@@ -19,6 +23,7 @@ import java.util.*;
 @RequiredArgsConstructor
 public class OnlineServiceImpl implements OnlineService {
     private final OnlinePaymentRedisRepository redisRepository;
+    private final PaymentLogRepository paymentLogRepository;
     private final RestClient restClient;
     @Override
     public GetOnlineQRCodeResponseDto getOnlineQRcode(GetOnlineQRCodeRequestDto dto) {
@@ -55,6 +60,7 @@ public class OnlineServiceImpl implements OnlineService {
     }
 
     @Override
+    @Transactional
     public void ExecuteOnlinePayment(ExecuteOnlinePaymentRequestDto dto) {
         // 카드 선택 유형에 따라 다르게 결제 방식을 정함
         List<PaymentCardInfoDto> paymentInfoList = new ArrayList<>();
@@ -67,6 +73,7 @@ public class OnlineServiceImpl implements OnlineService {
 //            // 추후 구현
 //        }
         List<PaymentCardInfoDto> successedPaymentInfoList = new ArrayList<>(); // 성공하는 경우, arraylist로 새롭게 넣는다. 추후 결제 실패 대응을 위함.
+        List<UUID> successedPaymentIdList = new ArrayList<>();
         for(PaymentCardInfoDto paymentInfo : paymentInfoList) {
             // 각 카드별로 각각 결제요청을 전송
             // uri : 일단은 하드코딩
@@ -82,12 +89,15 @@ public class OnlineServiceImpl implements OnlineService {
                     .body(paymentRequestBody)
                     .retrieve()
                     .toEntity(Map.class);
-            Map<String, String> paymentResponseBody = (Map<String, String>) paymentResponse.getBody().get("data");
-            if(!paymentResponse.getStatusCode().is2xxSuccessful() || !paymentResponseBody.get("status").equals("APPROVED")) {
+            Map<String, Object> paymentResponseBody = (Map<String, Object>) paymentResponse.getBody().get("data");
+            if(!paymentResponse.getStatusCode().is2xxSuccessful() || !((String) paymentResponseBody.get("status")).equals("APPROVED")) {
                 // 결제 중 오류가 발생했거나, 한도초과이거나, 잔액부족으로 결제가 실패했을 경우 결제를 중지한다
                 // 추후 이미 진행한 결제를 취소하는 매커니즘 추가 예정
+
+                log.info("status : {}", (String)paymentResponseBody.get("status"));
+
                 // todo : 결제 중 에러가 발생하는 경우 결제 취소하도록 변경
-                log.info("status : {}", paymentResponseBody.get("status"));
+
                 throw new BusinessException(HttpStatus.BAD_REQUEST, "결제에 실패했습니다.");
             }
             // 결제에 성공한 경우, successList에 넣음
@@ -96,6 +106,19 @@ public class OnlineServiceImpl implements OnlineService {
                     paymentResponseBody.get("status"), paymentResponseBody.get("amount"), paymentResponseBody.get("benefitActivated"),
                     paymentResponseBody.get("benefitBalance"), paymentResponseBody.get("remainedBenefit"));
             successedPaymentInfoList.add(paymentInfo);
+            log.info("successed payment ID : {}", paymentResponseBody.get("paymentId"));
+            successedPaymentIdList.add(UUID.fromString((String) paymentResponseBody.get("paymentId")));
+            // 이후 save 시도
+            PaymentLog paymentLog = PaymentLog.builder()
+                    .cardId(paymentInfo.getCardId())
+                    .amount(((Integer)paymentResponseBody.get("amount")).longValue())
+                    .status(Status.APPROVED)
+                    .merchantId(dto.getMerchantId())
+                    .merchantName((String)paymentResponseBody.get("merchantName"))
+                    .categoryId(dto.getCategoryId())
+                    .benefitBalance(((Integer)paymentResponseBody.get("benefitBalance")).longValue())
+                    .build();
+            paymentLogRepository.save(paymentLog);
         }
     }
 }
