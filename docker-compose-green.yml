@@ -11,15 +11,6 @@ services:
       - webnet
     restart: always
 
-  config-server:
-    image: config-server
-    container_name: config-server
-    ports:
-      - "8888:8080"
-    networks:
-      - webnet
-    restart: always
-
   # eureka, api-gateway는 blue-green 전략을 사용하지 않는다.
   eureka-server:
     build:
