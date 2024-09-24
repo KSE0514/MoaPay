@@ -38,6 +38,7 @@ public class CardServiceImpl implements CardService {
     private final AccountRepository accountRepository;
     private final EarningLogRepository earningLogRepository;
     private final CardProductRepository cardProductRepository;
+    private final CardProductQueryRepository cardProductQueryRepository;
     private final CardBenefitRepository cardBenefitRepository;
     private final PaymentQueryRepository paymentQueryRepository;
 
@@ -202,6 +203,7 @@ public class CardServiceImpl implements CardService {
                 .merchantId(merchant.getId())
                 .amount(finalAmount)
                 .status(paymentStatus)
+                .discountAmount(totalDiscount)
                 .build();
 
         paymentLogRepository.save(paymentLog);
@@ -282,7 +284,9 @@ public class CardServiceImpl implements CardService {
         // [3] 결제 무효화
         // 적립과 결제의 status를 변경
         List<EarningLog> earningLogList = earningLogRepository.findByPaymentLogId(paymentLog.getId());
+        long totalBenefit = 0; // 혜택값 복구를 위해 전체 혜택값 정산
         for(EarningLog earningLog : earningLogList) {
+            totalBenefit += earningLog.getAmount();
             if(earningLog.getStatus() == ProcessingStatus.SETTLED) {
                 // 정산된 적립금이나 캐시백이었다면, 다시 뺏어갈 필요가 있다
                 String comment;
@@ -301,6 +305,7 @@ public class CardServiceImpl implements CardService {
                     .build();
             earningLogRepository.save(newEarningLog);
         }
+        totalBenefit += paymentLog.getDiscountAmount(); // 할인값까지 종합
         PaymentLog newPaymentLog = paymentLog.toBuilder()
                 .status(ProcessingStatus.CANCELED)
                 .build();
@@ -310,10 +315,18 @@ public class CardServiceImpl implements CardService {
         // 환불한만큼 사용 혜택 현황을 돌려놓는다. < 일단은 그냥 진행...
         // 단, 현재 혜택한도를 넘는 이상으로 돌려주지는 않는다
         // todo : 할인내역 기록해서 그 값 기반으로 사용 혜택량(my_card), 카드 총 사용량 변동시키기
+        long newAmount = myCard.getAmount() - newPaymentLog.getAmount(); // 사용금액은 취소된 결제금액만큼 차감
+        long newBenefitUsage = Math.max(myCard.getBenefitUsage() - totalBenefit, 0); // 혜택 사용량도 차감해주나 0 미만으로 차감해주지는 않음
+        MyCard newMyCard = myCard.toBuilder()
+                .amount(newAmount)
+                .benefitUsage(newBenefitUsage)
+                .build();
+        myCardRepository.save(newMyCard);
+
         return CancelPayResponseDto.builder()
                 .amount(newPaymentLog.getAmount())
-                .benefitBalance(0)
-                .remainedBenefit(myCard.getProduct().getBenefitTotalLimit()-myCard.getBenefitUsage())
+                .benefitBalance(totalBenefit)
+                .remainedBenefit(cardProductQueryRepository.getBenefitTotalLimitById(newMyCard.getProductId())-newMyCard.getBenefitUsage())
                 .build();
     }
 
