@@ -1,6 +1,8 @@
 package com.moa.moapay.domain.Card.controller;
 
-import com.moa.moapay.domain.Card.model.dto.RecommendCardResponseDto;
+import com.moa.moapay.domain.Card.model.dto.CardInfoResponseDto;
+import com.moa.moapay.domain.Card.model.dto.MyCardInfoDto;
+import com.moa.moapay.domain.Card.service.MyCardService;
 import com.moa.moapay.domain.Card.service.RecommendCardService;
 import com.moa.moapay.global.response.ResultResponse;
 import jakarta.servlet.http.HttpServletRequest;
@@ -21,11 +23,19 @@ import java.util.List;
 public class CardController {
 
     private final RecommendCardService recommendCardService;
+    private final MyCardService myCardService;
 
     @GetMapping("/recommend")
     public ResponseEntity<ResultResponse> recommend(HttpServletRequest request) {
-        List<RecommendCardResponseDto> recommendCardResponseDtos = recommendCardService.recommendCard(request);
+        List<CardInfoResponseDto> recommendCardResponseDtos = recommendCardService.recommendCard(request);
         ResultResponse resultResponse = ResultResponse.of(HttpStatus.OK, "카드 상품 추천", recommendCardResponseDtos);
+        return ResponseEntity.status(resultResponse.getStatus()).body(resultResponse);
+    }
+
+    @GetMapping("/mycard")
+    public ResponseEntity<ResultResponse> mycard(HttpServletRequest request) {
+        List<MyCardInfoDto> myCardInfo = myCardService.getMyCardInfo(request);
+        ResultResponse resultResponse = ResultResponse.of(HttpStatus.OK, "나의 카드 조회", myCardInfo);
         return ResponseEntity.status(resultResponse.getStatus()).body(resultResponse);
     }
 }
