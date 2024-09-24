@@ -4,13 +4,16 @@ import { VitePWA } from "vite-plugin-pwa";
 import path from "path";
 
 export default defineConfig({
+  define: {
+    "process.env.VITE_BASE_URL": JSON.stringify("http://localhost:8765"),
+  },
   plugins: [
     react(),
     VitePWA({
       registerType: "autoUpdate",
       manifest: {
-        name: "onDo",
-        short_name: "onDo",
+        name: "MoAPay",
+        short_name: "MoAPay",
         description: "My awesome Vite-powered PWA!",
         theme_color: "#ffffff",
         icons: [

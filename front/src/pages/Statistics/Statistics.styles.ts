@@ -4,6 +4,7 @@ import "../../assets/image/secondWave.png";
 export const Wrapper = styled.div`
   display: flex;
   flex-direction: column;
+  overflow-y: scroll;
   width: 100%;
   height: 100%;
   padding: 0px 20px var(--padding-bottom) 20px;
@@ -11,7 +12,7 @@ export const Wrapper = styled.div`
 `;
 
 export const Top = styled.div`
-  height: 400px;
+  height: 350px;
   margin-top: 10px;
   * {
     position: relative;
@@ -32,6 +33,7 @@ export const Bottom = styled.div`
 export const Month = styled.div`
   z-index: 20;
   padding-top: 20px;
+  padding-left: 15px;
   font-family: var(--day-font);
   @keyframes binggle {
     0% {
@@ -63,7 +65,7 @@ export const Month = styled.div`
   }
   .dropdown-btn {
     position: relative;
-    font-size: 40px;
+    font-size: 25px;
     display: flex;
     align-items: center;
     p {
@@ -79,7 +81,7 @@ export const Month = styled.div`
     width: fit-content;
     border-radius: 5px;
     background-color: white;
-    font-size: 40px;
+    font-size: 25px;
     max-height: 0;
     overflow: hidden;
     li {

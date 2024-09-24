@@ -18,6 +18,11 @@ import Benefits from "../pages/Statistics/Benefits/Benefits.tsx";
 import Consumption from "../pages/Statistics/Consumption/Consumption.tsx";
 import PaymentRecommendation from "../pages/PaymentRecommendation/PaymentRecommendation.tsx";
 import UserCardDetail from "../pages/UserCardDetail/UserCardDetail.tsx";
+import SettingBiometricsLogin from "../pages/SettingBiometricsLogin/SettingBiometricsLogin.tsx";
+import UserCardList from "../pages/UserCardList/UserCardList.tsx";
+import Dutchpay from "../pages/Dutchpay/Dutchpay.tsx";
+import DutchInvite from "../pages/DutchInvite/DutchInvite.tsx";
+import DutchParticipation from "../pages/DutchParticipation/DutchParticipation.tsx";
 const router = createBrowserRouter([
   {
     element: <AppAuthHandler />, // 최상위 레이아웃으로 AppAuthHandler 설정
@@ -70,7 +75,7 @@ const router = createBrowserRouter([
           },
           {
             path: PATH.USER_CARD_LIST,
-            element: <UserCardDetail />,
+            element: <UserCardList />,
           },
           {
             path: PATH.USER_CARD_DETAIL,
@@ -87,7 +92,22 @@ const router = createBrowserRouter([
         element: <CreateAccount />,
       },
       { path: PATH.PASSWORD_LOGIN, element: <PasswordLogin /> },
-      {},
+      {
+        path: PATH.SETTING_BIOMETRICS_LOGIN,
+        element: <SettingBiometricsLogin />,
+      },
+      {
+        path: PATH.DUTCHPAY,
+        element: <Dutchpay />,
+      },
+      {
+        path: PATH.DUTCHINVITE,
+        element: <DutchInvite />,
+      },
+      {
+        path: PATH.DUTCHPARTICIPATION,
+        element: <DutchParticipation />,
+      },
     ],
   },
 ]);
