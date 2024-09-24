@@ -292,7 +292,7 @@ public class CardServiceImpl implements CardService {
                 RefundEarningDto earningDto = RefundEarningDto.builder()
                         .accountId(accountId)
                         .value(earningLog.getAmount())
-                        .memo(comment+"취소")
+                        .memo(comment + "취소")
                         .build();
                 accountService.RefundEarning(earningDto);
             }
@@ -325,6 +325,10 @@ public class CardServiceImpl implements CardService {
                 .orElseThrow(() -> new BusinessException(HttpStatus.BAD_REQUEST, "유효하지 않은 입력입니다."));
         CardProduct cardProduct = cardProductRepository.findByUuid(dto.getCardProductId())
                 .orElseThrow(() -> new BusinessException(HttpStatus.BAD_REQUEST, "유효하지 않은 입력입니다."));
+        // 카드 한도는 최소 1만원부터 시작하도록 함
+        if(dto.getCardLimit() < 10000) {
+            throw new BusinessException(HttpStatus.BAD_REQUEST, "한도가 너무 작습니다.");
+        }
         // 카드번호와 cvc는 무작위 생성
         // 카드 번호는 중복검사 이후 결정한다
         String cardNumber;
@@ -340,7 +344,7 @@ public class CardServiceImpl implements CardService {
                 .cardNumber(cardNumber)
                 .cvc(cvc)
                 .performanceFlag(false)
-                .cardLimit(1000000) // 임시로 임의의 값 지정
+                .cardLimit(dto.getCardLimit())
                 .amount(0)
                 .benefitUsage(0)
                 .memberId(member.getId())
