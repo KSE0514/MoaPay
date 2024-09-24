@@ -11,6 +11,7 @@ import {
   Price,
   Card,
   CardInfo,
+  Bottom,
   Btn,
 } from "./Payment.styles"
 
@@ -58,9 +59,9 @@ const Payment = ({onClick}: PaymentProps) => {
           <img
             onLoad={(event) => handleImageLoad(event)} // 이미지가 로드되면 handleImageLoad 호출
             style={{
-              // position: "absolute",
-              width: rotate ? "57px" : "90px", // 회전 여부에 따라 width와 height 변경
-              height: rotate ? "90px" : "57px",
+              // position: "absolute", 19 30 38 60 9.5 15
+              width: rotate ? "47.5px" : "75px", // 회전 여부에 따라 width와 height 변경
+              height: rotate ? "75px" : "47.5px",
               transform: rotate ? "rotate(-90deg)" : "none", // 회전시키기
               marginLeft: rotate ? "17.5px" : "0",
             }}
@@ -70,9 +71,11 @@ const Payment = ({onClick}: PaymentProps) => {
          <div>다른카드 선택하기</div>
       </Card>
 
-      {/* 결제 금액 넘겨 받아야 함 */}
-      <Btn onClick={onClick}>7,000원 결제하기</Btn> 
-      {/* text={'7,000원 결제하기'} color={'white'} onClick={onClick} /> */}
+      <Bottom>
+        {/* 결제 금액 넘겨 받아야 함 */}
+        <Btn onClick={onClick}>7,000원 결제하기</Btn> 
+        {/* text={'7,000원 결제하기'} color={'white'} onClick={onClick} /> */}
+      </Bottom>
 
     </Wrapper>
   )
