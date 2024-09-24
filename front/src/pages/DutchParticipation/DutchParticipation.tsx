@@ -46,11 +46,18 @@ const DutchParticipation = () => {
   }, [timeLeft]);
 
   // 남은 시간을 분과 초로 변환하는 함수
-  const formatTime = (time) => {
+  const formatTime = (time:number) => {
     const minutes = Math.floor(time / 60);
     const seconds = time % 60;
     return `${minutes < 10 ? `0${minutes}` : minutes}:${seconds < 10 ? `0${seconds}` : seconds}`;
   };
+
+  // 결제 버튼 클릭
+  const onClickPaymentBtn = () => {
+    // 결제하는 api 작성
+
+    setProcess(3); // 다음 화면으로 전환
+  }
 
   return (
     <Wrapper>
@@ -156,13 +163,13 @@ const DutchParticipation = () => {
 
       <Main
         style={{
-          backgroundColor: process === 2 ? "#B6BCFF" : "none"
+          backgroundColor: process === 2 ? "#B6BCFF" : "rgba(255, 255, 255, 0.65);"
         }}
       >
         {/* 3. 더치페이하는 상품 정보 */}
         {/* 2. 참여자 목록 컴포넌트_2단계인지 판단 기준: memberSetComplete === true */}
         {process <2 ? <Participant /> : null}
-        {process === 2? <Payment /> : null}
+        {process === 2? <Payment onClick={onClickPaymentBtn} /> : null}
         {process === 3? (
           <DutchWaiting>
             <div>

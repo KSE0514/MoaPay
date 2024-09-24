@@ -5,7 +5,12 @@ import {
 
 import testImg from './../../../assets/image/testImg.png'
 
-const Product = ({productName, productUrl}) => {
+interface ProductProps {
+  productName: string;
+  productUrl: string;
+}
+
+const Product = ({productName, productUrl}:ProductProps) => {
   return (
     <ProductCard onClick={() => {window.open(productUrl)}}>
       {/* 상품 미리보기 사진 */}
