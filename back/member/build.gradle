@@ -36,8 +36,11 @@ dependencies {
 	implementation 'com.fasterxml.uuid:java-uuid-generator:4.0.1'
 	implementation 'net.nurigo:sdk:4.3.0'
 	implementation 'org.springframework.boot:spring-boot-starter-data-redis'
-	implementation 'com.yubico:webauthn-server-core:1.12.1'
-
+	//implementation 'com.yubico:webauthn-server-core:1.12.1'
+	//implementation 'com.yubico:webauthn-server-core:1.18.0'
+	implementation 'com.yubico:webauthn-server-core:2.0.0'
+	implementation 'com.yubico:webauthn-server-attestation:2.0.0'
+	implementation 'com.yubico:yubico-util:2.0.0'
 
 	compileOnly 'org.projectlombok:lombok'
 	developmentOnly 'org.springframework.boot:spring-boot-devtools'

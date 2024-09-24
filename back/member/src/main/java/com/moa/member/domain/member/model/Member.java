@@ -79,7 +79,7 @@ public class Member {
 	@NotNull
 	@Column(name = "public_key", nullable = true)
 	private String publicKey; //공개키
-	
+
 	@NotNull
 	@Column(name = "credential_id", nullable = true)
 	private String credentialId; //WebAuthn 장치의 Credential ID
@@ -100,6 +100,14 @@ public class Member {
 	@PreUpdate
 	private void preUpdate() {
 		this.updateTime = LocalDateTime.now();
+	}
+
+	// Builder를 통한 공개키 및 관련 정보 설정 메서드 추가
+	public static MemberBuilder builderWithPublicKey(String publicKey, String credentialId, byte[] authenticatorData) {
+		return Member.builder()
+			.publicKey(publicKey)
+			.credentialId(credentialId)
+			.authenticatorData(authenticatorData);
 	}
 
 
