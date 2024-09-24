@@ -124,9 +124,9 @@ const Participant = ({maxNum=null}: ParticipantProps) => {
       </PartiList>
       <Btn>
         {dutchStart? 
-          <SquareBtn text={'결제 요청하기'} color={'rgba(255, 255, 255, 0.7)'} onClick={null}/>
+          <SquareBtn text={'결제 요청하기'} color={'rgba(255, 255, 255, 0.7)'} onClick={() => {}} />
         :
-          <SquareBtn text={'더치페이 시작'} color={null} onClick={onClickDutchStart} />
+          <SquareBtn text={'더치페이 시작'} color='rgba(135, 72, 243, 0.74)' onClick={onClickDutchStart} />
         }
       </Btn>
     </Wrapper>
