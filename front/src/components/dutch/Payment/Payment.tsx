@@ -25,7 +25,11 @@ const testMainCard2 = {
   name: "올바른 FLEX 카드"
 }
 
-const Payment = ({onClick}) => {
+interface PaymentProps {
+  onClick: () => void;
+}
+
+const Payment = ({onClick}: PaymentProps) => {
   const [rotate, setRotate] = useState(false);
 
   // 카드 가로, 세로 길이에 따른 회전 여부 판단 핸들러
@@ -67,7 +71,7 @@ const Payment = ({onClick}) => {
       </Card>
 
       {/* 결제 금액 넘겨 받아야 함 */}
-      <Btn>7,000원 결제하기</Btn> 
+      <Btn onClick={onClick}>7,000원 결제하기</Btn> 
       {/* text={'7,000원 결제하기'} color={'white'} onClick={onClick} /> */}
 
     </Wrapper>
