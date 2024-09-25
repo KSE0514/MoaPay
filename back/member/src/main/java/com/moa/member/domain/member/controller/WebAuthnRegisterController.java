@@ -2,8 +2,10 @@ package com.moa.member.domain.member.controller;
 
 import java.security.SecureRandom;
 import java.util.Arrays;
+import java.util.Base64;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 import java.util.UUID;
 
 import org.springframework.http.HttpStatus;
@@ -126,8 +128,12 @@ public class WebAuthnRegisterController{
 			Map<String, Object> response = (Map<String, Object>) responseData.get("response");
 
 			// AuthenticatorResponse는 별도의 형태로 변환해야 함 (AttestationObject와 ClientDataJSON 필요)
-			ByteArray attestationObject = new ByteArray((byte[]) response.get("attestationObject"));
-			ByteArray clientDataJSON = new ByteArray((byte[]) response.get("clientDataJSON"));
+			byte[] attestationObjectBytes = Base64.getUrlDecoder().decode((String) response.get("attestationObject"));
+			byte[] clientDataJSONBytes = Base64.getUrlDecoder().decode((String) response.get("clientDataJSON"));
+
+			// ByteArray 객체로 변환
+			ByteArray attestationObject = new ByteArray(attestationObjectBytes);
+			ByteArray clientDataJSON = new ByteArray(clientDataJSONBytes);
 
 			// AuthenticatorAttestationResponse 생성
 			AuthenticatorAttestationResponse attestationResponse = AuthenticatorAttestationResponse.builder()
@@ -135,21 +141,21 @@ public class WebAuthnRegisterController{
 				.clientDataJSON(clientDataJSON)
 				.build();
 
+			ClientExtensionOutputs clientExtensions = new ClientExtensionOutputs() {
+				@Override
+				public Set<String> getExtensionIds() {
+					return Set.of();
+				}
+			};
+
 			// PublicKeyCredential 생성
 			PublicKeyCredential credential = PublicKeyCredential.builder()
 				.id(new ByteArray(credentialId.getBytes()))  // 자격 증명 ID
 				.response(attestationResponse)  // 생성된 AuthenticatorAttestationResponse 객체
-				.clientExtensionResults(null)  // 클라이언트 확장 결과 (없을 경우 빈 객체)
+				.clientExtensionResults(clientExtensions)  // 빈 ClientExtensionOutputs 객체
 				.type(PublicKeyCredentialType.PUBLIC_KEY)  // 자격 증명 타입
 				.build();
 
-			// // PublicKeyCredential 생성 (RegistrationResponse 없이)
-			// PublicKeyCredential credential = PublicKeyCredential.builder()
-			// 	.id(new ByteArray(credentialId.getBytes())) // Credential ID
-			// 	.response((AuthenticatorResponse)response) // 응답 데이터 (Map 형태)
-			// 	.clientExtensionResults(null) //클라이언트 확장 결과
-			// 	.type(PublicKeyCredentialType.PUBLIC_KEY) //자격증명타입
-			// 	.build();
 
 			// 등록 검증 완료
 			var registrationResult = relyingParty.finishRegistration(
