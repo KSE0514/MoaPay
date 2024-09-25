@@ -15,4 +15,3 @@ public class WebConfig implements WebMvcConfigurer {
                 .allowCredentials(true); // 쿠키 인증 요청 허용
     }
 }
-
