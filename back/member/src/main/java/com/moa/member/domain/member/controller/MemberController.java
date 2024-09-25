@@ -23,12 +23,14 @@ import lombok.extern.slf4j.Slf4j;
 @RestController
 @RequiredArgsConstructor
 @Slf4j
-@RequestMapping("/payment/member")
+@RequestMapping("/moapay/member")
 public class MemberController {
 
 	private final MemberService memberService;
 	private final MessageService messageService;
 
+
+	//회원가입
 	@PostMapping("/join")
 	public ResponseEntity<ResultResponse> join(@RequestBody JoinRequestDto dto) throws Exception {
 		JoinResponseDto member=memberService.join(dto);
@@ -36,6 +38,7 @@ public class MemberController {
 		return ResponseEntity.status(resultResponse.getStatus()).body(resultResponse);
 	}
 
+	//본인인증 문자 보내기
 	@PostMapping("/sendSMS")
 	public ResponseEntity<ResultResponse> sendSMS(@RequestBody MessageRequestDto dto){
 		// 성공코드 2000
@@ -48,6 +51,7 @@ public class MemberController {
 
 	}
 
+	//인증번호로 본인 인증
 	@PostMapping("/verification")
 	public ResponseEntity<ResultResponse> verification(@RequestBody VerificationRequestDto dto){
 		boolean pass = messageService.verifySMS(dto.getPhoneNumber(),dto.getCode());
