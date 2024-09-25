@@ -16,11 +16,14 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import com.moa.member.domain.member.model.Member;
+import com.moa.member.domain.member.repository.EmptyCredentialRepository;
 import com.moa.member.domain.member.repository.MemberRepository;
 
 import com.moa.member.global.response.ResultResponse;
 import com.yubico.webauthn.CredentialRepository;
+import com.yubico.webauthn.data.AuthenticatorAttestationResponse;
 import com.yubico.webauthn.data.AuthenticatorResponse;
+import com.yubico.webauthn.data.ClientExtensionOutputs;
 import com.yubico.webauthn.data.PublicKeyCredential;
 import com.yubico.webauthn.data.PublicKeyCredentialType; // PublicKeyCredentialType 임포트
 import com.yubico.webauthn.FinishRegistrationOptions;
@@ -51,19 +54,16 @@ public class WebAuthnRegisterController{
 
 	private final RelyingParty relyingParty;
 	private final MemberRepository memberRepository;
-	private final CredentialRepository credentialRepository;
-
-	public WebAuthnRegisterController(MemberRepository memberRepository, CredentialRepository credentialRepository) {
+	public WebAuthnRegisterController(MemberRepository memberRepository, EmptyCredentialRepository credentialRepository) {
 		// RelyingParty 설정
 		this.relyingParty = RelyingParty.builder()
 			.identity(RelyingPartyIdentity.builder()
-				.id("moapay.com") // 서버 도메인
-				.name("moapay")   // 서버 이름
+				.id("moapay.com")  // 서버 도메인
+				.name("moapay")    // 서버 이름
 				.build())
-			.credentialRepository(new InMemoryCredentialRepository()) // CredentialRepository 주입
+			.credentialRepository(credentialRepository)  // 빈 CredentialRepository 주입
 			.build();
 		this.memberRepository = memberRepository;
-		this.credentialRepository = credentialRepository; // 주입받은 Repository 저장
 	}
 
 	@GetMapping("/options/{name}")
@@ -115,24 +115,43 @@ public class WebAuthnRegisterController{
 	@PostMapping("/verify")
 	public ResponseEntity<ResultResponse> verifyRegistration(@RequestBody Map<String, Object> responseData, HttpServletRequest request) {
 		try {
+			// 사용자 정보 조회 (예시로 '고망고' 이름을 통해 조회)
 			Member member = memberRepository.findByName("고망고");
 
-			// 세션에서 registrationOptions 가져오기
+			// 세션에서 등록 옵션을 가져옴
 			PublicKeyCredentialCreationOptions options = (PublicKeyCredentialCreationOptions) request.getSession().getAttribute("registrationOptions");
 
-			// 클라이언트에서 반환한 데이터에서 필요한 정보 추출
+			// 클라이언트로부터 전달받은 데이터에서 자격 증명 ID와 응답 데이터 추출
 			String credentialId = (String) responseData.get("id");
 			Map<String, Object> response = (Map<String, Object>) responseData.get("response");
 
-			// PublicKeyCredential 생성 (RegistrationResponse 없이)
-			PublicKeyCredential credential = PublicKeyCredential.builder()
-				.id(new ByteArray(credentialId.getBytes())) // Credential ID
-				.response((AuthenticatorResponse)response) // 응답 데이터 (Map 형태)
-				.clientExtensionResults(null) //클라이언트 확장 결과
-				.type(PublicKeyCredentialType.PUBLIC_KEY) //자격증명타입
+			// AuthenticatorResponse는 별도의 형태로 변환해야 함 (AttestationObject와 ClientDataJSON 필요)
+			ByteArray attestationObject = new ByteArray((byte[]) response.get("attestationObject"));
+			ByteArray clientDataJSON = new ByteArray((byte[]) response.get("clientDataJSON"));
+
+			// AuthenticatorAttestationResponse 생성
+			AuthenticatorAttestationResponse attestationResponse = AuthenticatorAttestationResponse.builder()
+				.attestationObject(attestationObject)
+				.clientDataJSON(clientDataJSON)
 				.build();
 
-			// finishRegistration 호출
+			// PublicKeyCredential 생성
+			PublicKeyCredential credential = PublicKeyCredential.builder()
+				.id(new ByteArray(credentialId.getBytes()))  // 자격 증명 ID
+				.response(attestationResponse)  // 생성된 AuthenticatorAttestationResponse 객체
+				.clientExtensionResults(null)  // 클라이언트 확장 결과 (없을 경우 빈 객체)
+				.type(PublicKeyCredentialType.PUBLIC_KEY)  // 자격 증명 타입
+				.build();
+
+			// // PublicKeyCredential 생성 (RegistrationResponse 없이)
+			// PublicKeyCredential credential = PublicKeyCredential.builder()
+			// 	.id(new ByteArray(credentialId.getBytes())) // Credential ID
+			// 	.response((AuthenticatorResponse)response) // 응답 데이터 (Map 형태)
+			// 	.clientExtensionResults(null) //클라이언트 확장 결과
+			// 	.type(PublicKeyCredentialType.PUBLIC_KEY) //자격증명타입
+			// 	.build();
+
+			// 등록 검증 완료
 			var registrationResult = relyingParty.finishRegistration(
 				FinishRegistrationOptions.builder()
 					.request(options)
@@ -140,7 +159,7 @@ public class WebAuthnRegisterController{
 					.build()
 			);
 
-			// Member 정보 업데이트
+			// Member 정보 업데이트 (기존 데이터 유지)
 			Member updatedMember = Member.builder()
 				.id(member.getId())
 				.name(member.getName())
@@ -149,21 +168,22 @@ public class WebAuthnRegisterController{
 				.phoneNumber(member.getPhoneNumber())
 				.email(member.getEmail())
 				.address(member.getAddress())
-				.uuid(member.getUuid()) // 기존 UUID 유지
+				.uuid(member.getUuid())  // UUID 유지
 				.createTime(member.getCreateTime())
 				.updateTime(member.getUpdateTime())
-				.publicKey(registrationResult.getKeyId().getId().toString())
-				.credentialId(credentialId)
-				.authenticatorData((byte[]) response.get("attestationObject")) // 필요한 경우 변환
+				.publicKey(registrationResult.getKeyId().getId().toString())  // 공개키 저장
+				.credentialId(credentialId)  // 자격 증명 ID 저장
+				.authenticatorData(attestationObject.getBytes())  // AttestationObject 저장
 				.build();
 
-			// Member 저장
-			memberRepository.save(member);
+			// Member 정보 저장
+			memberRepository.save(updatedMember);
 
-			ResultResponse resultResponse = ResultResponse.of(HttpStatus.OK, "검증 성공 : 일치");
+			ResultResponse resultResponse = ResultResponse.of(HttpStatus.OK, "검증 성공: 일치");
 			return ResponseEntity.status(resultResponse.getStatus()).body(resultResponse);
 		} catch (Exception e) {
-			ResultResponse resultResponse = ResultResponse.of(HttpStatus.BAD_REQUEST, "검증 실패 : 불일치");
+			log.error("등록 검증 실패: ", e);
+			ResultResponse resultResponse = ResultResponse.of(HttpStatus.BAD_REQUEST, "검증 실패: 불일치");
 			return ResponseEntity.status(resultResponse.getStatus()).body(resultResponse);
 		}
 	}
