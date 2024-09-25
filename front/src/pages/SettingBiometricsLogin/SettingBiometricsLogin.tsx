@@ -38,7 +38,7 @@ const SettingBiometricsLogin = () => {
       // 1. 서버로부터 WebAuthn 등록 옵션을 가져옴
       const options = (
         await axios.get(
-          `http://localhost:18040/moapay/member/authn/register/options/예빈`
+          `http://localhost:18040/moapay/member/authn/register/options/고망고`
         )
       ).data;
 
@@ -56,7 +56,17 @@ const SettingBiometricsLogin = () => {
       // 3. 등록된 생체인증 정보를 서버에 전송하여 저장
       const registerResult = await axios.post(
         `http://localhost:18040/moapay/member/authn/register/verify`,
-        attestationResponse
+        {
+          id: attestationResponse.id,
+          rawId: attestationResponse.rawId,
+          response: {
+            attestationObject: attestationResponse.response.attestationObject,
+            clientDataJSON: attestationResponse.response.clientDataJSON,
+          },
+          type: attestationResponse.type,
+          clientExtensionResults: attestationResponse.clientExtensionResults,
+          authenticatorAttachment: attestationResponse.authenticatorAttachment,
+        }
       );
       if (registerResult.data.success) {
         setSettingFinish(true);
