@@ -9,69 +9,45 @@ import {
   Detail,
 } from "./DetailPayLogList.styles";
 
-const testLog = [
+type LogItem = {
+  vendor: string;
+  category: string;
+  time: string;
+  payment: number;
+};
+
+type LogByDate = {
+  [key: string]: LogItem[]; // key는 string으로 된 날짜, 값은 LogItem 배열
+};
+
+const testLog: LogByDate[] = [
   {
     '20240830': [
-      {
-        vendor: '롯데시네마',
-        category: 'hobby',
-        time: '16:07',
-        payment: 2000,
-      },
-      {
-        vendor: '쿠팡',
-        category: 'shopping',
-        time: '10:11',
-        payment: 13000,
-      },
+      { vendor: '롯데시네마', category: 'hobby', time: '16:07', payment: 2000 },
+      { vendor: '쿠팡', category: 'shopping', time: '10:11', payment: 13000 },
     ],
   },
   {
     '20240829': [
-      {
-        vendor: '롯데시네마',
-        category: 'hobby',
-        time: '15:07',
-        payment: 32000,
-      },
+      { vendor: '롯데시네마', category: 'hobby', time: '15:07', payment: 32000 },
     ],
   },
   {
     '20240826': [
-      {
-        vendor: '롯데시네마',
-        category: 'hobby',
-        time: '16:07',
-        payment: 2000,
-      },
-      {
-        vendor: '쿠팡',
-        category: 'shopping',
-        time: '10:11',
-        payment: 13000,
-      },
+      { vendor: '롯데시네마', category: 'hobby', time: '16:07', payment: 2000 },
+      { vendor: '쿠팡', category: 'shopping', time: '10:11', payment: 13000 },
     ],
   },
   {
     '20240825': [
-      {
-        vendor: '롯데시네마',
-        category: 'hobby',
-        time: '16:07',
-        payment: 2000,
-      },
-      {
-        vendor: '쿠팡',
-        category: 'shopping',
-        time: '10:11',
-        payment: 13000,
-      },
+      { vendor: '롯데시네마', category: 'hobby', time: '16:07', payment: 2000 },
+      { vendor: '쿠팡', category: 'shopping', time: '10:11', payment: 13000 },
     ],
   },
 ];
 
 const DetailPayLogList = () => {
-  const [cardHistory, setCardHistory] = useState(testLog);
+  const [cardHistory, setCardHistory] = useState<LogByDate[]>(testLog); // 카드 결제 내역을 받을 변수
 
   const getCardHistory = async (year: number, month: number) => {
     try {
@@ -102,7 +78,7 @@ const DetailPayLogList = () => {
           return (
             <Log key={index}>
               <Date>{month}월 {day}일</Date>
-              {logs.map((logItem, logIndex) => (
+              {logs.map((logItem: LogItem, logIndex: number) => (
                 <Content key={logIndex}>
                   <div>
                     {/* <img src="" alt="" /> */}

@@ -1,5 +1,6 @@
 package com.moa.payment.domain.online.entity;
 
+import com.fasterxml.uuid.Generators;
 import com.moa.payment.domain.online.model.Status;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
@@ -8,7 +9,7 @@ import java.time.LocalDateTime;
 import java.util.UUID;
 
 @Entity
-@Table(name="payment_log")
+@Table(name = "payment_log")
 @Getter
 @Builder(toBuilder = true)
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -48,14 +49,32 @@ public class PaymentLog {
     @Column(name = "category_id", columnDefinition = "char(5)")
     private String categoryId;
 
-    @NotNull
-    @Column(name = "category_name")
-    private String categoryName;
-
     @Column(name = "transaction_date")
     private LocalDateTime transactionDate;
 
     @NotNull
     @Column(name = "benefit_balance")
     private long benefitBalance;
+
+    @NotNull
+    @Column(name = "create_time")
+    private LocalDateTime createTime;
+
+    @NotNull
+    @Column(name = "update_time")
+    private LocalDateTime updateTime;
+
+    @PrePersist
+    private void prePersist() {
+        this.uuid = Generators.timeBasedEpochGenerator().generate();
+        LocalDateTime now = LocalDateTime.now();
+        this.createTime = now;
+        this.updateTime = now;
+    }
+
+    @PreUpdate
+    private void preUpdate() {
+        this.updateTime = LocalDateTime.now();
+    }
+
 }

@@ -18,12 +18,22 @@ import {
 //   // 참가자 목록 불러오기_참가자가 새로 들어올 때마다 리스트 조회가 이루어져야함?
 // }, [])
 
-const Participant = ({maxNum=null}) => {
+interface ParticipantProps {
+  maxNum?: number | null;
+}
+
+interface Participant {
+  name: string;
+  id: number;
+  charge: string;
+}
+
+const Participant = ({maxNum=null}: ParticipantProps) => {
   // const [participants, setParticipants] = useState([])
   const [dutchStart, setDutchStart] = useState(false)
 
   // 테스트용 데이터_ 후에 지울 예정
-  const [participants, setParticipants] = useState([
+  const [participants, setParticipants] = useState<Participant[]>([
     {name: '정유진', id:1, charge: '',
     },
     {name: '이대현', id:2, charge: '',
@@ -33,7 +43,7 @@ const Participant = ({maxNum=null}) => {
   ])
 
   // [미완]특정 참가자 추방(삭제) api 호출 함수_id로 삭제하게 될 것 같아 id를 인자로 넘겨놓음(나중에 다시 체크하기)
-  const onDelete = async (id) => {
+  const onDelete = async (id:number) => {
     // console.log(id, "삭제")
     try{
       const response = await axios.delete(
@@ -59,7 +69,7 @@ const Participant = ({maxNum=null}) => {
     setDutchStart(true)
   }
 
-  const changeCharge = (index, value) => {
+  const changeCharge = (index: number, value: string) => {
     const updateParticipants = participants
     updateParticipants[index].charge = value
     setParticipants(updateParticipants)
@@ -114,9 +124,9 @@ const Participant = ({maxNum=null}) => {
       </PartiList>
       <Btn>
         {dutchStart? 
-          <SquareBtn text={'결제 요청하기'} color={'rgba(255, 255, 255, 0.7)'} onClick={null}/>
+          <SquareBtn text={'결제 요청하기'} color={'rgba(255, 255, 255, 0.7)'} onClick={() => {}} />
         :
-          <SquareBtn text={'더치페이 시작'} color={null} onClick={onClickDutchStart} />
+          <SquareBtn text={'더치페이 시작'} color='rgba(135, 72, 243, 0.74)' onClick={onClickDutchStart} />
         }
       </Btn>
     </Wrapper>
