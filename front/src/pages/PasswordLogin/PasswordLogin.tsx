@@ -182,12 +182,12 @@ const PasswordLogin: React.FC = () => {
             try {
               console.log("here");
               //생체정보 설정을 위해 이동 - 선택 가능
-              // const response = await axios.post(``);
-              // if (response.status == 201) {
-              navigate(PATH.SETTING_BIOMETRICS_LOGIN, {
-                state: { mode: "Join" },
-              });
-              // }
+              const response = await axios.post(``);
+              if (response.status == 201) {
+                navigate(PATH.SETTING_BIOMETRICS_LOGIN, {
+                  state: { mode: "Join" },
+                });
+              }
             } catch (error) {
               console.error("Error during password setting:", error);
             }
@@ -240,8 +240,7 @@ const PasswordLogin: React.FC = () => {
                   : password.length)
                   ? "full"
                   : ""
-              }
-            >
+              }>
               <FontAwesomeIcon
                 style={{ width: "30px", height: "30px" }}
                 icon={faAsterisk}

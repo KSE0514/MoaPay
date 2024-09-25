@@ -9,10 +9,9 @@ public class WebConfig implements WebMvcConfigurer {
 	@Override
 	public void addCorsMappings(CorsRegistry registry) {
 		registry.addMapping("/**")
-				.allowedOriginPatterns("http://localhost:5173", "https://moapay-7e24e.web.app") // 개발 및 배포 환경 도메인 추가
+				.allowedOrigins("https://moapay-mac-eb861.web.app/") // 실제 도메인 지정
 				.allowedMethods("GET", "POST", "PUT", "DELETE", "PATCH")
 				.allowedHeaders("*")
 				.allowCredentials(true); // 쿠키 인증 요청 허용
 	}
 }
-

@@ -23,27 +23,39 @@ const SettingBiometricsLogin = () => {
   const location = useLocation();
   const mode = location.state?.mode; // "Join" 값에 접근
   const { Login } = useAuthStore();
-  const removeNullValues = async (obj) => {
+  type NestedObject = {
+    [key: string]:
+      | string
+      | number
+      | boolean
+      | null
+      | undefined
+      | NestedObject
+      | NestedObject[];
+  };
+
+  const removeNullValues = async (obj: NestedObject): Promise<void> => {
     Object.keys(obj).forEach((key) => {
       if (obj[key] === null || obj[key] === undefined) {
         delete obj[key]; // null 또는 undefined인 속성 제거
       } else if (typeof obj[key] === "object" && !Array.isArray(obj[key])) {
         // 중첩된 객체가 있는 경우 재귀적으로 처리
-        removeNullValues(obj[key]);
+        removeNullValues(obj[key] as NestedObject);
       }
     });
   };
+
   const biometricsRegister = async () => {
     try {
       // 1. 서버로부터 WebAuthn 등록 옵션을 가져옴
-      const options = (
-        await axios.get(
-          `http://localhost:18040/moapay/member/authn/register/options/고망고`
-        )
-      ).data;
-
+      const response = await axios.get(
+        `http://localhost:18040/moapay/member/authn/register/options/고망고`,
+        { withCredentials: true }
+      );
+      const options = response.data;
+      console.log(response);
       // rp.id를 window.location.hostname으로 변경
-      options.rp.id = window.location.hostname;
+      console.log(window.location.hostname);
       await removeNullValues(options);
       console.log("option");
       console.log(options);
@@ -53,25 +65,31 @@ const SettingBiometricsLogin = () => {
       console.log("result");
       console.log(attestationResponse);
 
-      // 3. 등록된 생체인증 정보를 서버에 전송하여 저장
-      const registerResult = await axios.post(
-        `http://localhost:18040/moapay/member/authn/register/verify`,
-        {
-          id: attestationResponse.id,
-          rawId: attestationResponse.rawId,
-          response: {
-            attestationObject: attestationResponse.response.attestationObject,
-            clientDataJSON: attestationResponse.response.clientDataJSON,
+      // 지연을 추가하여 세션 쿠키가 설정될 시간을 확보
+      setTimeout(async () => {
+        // 3. 등록된 생체인증 정보를 서버에 전송하여 저장
+        const registerResult = await axios.post(
+          `http://localhost:18040/moapay/member/authn/register/verify`,
+          {
+            id: attestationResponse.id,
+            rawId: attestationResponse.rawId,
+            response: {
+              attestationObject: attestationResponse.response.attestationObject,
+              clientDataJSON: attestationResponse.response.clientDataJSON,
+            },
+            type: attestationResponse.type,
+            clientExtensionResults: attestationResponse.clientExtensionResults,
+            authenticatorAttachment:
+              attestationResponse.authenticatorAttachment,
           },
-          type: attestationResponse.type,
-          clientExtensionResults: attestationResponse.clientExtensionResults,
-          authenticatorAttachment: attestationResponse.authenticatorAttachment,
+          { withCredentials: true }
+        );
+
+        if (registerResult.data.success) {
+          setSettingFinish(true);
+          localStorage.setItem("settingBioLogin", "true");
         }
-      );
-      if (registerResult.data.success) {
-        setSettingFinish(true);
-        localStorage.setItem("settingBioLogin", "true");
-      }
+      }, 1000); // 1초 지연 (필요에 따라 지연 시간을 조정 가능)
     } catch (e) {
       console.log(e);
     }
@@ -172,8 +190,7 @@ const SettingBiometricsLogin = () => {
               viewBox="0 0 24 24"
               stroke-width="1.5"
               stroke="currentColor"
-              className="size-6"
-            >
+              className="size-6">
               <path
                 stroke-linecap="round"
                 stroke-linejoin="round"
@@ -191,8 +208,7 @@ const SettingBiometricsLogin = () => {
         <Button
           onClick={() => {
             biometricsRegister();
-          }}
-        >
+          }}>
           등록하기
         </Button>
         {mode == "Join" || mode == "NewLogin" ? (
@@ -200,8 +216,7 @@ const SettingBiometricsLogin = () => {
             onClick={() => {
               skipSettingBiometrics();
               navigate(PATH.HOME);
-            }}
-          >
+            }}>
             다음에 설정하기
           </div>
         ) : null}
@@ -218,8 +233,7 @@ const SettingBiometricsLogin = () => {
             <button
               onClick={() => {
                 checkingPath();
-              }}
-            >
+              }}>
               확인
             </button>
           </div>
