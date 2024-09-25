@@ -29,9 +29,8 @@ public class MemberServiceImpl implements MemberService{
 	@Transactional
 	public JoinResponseDto join(JoinRequestDto joinRequestDto){
 
-		//join하기 전에 문자인증 마쳐야한다
-		//핸드폰 번호 존재하면 실패 -> 이게 번호 인증에 있어야 될것같기도하고????
 		Member member=joinRequestDto.toEntity();
+		//핸드폰 번호는 겹칠 수 없다. 고유한 값.
 		Optional<Member> memberOptional=memberRepository.findByPhoneNumber(member.getPhoneNumber());
 
 		if(memberOptional.isPresent()){
@@ -53,6 +52,7 @@ public class MemberServiceImpl implements MemberService{
 			.build();
 
 	}
+
 
 
 
