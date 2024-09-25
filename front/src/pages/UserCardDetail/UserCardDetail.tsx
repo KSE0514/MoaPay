@@ -1,8 +1,9 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import backImg from "./../../assets/image/card_detail_back.png";
 import bottomGD from "./../../assets/image/card_detail_bottom.png";
 import testCard12 from "./../../assets/image/cards/신용카드이미지/12_올바른_FLEX_카드.png";
 import DetailPayLogList from "../../components/card/DetailPayLogList/DetailPayLogList";
+import axios from "axios";
 
 import {
   Wrapper,
@@ -28,6 +29,28 @@ const UserCardDetail = () => {
   const [year, setYear] = useState<number>(2024);
   const [month, setMonth] = useState<number>(8);
   const [rotate, setRotate] = useState<boolean>(false);
+
+  // 카드별 결제 내역 조회(년, 월)
+  const getCardHistory = async () => {
+    try{
+      const response = await axios.get(
+        `요청 api 주소 입력`, {
+          headers: {
+            "Content-Type": "application/json",
+          },
+        });
+        if (response.status === 200) {
+          console.log("카드 결제내역 조회 완료");
+        }
+    }catch (err) {
+      console.error("에러 발생", err);
+    }
+  }
+
+  // 년, 월이 바뀔 때마다 결제내역 조회 요청하기
+  useEffect(() => {
+    getCardHistory()
+  }, [year, month])
 
   // 월 선택 핸들러 (이전 달)
   const handlePrevMonth = () => {
