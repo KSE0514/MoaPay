@@ -49,7 +49,7 @@ import lombok.extern.slf4j.Slf4j;
 
 @RestController
 @Slf4j
-@RequestMapping("/payment/member/authn/register")
+@RequestMapping("/moapay/member/authn/register")
 public class WebAuthnRegisterController{
 
 	private final RelyingParty relyingParty;
