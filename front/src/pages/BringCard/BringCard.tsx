@@ -4,9 +4,10 @@ import axios, { AxiosError } from "axios";
 import { useNavigate } from "react-router-dom";
 import { PATH } from "../../constants/path";
 import { useAuthStore } from "../../store/AuthStore";
+import { useCardStore } from "../../store/CardStore";
 
 const BringCard = () => {
-  const { id } = useAuthStore();
+  const { cardList, setCardList } = useCardStore();
   const navigate = useNavigate();
   const [isLoding, setIsLoding] = useState(false);
   const [before, setBefore] = useState(true);
@@ -19,6 +20,8 @@ const BringCard = () => {
         { withCredentials: true }
       );
       //로딩상태 풀고 카드 선택 뷰 보이도록 설정
+      setCardList(response.data);
+      //추가
       setIsLoding(false);
       setBefore(false);
     } catch (e) {
@@ -28,7 +31,7 @@ const BringCard = () => {
   };
   const settingCard = () => {
     //카드 등록 요청 보내기
-
+    // await axios.post(``, { cardList });
     navigate(PATH.HOME);
   };
   return (

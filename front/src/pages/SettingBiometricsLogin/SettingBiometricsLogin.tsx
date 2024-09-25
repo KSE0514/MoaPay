@@ -23,27 +23,37 @@ const SettingBiometricsLogin = () => {
   const location = useLocation();
   const mode = location.state?.mode; // "Join" 값에 접근
   const { Login } = useAuthStore();
+  const removeNullValues = async (obj) => {
+    Object.keys(obj).forEach((key) => {
+      if (obj[key] === null || obj[key] === undefined) {
+        delete obj[key]; // null 또는 undefined인 속성 제거
+      } else if (typeof obj[key] === "object" && !Array.isArray(obj[key])) {
+        // 중첩된 객체가 있는 경우 재귀적으로 처리
+        removeNullValues(obj[key]);
+      }
+    });
+  };
   const biometricsRegister = async () => {
     try {
-      console.log(name);
       // 1. 서버로부터 WebAuthn 등록 옵션을 가져옴
-      //    이 단계에서는 사용자 생체 인증 등록을 위한 챌린지와 공개키 정보가 포함된 옵션을 서버에서 제공.
       const options = (
         await axios.get(
           `http://localhost:18040/moapay/member/authn/register/options/예빈`
         )
       ).data;
+
+      // rp.id를 window.location.hostname으로 변경
+      options.rp.id = window.location.hostname;
+      await removeNullValues(options);
+      console.log("option");
       console.log(options);
-      // 2. navigator.credentials.create() 또는 라이브러리에서 제공하는 startRegistration 사용
-      //    서버에서 받은 등록 옵션을 사용해 WebAuthn 등록을 진행
-      //    WebAuthn API는 사용자의 지문/얼굴 인식 장치에 등록하는 과정을 수행.
-      //    서버로부터 받은 옵션을 사용하여 사용자의 인증 장치를 등록함.
-      //    사용자가 지문이나 얼굴을 인식하면, attestationResponse에 결과가 저장됨.
+
+      // 2. WebAuthn 등록을 진행
       const attestationResponse = await startRegistration(options);
+      console.log("result");
       console.log(attestationResponse);
-      // 3. 등록된 생체인증 정보를 서버에 전송하여 저장함
-      //    서버는 이 정보를 통해 사용자의 인증 장치를 등록하고, 나중에 인증 시 사용할 수 있도록 함.
-      //    등록된 생체인증 정보는 서버에 안전하게 저장되며, 이후 로그인에 사용됨.
+
+      // 3. 등록된 생체인증 정보를 서버에 전송하여 저장
       const registerResult = await axios.post(
         `http://localhost:18040/moapay/member/authn/register/verify`,
         attestationResponse
@@ -128,6 +138,10 @@ const SettingBiometricsLogin = () => {
     if (mode == "newLogin") {
       await Login();
       navigate(PATH.BRING_CARD);
+    }
+    if (mode == "Join") {
+      //실적형 혜택형 선택 뷰
+      navigate(PATH.SELECT_TYPE);
     }
     //그 외에는 home으로 이동
     else {

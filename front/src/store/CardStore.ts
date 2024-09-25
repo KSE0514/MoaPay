@@ -1,30 +1,44 @@
 import { create } from "zustand";
-export interface benefit {
+// 혜택 인터페이스 정의
+export interface Benefit {
   categoryName: string;
   benefitDesc: string;
-  categoryType: "string";
-  benefitType: "string";
-  benefitValue: "string";
-}
-// 카드 객체 타입 정의
-export interface card {
-  cardNumber: string; // 카드 식별자
-  performanceOk: true; //실적달성여부
-  cardName: string; //카드명
-  imageUrl: string; //이미지 url
-  cardType: string; //카드 종류 - 신용, 체크
-  annualFee: number; //연회비
-  performance: number; //전월실적
-  benefits: benefit[]; //혜택
-  benefitUsage: number; //사용한 혜택량
-  charges: number; //사용금액
+  categoryType: string; // 카테고리 타입은 실제 문자열
+  benefitType: string; // 혜택 타입도 문자열
+  benefitValue: number; // 혜택 값은 실제로 숫자형
+  benefitPoint: number; // 혜택 포인트 추가
 }
 
+// 카드 객체 타입 정의
+export interface CardInfo {
+  cardName: string; // 카드명
+  companyName: string; // 카드 발급사
+  benefitTotalLimit: number | null; // 혜택 한도 (nullable)
+  cardType: string; // 카드 종류 (신용, 체크 등)
+  annualFee: number; // 국내 연회비
+  annualFeeForeign: number; // 해외 연회비
+  performance: number; // 전월 실적
+  imageUrl: string; // 이미지 url
+  benefits: Benefit[]; // 혜택 목록
+}
+
+// 카드 객체 타입 정의
+export interface Card {
+  cardNumber: string; // 카드 식별자
+  cvc: string; // CVC 코드 추가
+  performanceOk: boolean; // 실적 달성 여부
+  cardLimit: number; // 카드 한도
+  charges: number; // 사용 금액
+  benefitUsage: number; // 사용한 혜택량
+  cardInfo: CardInfo; // 카드 정보 객체
+}
+
+// 카드 상태 인터페이스 정의
 interface CardState {
-  cardList: card[]; // 카드 리스트 배열
-  setCardList: (newCardList: card[]) => void; // 받아온 카드 리스트를 설정하는 함수
-  addCard: (card: card) => void; // 카드 추가 함수
-  removeCard: (id: string) => void; // 카드 삭제 함수
+  cardList: Card[]; // 카드 리스트 배열
+  setCardList: (newCardList: Card[]) => void; // 받아온 카드 리스트를 설정하는 함수
+  addCard: (card: Card) => void; // 카드 추가 함수
+  removeCard: (cardNumber: string) => void; // 카드 삭제 함수
   clearCards: () => void; // 카드 리스트 초기화 함수
 }
 
