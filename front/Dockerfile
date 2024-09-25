@@ -17,7 +17,7 @@ COPY . .
 RUN npm run build
 
 # 빌드된 파일을 최종 이미지로 복사
-FROM nginx:alpine
+FROM nginx:1.27.1
 
 # Nginx 기본 설정 파일을 삭제하고, 빌드된 파일을 복사
 COPY --from=build /app/dist /usr/share/nginx/html
