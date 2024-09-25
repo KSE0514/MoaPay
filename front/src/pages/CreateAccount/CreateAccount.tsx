@@ -124,7 +124,7 @@ const CreateAccount = () => {
     // 인증번호 발급하기
     try {
       await axios.post(
-        `https://j11c201.p.ssafy.io:8765/api/payment/member/sendSMS`,
+        `https://j11c201.p.ssafy.io/api/payment/member/sendSMS`,
         {
           phoneNumber: joinUserInfo.phone_number,
         }
