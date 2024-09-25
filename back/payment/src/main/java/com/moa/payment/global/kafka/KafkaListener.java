@@ -47,8 +47,6 @@ public class KafkaListener {
         log.info("cardNumber: {}", vo.getCardNumber());
         log.info("amount: {}", vo.getAmount());
 
-        // TODO: 여기서 결제 서비스 에 호출하여 결제 진행 해 주세요~~!
-
         return null; // 실제 변환 로직을 구현하여 리스트 반환
     }
 }
