@@ -1,18 +1,24 @@
 import { styled } from "styled-components";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import "../../assets/image/secondWave.png";
+import MediaQuery from "../../constants/styles";
 export const Wrapper = styled.div`
   display: flex;
   flex-direction: column;
-  overflow-y: scroll;
+  overflow-x: hidden;
+  overflow-y: auto;
+  -ms-overflow-style: none;
+  scrollbar-width: none;
   width: 100%;
   height: 100%;
   padding: 0px 20px var(--padding-bottom) 20px;
+  ${MediaQuery.small},${MediaQuery.medium} {
+    padding-bottom: var(--padding-bottom-small);
+  }
   font-family: "Reem Kufi Ink";
 `;
 
 export const Top = styled.div`
-  height: 350px;
   margin-top: 10px;
   * {
     position: relative;
@@ -23,7 +29,8 @@ export const Top = styled.div`
 
 export const Bottom = styled.div`
   width: 100%;
-  height: calc(100vh - 550px);
+  margin-top: 90px;
+  /* height: calc(100vh - 550px); */
   flex: 1;
   display: flex;
   flex-direction: column;
@@ -65,7 +72,7 @@ export const Month = styled.div`
   }
   .dropdown-btn {
     position: relative;
-    font-size: 25px;
+    font-size: 30px;
     display: flex;
     align-items: center;
     p {
@@ -81,7 +88,7 @@ export const Month = styled.div`
     width: fit-content;
     border-radius: 5px;
     background-color: white;
-    font-size: 25px;
+    font-size: 30px;
     max-height: 0;
     overflow: hidden;
     li {
@@ -108,7 +115,7 @@ export const DropDownIcon = styled(FontAwesomeIcon)`
 
 export const Info = styled.div`
   width: 100%;
-  margin-top: 25px;
+  margin-top: 30px;
   display: flex;
   align-items: center;
   justify-content: space-around;
@@ -133,17 +140,17 @@ export const TopWrapper = styled.div`
   animation: fadeIn 2s;
 `;
 export const NowDate = styled.div`
-  font-size: 28px;
+  font-size: 25px;
 `;
 export const ImageBox = styled.div`
   margin: 25px 0px 11px 0px;
   img {
-    width: 250px;
-    height: 130px;
+    width: 200px;
+    height: 100px;
   }
 `;
 export const TextBox = styled.div`
-  font-size: 22px;
-  line-height: 32px;
+  font-size: 20px;
+  line-height: 30px;
   text-align: center;
 `;

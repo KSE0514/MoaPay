@@ -1,5 +1,7 @@
 package com.moa.payment.domain.online.controller;
 
+import com.moa.payment.domain.online.model.dto.PaymentCardInfoDto;
+import com.moa.payment.domain.online.model.dto.ExecuteOnlinePaymentRequestDto;
 import com.moa.payment.domain.online.model.dto.GetOnlinePaymentInfoResponseDto;
 import com.moa.payment.domain.online.model.dto.GetOnlineQRCodeRequestDto;
 import com.moa.payment.domain.online.model.dto.GetOnlineQRCodeResponseDto;
@@ -14,7 +16,7 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @Slf4j
 @RequiredArgsConstructor
-@RequestMapping("/payment/pay/online")
+@RequestMapping("/online")
 public class OnlinePaymentController {
 
     private final OnlineService onlineService;
@@ -35,9 +37,17 @@ public class OnlinePaymentController {
 
     @DeleteMapping("/info/{QRCode}")
     public ResponseEntity<ResultResponse> disablePaymentInfo(@PathVariable String QRCode) {
-        // onlineService.deleteOnlinePaymentInfo(QRCode);
         onlineService.disableOnlinePaymentInfo(QRCode);
         ResultResponse resultResponse = ResultResponse.of(HttpStatus.OK, "QR코드를 비활성화했습니다.");
+        return ResponseEntity.status(resultResponse.getStatus()).body(resultResponse);
+    }
+
+    @PostMapping("/info")
+    public ResponseEntity<ResultResponse> executeOnlinePayment(@RequestBody ExecuteOnlinePaymentRequestDto dto) {
+        // 우선은 단일 카드 선택인 경우만 구현
+        onlineService.ExecuteOnlinePayment(dto);
+        // 서비스 시행 이후, 클라이언트에 응답하면서 가맹점에도 결제 완료 메시지를 보내야 한다
+        ResultResponse resultResponse = ResultResponse.of(HttpStatus.OK, "결제를 마쳤습니다.");
         return ResponseEntity.status(resultResponse.getStatus()).body(resultResponse);
     }
 

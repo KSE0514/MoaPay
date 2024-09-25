@@ -38,7 +38,6 @@ public class MessageServiceImpl implements MessageService{
 	@Value("${coolsms.fromnumber}")
 	private String fromNumber;
 
-
 	@Autowired
 	MessageRepository messageRepository;
 	DefaultMessageService defaultMessageService;
