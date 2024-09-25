@@ -17,4 +17,5 @@ public class ExecutePayResponseDto {
     private boolean benefitActivated;
     private long benefitBalance;
     private long remainedBenefit;
+    private BenefitDetailDto benefitDetail;
 }
