@@ -23,7 +23,7 @@ import lombok.extern.slf4j.Slf4j;
 @RestController
 @RequiredArgsConstructor
 @Slf4j
-@RequestMapping("/payment/member")
+@RequestMapping("/moapay/member")
 public class MemberController {
 
 	private final MemberService memberService;
