@@ -27,7 +27,7 @@
 /front/firebase.json
 /front/.firebase
 /front/.firebaserc
-/front/public
 /front/src/firebase.tsx
 
 .idea
+

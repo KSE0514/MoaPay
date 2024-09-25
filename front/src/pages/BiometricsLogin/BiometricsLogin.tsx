@@ -13,7 +13,7 @@ const BiometricsLogin = () => {
       //    - '/api/auth/webauthn/options' 경로로 GET 요청을 보내서 서버로부터 인증 옵션을 받아옴.
       //    - 이 옵션에는 인증에 필요한 '챌린지'(서버가 제공하는 일회용 코드)와 공용키 정보가 포함됨.
       const options = await axios
-        .get("/api/auth/webauthn/options")
+        .get(``)
         .then((res: AxiosResponse) => res.data);
       //    - res.data: 서버에서 응답한 데이터를 받아오는 부분.
 
@@ -29,10 +29,7 @@ const BiometricsLogin = () => {
       // 4. 서버에 인증 결과를 전송하여 검증
       //    - 생체인증을 통해 생성된 'authenticationResponse'를 서버에 POST 요청으로 전송.
       //    - 이 응답은 사용자의 인증 결과를 담고 있으며, 서버는 이를 검증하여 인증이 성공했는지 확인함.
-      const verification = await axios.post(
-        "/api/auth/webauthn/verify",
-        authenticationResponse
-      );
+      const verification = await axios.post(``, authenticationResponse);
       //    - POST 요청: 인증 결과를 서버에 전송하기 위해 사용됨.
       //    - authenticationResponse: WebAuthn을 통해 사용자 인증을 완료한 후 반환된 객체.
       // 5. 서버로부터 받은 인증 결과를 처리

@@ -192,7 +192,7 @@ const Statistics = () => {
               <Info>
                 <DonutChart dataList={dataList} />
                 <StatisticDonutChartText
-                  text={`이번달에는\n200000원\n소비했어요!`}
+                  text={`이번달에는\n2000000원\n소비했어요!`}
                 />
               </Info>
             </>

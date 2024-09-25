@@ -1,5 +1,6 @@
 import { styled } from "styled-components";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import MediaQuery from "../../../constants/styles";
 export const Wrapper = styled.div`
   display: flex;
   position: fixed;
@@ -26,9 +27,23 @@ export const Wrapper = styled.div`
       color: #c473f6;
     }
   }
+  ${MediaQuery.small},${MediaQuery.medium} {
+    div {
+      padding: 15px 10px;
+      & p {
+        font-weight: 500;
+        font-size: 13px;
+        text-align: center;
+      }
+    }
+  }
 `;
 export const StyledIcon = styled(FontAwesomeIcon)`
   width: 25px;
   height: 25px;
   color: #4a4a4a;
+  ${MediaQuery.small} {
+    width: 21px;
+    height: 21px;
+  }
 `;

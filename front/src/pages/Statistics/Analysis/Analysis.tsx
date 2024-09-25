@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Graph } from "./Analysis.styles";
+import { Graph, Wrapper } from "./Analysis.styles";
 import MixedChart from "../../../components/statistics/Chart/BarGraph/BarGraph";
 import Toggle from "../../../../src/components/statistics/Toggle/Toggle";
 
@@ -47,7 +47,7 @@ const Analysis = () => {
     setConsumptionMode((current) => !current);
   };
   return (
-    <>
+    <Wrapper>
       <Graph>
         <MixedChart
           consumptionMode={consumptionMode}
@@ -56,7 +56,7 @@ const Analysis = () => {
         />
       </Graph>
       <Toggle consumptionMode={consumptionMode} handleToggle={handleToggle} />
-    </>
+    </Wrapper>
   );
 };
 export default Analysis;
