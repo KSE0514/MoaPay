@@ -4,7 +4,7 @@ import com.moa.moapay.domain.Card.entity.CardBenefit;
 import com.moa.moapay.domain.Card.entity.CardBenefitCategory;
 import com.moa.moapay.domain.Card.entity.CardProduct;
 import com.moa.moapay.domain.Card.model.dto.CardBenefitDto;
-import com.moa.moapay.domain.Card.model.dto.RecommendCardResponseDto;
+import com.moa.moapay.domain.Card.model.dto.CardInfoResponseDto;
 import com.moa.moapay.domain.Card.repository.CardBenefigCategoryRepository;
 import com.moa.moapay.domain.Card.repository.CardProductRepository;
 import com.moa.moapay.global.exception.BusinessException;
@@ -32,7 +32,7 @@ public class RecommendCardServiceImpl implements RecommendCardService {
      * @return
      */
     @Override
-    public List<RecommendCardResponseDto> recommendCard(HttpServletRequest request) {
+    public List<CardInfoResponseDto> recommendCard(HttpServletRequest request) {
 
         // TODO: 1. 소비 패턴 분석 자료 가져오기
 
@@ -43,15 +43,12 @@ public class RecommendCardServiceImpl implements RecommendCardService {
         log.info("allProducs size {}", allProducts.size());
 
         // 점수 계산 (여기에 소비패턴 분석정보 같이 넘겨주기)
-        List<Optional<CardProduct>> recomendCards = calculateScore(allProducts);
+        List<CardProduct> recomendCards = calculateScore(allProducts);
 
         // 4. 제일 점수가 높은 카드 반환
-        List<RecommendCardResponseDto> recomendCardDtos = recomendCards.stream()
+        List<CardInfoResponseDto> recomendCardDtos = recomendCards.stream()
                 // 점수 계산된 카드를 반복문 돌면서
-                .map(cardProductOptional -> {
-                    // 없으면 예외 처리
-                    CardProduct cardProduct = cardProductOptional.orElseThrow(() -> new BusinessException(HttpStatus.NOT_FOUND, "카드 상품이 없어요"));
-
+                .map(cardProduct -> {
                     // 혜택 정보를 가지고
                     List<CardBenefit> benefits = cardProduct.getBenefits();
                     List<CardBenefitDto> benefitDtos = benefits.stream()
@@ -74,7 +71,7 @@ public class RecommendCardServiceImpl implements RecommendCardService {
                             }).collect(Collectors.toList());
 
                     // 최종 DTO 생성 후 리턴
-                    return RecommendCardResponseDto.builder()
+                    return CardInfoResponseDto.builder()
                             .cardName(cardProduct.getName())
                             .companyName(cardProduct.getCompanyName())
                             .cardType(cardProduct.getType())
@@ -97,7 +94,7 @@ public class RecommendCardServiceImpl implements RecommendCardService {
      * @param allProducts
      * @return
      */
-    private List<Optional<CardProduct>> calculateScore(List<CardProduct> allProducts) {
+    private List<CardProduct> calculateScore(List<CardProduct> allProducts) {
         Map<CardProduct, Float> cardScoreMap = new HashMap<>();
 
         // 각 카드의 점수를 계산
@@ -133,12 +130,7 @@ public class RecommendCardServiceImpl implements RecommendCardService {
                 .collect(Collectors.toList())
                 .subList(0, Math.min(9, sortedCardScores.size()));
 
-        // 리스트에 Optional로 변환해서 추가
-        cardProducts.addAll(topCardProducts.stream()
-                .map(Optional::of)
-                .collect(Collectors.toList()));
-
-        return cardProducts;
+        return topCardProducts;
     }
 
     /**
