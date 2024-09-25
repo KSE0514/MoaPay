@@ -84,7 +84,7 @@ public class OnlineServiceImpl implements OnlineService {
             paymentRequestBody.put("cvc", paymentInfo.getCvc());
             paymentRequestBody.put("amount", Long.toString(paymentInfo.getAmount()));
             ResponseEntity<Map> paymentResponse = restClient.post()
-                    .uri("http://localhost:18100/bank/card/pay")
+                    .uri("http://localhost:18100/cardbank/card/pay")
                     .contentType(MediaType.APPLICATION_JSON)// 일단은 하드코딩
                     .body(paymentRequestBody)
                     .retrieve()

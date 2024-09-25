@@ -18,7 +18,7 @@ import static org.mockito.Mockito.verify;
 class KafkaProducerTest {
 
     @Autowired
-    private KafkaProducer kafkaProducer;
+    private com.moa.moapay.global.Kafka.KafkaProducer kafkaProducer;
 
     @MockBean
     private KafkaTemplate<String, KafkaMsgVo> kafkaTemplate;
