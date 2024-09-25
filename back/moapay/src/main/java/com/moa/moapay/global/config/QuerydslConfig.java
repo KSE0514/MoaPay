@@ -1,4 +1,4 @@
-package com.moa.cardbank.global.config;
+package com.moa.moapay.global.config;
 
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import jakarta.persistence.EntityManager;

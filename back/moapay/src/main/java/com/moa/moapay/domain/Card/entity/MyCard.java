@@ -6,6 +6,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import java.util.UUID;
 
 @Entity
 @Table(name="my_card")
@@ -21,6 +22,10 @@ public class MyCard {
     private long id;
 
     @NotNull
+    @Column(name = "uuid", columnDefinition = "binary(16)", nullable = false)
+    private UUID uuid;
+
+    @NotNull
     @Column(name = "cardNumber", unique = true)
     private String cardNumber;
 
@@ -30,7 +35,7 @@ public class MyCard {
 
     @NotNull
     @Column(name = "performance")
-    private boolean performance;
+    private boolean performanceOk;
 
     @NotNull
     @Column(name = "card_limit")
@@ -43,6 +48,10 @@ public class MyCard {
     @NotNull
     @Column(name = "benefit_usage")
     private Long benefitUsage;
+
+    @NotNull
+    @Column(name = "member_id",  columnDefinition = "binary(16)")
+    private UUID memberId;
 
     @NotNull
     @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
