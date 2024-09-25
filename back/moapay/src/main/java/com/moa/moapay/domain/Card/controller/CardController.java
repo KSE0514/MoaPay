@@ -22,7 +22,7 @@ import java.util.UUID;
 @RestController
 @RequiredArgsConstructor
 @Slf4j
-@RequestMapping("/payment/moapay/card")
+@RequestMapping("/moapay/core/card")
 public class CardController {
 
     private final RecommendCardService recommendCardService;
