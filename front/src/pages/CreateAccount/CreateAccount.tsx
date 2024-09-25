@@ -123,9 +123,12 @@ const CreateAccount = () => {
     }
     // 인증번호 발급하기
     try {
-      await axios.post(`http://localhost:18040/payment/member/sendSMS`, {
-        phoneNumber: joinUserInfo.phone_number,
-      });
+      await axios.post(
+        `https://j11c201.p.ssafy.io:8765/api/payment/member/sendSMS`,
+        {
+          phoneNumber: joinUserInfo.phone_number,
+        }
+      );
       setAuthSent(true); // 인증번호 발급됨
       setBtnMent("인증번호 재발송");
     } catch (e) {
@@ -245,7 +248,8 @@ const CreateAccount = () => {
           <button
             onClick={() => {
               setBeforeStarting(false);
-            }}>
+            }}
+          >
             시작하기
           </button>
         </LogoView>
@@ -339,7 +343,8 @@ const CreateAccount = () => {
                 disabled={authSent}
                 style={{
                   borderColor: validationErrors.telecom ? "red" : "",
-                }}>
+                }}
+              >
                 <option value="" disabled>
                   통신사를 선택해주세요
                 </option>
@@ -411,7 +416,8 @@ const CreateAccount = () => {
             )}
             <button
               className={isAuth ? "join-btn" : "ready-btn"}
-              onClick={isAuth ? join : checkUser}>
+              onClick={isAuth ? join : checkUser}
+            >
               {isAuth ? "회원가입" : "확인"}
             </button>
           </Form>
