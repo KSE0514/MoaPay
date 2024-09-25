@@ -1,58 +1,97 @@
 import styled from "styled-components";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import MediaQuery from "../../constants/styles";
 
 export const Wrapper = styled.div`
   display: flex;
   flex-direction: column;
   height: 100vh;
-  background-color: var(--light-purple);
+  background-color: #db80e5;
 `;
 export const Top = styled.div`
-  height: 28%;
-  padding: 51px 41px;
+  padding: 20px 41px;
   & button {
     border: none;
     background-color: white;
   }
-  margin: 0px 0px 20px 0px;
+  ${MediaQuery.small} {
+    & {
+      padding: 20px 41px 15px 41px;
+    }
+  }
+  ${MediaQuery.medium} {
+    & {
+      padding: 30px 41px 15px 41px;
+    }
+  }
+  @media screen and (min-height: 840px) {
+    & {
+      padding: 10% 41px 8% 41px;
+    }
+  }
 `;
 
 export const BarcordArea = styled.div`
   margin-bottom: 19px;
-  padding: 18px 14px 10px 14px;
+  padding: 18px 30px 10px 30px;
   background-color: white;
   border-radius: 19px;
+  ${MediaQuery.small} {
+    padding: 10px 20px 10px 20px;
+  }
+  @media screen and (min-height: 840px) {
+    padding: 18px 20px 10px 20px;
+  }
 `;
 export const Barcord = styled.div`
   img {
     width: 100%;
-    height: 87px;
+    height: 80px;
+  }
+  @media screen and (min-height: 840px) {
+    img {
+      height: 100px;
+    }
   }
 `;
 export const Time = styled.div`
-  padding-top: 10px;
+  padding-top: 5px;
   display: flex;
-  justify-content: center;
+  justify-content: end;
+  /* justify-content: center; */
   gap: 5px;
 `;
 export const ButtonArea = styled.div`
   display: flex;
   justify-content: space-between;
   button {
-    width: 45%;
+    width: 47%;
     border-radius: 10px;
-    padding: 6px 23px;
+    padding: 10px 15px;
+  }
+  ${MediaQuery.small} {
+    button {
+      padding: 8px 15px;
+      font-size: 12px;
+    }
+  }
+
+  ${MediaQuery.medium} {
+    button {
+      padding: 8px 15px;
+      font-size: 12px;
+    }
   }
 `;
 
 export const Bottom = styled.div`
   position: relative;
-  padding: 30px 40px var(--padding-bottom) 40px;
+  padding: 25px 40px var(--padding-bottom) 40px;
   /* height:100%; */
   overflow: hidden;
   border-top-left-radius: 48px;
   border-top-right-radius: 48px;
-  flex: auto;
+  flex: 1;
   background-color: white;
   display: flex;
   flex-direction: column;
@@ -63,7 +102,7 @@ export const Bottom = styled.div`
     align-items: center;
     gap: 10px;
     color: #6c6c6c;
-    margin-bottom: 32px;
+    margin-bottom: 10px;
   }
   .remaining-performance {
     width: 80%;
@@ -73,7 +112,7 @@ export const Bottom = styled.div`
     padding: 5px 31px;
     background-color: rgba(214, 125, 249, 0.62);
     border-radius: 21px;
-    margin: 32px 0px 55px 0px;
+    margin: 12px 0px 45px 0px;
   }
   .tri {
     position: absolute;
@@ -91,6 +130,69 @@ export const Bottom = styled.div`
   .tri-right {
     right: -100px;
   }
+
+  ${MediaQuery.small} {
+    & {
+      padding-top: 20px;
+    }
+    .remaining-performance {
+      width: 80%;
+      text-align: center;
+      font-size: 14px;
+      font-weight: 400;
+      padding: 8px 31px;
+      background-color: rgba(214, 125, 249, 0.62);
+      border-radius: 21px;
+      margin: 10px 0px 15px 0px;
+    }
+    .tri {
+      position: absolute;
+      bottom: 55.5px;
+      width: 0;
+      height: 0;
+      border-bottom: 100px solid rgba(84, 98, 255, 0.24);
+      border-top: 100px solid transparent;
+      border-left: 100px solid transparent;
+      border-right: 100px solid transparent;
+    }
+    .tri-left {
+      left: -100px;
+    }
+    .tri-right {
+      right: -100px;
+    }
+  }
+  ${MediaQuery.medium} {
+    & {
+      padding-top: 25px;
+    }
+    .remaining-performance {
+      width: 90%;
+      text-align: center;
+      font-size: 16px;
+      font-weight: 400;
+      padding: 8px 31px;
+      background-color: rgba(214, 125, 249, 0.62);
+      border-radius: 21px;
+      margin: 10px 0px 35px 0px;
+    }
+    .tri {
+      position: absolute;
+      bottom: 55.5px;
+      width: 0;
+      height: 0;
+      border-bottom: 100px solid rgba(84, 98, 255, 0.24);
+      border-top: 100px solid transparent;
+      border-left: 100px solid transparent;
+      border-right: 100px solid transparent;
+    }
+    .tri-left {
+      left: -100px;
+    }
+    .tri-right {
+      right: -100px;
+    }
+  }
 `;
 
 export const CardList = styled.div`
@@ -101,7 +203,6 @@ export const CardList = styled.div`
   perspective: 100px;
   transform-style: preserve-3d;
   flex: 1;
-  height: 500px;
   width: 100%;
   /* overflow-y: scroll; */
   .container {
@@ -113,8 +214,9 @@ export const CardList = styled.div`
     width: 100%;
   }
   .card {
-    width: 336px;
-    height: 212px;
+    width: 100%; /* 원하는 너비로 설정 */
+    aspect-ratio: 1.58 / 1; /* 1.58:1 비율 유지 */
+
     transition: 0.5s;
     position: absolute;
     & > img {
@@ -123,15 +225,45 @@ export const CardList = styled.div`
     }
   }
   .card:nth-of-type(1) {
-    transform: translateY(-75px) translateZ(-0.2px);
-    width: 88%;
+    transform: translateY(-23%) translateZ(-0.2px);
+    width: 85%;
   }
   .card:nth-of-type(2) {
     z-index: 10;
   }
   .card:nth-of-type(3) {
-    transform: translateY(75px) translateZ(-0.2px);
-    width: 88%;
+    width: 85%;
+    transform: translateY(23%) translateZ(-0.2px);
+  }
+  ${MediaQuery.small} {
+    .card:nth-of-type(1) {
+      transform: translateY(-23%) translateZ(-0.2px);
+      width: 85%;
+    }
+    .card:nth-of-type(3) {
+      width: 85%;
+      transform: translateY(23%) translateZ(-0.2px);
+    }
+  }
+  ${MediaQuery.medium} {
+    .card:nth-of-type(1) {
+      transform: translateY(-28%) translateZ(-0.2px);
+      width: 85%;
+    }
+    .card:nth-of-type(3) {
+      width: 85%;
+      transform: translateY(28%) translateZ(-0.2px);
+    }
+  }
+  @media screen and (min-height: 800px) {
+    .card:nth-of-type(1) {
+      transform: translateY(-35%) translateZ(-0.2px);
+      width: 85%;
+    }
+    .card:nth-of-type(3) {
+      width: 85%;
+      transform: translateY(35%) translateZ(-0.2px);
+    }
   }
   .card:nth-of-type(n + 4) {
     display: none;
@@ -140,8 +272,8 @@ export const CardList = styled.div`
   .add-card {
     background-color: white;
     color: rgba(125, 136, 255, 0.86);
-    border: 3px dotted rgba(125, 136, 255, 0.86);
-    border-radius: 33px;
+    border: 3px solid rgba(125, 136, 255, 0.86);
+    border-radius: 10px;
     display: flex;
     justify-content: center;
     padding: 25px 0px 0px 0px;
@@ -165,7 +297,7 @@ export const CardList = styled.div`
 export const PlusIcon = styled(FontAwesomeIcon)`
   height: 13px;
   width: 13px;
-  border: 3px dotted rgba(125, 136, 255, 0.86);
+  border: 2px solid rgba(125, 136, 255, 0.86);
   margin-right: 5px;
   border-radius: 50%;
   padding: 5px 5px;
