@@ -14,7 +14,7 @@ export const NavArea = styled.div`
     display: flex;
     justify-content: center;
     padding: 10px 0px;
-    font-size: 20px;
+    font-size: 18px;
     list-style: none;
     border-radius: 20px;
   }

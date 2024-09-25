@@ -14,6 +14,7 @@ const AppAuthHandler: React.FC = () => {
       if (document.hidden) {
         //lastBackgroundTime 업데이트하기
         localStorage.setItem("lastBackgroundTime", Date.now().toString());
+        localStorage.setItem("lastInURI", window.location.pathname);
       }
       //앱으로 돌아온 경우
       else {
@@ -25,7 +26,7 @@ const AppAuthHandler: React.FC = () => {
           const hasLoggedInBefore =
             localStorage.getItem("hasLoggedInBefore") === "true";
           //백그라운드에서 머무른 시간이 1분을 초과한 경우
-          if (timeDiff > 60000) {
+          if (timeDiff > 10) {
             //이전 로그인 기록이 있는 경우
             if (hasLoggedInBefore) {
               requestLogin();
@@ -64,6 +65,11 @@ const AppAuthHandler: React.FC = () => {
       else {
         // hasLoggedInBefore 값을 기반으로 로그인 상태를 전역 상태(zustand)에 설정합니다.
         setIsLoggedIn(hasLoggedInBefore);
+        const lastInURI = localStorage.getItem("lastInURI") || "/home";
+        // lastInURI가 null이 아닌 경우에만 navigate 호출
+        if (lastInURI) {
+          navigate(lastInURI);
+        }
       }
 
       // 마지막 활성화 시간을 현재 시간으로 localStorage에 저장하여 추후 비교에 사용할 수 있도록 합니다.
@@ -79,7 +85,15 @@ const AppAuthHandler: React.FC = () => {
       }
       //생체정보가 없는 경우 비밀번호 입력으로
       else {
-        navigate(PATH.PASSWORD_LOGIN);
+        navigate(PATH.PASSWORD_LOGIN, {
+          state: {
+            state: {
+              ment: `앱을 켜려면\n비밀번호를 눌러주세요`,
+              back: false,
+              mode: "Login",
+            },
+          },
+        });
       }
     };
 
