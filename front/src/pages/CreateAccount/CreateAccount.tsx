@@ -123,12 +123,9 @@ const CreateAccount = () => {
     }
     // 인증번호 발급하기
     try {
-      await axios.post(
-        `https://j11c201.p.ssafy.io:8765/api/payment/member/sendSMS`,
-        {
-          phoneNumber: joinUserInfo.phone_number,
-        }
-      );
+      await axios.post(`http://localhost:18040/payment/member/sendSMS`, {
+        phoneNumber: joinUserInfo.phone_number,
+      });
       setAuthSent(true); // 인증번호 발급됨
       setBtnMent("인증번호 재발송");
     } catch (e) {
