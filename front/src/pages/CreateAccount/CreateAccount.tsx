@@ -123,7 +123,7 @@ const CreateAccount = () => {
     }
     // 인증번호 발급하기
     try {
-      await axios.post(`http://localhost:18040/payment/member/sendSMS`, {
+      await axios.post(`http://api-gateway:8765/api/payment/member/sendSMS`, {
         phoneNumber: joinUserInfo.phone_number,
       });
       setAuthSent(true); // 인증번호 발급됨
