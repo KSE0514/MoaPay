@@ -29,15 +29,7 @@ dependencies {
 	implementation 'org.springframework.cloud:spring-cloud-starter-config'
 	developmentOnly 'org.springframework.boot:spring-boot-devtools'
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
-<<<<<<< HEAD
-<<<<<<< HEAD
 //	testImplementation 'org.springframework.security:spring-security-test'
-=======
-	//testImplementation 'org.springframework.security:spring-security-test'
->>>>>>> BE-WebAuthn
-=======
-//	testImplementation 'org.springframework.security:spring-security-test'
->>>>>>> 3a32f99a2c6859c89c7364f7c751bfd5dcf94d1d
 	testImplementation 'io.projectreactor:reactor-test'
 	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
 }

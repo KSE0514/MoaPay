@@ -5,24 +5,7 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="f09ba0f0-b7b4-472d-902b-3674651124a5" name="Changes" comment="K">
-      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/modules/cardbank.main.iml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/modules/cardbank.test.iml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/modules/config.iml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/modules/config.main.iml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/modules/config.test.iml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/modules/eureka.iml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/modules/eureka.main.iml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/modules/eureka.test.iml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/modules/member.iml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/modules/member.main.iml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/modules/member.test.iml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/modules/payment.main.iml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/modules/payment.test.iml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/modules/store.iml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/modules/store.main.iml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/modules/store.test.iml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/back/gateway/build.gradle" beforeDir="false" afterPath="$PROJECT_DIR$/back/gateway/build.gradle" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -150,7 +133,7 @@
     "Spring Boot.GatewayApplication.executor": "Run",
     "Spring Boot.MemberApplication.executor": "Run",
     "Spring Boot.StoreApplication.executor": "Run",
-    "git-widget-placeholder": "dev",
+    "git-widget-placeholder": "dev-test",
     "kotlin-language-version-configured": "true",
     "last_opened_file_path": "C:/SSAFY/docker",
     "node.js.detected.package.eslint": "true",
@@ -286,7 +269,7 @@
       <workItem from="1726908509614" duration="17431000" />
       <workItem from="1726993595820" duration="17448000" />
       <workItem from="1727144468595" duration="18803000" />
-      <workItem from="1727221818109" duration="4706000" />
+      <workItem from="1727221818109" duration="5061000" />
     </task>
     <servers />
   </component>
