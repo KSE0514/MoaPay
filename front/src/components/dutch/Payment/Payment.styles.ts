@@ -34,14 +34,21 @@ export const CardInfo = styled.div`
 
 export const Bottom = styled.div`
   position: absolute;
-  // bottom: 150px;
+  width: 100%;
+  bottom: 0;
+  text-align: center;
+
+  // absolute 요소 중앙 정렬
+  left: 50%;
+  transform: translate(-50%, -50%);
 `
 
 export const Btn = styled.button`
   background-color: white;
-  // width: 95%;
-  height: 7%;
+  width: 90%;
+  height: 60px;
   font-size: 19px;
+  font-weight: 700;
   border: 2px solid black;
   border-radius: 10px;
   padding: 10px;

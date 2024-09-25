@@ -25,7 +25,7 @@ import DutchInvite from "../pages/DutchInvite/DutchInvite.tsx";
 import DutchParticipation from "../pages/DutchParticipation/DutchParticipation.tsx";
 const router = createBrowserRouter([
   {
-    element: <AppAuthHandler />, // 최상위 레이아웃으로 AppAuthHandler 설정
+    // element: <AppAuthHandler />, // 최상위 레이아웃으로 AppAuthHandler 설정
     children: [
       {
         path: PATH.ROOT,

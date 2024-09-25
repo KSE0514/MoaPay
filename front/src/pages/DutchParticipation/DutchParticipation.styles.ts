@@ -10,6 +10,7 @@ export const Top = styled.div`
   flex-direction: column;
   gap: 20px;
   padding: 13% 0;
+  height: 41%;
 
 `
 
@@ -69,7 +70,7 @@ export const Step = styled.div`
 export const Main = styled.div`
   position: relative;
   width: 85%;
-  height: 100%;
+  height: 60%;
   border: 3px solid black;
   border-top-right-radius: 30px;
   border-top-left-radius: 30px;

@@ -13,7 +13,7 @@ const DutchParticipation = () => {
   const [memberNum, setMemberNum] = useState(''); // 참여자 수 입력 받는 변수
   const [isOpen, setIsOpen] = useState(false); // 더치페이 나가기 모달 상태 관리
   const [timeLeft, setTimeLeft] = useState(600); // 10분(600초) 카운트다운을 위한 상태 관리
-  const [process, setProcess] = useState(2) // 진행 단계
+  const [process, setProcess] = useState(0) // 진행 단계
 
   const goHome = () => {
     nav("/home");
@@ -58,6 +58,9 @@ const DutchParticipation = () => {
 
     setProcess(3); // 다음 화면으로 전환
   }
+  useEffect(() => {
+    console.log(`Process changed to ${process}`);
+  }, [process]);
 
   return (
     <Wrapper>
@@ -163,12 +166,12 @@ const DutchParticipation = () => {
 
       <Main
         style={{
-          backgroundColor: process === 2 ? "#B6BCFF" : "rgba(255, 255, 255, 0.65);"
+          backgroundColor: process === 2 ? "#B6BCFF" : "rgba(255, 255, 255, 0.65)"
         }}
       >
         {/* 3. 더치페이하는 상품 정보 */}
         {/* 2. 참여자 목록 컴포넌트_2단계인지 판단 기준: memberSetComplete === true */}
-        {process <2 ? <Participant /> : null}
+        {process <2 ? <Participant isHost={false} /> : null}
         {process === 2? <Payment onClick={onClickPaymentBtn} /> : null}
         {process === 3? (
           <DutchWaiting>

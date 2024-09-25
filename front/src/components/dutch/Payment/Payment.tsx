@@ -69,13 +69,13 @@ const Payment = ({onClick}: PaymentProps) => {
           <div>{testMainCard.name}</div>
         </CardInfo>
          <div>다른카드 선택하기</div>
-      </Card>
-
       <Bottom>
         {/* 결제 금액 넘겨 받아야 함 */}
         <Btn onClick={onClick}>7,000원 결제하기</Btn> 
         {/* text={'7,000원 결제하기'} color={'white'} onClick={onClick} /> */}
       </Bottom>
+      </Card>
+
 
     </Wrapper>
   )
