@@ -9,7 +9,7 @@ import {
   LogoView,
 } from "./CreateAccount.styles";
 import { PATH } from "../../constants/path";
-import axios from "axios";
+import axios, { AxiosError } from "axios";
 import { useAuthStore } from "../../store/AuthStore";
 
 interface JoinUserInfo {
@@ -129,7 +129,8 @@ const CreateAccount = () => {
       setAuthSent(true); // 인증번호 발급됨
       setBtnMent("인증번호 재발송");
     } catch (e) {
-      console.log(e);
+      const error = e as AxiosError; // e를 AxiosError로 단언
+      console.log(error);
     }
   };
 
@@ -170,7 +171,8 @@ const CreateAccount = () => {
         }
       }
     } catch (e) {
-      if (e.response.status == 400) {
+      const error = e as AxiosError; // e를 AxiosError로 단언
+      if (error.response?.status == 400) {
         setValidationErrors((prevErrors) => ({
           ...prevErrors,
           verification_code: true, // verification_code 필드에 오류 상태 추가
@@ -224,7 +226,8 @@ const CreateAccount = () => {
         });
       }
     } catch (e) {
-      console.log(e);
+      const error = e as AxiosError; // e를 AxiosError로 단언
+      console.log(error);
     }
     //test
     // localStorage.setItem("hasLoggedInBefore", "true");
@@ -245,7 +248,8 @@ const CreateAccount = () => {
           <button
             onClick={() => {
               setBeforeStarting(false);
-            }}>
+            }}
+          >
             시작하기
           </button>
         </LogoView>
@@ -339,7 +343,8 @@ const CreateAccount = () => {
                 disabled={authSent}
                 style={{
                   borderColor: validationErrors.telecom ? "red" : "",
-                }}>
+                }}
+              >
                 <option value="" disabled>
                   통신사를 선택해주세요
                 </option>
@@ -411,7 +416,8 @@ const CreateAccount = () => {
             )}
             <button
               className={isAuth ? "join-btn" : "ready-btn"}
-              onClick={isAuth ? join : checkUser}>
+              onClick={isAuth ? join : checkUser}
+            >
               {isAuth ? "회원가입" : "확인"}
             </button>
           </Form>
