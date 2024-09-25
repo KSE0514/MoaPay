@@ -2,7 +2,11 @@ import styled from "styled-components";
 
 export const Chart = styled.div`
   text-align: center;
-  line-height: 61px;
-  font-size: 28px;
+  line-height: 51px;
+  font-size: 25px;
   font-weight: 500;
+  letter-spacing: 0.5px;
+  p:nth-child(2) {
+    font-weight: 500;
+  }
 `;
