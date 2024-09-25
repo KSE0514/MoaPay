@@ -8,6 +8,7 @@ import com.moa.moapay.domain.Card.model.dto.MyCardInfoDto;
 import com.moa.moapay.domain.Card.repository.CardProductRepository;
 import com.moa.moapay.domain.Card.repository.MyCardQueryRepository;
 import com.moa.moapay.global.exception.BusinessException;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -27,7 +28,11 @@ public class MyCardServiceImpl implements MyCardService {
     private final MyCardQueryRepository myCardQueryRepository;
 
     @Override
-    public List<MyCardInfoDto> getMyCardInfo(UUID memberId) {
+    public List<MyCardInfoDto> getMyCardInfo(HttpServletRequest request) {
+
+        // todo: 여기서 쿠키를 뜯어서 UUID 찾기
+        // 이건 테스트용
+        UUID memberId = UUID.fromString("550e8400-e29b-41d4-a716-446655440000");
 
         List<MyCard> myCards = myCardQueryRepository.findAllByMemberIdWithBenefits(memberId);
 

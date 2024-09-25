@@ -22,7 +22,7 @@ import java.util.UUID;
 @RestController
 @RequiredArgsConstructor
 @Slf4j
-@RequestMapping("/payment/card")
+@RequestMapping("/payment/moapay/card")
 public class CardController {
 
     private final RecommendCardService recommendCardService;
@@ -36,8 +36,8 @@ public class CardController {
     }
 
     @GetMapping("/mycard")
-    public ResponseEntity<ResultResponse> mycard(@RequestParam UUID memberId) {
-        List<MyCardInfoDto> myCardInfo = myCardService.getMyCardInfo(memberId);
+    public ResponseEntity<ResultResponse> mycard(HttpServletRequest request) {
+        List<MyCardInfoDto> myCardInfo = myCardService.getMyCardInfo(request);
         ResultResponse resultResponse = ResultResponse.of(HttpStatus.OK, "나의 카드 조회", myCardInfo);
         return ResponseEntity.status(resultResponse.getStatus()).body(resultResponse);
     }
