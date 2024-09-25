@@ -38,7 +38,7 @@ interface CardState {
   cardList: Card[]; // 카드 리스트 배열
   setCardList: (newCardList: Card[]) => void; // 받아온 카드 리스트를 설정하는 함수
   addCard: (card: Card) => void; // 카드 추가 함수
-  removeCard: (cardNumber: string) => void; // 카드 삭제 함수
+  removeCard: (index: number) => void; // 카드 삭제 함수
   clearCards: () => void; // 카드 리스트 초기화 함수
 }
 
@@ -52,10 +52,12 @@ export const useCardStore = create<CardState>((set) => ({
   addCard: (card) => set((state) => ({ cardList: [...state.cardList, card] })),
 
   // 카드 삭제 함수 (id로 삭제)
-  removeCard: (cardNumber) =>
-    set((state) => ({
-      cardList: state.cardList.filter((card) => card.cardNumber !== cardNumber),
-    })),
+  removeCard: (index) =>
+    set((state) => {
+      const newCardList = [...state.cardList]; // Create a copy of the current cardList
+      newCardList.splice(index, 1); // Remove the card at the specified index
+      return { cardList: newCardList }; // Return the updated state
+    }),
 
   // 카드 리스트 초기화 함수
   clearCards: () => set(() => ({ cardList: [] })),

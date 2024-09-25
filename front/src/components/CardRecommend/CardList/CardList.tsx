@@ -1,24 +1,11 @@
 import { useState } from "react";
 import { CardInfo } from "./CardList.styles";
 import CardDetail from "../CardDetail/CardDetail";
-
-interface benefit {
-  category: string;
-  explanation: string;
-}
-
-interface card {
-  name: string; // 카드명
-  image_url: string; // 이미지 url
-  type: number; // 카드 종류 - 신용, 체크
-  annual_fee: number; // 연회비
-  performance: number; // 전월 실적
-  benefits: benefit[]; // 혜택
-}
+import { Card } from "../../../store/CardStore";
 
 interface Props {
-  cardList: card[];
-  onCardClick: (card: card) => void;
+  cardList: Card[];
+  onCardClick: (card: Card) => void;
 }
 
 const CardList = ({ cardList, onCardClick }: Props) => {
@@ -94,19 +81,17 @@ const CardList = ({ cardList, onCardClick }: Props) => {
             willChange: "transform",
           }}
           onClick={() => onCardClick(card)}
-          key={index}
-        >
+          key={index}>
           <div
             className={
               index === 0 && !animationExecuted
                 ? "active row" // 인덱스가 0이고 애니메이션이 실행되지 않은 경우에만 active
                 : "row"
-            }
-          >
+            }>
             <div>
               <img
-                src={card.image_url}
-                alt={card.name}
+                src={card.cardInfo.imageUrl}
+                alt={card.cardInfo.cardName}
                 onLoad={(event) => handleImageLoad(event, index)} // 이미지가 로드되면 handleImageLoad 호출
                 style={{
                   width: rotate[index] ? "57px" : "90px", // 회전 여부에 따라 width와 height 변경
@@ -116,7 +101,7 @@ const CardList = ({ cardList, onCardClick }: Props) => {
                 }}
               />
             </div>
-            <h3>{card.name}</h3> {/* 카드명 */}
+            <h3>{card.cardInfo.cardName}</h3> {/* 카드명 */}
           </div>
         </CardInfo>
       ))}
