@@ -11,7 +11,7 @@ import java.util.List;
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
-public class RecommendCardResponseDto {
+public class CardInfoResponseDto {
     private String cardName;
     private String companyName;
     private Long benefitTotalLimit;
