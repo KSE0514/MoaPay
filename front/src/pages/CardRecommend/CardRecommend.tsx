@@ -129,7 +129,8 @@ const CardRecommend = () => {
                         className="delete-btn"
                         onClick={() => {
                           deleteComparisonCard(0);
-                        }}>
+                        }}
+                      >
                         <FontAwesomeIcon icon={faX} />
                       </div>
                     </>
@@ -157,7 +158,8 @@ const CardRecommend = () => {
                         className="delete-btn"
                         onClick={() => {
                           deleteComparisonCard(1);
-                        }}>
+                        }}
+                      >
                         <FontAwesomeIcon icon={faX} />
                       </div>
                     </>
@@ -169,7 +171,8 @@ const CardRecommend = () => {
               <ComparisonView>
                 <div
                   onClick={changeShowComparisonViewState}
-                  className="comparison-view-header">
+                  className="comparison-view-header"
+                >
                   <p>
                     {showComparisonView ? "비교 결과 닫기" : "비교 결과 펼치기"}
                   </p>
@@ -246,7 +249,8 @@ const CardRecommend = () => {
                                     <>
                                       <p
                                         className="benefit-category"
-                                        key={index}>
+                                        key={index}
+                                      >
                                         {benefit.category}
                                       </p>
                                       <p className="benefit-explanation">
@@ -261,7 +265,8 @@ const CardRecommend = () => {
                             style={{
                               width: "1px",
                               backgroundColor: "#a097ff",
-                            }}></div>
+                            }}
+                          ></div>
                           <p className="benefit-row">
                             {comparisonCard[1]
                               ? comparisonCard[1].benefits.map(
@@ -269,7 +274,8 @@ const CardRecommend = () => {
                                     <>
                                       <p
                                         className="benefit-category"
-                                        key={index}>
+                                        key={index}
+                                      >
                                         {benefit.category}
                                       </p>
                                       <p className="benefit-explanation">
@@ -295,14 +301,16 @@ const CardRecommend = () => {
                   onClick={() => {
                     setNavPosition(`calc(calc(100% / 2) *0)`);
                     setShowUserCard(false);
-                  }}>
+                  }}
+                >
                   추천카드
                 </p>
                 <p
                   onClick={() => {
                     setNavPosition(`calc(calc(100% / 2) * 1)`);
                     setShowUserCard(true);
-                  }}>
+                  }}
+                >
                   내카드
                 </p>
                 <div style={{ left: `${navPosition}` }}></div>

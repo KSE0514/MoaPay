@@ -26,7 +26,7 @@ interface JoinUserInfo {
 const CreateAccount = () => {
   const baseUrl = import.meta.env.VITE_BASE_URL;
   const navigate = useNavigate();
-  const { isLoggedIn, setIsLoggedIn, setUserInfo } = useAuthStore();
+  const { setUserInfo } = useAuthStore();
   const [isAuth, setIsAuth] = useState<boolean>(false); //인증 여부
   const [beforeStarting, setBeforeStarting] = useState<boolean>(true);
   const [btnMent, setBtnMent] = useState<string>("인증번호 받기");
@@ -123,14 +123,13 @@ const CreateAccount = () => {
     }
     // 인증번호 발급하기
     try {
-      await axios.post(`http://localhost:18040/payment/member/sendSMS`, {
+      await axios.post(`http://localhost:18040/moapay/member/sendSMS`, {
         phoneNumber: joinUserInfo.phone_number,
       });
       setAuthSent(true); // 인증번호 발급됨
       setBtnMent("인증번호 재발송");
     } catch (e) {
-      const error = e as AxiosError; // e를 AxiosError로 단언
-      console.log(error);
+      console.log(e);
     }
   };
 
@@ -146,7 +145,7 @@ const CreateAccount = () => {
     try {
       //인증번호 확인하기
       const response = await axios.post(
-        `http://localhost:18040/payment/member/verification`,
+        `http://localhost:18040/moapay/member/verification`,
         {
           phoneNumber: joinUserInfo.phone_number,
           code: joinUserInfo.verification_code,
@@ -155,9 +154,10 @@ const CreateAccount = () => {
       //인증번호가 일치하면 존재하는 멤버인지 확인해야함
       if (response.status == 200) {
         //요청 결과에 따라 비밀번호 로그인 또는 회원가입으로 전달
-        const existUserCheckResponse = await axios.post(``, {});
+        // const existUserCheckResponse = await axios.post(``, {});
         //회원이 없는 경우
-        if (existUserCheckResponse.data) {
+        // if (existUserCheckResponse.data) {
+        if (true) {
           //회원가입
           setIsAuth(true);
         } else {
@@ -171,7 +171,7 @@ const CreateAccount = () => {
         }
       }
     } catch (e) {
-      const error = e as AxiosError; // e를 AxiosError로 단언
+      const error = e as AxiosError; // AxiosError로 타입 단언
       if (error.response?.status == 400) {
         setValidationErrors((prevErrors) => ({
           ...prevErrors,
@@ -201,7 +201,7 @@ const CreateAccount = () => {
     //회원 가입 요청 보내기
     try {
       const response = await axios.post(
-        `http://localhost:18040/payment/member/join`,
+        `http://localhost:18040/moapay/member/join`,
         {
           name: joinUserInfo.name,
           birthDate: formatBirthDate(joinUserInfo.birth_date),
@@ -213,8 +213,7 @@ const CreateAccount = () => {
       );
       if (response.status == 200) {
         //로그인 상태로 변경하기
-        localStorage.setItem("hasLoggedInBefore", "true");
-        setIsLoggedIn(true);
+        console.log(response);
         setUserInfo(response.data.id, response.data.name);
         // 응답 받으면 생체인식 설정으로 이동시키기
         navigate(PATH.PASSWORD_LOGIN, {
@@ -226,8 +225,7 @@ const CreateAccount = () => {
         });
       }
     } catch (e) {
-      const error = e as AxiosError; // e를 AxiosError로 단언
-      console.log(error);
+      console.log(e);
     }
     //test
     // localStorage.setItem("hasLoggedInBefore", "true");

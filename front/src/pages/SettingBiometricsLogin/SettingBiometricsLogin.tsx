@@ -14,29 +14,40 @@ import {
 import { useLocation, useNavigate } from "react-router-dom";
 import { PATH } from "../../constants/path";
 import { useState } from "react";
+import { useAuthStore } from "../../store/AuthStore";
 
 const SettingBiometricsLogin = () => {
+  const { name } = useAuthStore();
   const [settingFinish, setSettingFinish] = useState<boolean>(false);
   const navigate = useNavigate();
   const location = useLocation();
   const mode = location.state?.mode; // "Join" 값에 접근
+  const { Login } = useAuthStore();
   const biometricsRegister = async () => {
     try {
+      console.log(name);
       // 1. 서버로부터 WebAuthn 등록 옵션을 가져옴
       //    이 단계에서는 사용자 생체 인증 등록을 위한 챌린지와 공개키 정보가 포함된 옵션을 서버에서 제공.
-      const options = (await axios.get(``)).data;
-
+      const options = (
+        await axios.get(
+          `http://localhost:18040/moapay/member/authn/register/options/예빈`
+        )
+      ).data;
+      console.log(options);
       // 2. navigator.credentials.create() 또는 라이브러리에서 제공하는 startRegistration 사용
       //    서버에서 받은 등록 옵션을 사용해 WebAuthn 등록을 진행
       //    WebAuthn API는 사용자의 지문/얼굴 인식 장치에 등록하는 과정을 수행.
       //    서버로부터 받은 옵션을 사용하여 사용자의 인증 장치를 등록함.
       //    사용자가 지문이나 얼굴을 인식하면, attestationResponse에 결과가 저장됨.
       const attestationResponse = await startRegistration(options);
-
+      console.log(attestationResponse);
       // 3. 등록된 생체인증 정보를 서버에 전송하여 저장함
       //    서버는 이 정보를 통해 사용자의 인증 장치를 등록하고, 나중에 인증 시 사용할 수 있도록 함.
       //    등록된 생체인증 정보는 서버에 안전하게 저장되며, 이후 로그인에 사용됨.
-      const registerResult = await axios.post(``, attestationResponse);
+      const registerResult = await axios.post(
+        `http://localhost:18040/moapay/member/authn/register/verify`,
+        attestationResponse
+      );
       if (registerResult.data.success) {
         setSettingFinish(true);
         localStorage.setItem("settingBioLogin", "true");
@@ -112,6 +123,17 @@ const SettingBiometricsLogin = () => {
   const skipSettingBiometrics = () => {
     localStorage.setItem("settingBioLogin", "false");
   };
+  const checkingPath = async () => {
+    //new Login인 경우 카드 정보를 불러오는 곳으로 이동
+    if (mode == "newLogin") {
+      await Login();
+      navigate(PATH.BRING_CARD);
+    }
+    //그 외에는 home으로 이동
+    else {
+      navigate(PATH.HOME);
+    }
+  };
 
   return (
     <Wrapper>
@@ -126,7 +148,8 @@ const SettingBiometricsLogin = () => {
               viewBox="0 0 24 24"
               stroke-width="1.5"
               stroke="currentColor"
-              className="size-6">
+              className="size-6"
+            >
               <path
                 stroke-linecap="round"
                 stroke-linejoin="round"
@@ -144,7 +167,8 @@ const SettingBiometricsLogin = () => {
         <Button
           onClick={() => {
             biometricsRegister();
-          }}>
+          }}
+        >
           등록하기
         </Button>
         {mode == "Join" || mode == "NewLogin" ? (
@@ -152,7 +176,8 @@ const SettingBiometricsLogin = () => {
             onClick={() => {
               skipSettingBiometrics();
               navigate(PATH.HOME);
-            }}>
+            }}
+          >
             다음에 설정하기
           </div>
         ) : null}
@@ -168,8 +193,9 @@ const SettingBiometricsLogin = () => {
             <p className="ment">등록이 완료되었습니다.</p>
             <button
               onClick={() => {
-                navigate(PATH.HOME);
-              }}>
+                checkingPath();
+              }}
+            >
               확인
             </button>
           </div>

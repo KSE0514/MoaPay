@@ -18,6 +18,7 @@ const PATH = {
   DUTCHPAY: "/dutchpay", //nonav
   DUTCHINVITE: "/dutchpay/invite", //nonav
   DUTCHPARTICIPATION: "/dutchpay/participation", //nonav
+  BRING_CARD: "/bring-card",
 } as const;
 
 export { PATH };
