@@ -42,8 +42,7 @@ public class MessageServiceImpl implements MessageService{
 	MessageRepository messageRepository;
 	DefaultMessageService defaultMessageService;
 
-	public MessageServiceImpl(MessageRepository messageRepository, DefaultMessageService defaultMessageService) {
-		this.messageRepository = messageRepository;
+	public MessageServiceImpl(DefaultMessageService defaultMessageService) {
 		this.defaultMessageService = defaultMessageService;
 	}
 

@@ -61,9 +61,6 @@ public class Member {
 	@Column(name="simple_password")
 	private String simplePassword;
 
-	@Lob
-	@Column(name = "bio_info")
-	private byte[] bioInfo;
 
 	@Temporal(TemporalType.TIMESTAMP) //날짜와 시간 저장
 	@Column(name="create_time",nullable=false)
@@ -79,6 +76,19 @@ public class Member {
 	@Column(name="address",nullable=false)
 	private String address;
 
+	@NotNull
+	@Column(name = "public_key", nullable = true)
+	private String publicKey; //공개키
+
+	@NotNull
+	@Column(name = "credential_id", nullable = true)
+	private String credentialId; //WebAuthn 장치의 Credential ID
+
+	@NotNull
+	@Column(name = "authenticator_data", nullable = true)
+	private byte[] authenticatorData; //인증 장치 데이터
+
+
 	@PrePersist
 	private void prePersist() {
 		LocalDateTime now = LocalDateTime.now();
@@ -90,6 +100,14 @@ public class Member {
 	@PreUpdate
 	private void preUpdate() {
 		this.updateTime = LocalDateTime.now();
+	}
+
+	// Builder를 통한 공개키 및 관련 정보 설정 메서드 추가
+	public static MemberBuilder builderWithPublicKey(String publicKey, String credentialId, byte[] authenticatorData) {
+		return Member.builder()
+			.publicKey(publicKey)
+			.credentialId(credentialId)
+			.authenticatorData(authenticatorData);
 	}
 
 
