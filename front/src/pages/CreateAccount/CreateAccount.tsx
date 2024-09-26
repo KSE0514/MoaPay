@@ -26,6 +26,7 @@ interface JoinUserInfo {
 const CreateAccount = () => {
   const baseUrl = import.meta.env.VITE_BASE_URL;
   const navigate = useNavigate();
+  const { limitTime, setLimitTime } = useState<number>(2000); // 초기 값 2000으로 설정
   const { setUserInfo } = useAuthStore();
   const [isAuth, setIsAuth] = useState<boolean>(false); //인증 여부
   const [beforeStarting, setBeforeStarting] = useState<boolean>(true);
@@ -114,6 +115,25 @@ const CreateAccount = () => {
     setValidationErrors(errors);
     return Object.keys(errors).length === 0;
   };
+
+  // 인증번호 제한 시간 타이머
+  const startLimitTime = () => {
+    let timeRemaining = 180; // 3분 설정
+    const timer = setInterval(() => {
+      timeRemaining -= 1;
+      setLimitTime(timeRemaining);
+      if (timeRemaining <= 0) {
+        clearInterval(timer); // 타이머 중단
+      }
+    }, 1000); // 1초마다 실행
+  };
+
+  // 분:초 형식으로 시간 변환
+  const formatTime = (time: number) => {
+    const minutes = Math.floor(time / 60); // 분 계산
+    const seconds = time % 60; // 초 계산
+    return `${minutes}:${seconds < 10 ? `0${seconds}` : seconds}`; // 1:30 형식으로 반환
+  };
   /**
    * 1. 인증번호 받아오기
    */
@@ -128,6 +148,7 @@ const CreateAccount = () => {
       // });
       setAuthSent(true); // 인증번호 발급됨
       setBtnMent("인증번호 재발송");
+      startLimitTime();
     } catch (e) {
       console.log(e);
     }
@@ -378,13 +399,24 @@ const CreateAccount = () => {
                   </p>
                 )}
                 <div className="form-row auth-btn">
-                  <input
-                    value={joinUserInfo.verification_code}
-                    type="text"
-                    placeholder="인증번호"
-                    name="verification_code"
-                    onChange={handleChange}
-                  />
+                  <div>
+                    <input
+                      value={joinUserInfo.verification_code}
+                      type="text"
+                      placeholder="인증번호"
+                      name="verification_code"
+                      onChange={handleChange}
+                    />
+                    <div>
+                      {limitTime !== 2000 && (
+                        <div>
+                          {limitTime > 0 ? formatTime(limitTime) : "시간 초과"}
+                        </div>
+                      )}{" "}
+                      {/* limitTime이 2000이 아닐 때만 타이머 표시 */}
+                    </div>
+                  </div>
+
                   <button onClick={getAuthNumber}>{btnMent}</button>
                 </div>
               </div>
