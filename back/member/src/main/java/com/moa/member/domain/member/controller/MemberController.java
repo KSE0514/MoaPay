@@ -11,12 +11,15 @@ import net.nurigo.sdk.message.response.SingleMessageSentResponse;
 
 import com.moa.member.domain.member.model.dto.JoinRequestDto;
 import com.moa.member.domain.member.model.dto.JoinResponseDto;
+import com.moa.member.domain.member.model.dto.LoginRequestDto;
 import com.moa.member.domain.member.model.dto.MessageRequestDto;
 import com.moa.member.domain.member.model.dto.VerificationRequestDto;
+import com.moa.member.domain.member.security.TokenDto;
 import com.moa.member.domain.member.service.MemberService;
 import com.moa.member.domain.member.service.MessageService;
 import com.moa.member.global.response.ResultResponse;
 
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -54,6 +57,13 @@ public class MemberController {
 		ResultResponse resultResponse = ResultResponse.of(HttpStatus.OK, "인증번호가 일치합니다.");
 		return ResponseEntity.status(resultResponse.getStatus()).body(resultResponse);
 
+	}
+
+	@PostMapping("/login")
+	public ResponseEntity<ResultResponse> login(@RequestBody LoginRequestDto dto,HttpServletResponse response) throws Exception {
+		TokenDto token = memberService.login(dto);
+		ResultResponse resultResponse = ResultResponse.of(HttpStatus.OK, "로그인 성공",token);
+		return ResponseEntity.status(resultResponse.getStatus()).body(resultResponse);
 	}
 
 }

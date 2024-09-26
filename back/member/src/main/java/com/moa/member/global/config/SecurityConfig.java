@@ -20,6 +20,12 @@ import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
+import com.moa.member.domain.member.security.JwtAccessDeniedHandler;
+import com.moa.member.domain.member.security.JwtAuthenticationEntryPoint;
+import com.moa.member.domain.member.security.JwtFilter;
+import com.moa.member.domain.member.security.JwtTokenProvider;
+import com.moa.member.domain.member.security.MemberDetailsServiceImpl;
+
 import lombok.RequiredArgsConstructor;
 
 @Configuration
@@ -66,6 +72,7 @@ public class SecurityConfig {
 			//.requestMatchers("/**").permitAll() // 모든 주소 허용
 			.requestMatchers("/moapay/member/**").permitAll() // 허용된 주소
 			.anyRequest().authenticated() // Authentication 필요한 주소
+			.and()
 			.exceptionHandling((exceptionHandling) -> exceptionHandling
 				.authenticationEntryPoint(jwtAuthenticationEntryPoint)
 				.accessDeniedHandler(jwtAccessDeniedHandler))
