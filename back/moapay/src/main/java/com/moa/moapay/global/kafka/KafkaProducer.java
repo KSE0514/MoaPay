@@ -23,7 +23,7 @@ public class KafkaProducer {
 
     public void send(KafkaMsgVo message, String key) {
         log.info("send message: {}", message.toString());
-        this.kafkaTemplate.send(TOPIC, "1", message);
+        this.kafkaTemplate.send(TOPIC, message);
     }
 
 }

@@ -10,6 +10,10 @@ import java.util.UUID;
 @NoArgsConstructor
 @AllArgsConstructor
 public class KafkaMsgVo {
+
+    private String paymentType;
+    private String categoryId;
+
     private UUID merchantId;
     private UUID cardId;
     private String cardNumber;
