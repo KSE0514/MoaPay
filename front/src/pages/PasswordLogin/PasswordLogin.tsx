@@ -112,7 +112,7 @@ const PasswordLogin: React.FC = () => {
           setPassword("");
         }
       } else if (mode === "NewLogin") {
-        //비밀번호 일치 시 로그인 시키고 생체여부 판단 후 홈으로 이동
+        //비밀번호 일치 시 로그인 시키고 생체여부 판단
         if (true) {
           navigate(PATH.SETTING_BIOMETRICS_LOGIN, {
             state: { mode: "NewLogin" },
@@ -174,18 +174,20 @@ const PasswordLogin: React.FC = () => {
     const handlePasswordCheck = async () => {
       if (isDoubleCheck && doubleCheckPassword.length === 6) {
         console.log(password + " " + doubleCheckPassword);
-        if (doubleCheckPassword === password) {
+        if (String(doubleCheckPassword).trim() === String(password).trim()) {
+          console.log("!!");
           //비밀번호 설정 후 저장 요청보내기
           //단 Join일때와 SettingPassword일때는 다른 요청을 보내야한다.
           if (mode == "Join") {
             try {
+              console.log("here");
               //생체정보 설정을 위해 이동 - 선택 가능
-              const response = await axios.post(``);
-              if (response.status == 201) {
-                navigate(PATH.SETTING_BIOMETRICS_LOGIN, {
-                  state: { mode: "Join" },
-                });
-              }
+              // const response = await axios.post(``);
+              // if (response.status == 201) {
+              navigate(PATH.SETTING_BIOMETRICS_LOGIN, {
+                state: { mode: "Join" },
+              });
+              // }
             } catch (error) {
               console.error("Error during password setting:", error);
             }
@@ -238,7 +240,8 @@ const PasswordLogin: React.FC = () => {
                   : password.length)
                   ? "full"
                   : ""
-              }>
+              }
+            >
               <FontAwesomeIcon
                 style={{ width: "30px", height: "30px" }}
                 icon={faAsterisk}
