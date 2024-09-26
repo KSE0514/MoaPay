@@ -213,7 +213,7 @@ const CreateAccount = () => {
       if (response.status == 200) {
         //로그인 상태로 변경하기
         console.log(response);
-        setUserInfo(response.data.id, response.data.name);
+        setUserInfo(response.data.data.id, response.data.data.name);
         // 응답 받으면 생체인식 설정으로 이동시키기
         navigate(PATH.PASSWORD_LOGIN, {
           state: {

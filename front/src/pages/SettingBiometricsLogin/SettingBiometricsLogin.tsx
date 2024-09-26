@@ -47,6 +47,7 @@ const SettingBiometricsLogin = () => {
 
   const biometricsRegister = async () => {
     try {
+      console.log(name);
       // 1. 서버로부터 WebAuthn 등록 옵션을 가져옴
       const response = await axios.get(
         `https://j11c201.p.ssafy.io/api/moapay/member/authn/register/options/${name}`,
