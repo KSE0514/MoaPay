@@ -94,7 +94,7 @@ public class WebAuthnRegisterController{
 
 		PublicKeyCredentialCreationOptions options = PublicKeyCredentialCreationOptions.builder()
 				.rp(RelyingPartyIdentity.builder()
-						.id("moapay-7e24e.web.app")
+						.id("j11c201.p.ssafy.io")
 						.name("moapay")
 						.build())
 				.user(userEntity)
