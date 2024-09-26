@@ -26,7 +26,7 @@ interface JoinUserInfo {
 const CreateAccount = () => {
   const baseUrl = import.meta.env.VITE_BASE_URL;
   const navigate = useNavigate();
-  const { isLoggedIn, setIsLoggedIn, setUserInfo } = useAuthStore();
+  const { setUserInfo } = useAuthStore();
   const [isAuth, setIsAuth] = useState<boolean>(false); //인증 여부
   const [beforeStarting, setBeforeStarting] = useState<boolean>(true);
   const [btnMent, setBtnMent] = useState<string>("인증번호 받기");
@@ -123,14 +123,13 @@ const CreateAccount = () => {
     }
     // 인증번호 발급하기
     try {
-      await axios.post(`http://localhost:18040/payment/member/sendSMS`, {
-        phoneNumber: joinUserInfo.phone_number,
-      });
+      // await axios.post(`http://localhost:18040/moapay/member/sendSMS`, {
+      //   phoneNumber: joinUserInfo.phone_number,
+      // });
       setAuthSent(true); // 인증번호 발급됨
       setBtnMent("인증번호 재발송");
     } catch (e) {
-      const error = e as AxiosError; // e를 AxiosError로 단언
-      console.log(error);
+      console.log(e);
     }
   };
 
@@ -145,33 +144,33 @@ const CreateAccount = () => {
     }
     try {
       //인증번호 확인하기
-      const response = await axios.post(
-        `http://localhost:18040/payment/member/verification`,
-        {
-          phoneNumber: joinUserInfo.phone_number,
-          code: joinUserInfo.verification_code,
-        }
-      );
+      // const response = await axios.post(
+      //   `http://localhost:18040/moapay/member/verification`,
+      //   {
+      //     phoneNumber: joinUserInfo.phone_number,
+      //     code: joinUserInfo.verification_code,
+      //   }
+      // );
       //인증번호가 일치하면 존재하는 멤버인지 확인해야함
-      if (response.status == 200) {
-        //요청 결과에 따라 비밀번호 로그인 또는 회원가입으로 전달
-        const existUserCheckResponse = await axios.post(``, {});
-        //회원이 없는 경우
-        if (existUserCheckResponse.data) {
-          //회원가입
-          setIsAuth(true);
-        } else {
-          navigate(PATH.PASSWORD_LOGIN, {
-            state: {
-              ment: `앱을 켜려면\n비밀번호를 눌러주세요`,
-              back: false,
-              mode: "NewLogin",
-            },
-          });
-        }
-      }
+      // if (response.status == 200) {
+      //   //요청 결과에 따라 비밀번호 로그인 또는 회원가입으로 전달
+      //   const existUserCheckResponse = await axios.post(``, {});
+      //   //회원이 없는 경우
+      //   if (existUserCheckResponse.data) {
+      //     //회원가입
+      //     setIsAuth(true);
+      //   } else {
+      //     navigate(PATH.PASSWORD_LOGIN, {
+      //       state: {
+      //         ment: `앱을 켜려면\n비밀번호를 눌러주세요`,
+      //         back: false,
+      //         mode: "NewLogin",
+      //       },
+      //     });
+      //   }
+      // }
     } catch (e) {
-      const error = e as AxiosError; // e를 AxiosError로 단언
+      const error = e as AxiosError; // AxiosError로 타입 단언
       if (error.response?.status == 400) {
         setValidationErrors((prevErrors) => ({
           ...prevErrors,
@@ -182,7 +181,7 @@ const CreateAccount = () => {
     }
 
     //test - 회원가입
-    // setIsAuth(true);
+    setIsAuth(true);
 
     //test - 계정이 있는 경우
     // navigate(PATH.PASSWORD_LOGIN, {
@@ -200,44 +199,42 @@ const CreateAccount = () => {
   const join = async () => {
     //회원 가입 요청 보내기
     try {
-      const response = await axios.post(
-        `http://localhost:18040/payment/member/join`,
-        {
-          name: joinUserInfo.name,
-          birthDate: formatBirthDate(joinUserInfo.birth_date),
-          gender: Number(joinUserInfo.gender), //1~4로 넘겨주면 F,M 판단해서 db에 넣기
-          phoneNumber: joinUserInfo.phone_number,
-          email: joinUserInfo.email,
-          address: joinUserInfo.address,
-        }
-      );
-      if (response.status == 200) {
-        //로그인 상태로 변경하기
-        localStorage.setItem("hasLoggedInBefore", "true");
-        setIsLoggedIn(true);
-        setUserInfo(response.data.id, response.data.name);
-        // 응답 받으면 생체인식 설정으로 이동시키기
-        navigate(PATH.PASSWORD_LOGIN, {
-          state: {
-            ment: `간편 비밀번호를\n입력해주세요`,
-            back: false,
-            mode: "Join",
-          },
-        });
-      }
+      // const response = await axios.post(
+      //   `http://localhost:18040/moapay/member/join`,
+      //   {
+      //     name: joinUserInfo.name,
+      //     birthDate: formatBirthDate(joinUserInfo.birth_date),
+      //     gender: Number(joinUserInfo.gender), //1~4로 넘겨주면 F,M 판단해서 db에 넣기
+      //     phoneNumber: joinUserInfo.phone_number,
+      //     email: joinUserInfo.email,
+      //     address: joinUserInfo.address,
+      //   }
+      // );
+      // if (response.status == 200) {
+      //   //로그인 상태로 변경하기
+      //   console.log(response);
+      //   setUserInfo(response.data.id, response.data.name);
+      //   // 응답 받으면 생체인식 설정으로 이동시키기
+      //   navigate(PATH.PASSWORD_LOGIN, {
+      //     state: {
+      //       ment: `간편 비밀번호를\n입력해주세요`,
+      //       back: false,
+      //       mode: "Join",
+      //     },
+      //   });
+      // }
     } catch (e) {
-      const error = e as AxiosError; // e를 AxiosError로 단언
-      console.log(error);
+      console.log(e);
     }
-    //test
-    // localStorage.setItem("hasLoggedInBefore", "true");
-    // navigate(PATH.PASSWORD_LOGIN, {
-    //   state: {
-    //     ment: `간편 비밀번호를 설정합니다.\n 6자리 비밀번호를 입력해주세요`,
-    //     back: false,
-    //     mode: "Join",
-    //   },
-    // });
+    // test
+    localStorage.setItem("hasLoggedInBefore", "true");
+    navigate(PATH.PASSWORD_LOGIN, {
+      state: {
+        ment: `간편 비밀번호를 설정합니다.\n 6자리 비밀번호를 입력해주세요`,
+        back: false,
+        mode: "Join",
+      },
+    });
   };
 
   return (
