@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import Modal from "../../components/dutch/Modal/Modal";
 import backImg from "./../../assets/image/card_detail_back.png";
 import bottomGD from "./../../assets/image/card_detail_bottom.png";
 import testCard12 from "./../../assets/image/cards/신용카드이미지/12_올바른_FLEX_카드.png";
@@ -10,9 +11,11 @@ import {
   BackImg,
   Top,
   Month,
+  DateTag,
   CardInfo,
   Main,
   Bottom,
+  DateInput,
 } from "./UserCardDetail.styles";
 
 const UserCardDetail = () => {
@@ -29,6 +32,14 @@ const UserCardDetail = () => {
   const [year, setYear] = useState<number>(2024);
   const [month, setMonth] = useState<number>(8);
   const [rotate, setRotate] = useState<boolean>(false);
+
+  const [isOpen, setIsOpen] = useState<boolean>(false);
+  const [tempYear, setTempYear] = useState<number>(year);
+  const [tempMonth, setTempMonth] = useState<number>(month);
+  const [errorMessage, setErrorMessage] = useState<string>(""); // 오류 메시지 상태
+
+  const currentYear = new Date().getFullYear();  // 현재 년도 가져오기
+  const currentMonth = new Date().getMonth() + 1; // 월은 0부터 시작하기 때문에 +1
 
   // 카드별 결제 내역 조회(년, 월)
   const getCardHistory = async () => {
@@ -66,6 +77,11 @@ const UserCardDetail = () => {
 
   // 월 선택 핸들러 (다음 달)
   const handleNextMonth = () => {
+    if (year === currentYear && month === currentMonth) {
+      // 현재 연도와 월일 경우, 더 이상 다음 달로 이동하지 않도록
+      return
+    }
+
     if (month === 12) {
       // 12월에서 다음 달로 가면 다음 해의 1월로 이동
       setMonth(1);
@@ -78,22 +94,37 @@ const UserCardDetail = () => {
 
   // 년도와 월을 선택할 수 있는 함수
   const handleMonthSelect = () => {
-    const selectedYear = prompt("년도 입력 (예: 2024)", year.toString());
-    const selectedMonth = prompt("월 입력 (1 ~ 12)", month.toString());
-
-    if (selectedYear && !isNaN(Number(selectedYear))) {
-      setYear(Number(selectedYear));
-    }
-
-    if (selectedMonth && !isNaN(Number(selectedMonth))) {
-      const monthNum = Number(selectedMonth);
-      if (monthNum >= 1 && monthNum <= 12) {
-        setMonth(monthNum);
-      } else {
-        alert("월은 1과 12 사이여야 합니다.");
-      }
-    }
+    setTempYear(year);
+    setTempMonth(month);
+    setIsOpen(true);
   };
+
+  // 년도 변경
+  const onChangeYear = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setTempYear(Number(e.target.value))
+  }
+
+  // 월 변경
+  const onChangeMonth = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setTempMonth(Number(e.target.value))
+  }
+
+  const ChangeYearMonth = () => {
+    if (tempYear > currentYear || (tempYear === currentYear && tempMonth > currentMonth) || (tempMonth <= 1 || tempMonth >= 12)) {
+      setErrorMessage("날짜를 확인 후 다시 입력해주세요.");
+    } else {
+      // 입력이 유효한 경우 year과 month 업데이트
+      setYear(tempYear);
+      setMonth(tempMonth);
+      setIsOpen(false);
+      setErrorMessage(""); // 오류 메시지 초기화
+    }
+  }
+
+  const onClose = () => {
+    setIsOpen(false)
+    setErrorMessage(""); // 오류 메시지 초기화
+  }
 
   // 카드 가로, 세로 길이에 따른 회전 여부 판단 핸들러
   const handleImageLoad = (
@@ -127,9 +158,14 @@ const UserCardDetail = () => {
               />
             </svg>
           </button>
-          <div onClick={handleMonthSelect}>
-            {year}년 {month}월
-          </div>
+          <DateTag onClick={handleMonthSelect}>
+            {year !== currentYear && (
+              <span>{year}년 </span>
+            )}
+            <span>
+              {month < 10?  `0${month}`: month}월
+            </span>
+          </DateTag>
           <button onClick={handleNextMonth}>
             <svg
               xmlns="http://www.w3.org/2000/svg"
@@ -170,9 +206,40 @@ const UserCardDetail = () => {
       <Main>
         <DetailPayLogList />
       </Main>
-      <Bottom>
+      {/* <Bottom>
         <img src={bottomGD} />
-      </Bottom>
+      </Bottom> */}
+
+
+      {/* 날짜 변경 모달 */}
+      <Modal isOpen={isOpen} onClose={onClose}>
+        <div
+        style={{
+          fontSize: "15px",
+          paddingTop: '20px',
+        }}
+        >
+          <div
+            style={{
+              color: 'gray'
+            }}
+          >
+            조회하고자 하는 기간을 입력해주세요.
+          </div>
+          <DateInput>
+            <input type="number" value={tempYear} onChange={onChangeYear} />년
+            <input type="number" value={tempMonth} onChange={onChangeMonth}/>월
+          </DateInput>
+          {errorMessage && <div style={{ color: "red",
+            paddingBottom: '15px'
+           }}>{errorMessage}</div>}
+          <button onClick={ChangeYearMonth}>
+            확인
+          </button>
+        </div>
+        
+        
+      </Modal>
     </Wrapper>
   );
 };
