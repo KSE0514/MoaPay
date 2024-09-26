@@ -63,7 +63,7 @@ public class WebAuthnRegisterController{
 		// RelyingParty 설정
 		this.relyingParty = RelyingParty.builder()
 			.identity(RelyingPartyIdentity.builder()
-				.id("moapay.com")  // 서버 도메인
+				.id("j11c201.p.ssafy.io")  // 서버 도메인
 				.name("moapay")    // 서버 이름
 				.build())
 			.credentialRepository(credentialRepository)  // 빈 CredentialRepository 주입
