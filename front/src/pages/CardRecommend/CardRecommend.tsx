@@ -9,7 +9,7 @@ import {
   Toggle,
 } from "./CardRecommend.styles";
 import CardList from "../../components/CardRecommend/CardList/CardList";
-import { userCardList, RecommendedCardList } from "../../constants/card";
+import { MyCardList, RecommendedCardList } from "../../constants/card";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faCaretDown,
@@ -17,18 +17,8 @@ import {
   faX,
   faCreditCard,
 } from "@fortawesome/free-solid-svg-icons";
-interface benefit {
-  category: string;
-  explanation: string;
-}
-interface card {
-  name: string; //카드명
-  image_url: string; //이미지 url
-  type: number; //카드 종류 - 신용, 체크
-  annual_fee: number; //연회비
-  performance: number; //전월실적
-  benefits: benefit[]; //혜택
-}
+import { Card } from "../../store/CardStore";
+
 /**
  * 추천받은 카드를 가져올때 정보를 다 가져와서 프론트쪽에서 가지고 있기
  */
@@ -36,7 +26,7 @@ const CardRecommend = () => {
   const [isLoading, setIsLoading] = useState<boolean>(false);
   // const [RecommendedCardList, setRecommendedCardList] = useState<card[]>([]);
   // const [userCardInfoList, setUserCardInfoList] = useState<card[]>([]);
-  const [comparisonCard, setComparisonCard] = useState<(card | null)[]>([
+  const [comparisonCard, setComparisonCard] = useState<(Card | null)[]>([
     null,
     null,
   ]);
@@ -51,7 +41,7 @@ const CardRecommend = () => {
     setShowComparisonView((current) => !current);
   };
 
-  const onCardClick = (card: card) => {
+  const onCardClick = (card: Card) => {
     setComparisonCard((prev) => {
       if (prev.length >= 2 && prev[0] && prev[1]) return prev; // 이미 2개의 카드가 선택되었으면 더 추가하지 않음
       //0이 비어 있을 때
@@ -114,8 +104,8 @@ const CardRecommend = () => {
                   {comparisonCard[0] ? (
                     <>
                       <img
-                        src={comparisonCard[0].image_url}
-                        alt={comparisonCard[0].name}
+                        src={comparisonCard[0].cardInfo.imageUrl}
+                        alt={comparisonCard[0].cardInfo.cardName}
                         onLoad={(event) => handleImageLoad(event, 0)} // 이미지 로드 시 회전 여부 판단
                         style={{
                           width: rotate[0] ? "84px" : "132px", // 회전 여부에 따라 width와 height 변경
@@ -142,8 +132,8 @@ const CardRecommend = () => {
                   {comparisonCard[1] ? (
                     <>
                       <img
-                        src={comparisonCard[1].image_url}
-                        alt={comparisonCard[1].name}
+                        src={comparisonCard[1].cardInfo.imageUrl}
+                        alt={comparisonCard[1].cardInfo.cardName}
                         onLoad={(event) => handleImageLoad(event, 1)} // 두 번째 카드도 동일하게 적용
                         style={{
                           width: rotate[1] ? "84px" : "132px", // 회전 여부에 따라 width와 height 변경
@@ -187,7 +177,7 @@ const CardRecommend = () => {
                         <div className="row">
                           <p>
                             {comparisonCard[0]
-                              ? comparisonCard[0].type == 0
+                              ? comparisonCard[0].cardInfo.cardType == "cred"
                                 ? "신용카드"
                                 : "체크카드"
                               : ""}
@@ -195,7 +185,7 @@ const CardRecommend = () => {
                           <div className="line"></div>
                           <p>
                             {comparisonCard[1]
-                              ? comparisonCard[1].type == 0
+                              ? comparisonCard[1].cardInfo.cardType == "cred"
                                 ? "신용카드"
                                 : "체크카드"
                               : ""}
@@ -205,16 +195,16 @@ const CardRecommend = () => {
                         <div className="row">
                           <p>
                             {comparisonCard[0]
-                              ? comparisonCard[0].annual_fee !== 0
-                                ? `${comparisonCard[0].annual_fee}원`
+                              ? comparisonCard[0].cardInfo.annualFee !== 0
+                                ? `${comparisonCard[0].cardInfo.annualFee}원`
                                 : "연회비 없음"
                               : ""}
                           </p>
                           <div className="line"></div>
                           <p>
                             {comparisonCard[1]
-                              ? comparisonCard[1].annual_fee !== 0
-                                ? `${comparisonCard[1].annual_fee}원`
+                              ? comparisonCard[1].cardInfo.annualFee !== 0
+                                ? `${comparisonCard[1].cardInfo.annualFee}원`
                                 : "연회비 없음"
                               : ""}
                           </p>
@@ -223,16 +213,16 @@ const CardRecommend = () => {
                         <div className="row">
                           <p>
                             {comparisonCard[0]
-                              ? comparisonCard[0].performance !== 0
-                                ? `${comparisonCard[0].performance}원`
+                              ? comparisonCard[0].cardInfo.performance !== 0
+                                ? `${comparisonCard[0].cardInfo.performance}원`
                                 : "전월실적 없음"
                               : ""}
                           </p>
                           <div className="line"></div>
                           <p>
                             {comparisonCard[1]
-                              ? comparisonCard[1].performance !== 0
-                                ? `${comparisonCard[1].performance}원`
+                              ? comparisonCard[1].cardInfo.performance !== 0
+                                ? `${comparisonCard[1].cardInfo.performance}원`
                                 : "전월실적 없음"
                               : ""}
                           </p>
@@ -241,16 +231,16 @@ const CardRecommend = () => {
                         <div className="row benefit">
                           <p className="benefit-row">
                             {comparisonCard[0]
-                              ? comparisonCard[0].benefits.map(
+                              ? comparisonCard[0].cardInfo.benefits.map(
                                   (benefit, index) => (
                                     <>
                                       <p
                                         className="benefit-category"
                                         key={index}>
-                                        {benefit.category}
+                                        {benefit.categoryName}
                                       </p>
                                       <p className="benefit-explanation">
-                                        {benefit.explanation}
+                                        {benefit.benefitDesc}
                                       </p>
                                     </>
                                   )
@@ -264,16 +254,16 @@ const CardRecommend = () => {
                             }}></div>
                           <p className="benefit-row">
                             {comparisonCard[1]
-                              ? comparisonCard[1].benefits.map(
+                              ? comparisonCard[1].cardInfo.benefits.map(
                                   (benefit, index) => (
                                     <>
                                       <p
                                         className="benefit-category"
                                         key={index}>
-                                        {benefit.category}
+                                        {benefit.categoryName}
                                       </p>
                                       <p className="benefit-explanation">
-                                        {benefit.explanation}
+                                        {benefit.benefitDesc}
                                       </p>
                                     </>
                                   )
@@ -312,7 +302,7 @@ const CardRecommend = () => {
               </div>
               <CardList
                 onCardClick={onCardClick}
-                cardList={showUserCard ? userCardList : RecommendedCardList}
+                cardList={showUserCard ? MyCardList : RecommendedCardList}
               />
             </div>
           </div>
