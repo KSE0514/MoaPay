@@ -49,9 +49,6 @@ public class PaymentLog {
     @Column(name = "category_id", columnDefinition = "char(5)")
     private String categoryId;
 
-    @Column(name = "transaction_date")
-    private LocalDateTime transactionDate;
-
     @NotNull
     @Column(name = "benefit_balance")
     private long benefitBalance;
