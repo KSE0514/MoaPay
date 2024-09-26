@@ -445,11 +445,6 @@ const CreateAccount = () => {
                     만료된 인증번호입니다.
                   </p>
                 )}
-<<<<<<< HEAD
-                <div className="form-row auth-btn">
-                  <div>
-                    <input
-=======
                 {endSMSAuth && (
                   <p
                     className="error"
@@ -461,7 +456,6 @@ const CreateAccount = () => {
                   <div>
                     <input
                       style={{ borderColor: endSMSAuth ? "green" : "" }}
->>>>>>> c97611d ([feat] (이예빈) 문자 인증 시 제한시간 걸기, 로직 수정)
                       disabled={endSMSAuth}
                       value={joinUserInfo.verification_code}
                       type="text"
