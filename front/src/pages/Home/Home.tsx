@@ -1,6 +1,7 @@
 import styled from "styled-components";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faRepeat, faBars, faPlus } from "@fortawesome/free-solid-svg-icons";
+import { Html5QrcodeScanner } from "html5-qrcode";
 import {
   Top,
   Bottom,
@@ -17,6 +18,11 @@ import { useRef, useState, useEffect } from "react";
 const Home = () => {
   const [cardList, setCardList] = useState<string[]>([]);
   const containerRef = useRef<HTMLDivElement | null>(null);
+
+  const [isCameraOn, setIsCameraOn] = useState(false); // 카메라 상태
+  const [qrResult, setQrResult] = useState<string | null>(null); // QR 코드 결과
+  const qrScannerRef = useRef<Html5QrcodeScanner | null>(null);
+
   let startY = 0;
 
   // 터치 시작 시 Y 좌표를 기록
