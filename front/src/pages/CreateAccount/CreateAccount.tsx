@@ -262,6 +262,7 @@ const CreateAccount = () => {
    */
   const join = async () => {
     //회원 가입 요청 보내기
+    if (!endSMSAuth) return;
     try {
       const response = await axios.post(
         `https://j11c201.p.ssafy.io/api/moapay/member/join`,
@@ -444,9 +445,23 @@ const CreateAccount = () => {
                     만료된 인증번호입니다.
                   </p>
                 )}
+<<<<<<< HEAD
                 <div className="form-row auth-btn">
                   <div>
                     <input
+=======
+                {endSMSAuth && (
+                  <p
+                    className="error"
+                    style={{ color: endSMSAuth ? "green" : "" }}>
+                    인증되었습니다.
+                  </p>
+                )}
+                <div className="form-row auth-btn">
+                  <div>
+                    <input
+                      style={{ borderColor: endSMSAuth ? "green" : "" }}
+>>>>>>> c97611d ([feat] (이예빈) 문자 인증 시 제한시간 걸기, 로직 수정)
                       disabled={endSMSAuth}
                       value={joinUserInfo.verification_code}
                       type="text"
