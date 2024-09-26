@@ -49,7 +49,7 @@ const SettingBiometricsLogin = () => {
     try {
       // 1. 서버로부터 WebAuthn 등록 옵션을 가져옴
       const response = await axios.get(
-        `http://localhost:18040/moapay/member/authn/register/options/고망고`,
+        `https://j11c201.p.ssafy.io/api/moapay/member/authn/register/options/고망고`,
         { withCredentials: true }
       );
       const options = response.data;
@@ -69,7 +69,7 @@ const SettingBiometricsLogin = () => {
       setTimeout(async () => {
         // 3. 등록된 생체인증 정보를 서버에 전송하여 저장
         const registerResult = await axios.post(
-          `http://localhost:18040/moapay/member/authn/register/verify`,
+          `https://j11c201.p.ssafy.io/api/moapay/member/authn/register/verify`,
           {
             id: attestationResponse.id,
             rawId: attestationResponse.rawId,
@@ -190,7 +190,8 @@ const SettingBiometricsLogin = () => {
               viewBox="0 0 24 24"
               stroke-width="1.5"
               stroke="currentColor"
-              className="size-6">
+              className="size-6"
+            >
               <path
                 stroke-linecap="round"
                 stroke-linejoin="round"
@@ -208,7 +209,8 @@ const SettingBiometricsLogin = () => {
         <Button
           onClick={() => {
             biometricsRegister();
-          }}>
+          }}
+        >
           등록하기
         </Button>
         {mode == "Join" || mode == "NewLogin" ? (
@@ -216,7 +218,8 @@ const SettingBiometricsLogin = () => {
             onClick={() => {
               skipSettingBiometrics();
               navigate(PATH.HOME);
-            }}>
+            }}
+          >
             다음에 설정하기
           </div>
         ) : null}
@@ -233,7 +236,8 @@ const SettingBiometricsLogin = () => {
             <button
               onClick={() => {
                 checkingPath();
-              }}>
+              }}
+            >
               확인
             </button>
           </div>

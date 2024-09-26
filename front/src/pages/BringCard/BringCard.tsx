@@ -51,7 +51,7 @@ const BringCard = () => {
 
   //////////////////////////////////////////////////////////////
   const deleteCard = async () => {
-    removeCard(swipeCard);
+    removeCard(0);
     closeModal();
   };
 
@@ -186,7 +186,8 @@ const BringCard = () => {
                           ? "none"
                           : `translateX(-${swipeDistance[index] || 0}px)`,
                         backgroundColor: "white",
-                      }}>
+                      }}
+                    >
                       {editMode ? (
                         <input
                           type="radio"
@@ -197,7 +198,8 @@ const BringCard = () => {
                       <div
                         style={{
                           paddingLeft: editMode ? "15px" : "none",
-                        }}>
+                        }}
+                      >
                         <img
                           src={card.cardInfo.imageUrl}
                           alt={card.cardInfo.cardName}
@@ -222,7 +224,8 @@ const BringCard = () => {
                           fill="#A1A1A1"
                           width="30"
                           height="30"
-                          viewBox="0 0 30 30">
+                          viewBox="0 0 30 30"
+                        >
                           <path d="M 3 7 A 1.0001 1.0001 0 1 0 3 9 L 27 9 A 1.0001 1.0001 0 1 0 27 7 L 3 7 z M 3 14 A 1.0001 1.0001 0 1 0 3 16 L 27 16 A 1.0001 1.0001 0 1 0 27 14 L 3 14 z M 3 21 A 1.0001 1.0001 0 1 0 3 23 L 27 23 A 1.0001 1.0001 0 1 0 27 21 L 3 21 z"></path>
                         </svg>
                       )}
@@ -234,7 +237,8 @@ const BringCard = () => {
               <Btn
                 onClick={() => {
                   settingCard();
-                }}>
+                }}
+              >
                 카드 등록하기
               </Btn>
 
@@ -245,7 +249,8 @@ const BringCard = () => {
                     style={{
                       fontSize: "18px",
                       paddingTop: "25px",
-                    }}>
+                    }}
+                  >
                     '{cardList[swipeCard || 0].cardInfo.cardName}'
                     <br />
                     <br />
@@ -254,13 +259,15 @@ const BringCard = () => {
                   <div
                     style={{
                       gap: "50px",
-                    }}>
+                    }}
+                  >
                     <button
                       onClick={deleteCard}
                       style={{
                         fontSize: "18px",
                         width: "95px",
-                      }}>
+                      }}
+                    >
                       삭제
                     </button>
                     <button
@@ -268,7 +275,8 @@ const BringCard = () => {
                       style={{
                         fontSize: "18px",
                         width: "95px",
-                      }}>
+                      }}
+                    >
                       취소
                     </button>
                   </div>

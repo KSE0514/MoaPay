@@ -7,7 +7,11 @@ import { useAuthStore } from "../../store/AuthStore";
 
 const SelectType = () => {
   const navigate = useNavigate();
-  const { isLoggedIn, Login } = useAuthStore;
+  const { isLoggedIn, Login } = useAuthStore((state) => ({
+    isLoggedIn: state.isLoggedIn,
+    Login: state.Login,
+  }));
+
   const [isLoading, setIsLoading] = useState(true);
   const SettingType = (type: string) => {
     //요청보내기
@@ -33,13 +37,15 @@ const SelectType = () => {
           <div
             onClick={() => {
               SettingType("benefit");
-            }}>
+            }}
+          >
             혜택형
           </div>
           <div
             onClick={() => {
               SettingType("perform");
-            }}>
+            }}
+          >
             실적형
           </div>
         </SelectView>

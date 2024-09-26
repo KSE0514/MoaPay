@@ -94,7 +94,7 @@ public class WebAuthnRegisterController{
 
 		PublicKeyCredentialCreationOptions options = PublicKeyCredentialCreationOptions.builder()
 				.rp(RelyingPartyIdentity.builder()
-						.id("moapay-mac-eb861.web.app")
+						.id("moapay-7e24e.web.app")
 						.name("moapay")
 						.build())
 				.user(userEntity)
@@ -167,9 +167,9 @@ public class WebAuthnRegisterController{
 
 			// AuthenticatorAttestationResponse 생성
 			AuthenticatorAttestationResponse attestationResponse = AuthenticatorAttestationResponse.builder()
-				.attestationObject(attestationObject)
-				.clientDataJSON(clientDataJSON)
-				.build();
+					.attestationObject(attestationObject)
+					.clientDataJSON(clientDataJSON)
+					.build();
 
 			ClientExtensionOutputs clientExtensions = new ClientExtensionOutputs() {
 				@Override
@@ -180,37 +180,37 @@ public class WebAuthnRegisterController{
 
 			// PublicKeyCredential 생성
 			PublicKeyCredential credential = PublicKeyCredential.builder()
-				.id(new ByteArray(credentialId.getBytes()))  // 자격 증명 ID
-				.response(attestationResponse)  // 생성된 AuthenticatorAttestationResponse 객체
-				.clientExtensionResults(clientExtensions)  // 빈 ClientExtensionOutputs 객체
-				.type(PublicKeyCredentialType.PUBLIC_KEY)  // 자격 증명 타입
-				.build();
+					.id(new ByteArray(credentialId.getBytes()))  // 자격 증명 ID
+					.response(attestationResponse)  // 생성된 AuthenticatorAttestationResponse 객체
+					.clientExtensionResults(clientExtensions)  // 빈 ClientExtensionOutputs 객체
+					.type(PublicKeyCredentialType.PUBLIC_KEY)  // 자격 증명 타입
+					.build();
 
 
 			// 등록 검증 완료
 			var registrationResult = relyingParty.finishRegistration(
-				FinishRegistrationOptions.builder()
-					.request(options)
-					.response(credential)
-					.build()
+					FinishRegistrationOptions.builder()
+							.request(options)
+							.response(credential)
+							.build()
 			);
 
 			// Member 정보 업데이트 (기존 데이터 유지)
 			Member updatedMember = Member.builder()
-				.id(member.getId())
-				.name(member.getName())
-				.birthDate(member.getBirthDate())
-				.gender(member.getGender())
-				.phoneNumber(member.getPhoneNumber())
-				.email(member.getEmail())
-				.address(member.getAddress())
-				.uuid(member.getUuid())  // UUID 유지
-				.createTime(member.getCreateTime())
-				.updateTime(member.getUpdateTime())
-				.publicKey(registrationResult.getKeyId().getId().toString())  // 공개키 저장
-				.credentialId(credentialId)  // 자격 증명 ID 저장
-				.authenticatorData(attestationObject.getBytes())  // AttestationObject 저장
-				.build();
+					.id(member.getId())
+					.name(member.getName())
+					.birthDate(member.getBirthDate())
+					.gender(member.getGender())
+					.phoneNumber(member.getPhoneNumber())
+					.email(member.getEmail())
+					.address(member.getAddress())
+					.uuid(member.getUuid())  // UUID 유지
+					.createTime(member.getCreateTime())
+					.updateTime(member.getUpdateTime())
+					.publicKey(registrationResult.getKeyId().getId().toString())  // 공개키 저장
+					.credentialId(credentialId)  // 자격 증명 ID 저장
+					.authenticatorData(attestationObject.getBytes())  // AttestationObject 저장
+					.build();
 
 			// Member 정보 저장
 			memberRepository.save(updatedMember);
@@ -223,5 +223,6 @@ public class WebAuthnRegisterController{
 			return ResponseEntity.status(resultResponse.getStatus()).body(resultResponse);
 		}
 	}
+
 }
 

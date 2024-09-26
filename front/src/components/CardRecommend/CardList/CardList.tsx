@@ -13,7 +13,7 @@ const CardList = ({ cardList, onCardClick }: Props) => {
   const [translateX, setTranslateX] = useState<{ [key: number]: number }>({});
   const [startX, setStartX] = useState<number | null>(null); // 터치 시작 위치 저장
   const [showCardDetail, setShowCardDetail] = useState<boolean>(false); // 새로운 화면 표시 여부
-  const [selectedCard, setSelectedCard] = useState<card | null>(null);
+  const [selectedCard, setSelectedCard] = useState<Card | null>(null);
   const [animationExecuted, setAnimationExecuted] = useState<boolean>(false); // 애니메이션이 실행된 상태 추적
 
   // 이미지 로드 시 회전 여부 설정
@@ -81,13 +81,15 @@ const CardList = ({ cardList, onCardClick }: Props) => {
             willChange: "transform",
           }}
           onClick={() => onCardClick(card)}
-          key={index}>
+          key={index}
+        >
           <div
             className={
               index === 0 && !animationExecuted
                 ? "active row" // 인덱스가 0이고 애니메이션이 실행되지 않은 경우에만 active
                 : "row"
-            }>
+            }
+          >
             <div>
               <img
                 src={card.cardInfo.imageUrl}
