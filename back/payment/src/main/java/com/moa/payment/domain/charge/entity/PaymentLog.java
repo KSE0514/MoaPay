@@ -1,4 +1,4 @@
-package com.moa.payment.domain.online.entity;
+package com.moa.payment.domain.charge.entity;
 
 import com.fasterxml.uuid.Generators;
 import com.moa.payment.domain.online.model.Status;

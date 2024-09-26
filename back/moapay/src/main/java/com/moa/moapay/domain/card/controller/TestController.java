@@ -1,12 +1,12 @@
 package com.moa.moapay.domain.card.controller;
 
-import com.moa.moapay.global.Kafka.KafkaProducer;
+import com.moa.moapay.global.kafka.KafkaProducer;
 import com.moa.moapay.global.kafkaVo.KafkaMsgVo;
-import lombok.RequiredArgsConstructor;
+import lombok.*;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 
-import java.util.UUID;
+import java.util.*;
 
 @Controller
 @RequiredArgsConstructor
@@ -17,24 +17,36 @@ public class TestController {
     @GetMapping("/test")
     public String test() {
         UUID merchantId = UUID.randomUUID();
-        UUID cardId = UUID.randomUUID();
-        String cardNumber = "123412341234";
-        String cvc = "123";
-        long amount = 100000000L;
+        List<PaymentCardInfoVO> paymentInfoList = new ArrayList<>();
+        paymentInfoList.add(PaymentCardInfoVO.builder()
+                        .cardId(UUID.randomUUID())
+                        .cardNumber("1234123412341234")
+                        .cvc("341")
+                        .amount(100000)
+                .build());
+        paymentInfoList.add(PaymentCardInfoVO.builder()
+                .cardId(UUID.randomUUID())
+                .cardNumber("94723047493833")
+                .cvc("441")
+                .amount(600000)
+                .build());
+        Map<String, Object> vo = new HashMap<>();
+        vo.put("merchantId", merchantId);
+        vo.put("paymentInfoList", paymentInfoList);
 
-        KafkaMsgVo vo = KafkaMsgVo.builder()
-                .merchantId(merchantId)
-                .cardNumber(cardNumber)
-                .cardId(cardId)
-                .cvc(cvc)
-                .amount(amount)
-                .build();
-
-        for (int i = 0; i < 10; i++) {
-            kafkaProducer.send(vo, String.valueOf(i));
-        }
-
-        return null;
+        kafkaProducer.send(vo, "1798");
+        return "OK";
+    }
+// 이건 진짜진짜 테스트용...
+    @Getter
+    @Builder
+    @NoArgsConstructor
+    @AllArgsConstructor
+    static class PaymentCardInfoVO {
+        private UUID cardId;
+        private String cardNumber;
+        private String cvc;
+        private long amount;
     }
 
 }

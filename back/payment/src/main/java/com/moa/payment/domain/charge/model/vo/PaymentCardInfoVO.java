@@ -1,16 +1,17 @@
-package com.moa.payment.global.kafkaVo;
+package com.moa.payment.domain.charge.model.vo;
 
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import java.util.UUID;
 
 @Getter
+@Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class KafkaMsgVo {
-    private UUID merchantId;
+public class PaymentCardInfoVO {
     private UUID cardId;
     private String cardNumber;
     private String cvc;
@@ -18,9 +19,8 @@ public class KafkaMsgVo {
 
     @Override
     public String toString() {
-        return "KafkaMsgVo{" +
-                "merchantId=" + merchantId +
-                ", cardId=" + cardId +
+        return "PaymentCardInfoVO{" +
+                "cardId=" + cardId +
                 ", cardNumber='" + cardNumber + '\'' +
                 ", cvc='" + cvc + '\'' +
                 ", amount=" + amount +

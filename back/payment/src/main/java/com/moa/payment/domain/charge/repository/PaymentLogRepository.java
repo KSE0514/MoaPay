@@ -1,6 +1,6 @@
-package com.moa.payment.domain.online.repository;
+package com.moa.payment.domain.charge.repository;
 
-import com.moa.payment.domain.online.entity.PaymentLog;
+import com.moa.payment.domain.charge.entity.PaymentLog;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.Optional;

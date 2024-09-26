@@ -1,15 +1,13 @@
 package com.moa.payment.domain.online.service;
 
-import com.moa.payment.domain.online.entity.PaymentLog;
+import com.moa.payment.domain.charge.entity.PaymentLog;
 import com.moa.payment.domain.online.model.CardSelectionType;
 import com.moa.payment.domain.online.model.Status;
 import com.moa.payment.domain.online.model.dto.*;
 import com.moa.payment.domain.online.repository.OnlinePaymentRedisRepository;
-import com.moa.payment.domain.online.repository.PaymentLogRepository;
-import com.moa.payment.global.exception.BusinessException;
+import com.moa.payment.domain.charge.repository.PaymentLogRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
