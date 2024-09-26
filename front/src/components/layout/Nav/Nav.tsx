@@ -11,10 +11,9 @@ import { PATH } from "../../../constants/path";
 const Nav = () => {
   const navigate = useNavigate();
   const location = useLocation(); // 현재 경로를 가져옴
-  const matchStatistics = useMatch(`${PATH.STATISTICS}/*`);
   const matchBringCard = useMatch(`${PATH.BRING_CARD}/*`);
 
-  const match = matchStatistics || matchBringCard;
+  const match = matchBringCard;
   const movePage = (page: string) => {
     navigate(page);
   };
