@@ -12,12 +12,12 @@ const SelectType = () => {
     Login: state.Login,
   }));
 
-  const [isLoading, setIsLoading] = useState(true);
+  const [isLoading, setIsLoading] = useState(false);
   const SettingType = (type: string) => {
     //요청보내기
     try {
       axios.post(``, { type }, { withCredentials: true });
-      navigate(PATH.HOME);
+      navigate(PATH.BRING_CARD);
     } catch (e) {
       const error = e as AxiosError;
       console.log(error);

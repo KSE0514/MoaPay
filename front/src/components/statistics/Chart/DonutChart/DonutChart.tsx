@@ -5,7 +5,7 @@ import { Chart } from "./DonutChart.styles";
 // Chart.js에서 사용할 요소를 등록
 ChartJS.register(ArcElement, Tooltip, Legend, Title);
 interface data {
-  cateory: string;
+  category: string;
   money: number;
   per: number;
 }
@@ -16,29 +16,49 @@ interface Props {
 const DonutChart = ({ dataList }: Props) => {
   const sortedDataList = [...(dataList || [])].sort((a, b) => b.per - a.per);
 
+  // 상위 5개의 데이터를 추출
+  const top5Data = sortedDataList.slice(0, 5);
+
+  // 나머지 데이터를 '기타'로 묶기
+  const remainingData = sortedDataList.slice(5);
+
+  // '기타' 항목의 money와 per 값을 계산
+  const otherMoney = remainingData.reduce((sum, data) => sum + data.money, 0);
+  const otherPer = 100 - top5Data.reduce((sum, data) => sum + data.per, 0);
+
+  // 새로운 dataList를 생성
+  const newDataList: data[] = [
+    ...top5Data,
+    {
+      category: "기타",
+      money: otherMoney,
+      per: otherPer,
+    },
+  ];
+
   // sortedDataList에서 레이블과 데이터 추출
-  const labels = sortedDataList.map((item) => item.cateory);
-  const values = sortedDataList.map((item) => item.money);
+  const labels = newDataList.map((item) => item.category);
+  const values = newDataList.map((item) => item.money);
   const data = {
     labels: labels,
     datasets: [
       {
         data: values,
         backgroundColor: [
-          "rgba(255, 99, 132, 1)", // 밝은 핑크 (기본 차트 색상 중 하나)
-          "#4457ff", // 라일락 (보라 계열)
-          "rgba(255, 159, 64, 1)", // 오렌지 톤
-          "rgba(75, 192, 192, 1)", // 민트 그린
-          "rgba(255, 205, 86, 1)", // 파스텔 옐로우
-          "rgba(54, 162, 235, 1)", // 파란색
+          "rgba(255, 99, 132, 0.85)",
+          "rgba(255, 159, 64, 0.85)",
+          "rgba(255, 205, 86, 0.85)",
+          "rgba(75, 192, 192, 0.85)",
+          "rgba(68,87,255,0.85)",
+          "rgba(215,215,215,0.85)",
         ],
         borderColor: [
-          "rgba(255, 99, 132, 1)", // 밝은 핑크 (기본 차트 색상 중 하나)
-          "#4457ff", // 라일락 (보라 계열)
-          "rgba(255, 159, 64, 1)", // 오렌지 톤
-          "rgba(75, 192, 192, 1)", // 민트 그린
-          "rgba(255, 205, 86, 1)", // 파스텔 옐로우
-          "rgba(54, 162, 235, 1)", // 파란색
+          "rgba(255, 99, 132, 0.85)",
+          "rgba(255, 159, 64, 0.85)",
+          "rgba(255, 205, 86, 0.85)",
+          "rgba(75, 192, 192, 0.85)",
+          "rgba(68,87,255,0.85)",
+          "rgba(215,215,215,0.85)",
         ],
         borderWidth: 1,
       },

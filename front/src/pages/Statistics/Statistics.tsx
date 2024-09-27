@@ -124,6 +124,13 @@ const Statistics = () => {
       setSelectedMonth((prevMonth) => prevMonth - 1);
     }
     // 현재페이지에 따라 데이터 새로 가져오기
+    if (window.location.pathname == paths[0]) {
+      console.log("load consumptionData");
+      getConsumptionData();
+    } else if (window.location.pathname == paths[1]) {
+      console.log("load benefitData");
+      getBenefitData();
+    }
   };
 
   const handleNextMonth = () => {
@@ -139,18 +146,20 @@ const Statistics = () => {
       setSelectedMonth((prevMonth) => prevMonth + 1);
     }
     //현재페이지에 따라 데이터 새로 가져오기
-    //소비
     if (window.location.pathname == paths[0]) {
+      console.log("load consumptionData");
       getConsumptionData();
     } else if (window.location.pathname == paths[1]) {
+      console.log("load benefitData");
       getBenefitData();
     }
   };
 
   /**
-   * 특정 달에 대한 소비 데이터 가져오기 - 월을 보내야함(selectedYear selectedMonth)
+   * 특정 달에 대한 소비 데이터 가져오기 - 년도와 월을 보내야함(selectedYear selectedMonth)
    */
   const getConsumptionData = async () => {
+    console.log("getConsumtionData");
     // try {
     //   const response = await axios.get(``);
     //   setDataList();
@@ -160,9 +169,10 @@ const Statistics = () => {
   };
 
   /**
-   * 특정 달에 대한 혜택 데이터 가져오기 - 월을 보내야함
+   * 특정 달에 대한 혜택 데이터 가져오기 - 년도와 월을 보내야함
    */
   const getBenefitData = async () => {
+    console.log("getBenefitData");
     // try {
     //   const response = await axios.get(``);
     //   setDataList();
@@ -181,7 +191,7 @@ const Statistics = () => {
     if (index == 0) {
       setMode("Donut");
       try {
-        // const response = await axios.get(``);
+        getConsumptionData();
         navigator(paths[index], { state: dataList });
       } catch (e) {
         console.log(e);
@@ -191,7 +201,7 @@ const Statistics = () => {
       //받을 때는 locationt사용   const location = useLocation();  const data = location.state;
       setMode("Donut");
       try {
-        // const response = await axios.get(``);
+        getBenefitData();
         navigator(paths[index], { state: dataList });
       } catch (e) {
         console.log(e);
@@ -286,7 +296,8 @@ const Statistics = () => {
                     true
                       ? "/assets/image/good-pig.png"
                       : "/assets/image/sad-pig.png"
-                  }></img>
+                  }
+                ></img>
               </ImageBox>
               <TextBox>
                 {"또래 남성에 비해 50,000원 덜 쓰고,\n34,200원의 혜택을 누렸어요!"

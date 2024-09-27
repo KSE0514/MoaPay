@@ -48,54 +48,53 @@ const SettingBiometricsLogin = () => {
   };
 
   const biometricsRegister = async () => {
-    try {
-      console.log(name);
-      // 1. 서버로부터 WebAuthn 등록 옵션을 가져옴
-      const response = await axios.get(
-        `${baseUrl1}moapay/member/authn/register/options/${name}`,
-        { withCredentials: true }
-      );
-      const options = response.data;
-      console.log(response);
-      // rp.id를 window.location.hostname으로 변경
-      console.log(window.location.hostname);
-      await removeNullValues(options);
-      console.log("option");
-      console.log(options);
-
-      // 2. WebAuthn 등록을 진행
-      const attestationResponse = await startRegistration(options);
-      console.log("result");
-      console.log(attestationResponse);
-
-      // 지연을 추가하여 세션 쿠키가 설정될 시간을 확보
-      setTimeout(async () => {
-        // 3. 등록된 생체인증 정보를 서버에 전송하여 저장
-        const registerResult = await axios.post(
-          `${baseUrl1}moapay/member/authn/register/verify`,
-          {
-            id: attestationResponse.id,
-            rawId: attestationResponse.rawId,
-            response: {
-              attestationObject: attestationResponse.response.attestationObject,
-              clientDataJSON: attestationResponse.response.clientDataJSON,
-            },
-            type: attestationResponse.type,
-            clientExtensionResults: attestationResponse.clientExtensionResults,
-            authenticatorAttachment:
-              attestationResponse.authenticatorAttachment,
-          },
-          { withCredentials: true }
-        );
-        console.log(registerResult);
-        if (registerResult.status == 200) {
-          setSettingFinish(true);
-          localStorage.setItem("settingBioLogin", "true");
-        }
-      }, 1000); // 1초 지연 (필요에 따라 지연 시간을 조정 가능)
-    } catch (e) {
-      console.log(e);
-    }
+    // try {
+    //   console.log(name);
+    //   // 1. 서버로부터 WebAuthn 등록 옵션을 가져옴
+    //   const response = await axios.get(
+    //     `${baseUrl1}moapay/member/authn/register/options/${name}`,
+    //     { withCredentials: true }
+    //   );
+    //   const options = response.data;
+    //   console.log(response);
+    //   // rp.id를 window.location.hostname으로 변경
+    //   console.log(window.location.hostname);
+    //   await removeNullValues(options);
+    //   console.log("option");
+    //   console.log(options);
+    //   // 2. WebAuthn 등록을 진행
+    //   const attestationResponse = await startRegistration(options);
+    //   console.log("result");
+    //   console.log(attestationResponse);
+    //   // 지연을 추가하여 세션 쿠키가 설정될 시간을 확보
+    //   setTimeout(async () => {
+    //     // 3. 등록된 생체인증 정보를 서버에 전송하여 저장
+    //     const registerResult = await axios.post(
+    //       `${baseUrl1}moapay/member/authn/register/verify`,
+    // {
+    //   id: attestationResponse.id,
+    //   rawId: attestationResponse.rawId,
+    //   response: {
+    //     attestationObject: attestationResponse.response.attestationObject,
+    //     clientDataJSON: attestationResponse.response.clientDataJSON,
+    //   },
+    //   type: attestationResponse.type,
+    //   clientExtensionResults: attestationResponse.clientExtensionResults,
+    //   authenticatorAttachment:
+    //     attestationResponse.authenticatorAttachment,
+    // },
+    //       { withCredentials: true }
+    //     );
+    //     console.log(registerResult);
+    //     if (registerResult.status == 200) {
+    //       setSettingFinish(true);
+    //       localStorage.setItem("settingBioLogin", "true");
+    //     }
+    //   }, 1000); // 1초 지연 (필요에 따라 지연 시간을 조정 가능)
+    // } catch (e) {
+    //   console.log(e);
+    // }
+    setSettingFinish(true);
   };
 
   //test code
@@ -165,12 +164,12 @@ const SettingBiometricsLogin = () => {
     localStorage.setItem("settingBioLogin", "false");
   };
   const checkingPath = async () => {
+    console.log(mode);
     //new Login인 경우 카드 정보를 불러오는 곳으로 이동
     if (mode == "newLogin") {
       await Login();
       navigate(PATH.BRING_CARD);
-    }
-    if (mode == "Join") {
+    } else if (mode == "Join") {
       //실적형 혜택형 선택 뷰
       navigate(PATH.SELECT_TYPE);
     }
