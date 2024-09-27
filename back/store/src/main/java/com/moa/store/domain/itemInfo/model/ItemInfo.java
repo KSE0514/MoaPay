@@ -43,6 +43,10 @@ public class ItemInfo {
 	private Product item;
 
 	@NotNull
+	@Column(name = "item_name", length = 100)
+	private String itemName;
+
+	@NotNull
 	@ColumnDefault("1")
 	private Long quantity;
 
