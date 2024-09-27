@@ -15,16 +15,7 @@ public class ExecutePaymentRequestDto {
     private UUID cardId;
     private String cardNumber;
     private String cvc;
+    private String categoryId;
     private long amount;
 
-    @Override
-    public String toString() {
-        return "ExecutePaymentRequestDto{" +
-                "merchantId=" + merchantId +
-                ", cardId=" + cardId +
-                ", cardNumber='" + cardNumber + '\'' +
-                ", cvc='" + cvc + '\'' +
-                ", amount=" + amount +
-                '}';
-    }
 }
