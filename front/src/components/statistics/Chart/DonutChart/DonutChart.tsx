@@ -11,10 +11,10 @@ interface data {
 }
 
 interface Props {
-  dataList: data[]; // props로 받을 데이터 타입 지정
+  dataList: data[] | null; // props로 받을 데이터 타입 지정
 }
 const DonutChart = ({ dataList }: Props) => {
-  const sortedDataList = [...dataList].sort((a, b) => b.per - a.per);
+  const sortedDataList = [...(dataList || [])].sort((a, b) => b.per - a.per);
 
   // sortedDataList에서 레이블과 데이터 추출
   const labels = sortedDataList.map((item) => item.cateory);
