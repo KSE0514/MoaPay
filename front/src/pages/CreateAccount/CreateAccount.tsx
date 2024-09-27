@@ -261,45 +261,46 @@ const CreateAccount = () => {
    * 4. 회원가입
    */
   const join = async () => {
+    console.log(endSMSAuth);
     //회원 가입 요청 보내기
     if (!endSMSAuth) return;
-    // try {
-    //   const response = await axios.post(
-    //     `https://j11c201.p.ssafy.io/api/moapay/member/join`,
-    //     {
-    //       name: joinUserInfo.name,
-    //       birthDate: formatBirthDate(joinUserInfo.birth_date),
-    //       gender: Number(joinUserInfo.gender), //1~4로 넘겨주면 F,M 판단해서 db에 넣기
-    //       phoneNumber: joinUserInfo.phone_number,
-    //       email: joinUserInfo.email,
-    //       address: joinUserInfo.address,
-    //     }
-    //   );
-    //   if (response.status == 200) {
-    //     //로그인 상태로 변경하기
-    //     console.log(response);
-    //     setUserInfo(response.data.data.id, response.data.data.name);
-    //     // 응답 받으면 생체인식 설정으로 이동시키기
-    //     navigate(PATH.PASSWORD_LOGIN, {
-    //       state: {
-    //         ment: `간편 비밀번호를\n입력해주세요`,
-    //         back: false,
-    //         mode: "Join",
-    //       },
-    //     });
-    //   }
-    // } catch (e) {
-    //   console.log(e);
-    // }
+    try {
+      const response = await axios.post(
+        `https://j11c201.p.ssafy.io/api/moapay/member/join`,
+        {
+          name: joinUserInfo.name,
+          birthDate: formatBirthDate(joinUserInfo.birth_date),
+          gender: Number(joinUserInfo.gender), //1~4로 넘겨주면 F,M 판단해서 db에 넣기
+          phoneNumber: joinUserInfo.phone_number,
+          email: joinUserInfo.email,
+          address: joinUserInfo.address,
+        }
+      );
+      if (response.status == 200) {
+        //로그인 상태로 변경하기
+        console.log(response);
+        setUserInfo(response.data.data.id, response.data.data.name);
+        // 응답 받으면 생체인식 설정으로 이동시키기
+        navigate(PATH.PASSWORD_LOGIN, {
+          state: {
+            ment: `간편 비밀번호를\n입력해주세요`,
+            back: false,
+            mode: "Join",
+          },
+        });
+      }
+    } catch (e) {
+      console.log(e);
+    }
     // test
-    localStorage.setItem("hasLoggedInBefore", "true");
-    navigate(PATH.PASSWORD_LOGIN, {
-      state: {
-        ment: `간편 비밀번호를 설정합니다.\n 6자리 비밀번호를 입력해주세요`,
-        back: false,
-        mode: "Join",
-      },
-    });
+    // localStorage.setItem("hasLoggedInBefore", "true");
+    // navigate(PATH.PASSWORD_LOGIN, {
+    //   state: {
+    //     ment: `간편 비밀번호를 설정합니다.\n 6자리 비밀번호를 입력해주세요`,
+    //     back: false,
+    //     mode: "Join",
+    //   },
+    // });
   };
 
   return (
