@@ -1,9 +1,6 @@
 package com.moa.payment.domain.online.service;
 
-import com.moa.payment.domain.online.model.dto.ExecuteOnlinePaymentRequestDto;
-import com.moa.payment.domain.online.model.dto.GetOnlinePaymentInfoResponseDto;
-import com.moa.payment.domain.online.model.dto.GetOnlineQRCodeRequestDto;
-import com.moa.payment.domain.online.model.dto.GetOnlineQRCodeResponseDto;
+import com.moa.payment.domain.online.model.dto.*;
 
 public interface OnlineService {
 
@@ -12,4 +9,5 @@ public interface OnlineService {
     void disableOnlinePaymentInfo(String QRCode);
     void ExecuteOnlinePayment(ExecuteOnlinePaymentRequestDto dto);
 
+    void ExecutePayment(ExecutePaymentRequestDto dto);
 }
