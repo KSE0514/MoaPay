@@ -10,10 +10,14 @@ import java.util.UUID;
 @NoArgsConstructor
 @AllArgsConstructor
 public class KafkaMsgVo {
+
+    // 결제, 환불
+    private String paymentType;
     private UUID merchantId;
     private UUID cardId;
     private String cardNumber;
     private String cvc;
+    private String categoryId;
     private long amount;
 
     @Override

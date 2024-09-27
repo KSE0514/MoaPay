@@ -26,9 +26,10 @@ public class KafkaListener {
             KafkaMsgVo kafkaMsgVo = objectMapper.readValue(message, KafkaMsgVo.class);
 
             // 변환된 KafkaMsgVo를 기반으로 DTO를 생성
-            List<ExecutePaymentRequestDto> dtoList = makeDto(kafkaMsgVo);
+            ExecutePaymentRequestDto dto = makeDto(kafkaMsgVo);
 
             // 온라인 결제 서비스 메서드 호출
+            onlineService.ExecutePayment(dto);
 
         } catch (Exception e) {
             log.error("Error processing message: {}", message, e);
@@ -40,13 +41,18 @@ public class KafkaListener {
      * @param vo
      * @return
      */
-    private List<ExecutePaymentRequestDto> makeDto(KafkaMsgVo vo) {
+    private ExecutePaymentRequestDto makeDto(KafkaMsgVo vo) {
         log.info("Converting KafkaMsgVo to DTO");
 
-        log.info("cardId: {}", vo.getCardId());
-        log.info("cardNumber: {}", vo.getCardNumber());
-        log.info("amount: {}", vo.getAmount());
+        ExecutePaymentRequestDto reqDto = ExecutePaymentRequestDto.builder()
+                .cvc(vo.getCvc())
+                .amount(vo.getAmount())
+                .cardId(vo.getCardId())
+                .cardNumber(vo.getCardNumber())
+                .merchantId(vo.getMerchantId())
+                .categoryId(vo.getCategoryId())
+                .build();
 
-        return null; // 실제 변환 로직을 구현하여 리스트 반환
+        return reqDto; // 실제 변환 로직을 구현하여 리스트 반환
     }
 }
