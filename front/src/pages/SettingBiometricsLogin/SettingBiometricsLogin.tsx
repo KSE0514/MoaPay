@@ -87,8 +87,8 @@ const SettingBiometricsLogin = () => {
           },
           { withCredentials: true }
         );
-
-        if (registerResult.data.success) {
+        console.log(registerResult);
+        if (registerResult.status == 200) {
           setSettingFinish(true);
           localStorage.setItem("settingBioLogin", "true");
         }

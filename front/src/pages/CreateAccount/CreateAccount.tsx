@@ -169,12 +169,10 @@ const CreateAccount = () => {
    */
 
   const checkAuthNumber = async () => {
-    console.log("hello");
     // 유효성 검사 통과하지 못한 경우
     if (!validateFields()) {
       return;
     }
-    console.log("h1");
     // 타이머 멈추기
     if (timerRef.current) {
       clearInterval(timerRef.current);
@@ -188,7 +186,6 @@ const CreateAccount = () => {
       }
       setLimitTime(2000);
     }
-    console.log("h2");
     try {
       console.log(joinUserInfo.verification_code);
       // 인증번호 확인하기
@@ -212,7 +209,6 @@ const CreateAccount = () => {
       }
       //인증번호가 틀린 경우 - 인증번호 다시 입력하도록 함
     }
-    console.log("h4");
   };
 
   /**
