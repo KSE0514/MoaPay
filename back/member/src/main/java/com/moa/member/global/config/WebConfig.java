@@ -10,7 +10,7 @@ public class WebConfig implements WebMvcConfigurer {
 	public void addCorsMappings(CorsRegistry registry) {
 		registry.addMapping("/**") // 모든 경로에 대해 CORS 허용
 				.allowedOriginPatterns("https://moapay-7e24e.web.app", "https://j11c201.p.ssafy.io",
-						"j11c201.p.ssafy.io", "http://j11c201.p.ssafy.io") // 허용할 프론트엔드 URL들
+						"j11c201.p.ssafy.io", "http://j11c201.p.ssafy.io","http://localhost:5173") // 허용할 프론트엔드 URL들
 				.allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS") // 허용할 HTTP 메서드
 				.allowedHeaders("*") // 허용할 헤더
 				.allowCredentials(true) // 쿠키 인증 요청 허용 여부

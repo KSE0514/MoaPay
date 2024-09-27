@@ -20,6 +20,7 @@ export const Wrapper = styled.div`
 
 export const Top = styled.div`
   margin-top: 10px;
+  height: 250.75px;
   * {
     position: relative;
     z-index: 10;
@@ -107,6 +108,13 @@ export const Month = styled.div`
   }
   .dropdown-menu.close {
     animation: up 1s forwards;
+  }
+  .month {
+    display: flex;
+    font-size: 25px;
+    p {
+      margin: 0px 15px;
+    }
   }
 `;
 export const DropDownIcon = styled(FontAwesomeIcon)`
