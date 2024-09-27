@@ -17,6 +17,8 @@ import { useState } from "react";
 import { useAuthStore } from "../../store/AuthStore";
 
 const SettingBiometricsLogin = () => {
+  const baseUrl = import.meta.env.VITE_BASE_URL;
+  const baseUrl1 = `http://localhost:18040/`;
   const { name } = useAuthStore();
   const [settingFinish, setSettingFinish] = useState<boolean>(false);
   const navigate = useNavigate();
@@ -50,7 +52,7 @@ const SettingBiometricsLogin = () => {
       console.log(name);
       // 1. 서버로부터 WebAuthn 등록 옵션을 가져옴
       const response = await axios.get(
-        `https://j11c201.p.ssafy.io/api/moapay/member/authn/register/options/${name}`,
+        `${baseUrl1}moapay/member/authn/register/options/${name}`,
         { withCredentials: true }
       );
       const options = response.data;
@@ -70,7 +72,7 @@ const SettingBiometricsLogin = () => {
       setTimeout(async () => {
         // 3. 등록된 생체인증 정보를 서버에 전송하여 저장
         const registerResult = await axios.post(
-          `https://j11c201.p.ssafy.io/api/moapay/member/authn/register/verify`,
+          `${baseUrl1}moapay/member/authn/register/verify`,
           {
             id: attestationResponse.id,
             rawId: attestationResponse.rawId,
