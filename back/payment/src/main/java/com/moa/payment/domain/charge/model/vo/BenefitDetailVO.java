@@ -13,4 +13,9 @@ public class BenefitDetailVO {
     private long discount;
     private long point;
     private long cashback;
+
+    @Override
+    public String toString() {
+        return "[discount : " + discount + ", point : " + point + ", cashback : " + cashback+"]";
+    }
 }

@@ -1,7 +1,6 @@
 package com.moa.payment.domain.charge.entity;
 
-import com.fasterxml.uuid.Generators;
-import com.moa.payment.domain.online.model.Status;
+import com.moa.payment.domain.charge.model.ProcessingStatus;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import lombok.*;
@@ -35,7 +34,7 @@ public class PaymentLog {
     @NotNull
     @Enumerated(value=EnumType.STRING)
     @Column(name="status")
-    private Status status;
+    private ProcessingStatus status;
 
     @NotNull
     @Column(name = "merchant_id", columnDefinition = "binary(16)")
@@ -63,7 +62,7 @@ public class PaymentLog {
 
     @PrePersist
     private void prePersist() {
-        this.uuid = Generators.timeBasedEpochGenerator().generate();
+//        this.uuid = Generators.timeBasedEpochGenerator().generate();
         LocalDateTime now = LocalDateTime.now();
         this.createTime = now;
         this.updateTime = now;

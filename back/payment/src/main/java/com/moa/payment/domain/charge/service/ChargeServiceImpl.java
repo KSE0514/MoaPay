@@ -3,13 +3,14 @@ package com.moa.payment.domain.charge.service;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.moa.payment.domain.charge.entity.PaymentLog;
 import com.moa.payment.domain.charge.model.PayStatus;
+import com.moa.payment.domain.charge.model.PaymentResultStatus;
+import com.moa.payment.domain.charge.model.ProcessingStatus;
+import com.moa.payment.domain.charge.model.dto.CancelPayRequestDto;
+import com.moa.payment.domain.charge.model.dto.CancelPayResponseDto;
 import com.moa.payment.domain.charge.model.dto.CardPaymentRequestDto;
 import com.moa.payment.domain.charge.model.dto.CardPaymentResponseDto;
-import com.moa.payment.domain.charge.model.vo.ExecutePaymentRequestVO;
-import com.moa.payment.domain.charge.model.vo.ExecutePaymentResultVO;
-import com.moa.payment.domain.charge.model.vo.PaymentCardInfoVO;
-import com.moa.payment.domain.online.model.Status;
-import com.moa.payment.domain.online.model.dto.PaymentCardInfoDto;
+import com.moa.payment.domain.charge.model.vo.*;
+import com.moa.payment.domain.charge.repository.PaymentLogRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.MediaType;
@@ -26,14 +27,17 @@ public class ChargeServiceImpl implements ChargeService {
 
     private final RestClient restClient;
     private final ObjectMapper objectMapper;
+    private final PaymentLogRepository paymentLogRepository;
 
     @Override
     public ExecutePaymentResultVO executePayment(ExecutePaymentRequestVO vo) {
+        // todo : 카드사로 요청 보내는 uri를 config 기반으로 변경
         List<PaymentCardInfoVO> paymentInfoList = vo.getPaymentInfoList();
         List<PaymentCardInfoVO> succeedPaymentInfoList = new ArrayList<>();
         List<UUID> succeedPaymentIdList = new ArrayList<>();
-        List<UUID> succeedPaymentLogList = new ArrayList<>();
-        for(PaymentCardInfoVO paymentInfo : paymentInfoList) {
+        List<PaymentResultCardInfoVO> paymentResultInfoList = new ArrayList<>();
+        String merchantName = "";
+        for (PaymentCardInfoVO paymentInfo : paymentInfoList) {
             CardPaymentRequestDto paymentRequestDto = CardPaymentRequestDto.builder()
                     .merchantId(vo.getMerchantId())
                     .cardId(paymentInfo.getCardId())
@@ -48,37 +52,42 @@ public class ChargeServiceImpl implements ChargeService {
                     .retrieve()
                     .toEntity(Map.class);
             CardPaymentResponseDto paymentResponseDto = objectMapper.convertValue(paymentResponse.getBody().get("data"), CardPaymentResponseDto.class);
+            merchantName = paymentResponseDto.getMerchantName();
             // 만일 결제에 실패했다면 결제 취소 과정을 거쳐야 한다
-            if(!paymentResponse.getStatusCode().is2xxSuccessful() || paymentResponseDto.getStatus() != PayStatus.APPROVED) {
+            if (!paymentResponse.getStatusCode().is2xxSuccessful() || paymentResponseDto.getStatus() != PayStatus.APPROVED) {
                 // 결제 중 오류가 발생했거나, 한도초과이거나, 잔액부족으로 결제가 실패했을 경우 결제를 중지한다
-                // todo : 결제 중 에러가 발생하는 경우 결제 취소하도록 변경
-//                log.info("payment failed - status : {}", (String) paymentResponseBody.get("status"));
-//                int successedSize = successedPaymentIdList.size();
-//                for(int s = 0 ; s < successedSize ; s++) {
-//                    PaymentCardInfoDto cardInfo = successedPaymentInfoList.get(s);
-//                    UUID paymentId = successedPaymentIdList.get(s);
-//                    // 해당 값을 기반으로 결제 취소 요청을 보냄
-//                    Map<String, Object> cancelRequestBody = new HashMap<>();
-//                    cancelRequestBody.put("paymentId", paymentId.toString());
-//                    cancelRequestBody.put("cardId", cardInfo.getCardId().toString());
-//                    cancelRequestBody.put("cardNumber", cardInfo.getCardNumber());
-//                    cancelRequestBody.put("cvc", cardInfo.getCvc());
-//                    ResponseEntity<Map> cancelResponse = restClient.post()
-//                            .uri("http://localhost:18100/cardbank/card/cancel")
-//                            .contentType(MediaType.APPLICATION_JSON)
-//                            .body(cancelRequestBody)
-//                            .retrieve()
-//                            .toEntity(Map.class);
-//                    log.info("{}", (String)cancelResponse.getBody().get("message"));
-//                    // 취소 처리가 되었다면, 로컬의 payment log status도 바꿔야 함
-//                    PaymentLog paymentLog = paymentLogRepository.findByUuid(successedPaymentLogList.get(s)).get();
-//                    PaymentLog newLog = paymentLog.toBuilder()
-//                            .status(Status.CANCELED)
-//                            .build();
-//                    paymentLogRepository.save(newLog);
-//            }
+                log.info("payment failed - status : {}", paymentResponseDto.getStatus());
+                int successSize = succeedPaymentInfoList.size();
+                for (int s = 0; s < successSize; ++s) {
+                    PaymentCardInfoVO cardInfo = succeedPaymentInfoList.get(s);
+                    UUID paymentId = succeedPaymentIdList.get(s);
+                    // 이 값들을 기반으로 결제 취소 요청을 보낸다
+                    CancelPayRequestDto requestDto = CancelPayRequestDto.builder()
+                            .paymentId(paymentId)
+                            .cardId(cardInfo.getCardId())
+                            .cardNumber(cardInfo.getCardNumber())
+                            .cvc(cardInfo.getCvc())
+                            .build();
+                    ResponseEntity<Map> cancelResponse = restClient.post()
+                            .uri("http://localhost:18100/cardbank/card/cancel")
+                            .contentType(MediaType.APPLICATION_JSON)
+                            .body(requestDto)
+                            .retrieve()
+                            .toEntity(Map.class);
+                    CancelPayResponseDto responseDto = objectMapper.convertValue(cancelResponse.getBody().get("data"), CancelPayResponseDto.class);
+                    log.info("canceled - amount : {}, benefitBalance : {}, remainedBenefit : {}", responseDto.getAmount(), responseDto.getBenefitBalance(), responseDto.getRemainedBenefit());
+                    // 취소 처리가 되었다면, 로컬의 payment log status도 바꿔야 함
+                    PaymentLog paymentLog = paymentLogRepository.findByUuid(paymentId).get();
+                    PaymentLog newLog = paymentLog.toBuilder()
+                            .status(ProcessingStatus.CANCELED)
+                            .build();
+                    paymentLogRepository.save(newLog);
+                }
                 // 결제 실패 관련 처리가 끝났다면 더이상 결제를 진행하지 않음
-                return null; //todo : 결제 실패시 리턴값 지정
+                return ExecutePaymentResultVO.builder()
+                        .merchantName(paymentResponseDto.getMerchantName())
+                        .status(PaymentResultStatus.FAILED)
+                        .build();
             }
             // 결제에 성공한 경우, succeedList에 넣음
             log.info(paymentResponseDto.toString());
@@ -86,22 +95,40 @@ public class ChargeServiceImpl implements ChargeService {
             log.info("succeed payment ID : {}", paymentResponseDto.getPaymentId());
             succeedPaymentIdList.add(paymentResponseDto.getPaymentId());
             // 이후 save 시도
-//            PaymentLog paymentLog = PaymentLog.builder()
-//                    .cardId(paymentInfo.getCardId())
-//                    .amount(((Integer)paymentResponseBody.get("amount")).longValue())
-//                    .status(Status.APPROVED)
-//                    .merchantId(dto.getMerchantId())
-//                    .merchantName((String)paymentResponseBody.get("merchantName"))
-//                    .categoryId(dto.getCategoryId())
-//                    .benefitBalance(((Integer)paymentResponseBody.get("benefitBalance")).longValue())
-//                    .build();
-//            paymentLogRepository.save(paymentLog);
-            
-
+            PaymentLog paymentLog = PaymentLog.builder()
+                    .uuid(paymentResponseDto.getPaymentId()) // 카드사쪽 결제로그와 이쪽 결제로그의 uuid를 통일
+                    .cardId(paymentInfo.getCardId())
+                    .amount(paymentResponseDto.getAmount())
+                    .status(ProcessingStatus.APPROVED)
+                    .merchantId(vo.getMerchantId())
+                    .merchantName(paymentResponseDto.getMerchantName())
+                    .categoryId(paymentResponseDto.getCategoryId())
+                    .benefitBalance(paymentResponseDto.getBenefitBalance())
+                    .build();
+            paymentLogRepository.save(paymentLog);
+            // 저장에도 성공했다면 성공 리스트에 넣는다
+            paymentResultInfoList.add(
+                    PaymentResultCardInfoVO.builder()
+                            .cardId(paymentInfo.getCardId())
+                            .amount(paymentResponseDto.getAmount())
+                            .benefitActivated(paymentResponseDto.isBenefitActivated())
+                            .benefitBalance(paymentResponseDto.getBenefitBalance())
+                            .remainedBenefit(paymentResponseDto.getRemainedBenefit())
+                            .benefitDetail(paymentResponseDto.getBenefitDetail())
+                            .build()
+            );
         }
-
-
-        return null;
+        // 전부 결제에 성공했다면 성공 로그 발송
+        // 궁금하니까 로그 찍어보기...
+        log.info("pay succeeded : {}", merchantName);
+        for(PaymentResultCardInfoVO v : paymentResultInfoList) {
+            log.info(v.toString());
+        }
+        return ExecutePaymentResultVO.builder()
+                .merchantName(merchantName)
+                .status(PaymentResultStatus.SUCCEED)
+                .paymentResultInfoList(paymentResultInfoList)
+                .build();
     }
 
 }

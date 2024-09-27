@@ -14,6 +14,7 @@ import java.util.UUID;
 @AllArgsConstructor
 public class CardPaymentResponseDto {
     private String merchantName;
+    private String categoryId;
     private PayStatus status;
     private UUID paymentId;
     private long amount;
@@ -26,6 +27,7 @@ public class CardPaymentResponseDto {
     public String toString() {
         return "CardPaymentResponseDto{" +
                 "merchantName='" + merchantName + '\'' +
+                ", categoryId='" + categoryId + '\'' +
                 ", status=" + status +
                 ", paymentId=" + paymentId +
                 ", amount=" + amount +

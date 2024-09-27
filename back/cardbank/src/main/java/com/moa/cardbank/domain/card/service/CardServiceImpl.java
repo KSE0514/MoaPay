@@ -172,6 +172,8 @@ public class CardServiceImpl implements CardService {
             // 한도초과 응답을 전송
             log.info("MAXED OUT : {} + {} > {}", myCard.getAmount(), finalAmount, myCard.getCardLimit());
             return ExecutePayResponseDto.builder()
+                    .merchantName(merchant.getName())
+                    .categoryId(merchant.getCategoryId())
                     .status(PayStatus.MAXED_OUT)
                     .build();
         }
@@ -185,6 +187,8 @@ public class CardServiceImpl implements CardService {
             Account account = myCard.getAccount();
             if (account.getBalance() < finalAmount) { // 통장 잔고가 없는 경우, 실패
                 return ExecutePayResponseDto.builder()
+                        .merchantName(merchant.getName())
+                        .categoryId(merchant.getCategoryId())
                         .status(PayStatus.OUT_OF_MONEY)
                         .build();
             }
@@ -244,6 +248,7 @@ public class CardServiceImpl implements CardService {
 
         return ExecutePayResponseDto.builder()
                 .merchantName(merchant.getName())
+                .categoryId(merchant.getCategoryId())
                 .status(PayStatus.APPROVED)
                 .paymentId(paymentLog.getUuid())
                 .amount(paymentLog.getAmount())

@@ -16,24 +16,23 @@ public class TestController {
 
     @GetMapping("/test")
     public String test() {
-        UUID merchantId = UUID.randomUUID();
+        UUID merchantId = UUID.fromString("0192083a-4595-7601-a03b-20bc037a3c98");
         List<PaymentCardInfoVO> paymentInfoList = new ArrayList<>();
         paymentInfoList.add(PaymentCardInfoVO.builder()
-                        .cardId(UUID.randomUUID())
-                        .cardNumber("1234123412341234")
-                        .cvc("341")
+                        .cardId(UUID.fromString("01921d47-86a8-702f-a268-21d03b15259e"))
+                        .cardNumber("6447272847698049")
+                        .cvc("433")
                         .amount(100000)
                 .build());
         paymentInfoList.add(PaymentCardInfoVO.builder()
-                .cardId(UUID.randomUUID())
-                .cardNumber("94723047493833")
-                .cvc("441")
-                .amount(600000)
+                .cardId(UUID.fromString("01921d7f-2a1a-75d4-80b3-5a69a545254c"))
+                .cardNumber("3140716895929967")
+                .cvc("879")
+                .amount(60000)
                 .build());
         Map<String, Object> vo = new HashMap<>();
         vo.put("merchantId", merchantId);
         vo.put("paymentInfoList", paymentInfoList);
-
         kafkaProducer.send(vo, "1798");
         return "OK";
     }

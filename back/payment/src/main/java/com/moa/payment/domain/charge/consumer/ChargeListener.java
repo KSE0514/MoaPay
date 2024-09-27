@@ -2,6 +2,7 @@ package com.moa.payment.domain.charge.consumer;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.moa.payment.domain.charge.model.vo.ExecutePaymentRequestVO;
+import com.moa.payment.domain.charge.model.vo.ExecutePaymentResultVO;
 import com.moa.payment.domain.charge.model.vo.PaymentCardInfoVO;
 import com.moa.payment.domain.charge.service.ChargeService;
 import lombok.RequiredArgsConstructor;
@@ -26,15 +27,10 @@ public class ChargeListener {
             Map<String, Object> vo  = objectMapper.readValue(message, Map.class);
             ExecutePaymentRequestVO executePaymentRequestVO = objectMapper.convertValue(vo, ExecutePaymentRequestVO.class);
             log.info("get payment request : {}", executePaymentRequestVO.getMerchantId().toString());
-            List<PaymentCardInfoVO> list = executePaymentRequestVO.getPaymentInfoList();
-            for(PaymentCardInfoVO cardInfo : list) {
-                log.info(cardInfo.toString());
-            }
-
-            //
-
+            ExecutePaymentResultVO resultVO = chargeService.executePayment(executePaymentRequestVO);
+            log.info("transfer payment result...");
         } catch(Exception e) {
-            // 에러가 발생하는 경우,
+            // 에러가 발생하는 경우, 에러 응답을 또 보내줘야 함
         }
     }
 
