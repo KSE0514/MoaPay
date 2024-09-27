@@ -24,6 +24,7 @@ public class PaymentResultCardInfoVO {
         return "PaymentResultCardInfoVO{" +
                 "cardId=" + cardId +
                 ", amount=" + amount +
+                ", benefitActivated=" + benefitActivated +
                 ", benefitBalance=" + benefitBalance +
                 ", remainedBenefit=" + remainedBenefit +
                 ", benefitDetail=" + benefitDetail +
