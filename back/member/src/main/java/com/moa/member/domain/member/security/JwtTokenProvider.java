@@ -91,7 +91,7 @@ public class JwtTokenProvider {
 	}
 
 	public boolean isTokenBlacklisted(String token) {
-		return redisTemplate.opsForValue().get("blacklist:" + token) != null;
+		return redisTemplate.opsForValue().get("blacklist:" + token) == null; //blacklist 에 존재하지 않으면  true
 	}
 
 	//토큰 유효성 검사

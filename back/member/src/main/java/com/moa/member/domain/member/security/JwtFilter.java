@@ -26,6 +26,7 @@ public class JwtFilter extends OncePerRequestFilter {
 	protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response,
 		FilterChain filterChain) throws ServletException, IOException {
 		String token = jwtTokenProvider.getJwtTokenFromRequestHeader(request);
+		System.out.println("토큰 값: " + token);
 		try {
 			if (token != null) {
 				if (jwtTokenProvider.validateToken(token) && jwtTokenProvider.isTokenBlacklisted(token)) {
@@ -33,10 +34,13 @@ public class JwtFilter extends OncePerRequestFilter {
 					if (jwtTokenProvider.hasClaim(claims, "type", "access")) {
 						Authentication auth = jwtTokenProvider.getAuthentication(token);
 						SecurityContextHolder.getContext().setAuthentication(auth); // 정상 토큰이면 SecurityContext에 저장
+						System.out.println("인증 성공: " + auth.getName());  // 인증 성공 로그
 					} else {
 						handleRefreshToken(request, response, filterChain, claims);
 						return;
 					}
+				}else{
+					System.out.println("토큰 검증 실패 또는 토큰이 없음");  // 검증 실패 로그
 				}
 			}
 		} catch (ExpiredJwtException e) {

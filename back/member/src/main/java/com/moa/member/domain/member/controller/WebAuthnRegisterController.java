@@ -72,6 +72,7 @@ public class WebAuthnRegisterController{
 	}
 
 
+
 	@GetMapping("/options/{name}")
 	public PublicKeyCredentialCreationOptions getRegistrationOptions(
 			@PathVariable String name,
@@ -223,6 +224,8 @@ public class WebAuthnRegisterController{
 			return ResponseEntity.status(resultResponse.getStatus()).body(resultResponse);
 		}
 	}
+
+
 
 }
 

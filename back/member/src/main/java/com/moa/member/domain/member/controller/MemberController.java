@@ -2,6 +2,7 @@ package com.moa.member.domain.member.controller;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -14,11 +15,13 @@ import com.moa.member.domain.member.model.dto.JoinResponseDto;
 import com.moa.member.domain.member.model.dto.LoginRequestDto;
 import com.moa.member.domain.member.model.dto.MessageRequestDto;
 import com.moa.member.domain.member.model.dto.VerificationRequestDto;
+import com.moa.member.domain.member.security.JwtTokenProvider;
 import com.moa.member.domain.member.security.TokenDto;
 import com.moa.member.domain.member.service.MemberService;
 import com.moa.member.domain.member.service.MessageService;
 import com.moa.member.global.response.ResultResponse;
 
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -31,6 +34,7 @@ public class MemberController {
 
 	private final MemberService memberService;
 	private final MessageService messageService;
+	private final JwtTokenProvider jwtTokenProvider;
 
 	@PostMapping("/join")
 	public ResponseEntity<ResultResponse> join(@RequestBody JoinRequestDto dto) throws Exception {
