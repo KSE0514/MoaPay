@@ -1,5 +1,6 @@
 package com.moa.member.domain.member.controller;
 
+import com.yubico.webauthn.data.ClientRegistrationExtensionOutputs;
 import java.security.SecureRandom;
 import java.util.Arrays;
 import java.util.Base64;
@@ -60,10 +61,11 @@ public class WebAuthnRegisterController{
 	private final RelyingParty relyingParty;
 	private final MemberRepository memberRepository;
 	public WebAuthnRegisterController(MemberRepository memberRepository, EmptyCredentialRepository credentialRepository) {
+	//////////////////////////////////꼭 !!!!!!!!!!!!!!!! id 값 서버 주소로 변경하기 ////////////////////////////////
 		// RelyingParty 설정
 		this.relyingParty = RelyingParty.builder()
 			.identity(RelyingPartyIdentity.builder()
-				.id("j11c201.p.ssafy.io")  // 서버 도메인
+					.id("moapay-7e24e.web.app")  // 포트 번호를 포함하여 설정
 				.name("moapay")    // 서버 이름
 				.build())
 			.credentialRepository(credentialRepository)  // 빈 CredentialRepository 주입
@@ -95,7 +97,8 @@ public class WebAuthnRegisterController{
 
 		PublicKeyCredentialCreationOptions options = PublicKeyCredentialCreationOptions.builder()
 				.rp(RelyingPartyIdentity.builder()
-						.id("j11c201.p.ssafy.io")
+						//////////////////////////////////꼭 !!!!!!!!!!!!!!!! id 값 서버 주소로 변경하기 ////////////////////////////////
+						.id("moapay-7e24e.web.app")  // 포트 번호를 포함하여 설정
 						.name("moapay")
 						.build())
 				.user(userEntity)
@@ -172,20 +175,24 @@ public class WebAuthnRegisterController{
 					.clientDataJSON(clientDataJSON)
 					.build();
 
-			ClientExtensionOutputs clientExtensions = new ClientExtensionOutputs() {
-				@Override
-				public Set<String> getExtensionIds() {
-					return Set.of();
-				}
-			};
+//			ClientExtensionOutputs clientExtensions = new ClientExtensionOutputs() {
+//				@Override
+//				public Set<String> getExtensionIds() {
+//					return Set.of();
+//				}
+//			};
 
-			// PublicKeyCredential 생성
+// 빈 확장 결과 생성
+			ClientRegistrationExtensionOutputs clientExtensions = ClientRegistrationExtensionOutputs.builder().build();  // 빈 확장 객체
+
+// PublicKeyCredential 생성
 			PublicKeyCredential credential = PublicKeyCredential.builder()
 					.id(new ByteArray(credentialId.getBytes()))  // 자격 증명 ID
 					.response(attestationResponse)  // 생성된 AuthenticatorAttestationResponse 객체
-					.clientExtensionResults(clientExtensions)  // 빈 ClientExtensionOutputs 객체
+					.clientExtensionResults(clientExtensions)  // 빈 확장 객체 전달
 					.type(PublicKeyCredentialType.PUBLIC_KEY)  // 자격 증명 타입
 					.build();
+
 
 
 			// 등록 검증 완료

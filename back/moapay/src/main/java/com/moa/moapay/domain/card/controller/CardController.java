@@ -19,7 +19,7 @@ import java.util.List;
 @RestController
 @RequiredArgsConstructor
 @Slf4j
-@RequestMapping("/moapay/core/card")
+@RequestMapping("card")
 public class CardController {
 
     private final RecommendCardService recommendCardService;
