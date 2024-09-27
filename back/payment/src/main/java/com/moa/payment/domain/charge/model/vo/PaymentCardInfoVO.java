@@ -15,6 +15,7 @@ public class PaymentCardInfoVO {
     private UUID cardId;
     private String cardNumber;
     private String cvc;
+    private String categoryId;
     private long amount;
 
     @Override

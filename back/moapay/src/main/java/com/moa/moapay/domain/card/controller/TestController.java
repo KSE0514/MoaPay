@@ -1,15 +1,18 @@
 package com.moa.moapay.domain.card.controller;
 
 import com.moa.moapay.global.kafka.KafkaProducer;
-import com.moa.moapay.global.kafkaVo.KafkaMsgVo;
 import lombok.*;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 
 import java.util.*;
 
 @Controller
 @RequiredArgsConstructor
+@Slf4j
+@CrossOrigin(origins = "http://localhost:3000")
 public class TestController {
 
     private final KafkaProducer kafkaProducer;

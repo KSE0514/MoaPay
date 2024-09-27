@@ -2,23 +2,10 @@ import { useState } from "react";
 import { Benefits, CardInfoRow, Wrapper } from "./CardDetail.styles";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faXmark } from "@fortawesome/free-solid-svg-icons";
-
-interface benefit {
-  category: string;
-  explanation: string;
-}
-
-interface card {
-  name: string; // 카드명
-  image_url: string; // 이미지 url
-  type: number; // 카드 종류 - 신용, 체크
-  annual_fee: number; // 연회비
-  performance: number; // 전월 실적
-  benefits: benefit[]; // 혜택
-}
+import { Card } from "../../../store/CardStore";
 
 interface Props {
-  selectedCard: card | null;
+  selectedCard: Card | null;
   closeCardDetail: () => void;
 }
 const CardDetail = ({ selectedCard, closeCardDetail }: Props) => {
@@ -41,7 +28,7 @@ const CardDetail = ({ selectedCard, closeCardDetail }: Props) => {
           icon={faXmark}
         />
       </div>
-      <h1>{selectedCard?.name}</h1>
+      <h1>{selectedCard?.cardInfo.cardName}</h1>
       <img
         onLoad={(event) => handleImageLoad(event)}
         style={{
@@ -51,7 +38,7 @@ const CardDetail = ({ selectedCard, closeCardDetail }: Props) => {
           marginTop: rotate ? "60px" : "none",
           marginBottom: rotate ? "59px" : "none",
         }}
-        src={selectedCard?.image_url}
+        src={selectedCard?.cardInfo.imageUrl}
       />
       <CardInfoRow>
         <header style={{ marginTop: "78px" }}>
@@ -60,7 +47,7 @@ const CardDetail = ({ selectedCard, closeCardDetail }: Props) => {
           <div className="line"></div>
         </header>
         <div className="value">
-          {selectedCard?.type == 0 ? "체크카드" : "신용카드"}
+          {selectedCard?.cardInfo.cardType == "cred" ? "체크카드" : "신용카드"}
         </div>
       </CardInfoRow>
       <CardInfoRow>
@@ -70,8 +57,8 @@ const CardDetail = ({ selectedCard, closeCardDetail }: Props) => {
           <div className="line"></div>
         </header>
         <div className="value">
-          {selectedCard?.annual_fee !== 0
-            ? `${selectedCard?.annual_fee}원`
+          {selectedCard?.cardInfo.annualFee !== 0
+            ? `${selectedCard?.cardInfo.annualFee}원`
             : "연회비 없음"}
         </div>
       </CardInfoRow>
@@ -82,8 +69,8 @@ const CardDetail = ({ selectedCard, closeCardDetail }: Props) => {
           <div className="line"></div>
         </header>
         <div className="value">
-          {selectedCard?.performance !== 0
-            ? `${selectedCard?.performance}원`
+          {selectedCard?.cardInfo.performance !== 0
+            ? `${selectedCard?.cardInfo.performance}원`
             : "전월실적 없음"}
         </div>
       </CardInfoRow>
@@ -94,10 +81,10 @@ const CardDetail = ({ selectedCard, closeCardDetail }: Props) => {
           <div className="line"></div>
         </header>
         <ul>
-          {selectedCard?.benefits.map((benefit) => (
+          {selectedCard?.cardInfo.benefits.map((benefit) => (
             <div>
               <p></p>
-              <li>{benefit.explanation}</li>
+              <li>{benefit.benefitDesc}</li>
             </div>
           ))}
         </ul>
