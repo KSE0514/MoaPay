@@ -1,6 +1,7 @@
 package com.moa.member.domain.member.controller;
 
 import com.yubico.webauthn.data.ClientRegistrationExtensionOutputs;
+
 import java.security.SecureRandom;
 import java.util.Arrays;
 import java.util.Base64;
@@ -11,6 +12,7 @@ import java.util.UUID;
 
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
@@ -21,6 +23,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+
 import com.moa.member.domain.member.model.Member;
 import com.moa.member.domain.member.repository.EmptyCredentialRepository;
 import com.moa.member.domain.member.repository.MemberRepository;
@@ -46,7 +49,6 @@ import com.yubico.webauthn.data.RelyingPartyIdentity;
 import com.yubico.webauthn.data.UserIdentity;
 import com.yubico.webauthn.data.UserVerificationRequirement;
 
-
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
@@ -56,16 +58,18 @@ import lombok.extern.slf4j.Slf4j;
 @RestController
 @Slf4j
 @RequestMapping("/moapay/member/authn/register")
-public class WebAuthnRegisterController{
+public class WebAuthnRegisterController {
 
 	private final RelyingParty relyingParty;
 	private final MemberRepository memberRepository;
-	public WebAuthnRegisterController(MemberRepository memberRepository, EmptyCredentialRepository credentialRepository) {
-	//////////////////////////////////꼭 !!!!!!!!!!!!!!!! id 값 서버 주소로 변경하기 ////////////////////////////////
+
+	public WebAuthnRegisterController(MemberRepository memberRepository,
+		EmptyCredentialRepository credentialRepository) {
+		//////////////////////////////////꼭 !!!!!!!!!!!!!!!! id 값 서버 주소로 변경하기 ////////////////////////////////
 		// RelyingParty 설정
 		this.relyingParty = RelyingParty.builder()
 			.identity(RelyingPartyIdentity.builder()
-					.id("moapay-7e24e.web.app")  // 포트 번호를 포함하여 설정
+				.id("moapay-7e24e.web.app")  // 포트 번호를 포함하여 설정
 				.name("moapay")    // 서버 이름
 				.build())
 			.credentialRepository(credentialRepository)  // 빈 CredentialRepository 주입
@@ -73,21 +77,20 @@ public class WebAuthnRegisterController{
 		this.memberRepository = memberRepository;
 	}
 
-
 	@GetMapping("/options/{name}")
 	public PublicKeyCredentialCreationOptions getRegistrationOptions(
-			@PathVariable String name,
-			HttpServletRequest request,
-			HttpServletResponse response) {  // HttpServletResponse 추가
+		@PathVariable String name,
+		HttpServletRequest request,
+		HttpServletResponse response) {  // HttpServletResponse 추가
 
 		Member member = memberRepository.findByName(name);
 
 		// UserIdentity 생성
 		UserIdentity userEntity = UserIdentity.builder()
-				.name(member.getName())
-				.displayName("moapay")
-				.id(new ByteArray(member.getUuid().toString().getBytes()))
-				.build();
+			.name(member.getName())
+			.displayName("moapay")
+			.id(new ByteArray(member.getUuid().toString().getBytes()))
+			.build();
 
 		// 랜덤 챌린지 생성
 		byte[] challengeBytes = new byte[32];
@@ -95,42 +98,43 @@ public class WebAuthnRegisterController{
 		ByteArray challenge = new ByteArray(challengeBytes);
 
 		PublicKeyCredentialCreationOptions options = PublicKeyCredentialCreationOptions.builder()
-				.rp(RelyingPartyIdentity.builder()
-						//////////////////////////////////꼭 !!!!!!!!!!!!!!!! id 값 서버 주소로 변경하기 ////////////////////////////////
-						.id("moapay-7e24e.web.app")  // 포트 번호를 포함하여 설정
-						.name("moapay")
-						.build())
-				.user(userEntity)
-				.challenge(challenge)
-				.pubKeyCredParams(Arrays.asList(
-						PublicKeyCredentialParameters.builder()
-								.alg(COSEAlgorithmIdentifier.ES256)
-								.type(PublicKeyCredentialType.PUBLIC_KEY)
-								.build(),
-						PublicKeyCredentialParameters.builder()
-								.alg(COSEAlgorithmIdentifier.RS256)
-								.type(PublicKeyCredentialType.PUBLIC_KEY)
-								.build()
-				))
-				.authenticatorSelection(AuthenticatorSelectionCriteria.builder()
-						.userVerification(UserVerificationRequirement.PREFERRED)
-						.build())
-				.attestation(AttestationConveyancePreference.NONE)
-				.build();
+			.rp(RelyingPartyIdentity.builder()
+				//////////////////////////////////꼭 !!!!!!!!!!!!!!!! id 값 서버 주소로 변경하기 ////////////////////////////////
+				.id("moapay-7e24e.web.app")  // 포트 번호를 포함하여 설정
+				.name("moapay")
+				.build())
+			.user(userEntity)
+			.challenge(challenge)
+			.pubKeyCredParams(Arrays.asList(
+				PublicKeyCredentialParameters.builder()
+					.alg(COSEAlgorithmIdentifier.ES256)
+					.type(PublicKeyCredentialType.PUBLIC_KEY)
+					.build(),
+				PublicKeyCredentialParameters.builder()
+					.alg(COSEAlgorithmIdentifier.RS256)
+					.type(PublicKeyCredentialType.PUBLIC_KEY)
+					.build()
+			))
+			.authenticatorSelection(AuthenticatorSelectionCriteria.builder()
+				.userVerification(UserVerificationRequirement.PREFERRED)
+				.build())
+			.attestation(AttestationConveyancePreference.NONE)
+			.build();
 
 		// 쿠키 설정
 		ResponseCookie jsessionCookie = ResponseCookie.from("JSESSIONID", request.getSession().getId())
-				.httpOnly(true)
-				.path("/")
-				.secure(true)  // HTTPS 환경에서만 동작
-				.sameSite("None")  // Cross-site 요청을 허용
-				.build();
+			.httpOnly(true)
+			.path("/")
+			.secure(true)  // HTTPS 환경에서만 동작
+			.sameSite("None")  // Cross-site 요청을 허용
+			.build();
 
 		response.addHeader("Set-Cookie", jsessionCookie.toString());  // 쿠키를 응답에 추가
 
 		// 클라이언트에게 옵션 전송 (세션에 저장 가능)
 		request.getSession().setAttribute("registrationOptions", options);
-		PublicKeyCredentialCreationOptions save = (PublicKeyCredentialCreationOptions) request.getSession().getAttribute("registrationOptions");
+		PublicKeyCredentialCreationOptions save = (PublicKeyCredentialCreationOptions)request.getSession()
+			.getAttribute("registrationOptions");
 		System.out.print("save option : ");
 		System.out.println(save);
 
@@ -138,7 +142,8 @@ public class WebAuthnRegisterController{
 	}
 
 	@PostMapping("/verify")
-	public ResponseEntity<ResultResponse> verifyRegistration(@RequestBody Map<String, Object> responseData, HttpServletRequest request) {
+	public ResponseEntity<ResultResponse> verifyRegistration(@RequestBody Map<String, Object> responseData,
+		HttpServletRequest request) {
 		try {
 			// 사용자 정보 조회 (예시로 '고망고' 이름을 통해 조회)
 			Member member = memberRepository.findByName("고망고");
@@ -152,17 +157,18 @@ public class WebAuthnRegisterController{
 			}
 
 			// 세션에서 등록 옵션을 가져옴
-			PublicKeyCredentialCreationOptions options = (PublicKeyCredentialCreationOptions) request.getSession().getAttribute("registrationOptions");
+			PublicKeyCredentialCreationOptions options = (PublicKeyCredentialCreationOptions)request.getSession()
+				.getAttribute("registrationOptions");
 			System.out.print("option : ");
 			System.out.println(options);
 
 			// 클라이언트로부터 전달받은 데이터에서 자격 증명 ID와 응답 데이터 추출
-			String credentialId = (String) responseData.get("id");
-			Map<String, Object> response = (Map<String, Object>) responseData.get("response");
+			String credentialId = (String)responseData.get("id");
+			Map<String, Object> response = (Map<String, Object>)responseData.get("response");
 
 			// AuthenticatorResponse는 별도의 형태로 변환해야 함 (AttestationObject와 ClientDataJSON 필요)
-			byte[] attestationObjectBytes = Base64.getUrlDecoder().decode((String) response.get("attestationObject"));
-			byte[] clientDataJSONBytes = Base64.getUrlDecoder().decode((String) response.get("clientDataJSON"));
+			byte[] attestationObjectBytes = Base64.getUrlDecoder().decode((String)response.get("attestationObject"));
+			byte[] clientDataJSONBytes = Base64.getUrlDecoder().decode((String)response.get("clientDataJSON"));
 
 			// ByteArray 객체로 변환
 			ByteArray attestationObject = new ByteArray(attestationObjectBytes);
@@ -170,54 +176,53 @@ public class WebAuthnRegisterController{
 
 			// AuthenticatorAttestationResponse 생성
 			AuthenticatorAttestationResponse attestationResponse = AuthenticatorAttestationResponse.builder()
-					.attestationObject(attestationObject)
-					.clientDataJSON(clientDataJSON)
-					.build();
+				.attestationObject(attestationObject)
+				.clientDataJSON(clientDataJSON)
+				.build();
 
-//			ClientExtensionOutputs clientExtensions = new ClientExtensionOutputs() {
-//				@Override
-//				public Set<String> getExtensionIds() {
-//					return Set.of();
-//				}
-//			};
+			//			ClientExtensionOutputs clientExtensions = new ClientExtensionOutputs() {
+			//				@Override
+			//				public Set<String> getExtensionIds() {
+			//					return Set.of();
+			//				}
+			//			};
 
-// 빈 확장 결과 생성
-			ClientRegistrationExtensionOutputs clientExtensions = ClientRegistrationExtensionOutputs.builder().build();  // 빈 확장 객체
+			// 빈 확장 결과 생성
+			ClientRegistrationExtensionOutputs clientExtensions = ClientRegistrationExtensionOutputs.builder()
+				.build();  // 빈 확장 객체
 
-// PublicKeyCredential 생성
+			// PublicKeyCredential 생성
 			PublicKeyCredential credential = PublicKeyCredential.builder()
-					.id(new ByteArray(credentialId.getBytes()))  // 자격 증명 ID
-					.response(attestationResponse)  // 생성된 AuthenticatorAttestationResponse 객체
-					.clientExtensionResults(clientExtensions)  // 빈 확장 객체 전달
-					.type(PublicKeyCredentialType.PUBLIC_KEY)  // 자격 증명 타입
-					.build();
-
-
+				.id(new ByteArray(credentialId.getBytes()))  // 자격 증명 ID
+				.response(attestationResponse)  // 생성된 AuthenticatorAttestationResponse 객체
+				.clientExtensionResults(clientExtensions)  // 빈 확장 객체 전달
+				.type(PublicKeyCredentialType.PUBLIC_KEY)  // 자격 증명 타입
+				.build();
 
 			// 등록 검증 완료
 			var registrationResult = relyingParty.finishRegistration(
-					FinishRegistrationOptions.builder()
-							.request(options)
-							.response(credential)
-							.build()
+				FinishRegistrationOptions.builder()
+					.request(options)
+					.response(credential)
+					.build()
 			);
 
 			// Member 정보 업데이트 (기존 데이터 유지)
 			Member updatedMember = Member.builder()
-					.id(member.getId())
-					.name(member.getName())
-					.birthDate(member.getBirthDate())
-					.gender(member.getGender())
-					.phoneNumber(member.getPhoneNumber())
-					.email(member.getEmail())
-					.address(member.getAddress())
-					.uuid(member.getUuid())  // UUID 유지
-					.createTime(member.getCreateTime())
-					.updateTime(member.getUpdateTime())
-					.publicKey(registrationResult.getKeyId().getId().toString())  // 공개키 저장
-					.credentialId(credentialId)  // 자격 증명 ID 저장
-					.authenticatorData(attestationObject.getBytes())  // AttestationObject 저장
-					.build();
+				.id(member.getId())
+				.name(member.getName())
+				.birthDate(member.getBirthDate())
+				.gender(member.getGender())
+				.phoneNumber(member.getPhoneNumber())
+				.email(member.getEmail())
+				.address(member.getAddress())
+				.uuid(member.getUuid())  // UUID 유지
+				.createTime(member.getCreateTime())
+				.updateTime(member.getUpdateTime())
+				.publicKey(registrationResult.getKeyId().getId().toString())  // 공개키 저장
+				.credentialId(credentialId)  // 자격 증명 ID 저장
+				.authenticatorData(attestationObject.getBytes())  // AttestationObject 저장
+				.build();
 
 			// Member 정보 저장
 			memberRepository.save(updatedMember);
