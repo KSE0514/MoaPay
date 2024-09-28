@@ -27,10 +27,12 @@ const UserCardDetail = () => {
     tar_record: 3000000,
     benefit: 5600,
   };
+  const currentYear = new Date().getFullYear();  // 현재 년도 가져오기
+  const currentMonth = new Date().getMonth() + 1; // 월은 0부터 시작하기 때문에 +1
 
   // 년도와 월을 state로 관리
-  const [year, setYear] = useState<number>(2024);
-  const [month, setMonth] = useState<number>(8);
+  const [year, setYear] = useState<number>(currentYear);
+  const [month, setMonth] = useState<number>(currentMonth);
   const [rotate, setRotate] = useState<boolean>(false);
 
   const [isOpen, setIsOpen] = useState<boolean>(false);
@@ -38,8 +40,6 @@ const UserCardDetail = () => {
   const [tempMonth, setTempMonth] = useState<number>(month);
   const [errorMessage, setErrorMessage] = useState<string>(""); // 오류 메시지 상태
 
-  const currentYear = new Date().getFullYear();  // 현재 년도 가져오기
-  const currentMonth = new Date().getMonth() + 1; // 월은 0부터 시작하기 때문에 +1
 
   // 카드별 결제 내역 조회(년, 월)
   const getCardHistory = async () => {
