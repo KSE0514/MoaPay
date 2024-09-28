@@ -2,6 +2,8 @@ package com.moa.member.domain.member.model;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -58,6 +60,10 @@ public class Member {
 	@Column(name="phone_number",nullable=false)
 	private String phoneNumber;
 
+	@NotNull
+	@Column(name="password",nullable=false)
+	private String password; //전화번호를 암호화 한 비밀번호
+
 	@Column(name="simple_password")
 	private String simplePassword;
 
@@ -87,6 +93,11 @@ public class Member {
 	@NotNull
 	@Column(name = "authenticator_data", nullable = true)
 	private byte[] authenticatorData; //인증 장치 데이터
+
+
+	@Enumerated(EnumType.STRING)
+	@Column(name="payment_type")
+	private PaymentType paymentType;
 
 
 	@PrePersist

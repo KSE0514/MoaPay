@@ -5,10 +5,17 @@ import java.util.Optional;
 
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.moa.member.domain.member.model.dto.JoinResponseDto;
+import com.moa.member.domain.member.model.dto.LoginRequestDto;
+import com.moa.member.domain.member.security.JwtTokenProvider;
+import com.moa.member.domain.member.security.TokenDto;
 import com.moa.member.global.exception.BusinessException;
 import com.moa.member.domain.member.model.Member;
 import com.moa.member.domain.member.model.dto.JoinRequestDto;
@@ -24,18 +31,23 @@ import lombok.extern.slf4j.Slf4j;
 public class MemberServiceImpl implements MemberService{
 
 	private final MemberRepository memberRepository;
+	private final JwtTokenProvider jwtTokenProvider;
+	private final DaoAuthenticationProvider memberAuthenticationProvider;
+	private final PasswordEncoder passwordEncoder;
 
 	@Override
 	@Transactional
 	public JoinResponseDto join(JoinRequestDto joinRequestDto){
-
-		Member member=joinRequestDto.toEntity();
 		//핸드폰 번호는 겹칠 수 없다. 고유한 값.
-		Optional<Member> memberOptional=memberRepository.findByPhoneNumber(member.getPhoneNumber());
-
+		Optional<Member> memberOptional=memberRepository.findByPhoneNumber(joinRequestDto.getPhoneNumber());
 		if(memberOptional.isPresent()){
 			throw new BusinessException(HttpStatus.BAD_REQUEST, "이미 존재하는 회원입니다.");
 		}
+
+		String phone=joinRequestDto.getPhoneNumber();
+		String password=passwordEncoder.encode(phone);
+
+		Member member=joinRequestDto.toEntity(password);
 
 		memberRepository.save(member);
 
@@ -53,10 +65,15 @@ public class MemberServiceImpl implements MemberService{
 
 	}
 
+	public TokenDto login(LoginRequestDto dto) throws Exception{
+		UsernamePasswordAuthenticationToken authToken =
+			new UsernamePasswordAuthenticationToken(dto.getUuid(), dto.getPhoneNumber());
+		Authentication authentication = memberAuthenticationProvider.authenticate(authToken);
+		String accessToken = jwtTokenProvider.generateAccessToken(authentication);
+		String refreshToken = jwtTokenProvider.generateRefreshToken(authentication);
 
-
-
-
+		return new TokenDto(accessToken,refreshToken);
+	}
 
 
 }
