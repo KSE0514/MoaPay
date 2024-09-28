@@ -67,7 +67,6 @@ public class Member {
 	@Column(name="simple_password")
 	private String simplePassword;
 
-
 	@Temporal(TemporalType.TIMESTAMP) //날짜와 시간 저장
 	@Column(name="create_time",nullable=false)
 	private LocalDateTime createTime;
@@ -119,6 +118,10 @@ public class Member {
 			.publicKey(publicKey)
 			.credentialId(credentialId)
 			.authenticatorData(authenticatorData);
+	}
+
+	public void updateSimplePassword(String simplePassword) {
+		this.simplePassword = simplePassword;
 	}
 
 
