@@ -24,7 +24,7 @@ public class MemberPrincipalDetails implements UserDetails {
 
 	@Override
 	public String getPassword() {
-		return this.member.getPhoneNumber();
+		return this.member.getPassword();
 	}
 
 	@Override

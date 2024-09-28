@@ -64,7 +64,7 @@ public class MemberController {
 	}
 
 	@PostMapping("/login")
-	public ResponseEntity<ResultResponse> login(@RequestBody LoginRequestDto dto,HttpServletResponse response) throws Exception {
+	public ResponseEntity<ResultResponse> login(@RequestBody LoginRequestDto dto) throws Exception {
 		TokenDto token = memberService.login(dto);
 		ResultResponse resultResponse = ResultResponse.of(HttpStatus.OK, "로그인 성공",token);
 		return ResponseEntity.status(resultResponse.getStatus()).body(resultResponse);

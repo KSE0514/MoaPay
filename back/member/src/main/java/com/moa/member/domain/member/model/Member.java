@@ -62,7 +62,7 @@ public class Member {
 
 	@NotNull
 	@Column(name="password",nullable=false)
-	private String password; //전화번호를 암호화 한 비밀번호 
+	private String password; //전화번호를 암호화 한 비밀번호
 
 	@Column(name="simple_password")
 	private String simplePassword;

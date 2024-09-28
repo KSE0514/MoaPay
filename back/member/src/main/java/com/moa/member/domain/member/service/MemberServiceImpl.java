@@ -45,9 +45,9 @@ public class MemberServiceImpl implements MemberService{
 		}
 
 		String phone=joinRequestDto.getPhoneNumber();
-		String encodedPhoneNumber=passwordEncoder.encode(phone);
+		String password=passwordEncoder.encode(phone);
 
-		Member member=joinRequestDto.toEntity(encodedPhoneNumber);
+		Member member=joinRequestDto.toEntity(password);
 
 		memberRepository.save(member);
 
@@ -68,7 +68,6 @@ public class MemberServiceImpl implements MemberService{
 	public TokenDto login(LoginRequestDto dto) throws Exception{
 		UsernamePasswordAuthenticationToken authToken =
 			new UsernamePasswordAuthenticationToken(dto.getUuid(), dto.getPhoneNumber());
-		System.out.println(dto.getUuid()+"/"+dto.getPhoneNumber());
 		Authentication authentication = memberAuthenticationProvider.authenticate(authToken);
 		String accessToken = jwtTokenProvider.generateAccessToken(authentication);
 		String refreshToken = jwtTokenProvider.generateRefreshToken(authentication);
