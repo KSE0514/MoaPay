@@ -1,20 +1,20 @@
-package com.moa.payment.domain.online.model.dto;
+package com.moa.payment.domain.charge.model.vo;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import java.util.List;
 import java.util.UUID;
 
 @Getter
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class GetOnlinePaymentInfoResponseDto {
-    private UUID orderId;
+public class ExecutePaymentRequestVO {
+
     private UUID merchantId;
-    private String merchantName;
-    private String categoryId;
-    private long totalPrice;
+    private List<PaymentCardInfoVO> paymentInfoList;
+
 }

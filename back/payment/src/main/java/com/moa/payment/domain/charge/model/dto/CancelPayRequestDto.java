@@ -1,21 +1,19 @@
-package com.moa.payment.domain.online.model.dto;
+package com.moa.payment.domain.charge.model.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+
 import java.util.UUID;
 
-@Builder
 @Getter
+@Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class ExecutePaymentRequestDto {
-    private UUID merchantId;
+public class CancelPayRequestDto {
+    private UUID paymentId;
     private UUID cardId;
     private String cardNumber;
     private String cvc;
-    private String categoryId;
-    private long amount;
-
 }
