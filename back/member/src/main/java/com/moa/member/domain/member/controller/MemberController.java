@@ -1,5 +1,7 @@
 package com.moa.member.domain.member.controller;
 
+import java.util.UUID;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -10,15 +12,19 @@ import org.springframework.web.bind.annotation.RestController;
 
 import net.nurigo.sdk.message.response.SingleMessageSentResponse;
 
+import com.moa.member.domain.member.model.Member;
 import com.moa.member.domain.member.model.dto.JoinRequestDto;
 import com.moa.member.domain.member.model.dto.JoinResponseDto;
 import com.moa.member.domain.member.model.dto.LoginRequestDto;
+import com.moa.member.domain.member.model.dto.LoginResponseDto;
 import com.moa.member.domain.member.model.dto.MessageRequestDto;
 import com.moa.member.domain.member.model.dto.VerificationRequestDto;
+import com.moa.member.domain.member.repository.MemberRepository;
 import com.moa.member.domain.member.security.JwtTokenProvider;
 import com.moa.member.domain.member.security.TokenDto;
 import com.moa.member.domain.member.service.MemberService;
 import com.moa.member.domain.member.service.MessageService;
+import com.moa.member.global.exception.BusinessException;
 import com.moa.member.global.response.ResultResponse;
 
 import jakarta.servlet.http.HttpServletRequest;
@@ -35,6 +41,7 @@ public class MemberController {
 	private final MemberService memberService;
 	private final MessageService messageService;
 	private final JwtTokenProvider jwtTokenProvider;
+	private final MemberRepository memberRepository;
 
 	@PostMapping("/join")
 	public ResponseEntity<ResultResponse> join(@RequestBody JoinRequestDto dto) throws Exception {
@@ -66,7 +73,10 @@ public class MemberController {
 	@PostMapping("/login")
 	public ResponseEntity<ResultResponse> login(@RequestBody LoginRequestDto dto) throws Exception {
 		TokenDto token = memberService.login(dto);
-		ResultResponse resultResponse = ResultResponse.of(HttpStatus.OK, "로그인 성공",token);
+		Member member = memberRepository.findByPhoneNumber(dto.getPhoneNumber()).orElseThrow(() -> new BusinessException(
+			HttpStatus.BAD_REQUEST, "회원이 존재하지 않습니다."));
+		LoginResponseDto loginResponse=new LoginResponseDto(token, member.getUuid().toString());
+		ResultResponse resultResponse = ResultResponse.of(HttpStatus.OK, "로그인 성공",loginResponse);
 		return ResponseEntity.status(resultResponse.getStatus()).body(resultResponse);
 	}
 

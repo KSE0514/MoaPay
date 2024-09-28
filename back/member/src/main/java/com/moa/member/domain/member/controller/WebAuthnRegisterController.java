@@ -74,7 +74,6 @@ public class WebAuthnRegisterController{
 	}
 
 
-
 	@GetMapping("/options/{name}")
 	public PublicKeyCredentialCreationOptions getRegistrationOptions(
 			@PathVariable String name,
