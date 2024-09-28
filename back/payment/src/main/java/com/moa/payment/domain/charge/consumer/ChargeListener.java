@@ -27,6 +27,7 @@ public class ChargeListener {
             Map<String, Object> vo  = objectMapper.readValue(message, Map.class);
             ExecutePaymentRequestVO executePaymentRequestVO = objectMapper.convertValue(vo, ExecutePaymentRequestVO.class);
             log.info("get payment request : {}", executePaymentRequestVO.getMerchantId().toString());
+            log.info("requestCode : {}", executePaymentRequestVO.getRequestCode());
             ExecutePaymentResultVO resultVO = chargeService.executePayment(executePaymentRequestVO);
             log.info("transfer payment result...");
         } catch(Exception e) {

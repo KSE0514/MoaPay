@@ -21,6 +21,6 @@ public class GeneralPayRedisRepository {
         String key = code.toString();
         ops.put(key, "orderId", dto.getOrderId().toString());
         ops.put(key, "merchantId", dto.getMerchantId().toString());
-        // 추후 필요한 정보 더 넣기로
+        // 일단은 주문ID와 상점ID만 넣고, 추후 필요한 정보 있으면 더 넣기로
     }
 }
