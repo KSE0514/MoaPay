@@ -71,10 +71,16 @@ public class MemberController {
 	}
 
 	@PostMapping("/login")
-	public ResponseEntity<ResultResponse> login(@RequestBody LoginRequestDto dto) throws Exception {
+	public ResponseEntity<ResultResponse> login(@RequestBody LoginRequestDto dto, HttpServletResponse response) throws Exception {
 		TokenDto token = memberService.login(dto);
 		Member member = memberRepository.findByPhoneNumber(dto.getPhoneNumber()).orElseThrow(() -> new BusinessException(
 			HttpStatus.BAD_REQUEST, "회원이 존재하지 않습니다."));
+		response.setHeader("Authorization", "Bearer " + token.getAccessToken());
+		response.setHeader("RefreshToken", "Bearer " + token.getRefreshToken());
+
+
+
+
 		LoginResponseDto loginResponse=new LoginResponseDto(token, member.getUuid().toString());
 		ResultResponse resultResponse = ResultResponse.of(HttpStatus.OK, "로그인 성공",loginResponse);
 		return ResponseEntity.status(resultResponse.getStatus()).body(resultResponse);
