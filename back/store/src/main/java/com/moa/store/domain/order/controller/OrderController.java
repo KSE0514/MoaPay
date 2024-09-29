@@ -1,4 +1,45 @@
 package com.moa.store.domain.order.controller;
 
+import com.moa.store.domain.order.model.dto.OrderResponseDto;
+import com.moa.store.domain.order.model.dto.UpdateOrderStatusRequestDto;
+import com.moa.store.domain.order.service.OrderService;
+import com.moa.store.global.response.ResultResponse;
+import lombok.RequiredArgsConstructor;
+import org.apache.coyote.Response;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.UUID;
+
+@RestController
+@RequestMapping("/store/order")
+@RequiredArgsConstructor
 public class OrderController {
+
+    private final OrderService orderService;
+
+    // 가맹점 별 주문 조회, API 명세서 7행
+    @GetMapping("/list/{merchantId}")
+    public ResponseEntity<ResultResponse> getOrdersByMerchant(@PathVariable("merchantId") UUID merchantId) {
+        O
+    }
+
+
+
+    // 주문 상세 조회, API 명세서 8행
+    @GetMapping("/detail/{orderId}")
+    public ResponseEntity<ResultResponse> getOrderDetail(@PathVariable("orderId") UUID orderId) {
+        OrderResponseDto orderResponseDto = orderService.getOrderResponse(orderId);
+        ResultResponse resultResponse = ResultResponse.of(HttpStatus.OK, "주문 상세 조회를 완료했습니다.", orderResponseDto);
+        return ResponseEntity.status(resultResponse.getStatus()).body(resultResponse);
+    }
+
+    // 주문 상태 수정, API 명세서 9행
+    @PutMapping("/status")
+    public ResponseEntity<ResultResponse> updateOrderStatus(@RequestBody UpdateOrderStatusRequestDto updateOrderStatusRequestDto) {
+        OrderResponseDto orderResponseDto = orderService.ChangeOrderStatus(updateOrderStatusRequestDto);
+        ResultResponse resultResponse = ResultResponse.of(HttpStatus.OK, "주문 상태 수정을 완료했습니다.", orderResponseDto);
+        return ResponseEntity.status(resultResponse.getStatus()).body(resultResponse);
+    }
 }

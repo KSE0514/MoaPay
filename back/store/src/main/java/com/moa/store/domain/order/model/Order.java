@@ -78,4 +78,8 @@ public class Order {
 	public void preUpdate() {
 		this.updateTime = LocalDateTime.now();
 	}
+
+	public void updateState(String state) {
+		this.state = OrderStatus.valueOf(state);
+	}
 }
