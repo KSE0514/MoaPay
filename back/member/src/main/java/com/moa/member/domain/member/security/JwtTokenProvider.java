@@ -104,13 +104,18 @@ public class JwtTokenProvider {
 		}
 	}
 
-	//header에서 Bearer 토큰 가져오기
+	//header에서 Access Bearer 토큰 가져오기
 	public String getJwtTokenFromRequestHeader(HttpServletRequest request) {
 		String bearerToken = request.getHeader("Authorization");
 		if (StringUtils.hasText(bearerToken) && bearerToken.startsWith("Bearer ")) {
 			return bearerToken.substring(7);
 		}
 		return null;
+	}
+
+	public String getRefreshTokenByUuid(String uuid) {
+		// Redis에서 리프레시 토큰 조회
+		return redisTemplate.opsForValue().get("refresh-token:" + uuid);
 	}
 
 	// 토큰에서 Uuid 가져오기. String 형태로.

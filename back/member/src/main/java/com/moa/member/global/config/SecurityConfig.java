@@ -70,7 +70,7 @@ public class SecurityConfig {
 			.logout(AbstractHttpConfigurer::disable)
 			.authorizeRequests()    // 다음 리퀘스트에 대한 사용권한 체크
 			//.requestMatchers("/**").permitAll() // 모든 주소 허용
-			.requestMatchers("/moapay/member/login","/moapay/member/join","/moapay/member/sendSMS","/moapay/member/verification").permitAll() // 허용된 주소
+			.requestMatchers("/moapay/member/login","/moapay/member/join","/moapay/member/sendSMS","/moapay/member/verification","/moapay/member/isMember").permitAll() // 허용된 주소
 			.anyRequest().authenticated() // Authentication 필요한 주소
 			.and()
 			.exceptionHandling((exceptionHandling) -> exceptionHandling

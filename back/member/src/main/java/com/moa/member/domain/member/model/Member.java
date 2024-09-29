@@ -20,12 +20,14 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import com.fasterxml.uuid.Generators;
+import com.moa.member.global.exception.BusinessException;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
 import org.antlr.v4.runtime.misc.NotNull;
+import org.springframework.http.HttpStatus;
 
 @Entity
 @Table(name="member")
@@ -66,7 +68,6 @@ public class Member {
 
 	@Column(name="simple_password")
 	private String simplePassword;
-
 
 	@Temporal(TemporalType.TIMESTAMP) //날짜와 시간 저장
 	@Column(name="create_time",nullable=false)
@@ -120,6 +121,21 @@ public class Member {
 			.credentialId(credentialId)
 			.authenticatorData(authenticatorData);
 	}
+
+	public void updateSimplePassword(String simplePassword) {
+		this.simplePassword = simplePassword;
+	}
+
+	public void updatePaymentType(String type) {
+		if("benefit".equals(type)){
+			this.paymentType=PaymentType.BENEFIT;
+		}else if("perform".equals(type)){
+			this.paymentType=PaymentType.PERFORM;
+		}else{
+			throw new BusinessException(HttpStatus.BAD_REQUEST,"존재하지 않는 결제 타입입니다.");
+		}
+	}
+
 
 
 
