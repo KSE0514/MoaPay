@@ -50,7 +50,7 @@ import lombok.extern.slf4j.Slf4j;
 
 @RestController
 @Slf4j
-@RequestMapping("/payment/member/authn/certify")
+@RequestMapping("/moapay/member/authn/certify")
 public class WebAuthnCertifyController {
 
 	private final RelyingParty relyingParty;
