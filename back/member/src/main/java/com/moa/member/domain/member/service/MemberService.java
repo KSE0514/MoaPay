@@ -10,7 +10,10 @@ import com.moa.member.domain.member.security.TokenDto;
 
 public interface MemberService {
 	JoinResponseDto join(JoinRequestDto joinRequestDto) throws IOException;
-	TokenDto login(LoginRequestDto dto) throws Exception;
+
+	TokenDto login(LoginRequestDto dto);
+
 	isMemberResponseDto isMember(String phoneNumber);
-	void selectType(String uuid,String type);
+
+	void selectType(String uuid, String type);
 }

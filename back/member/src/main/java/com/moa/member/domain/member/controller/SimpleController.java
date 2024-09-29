@@ -28,11 +28,9 @@ public class SimpleController {
 
 	@PostMapping("/register")
 	public ResponseEntity<ResultResponse> join(@RequestBody SimplePwdRequestDto dto) throws Exception {
-		simpleService.register(dto.getUuid(),dto.getSimplePassword());
+		simpleService.register(dto.getUuid(), dto.getSimplePassword());
 		ResultResponse resultResponse = ResultResponse.of(HttpStatus.OK, "간단 비밀번호 등록을 완료했습니다.");
 		return ResponseEntity.status(resultResponse.getStatus()).body(resultResponse);
 	}
-
-
 
 }

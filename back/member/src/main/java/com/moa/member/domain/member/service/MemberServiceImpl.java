@@ -32,7 +32,7 @@ import lombok.extern.slf4j.Slf4j;
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
 @Slf4j
-public class MemberServiceImpl implements MemberService{
+public class MemberServiceImpl implements MemberService {
 
 	private final MemberRepository memberRepository;
 	private final JwtTokenProvider jwtTokenProvider;
@@ -41,17 +41,17 @@ public class MemberServiceImpl implements MemberService{
 
 	@Override
 	@Transactional
-	public JoinResponseDto join(JoinRequestDto joinRequestDto){
+	public JoinResponseDto join(JoinRequestDto joinRequestDto) {
 		//핸드폰 번호는 겹칠 수 없다. 고유한 값.
-		Optional<Member> memberOptional=memberRepository.findByPhoneNumber(joinRequestDto.getPhoneNumber());
-		if(memberOptional.isPresent()){
+		Optional<Member> memberOptional = memberRepository.findByPhoneNumber(joinRequestDto.getPhoneNumber());
+		if (memberOptional.isPresent()) {
 			throw new BusinessException(HttpStatus.BAD_REQUEST, "이미 존재하는 회원입니다.");
 		}
 
-		String phone=joinRequestDto.getPhoneNumber();
-		String password=passwordEncoder.encode(phone);
+		String phone = joinRequestDto.getPhoneNumber();
+		String password = passwordEncoder.encode(phone);
 
-		Member member=joinRequestDto.toEntity(password);
+		Member member = joinRequestDto.toEntity(password);
 
 		memberRepository.save(member);
 
@@ -70,8 +70,7 @@ public class MemberServiceImpl implements MemberService{
 	}
 
 	@Override
-	@Transactional
-	public TokenDto login(LoginRequestDto dto) throws Exception{
+	public TokenDto login(LoginRequestDto dto) {
 
 		if (dto.getSimplePassword() != null) {
 
@@ -92,23 +91,23 @@ public class MemberServiceImpl implements MemberService{
 		Authentication authentication = memberAuthenticationProvider.authenticate(authToken);
 		SecurityContextHolder.getContext().setAuthentication(authentication);
 
-		String accessToken = jwtTokenProvider.generateAccessToken(SecurityContextHolder.getContext().getAuthentication());
+		String accessToken = jwtTokenProvider.generateAccessToken(
+			SecurityContextHolder.getContext().getAuthentication());
 
 		// 기존 리프레시 토큰 조회
 		String refreshToken = jwtTokenProvider.getRefreshTokenByUuid(dto.getUuid());
 
 		// 리프레시 토큰이 없으면 새로 생성
 		if (refreshToken == null) {
-			refreshToken = jwtTokenProvider.generateRefreshToken(SecurityContextHolder.getContext().getAuthentication());
+			refreshToken = jwtTokenProvider.generateRefreshToken(
+				SecurityContextHolder.getContext().getAuthentication());
 		}
 
 		return new TokenDto(accessToken, refreshToken);
 	}
 
-
 	@Override
-	@Transactional
-	public isMemberResponseDto isMember(String phoneNumber){
+	public isMemberResponseDto isMember(String phoneNumber) {
 		Member member = memberRepository.findByPhoneNumber(phoneNumber).orElseThrow(() -> new BusinessException(
 			HttpStatus.BAD_REQUEST, "회원이 존재하지 않습니다."));
 		isMemberResponseDto response = isMemberResponseDto.builder()
@@ -120,7 +119,7 @@ public class MemberServiceImpl implements MemberService{
 
 	@Override
 	@Transactional
-	public void selectType(String uuid,String type){
+	public void selectType(String uuid, String type) {
 		Member member = memberRepository.findByUuid(UUID.fromString(uuid)).orElseThrow(() -> new BusinessException(
 			HttpStatus.BAD_REQUEST, "회원이 존재하지 않습니다."));
 		member.updatePaymentType(type);

@@ -18,24 +18,23 @@ import lombok.extern.slf4j.Slf4j;
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
 @Slf4j
-public class SimpleServiceImpl implements SimpleService{
+public class SimpleServiceImpl implements SimpleService {
 
 	private final MemberRepository memberRepository;
 	private final PasswordEncoder passwordEncoder;
 
 	@Override
 	@Transactional
-	public void register(String uuid,String simplePassword){
+	public void register(String uuid, String simplePassword) {
 		Member member = memberRepository.findByUuid(UUID.fromString(uuid)).orElseThrow(() -> new BusinessException(
 			HttpStatus.BAD_REQUEST, "회원이 존재하지 않습니다."));
 
-		String simple=passwordEncoder.encode(simplePassword);
+		String simple = passwordEncoder.encode(simplePassword);
 
 		member.updateSimplePassword(simple);
 
 		memberRepository.save(member);
 
 	}
-
 
 }
