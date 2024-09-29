@@ -19,6 +19,8 @@ import com.moa.member.domain.member.model.dto.LoginRequestDto;
 import com.moa.member.domain.member.model.dto.LoginResponseDto;
 import com.moa.member.domain.member.model.dto.MessageRequestDto;
 import com.moa.member.domain.member.model.dto.VerificationRequestDto;
+import com.moa.member.domain.member.model.dto.isMemberRequestDto;
+import com.moa.member.domain.member.model.dto.isMemberResponseDto;
 import com.moa.member.domain.member.repository.MemberRepository;
 import com.moa.member.domain.member.security.JwtTokenProvider;
 import com.moa.member.domain.member.security.TokenDto;
@@ -78,12 +80,17 @@ public class MemberController {
 		response.setHeader("Authorization", "Bearer " + token.getAccessToken());
 		response.setHeader("RefreshToken", "Bearer " + token.getRefreshToken());
 
-
-
-
 		LoginResponseDto loginResponse=new LoginResponseDto(token, member.getUuid().toString());
 		ResultResponse resultResponse = ResultResponse.of(HttpStatus.OK, "로그인 성공",loginResponse);
 		return ResponseEntity.status(resultResponse.getStatus()).body(resultResponse);
 	}
+
+	@PostMapping("/isMember")
+	public ResponseEntity<ResultResponse> isMember(@RequestBody isMemberRequestDto dto){
+		isMemberResponseDto response=memberService.isMember(dto.getPhoneNumber());
+		ResultResponse resultResponse = ResultResponse.of(HttpStatus.OK, "멤버가 존재합니다.",response);
+		return ResponseEntity.status(resultResponse.getStatus()).body(resultResponse);
+	}
+
 
 }
