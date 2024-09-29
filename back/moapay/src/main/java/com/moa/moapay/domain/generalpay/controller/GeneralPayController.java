@@ -6,6 +6,7 @@ import com.moa.moapay.domain.generalpay.service.GeneralPayService;
 import com.moa.moapay.global.response.ResultResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -25,7 +26,8 @@ public class GeneralPayController {
         // 응답은 비동기식 SSE로 보낼 예정이므로, response 본문은 비워서 보낸다
         log.info("execute general pay : {}", dto.toString());
         generalPayService.executeGeneralPay(dto);
-        return null;
+        ResultResponse resultResponse = ResultResponse.of(HttpStatus.OK, "결제 요청 전송 완료");
+        return ResponseEntity.status(resultResponse.getStatus()).body(resultResponse);
     }
 
 }

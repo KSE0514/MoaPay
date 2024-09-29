@@ -30,10 +30,12 @@ public class GeneralPayServiceImpl implements GeneralPayService{
 
     @Override
     public void executeGeneralPay(ExecuteGeneralPayRequestDto dto) {
-        
-        // todo : 결제 정보 주고받을 때 requestCode를 주고받도록 수정
-
         UUID requestCode = Generators.timeBasedEpochGenerator().generate();
+        // [0] 중복 요청인지 확인
+        // 클라이언트가 생성한 requestId가 이미 redis에 저장되었는지를 화깅ㄴ한다
+        if(!generalPayRedisRepository.registRequestId(dto.getRequestId())) {
+            throw new BusinessException(HttpStatus.BAD_REQUEST, "중복된 결제 요청입니다.");
+        }
         // [1] payment에서 사용할 정보 redis에 저장
         // HASH SET을 이용하여 여러 정보를 저장하도록 한다
         generalPayRedisRepository.registerPaymentInformation(requestCode, dto);

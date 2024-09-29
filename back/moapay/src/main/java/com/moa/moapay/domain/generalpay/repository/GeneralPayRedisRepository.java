@@ -5,9 +5,11 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.redis.core.HashOperations;
 import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.data.redis.core.ValueOperations;
 import org.springframework.stereotype.Component;
 
 import java.util.UUID;
+import java.util.concurrent.TimeUnit;
 
 @Component
 @Slf4j
@@ -15,6 +17,16 @@ import java.util.UUID;
 public class GeneralPayRedisRepository {
 
     private final RedisTemplate<String, String> redisTemplate;
+
+    public boolean registRequestId(UUID requestId) {
+        // redis 레포에 삽입을 시도하고, 만일 이미 있는 값이었다면 false를 반환한다
+        ValueOperations<String, String> ops = redisTemplate.opsForValue();
+        boolean succeed = ops.setIfAbsent(requestId.toString(), "checked");
+        if(succeed) {
+            redisTemplate.expire(requestId.toString(), 10, TimeUnit.MINUTES);
+        }
+        return succeed;
+    }
 
     public void registerPaymentInformation(UUID code, ExecuteGeneralPayRequestDto dto) {
         HashOperations<String, String, String> ops = redisTemplate.opsForHash();

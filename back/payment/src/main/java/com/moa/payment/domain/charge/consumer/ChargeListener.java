@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.moa.payment.domain.charge.model.vo.ExecutePaymentRequestVO;
 import com.moa.payment.domain.charge.model.vo.ExecutePaymentResultVO;
 import com.moa.payment.domain.charge.model.vo.PaymentCardInfoVO;
+import com.moa.payment.domain.charge.repository.ChargeRedisRepository;
 import com.moa.payment.domain.charge.service.ChargeService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -12,6 +13,7 @@ import org.springframework.stereotype.Component;
 
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 @Component
 @Slf4j
@@ -20,6 +22,7 @@ public class ChargeListener {
 
     private final ChargeService chargeService;
     private final ObjectMapper objectMapper;
+    private final ChargeRedisRepository chargeRedisRepository;
 
     @KafkaListener(topics = "request.payment", groupId = "payments_consumer_group")
     public void executePayment(String message) {
@@ -27,11 +30,20 @@ public class ChargeListener {
             Map<String, Object> vo  = objectMapper.readValue(message, Map.class);
             ExecutePaymentRequestVO executePaymentRequestVO = objectMapper.convertValue(vo, ExecutePaymentRequestVO.class);
             log.info("get payment request : {}", executePaymentRequestVO.getMerchantId().toString());
-            log.info("requestCode : {}", executePaymentRequestVO.getRequestCode());
+            UUID requestCode = executePaymentRequestVO.getRequestCode();
+            log.info("requestCode : {}", requestCode);
+
+            if(!chargeRedisRepository.registRequestCode(requestCode)) {
+                // 중복 요청이었다면 그 요청에 대해서는 반응하지 않는다
+                log.info("duplicated request");
+                return;
+            }
             ExecutePaymentResultVO resultVO = chargeService.executePayment(executePaymentRequestVO);
             log.info("transfer payment result...");
+            // vo에 들은 requestCode를 기반으로 알람을 보낸다
+            
         } catch(Exception e) {
-            // 에러가 발생하는 경우, 에러 응답을 또 보내줘야 함
+            // 에러가 발생하는 경우, 에러 관련 응답을 클라이언트에 전달
         }
     }
 
