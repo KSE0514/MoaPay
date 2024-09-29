@@ -4,6 +4,7 @@ import java.security.SecureRandom;
 import java.util.Arrays;
 import java.util.Base64;
 import java.util.Map;
+import java.util.UUID;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseCookie;
@@ -18,6 +19,8 @@ import org.springframework.web.bind.annotation.RestController;
 import com.moa.member.domain.member.model.Member;
 import com.moa.member.domain.member.repository.EmptyCredentialRepository;
 import com.moa.member.domain.member.repository.MemberRepository;
+import com.moa.member.domain.member.security.JwtTokenProvider;
+import com.moa.member.global.exception.BusinessException;
 import com.moa.member.global.response.ResultResponse;
 import com.yubico.webauthn.AssertionRequest;
 import com.yubico.webauthn.FinishAssertionOptions;
@@ -52,7 +55,10 @@ public class WebAuthnCertifyController {
 
 	private final RelyingParty relyingParty;
 	private final MemberRepository memberRepository;
-	public WebAuthnCertifyController(MemberRepository memberRepository, EmptyCredentialRepository credentialRepository) {
+	private final JwtTokenProvider jwtTokenProvider;
+
+	public WebAuthnCertifyController(MemberRepository memberRepository, EmptyCredentialRepository credentialRepository,
+		JwtTokenProvider jwtTokenProvider) {
 		// RelyingParty 설정
 		this.relyingParty = RelyingParty.builder()
 			.identity(RelyingPartyIdentity.builder()
@@ -62,15 +68,19 @@ public class WebAuthnCertifyController {
 			.credentialRepository(credentialRepository)  // 빈 CredentialRepository 주입
 			.build();
 		this.memberRepository = memberRepository;
+		this.jwtTokenProvider = jwtTokenProvider;
 	}
 
-	@GetMapping("/options/{name}")
+	@GetMapping("/options")
 	public PublicKeyCredentialCreationOptions getRegistrationOptions(
-		@PathVariable String name,
 		HttpServletRequest request,
 		HttpServletResponse response) {  // HttpServletResponse 추가
 
-		Member member = memberRepository.findByName(name);
+		String token = jwtTokenProvider.getJwtTokenFromRequestHeader(request);
+		String uuid = jwtTokenProvider.getUuidFromToken(token);
+		Member member = memberRepository.findByUuid(UUID.fromString(uuid))
+			.orElseThrow(() -> new BusinessException(HttpStatus.BAD_REQUEST, "회원이 존재하지 않습니다."));
+
 
 		// UserIdentity 생성
 		UserIdentity userEntity = UserIdentity.builder()
@@ -132,8 +142,8 @@ public class WebAuthnCertifyController {
 	public ResponseEntity<ResultResponse> verifyAuthentication(@RequestBody Map<String, Object> responseData, HttpServletRequest request) {
 		try {
 			// 세션에서 챌린지를 가져옴
-			PublicKeyCredentialCreationOptions options = (PublicKeyCredentialCreationOptions) request.getSession().getAttribute("registrationOptions");
-			ByteArray challenge = options.getChallenge(); // options에서 챌린지를 가져옴
+			PublicKeyCredentialCreationOptions option = (PublicKeyCredentialCreationOptions) request.getSession().getAttribute("registrationOptions");
+			ByteArray challenge = option.getChallenge(); // options에서 챌린지를 가져옴
 
 			if (challenge == null) {
 				return ResponseEntity.status(HttpStatus.BAD_REQUEST)

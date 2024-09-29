@@ -83,9 +83,6 @@ public class Member {
 	@Column(name="address",nullable=false)
 	private String address;
 
-
-	private String paymentType;
-
 	@NotNull
 	@Column(name = "public_key", nullable = true)
 	private String publicKey; //공개키

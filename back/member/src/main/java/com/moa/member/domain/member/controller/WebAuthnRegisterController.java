@@ -1,5 +1,7 @@
 package com.moa.member.domain.member.controller;
 
+import com.moa.member.domain.member.security.JwtTokenProvider;
+import com.moa.member.global.exception.BusinessException;
 import com.yubico.webauthn.data.ClientRegistrationExtensionOutputs;
 
 import java.security.SecureRandom;
@@ -27,7 +29,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.moa.member.domain.member.model.Member;
 import com.moa.member.domain.member.repository.EmptyCredentialRepository;
 import com.moa.member.domain.member.repository.MemberRepository;
-
+import com.moa.member.domain.member.security.JwtTokenProvider;
 import com.moa.member.global.response.ResultResponse;
 import com.yubico.webauthn.CredentialRepository;
 import com.yubico.webauthn.data.AuthenticatorAttestationResponse;
@@ -62,9 +64,10 @@ public class WebAuthnRegisterController {
 
 	private final RelyingParty relyingParty;
 	private final MemberRepository memberRepository;
+	private final JwtTokenProvider jwtTokenProvider;
 
 	public WebAuthnRegisterController(MemberRepository memberRepository,
-		EmptyCredentialRepository credentialRepository) {
+		EmptyCredentialRepository credentialRepository, JwtTokenProvider jwtTokenProvider) {
 		//////////////////////////////////꼭 !!!!!!!!!!!!!!!! id 값 서버 주소로 변경하기 ////////////////////////////////
 		// RelyingParty 설정
 		this.relyingParty = RelyingParty.builder()
@@ -75,15 +78,17 @@ public class WebAuthnRegisterController {
 			.credentialRepository(credentialRepository)  // 빈 CredentialRepository 주입
 			.build();
 		this.memberRepository = memberRepository;
+		this.jwtTokenProvider = jwtTokenProvider;
 	}
 
-	@GetMapping("/options/{name}")
+	@GetMapping("/options")
 	public PublicKeyCredentialCreationOptions getRegistrationOptions(
-		@PathVariable String name,
 		HttpServletRequest request,
 		HttpServletResponse response) {  // HttpServletResponse 추가
-
-		Member member = memberRepository.findByName(name);
+		String token = jwtTokenProvider.getJwtTokenFromRequestHeader(request);
+		String uuid = jwtTokenProvider.getUuidFromToken(token);
+		Member member = memberRepository.findByUuid(UUID.fromString(uuid))
+			.orElseThrow(() -> new BusinessException(HttpStatus.BAD_REQUEST, "회원이 존재하지 않습니다."));
 
 		// UserIdentity 생성
 		UserIdentity userEntity = UserIdentity.builder()
@@ -145,10 +150,11 @@ public class WebAuthnRegisterController {
 	public ResponseEntity<ResultResponse> verifyRegistration(@RequestBody Map<String, Object> responseData,
 		HttpServletRequest request) {
 		try {
-			// 사용자 정보 조회 (예시로 '고망고' 이름을 통해 조회)
-			Member member = memberRepository.findByName("고망고");
-			System.out.print("responseData : ");
-			System.out.println(responseData);
+			String token = jwtTokenProvider.getJwtTokenFromRequestHeader(request);
+			String uuid = jwtTokenProvider.getUuidFromToken(token);
+			Member member = memberRepository.findByUuid(UUID.fromString(uuid))
+				.orElseThrow(() -> new BusinessException(HttpStatus.BAD_REQUEST, "회원이 존재하지 않습니다."));
+
 			HttpSession session = request.getSession(false);
 			if (session == null) {
 				System.out.println("세션이 없습니다.");
@@ -179,13 +185,6 @@ public class WebAuthnRegisterController {
 				.attestationObject(attestationObject)
 				.clientDataJSON(clientDataJSON)
 				.build();
-
-			//			ClientExtensionOutputs clientExtensions = new ClientExtensionOutputs() {
-			//				@Override
-			//				public Set<String> getExtensionIds() {
-			//					return Set.of();
-			//				}
-			//			};
 
 			// 빈 확장 결과 생성
 			ClientRegistrationExtensionOutputs clientExtensions = ClientRegistrationExtensionOutputs.builder()
