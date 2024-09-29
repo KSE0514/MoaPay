@@ -11,6 +11,7 @@ import java.util.UUID;
 @AllArgsConstructor
 public class ExecutePayResponseDto {
     private String merchantName;
+    private String categoryId;
     private PayStatus status;
     private UUID paymentId;
     private long amount;
