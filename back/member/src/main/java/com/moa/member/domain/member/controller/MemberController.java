@@ -1,16 +1,13 @@
 package com.moa.member.domain.member.controller;
 
-import java.util.UUID;
-
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-
-import net.nurigo.sdk.message.response.SingleMessageSentResponse;
 
 import com.moa.member.domain.member.model.Member;
 import com.moa.member.domain.member.model.dto.JoinRequestDto;
@@ -21,6 +18,7 @@ import com.moa.member.domain.member.model.dto.MessageRequestDto;
 import com.moa.member.domain.member.model.dto.VerificationRequestDto;
 import com.moa.member.domain.member.model.dto.isMemberRequestDto;
 import com.moa.member.domain.member.model.dto.isMemberResponseDto;
+import com.moa.member.domain.member.model.dto.selectTypeRequestDto;
 import com.moa.member.domain.member.repository.MemberRepository;
 import com.moa.member.domain.member.security.JwtTokenProvider;
 import com.moa.member.domain.member.security.TokenDto;
@@ -29,7 +27,6 @@ import com.moa.member.domain.member.service.MessageService;
 import com.moa.member.global.exception.BusinessException;
 import com.moa.member.global.response.ResultResponse;
 
-import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -89,6 +86,13 @@ public class MemberController {
 	public ResponseEntity<ResultResponse> isMember(@RequestBody isMemberRequestDto dto){
 		isMemberResponseDto response=memberService.isMember(dto.getPhoneNumber());
 		ResultResponse resultResponse = ResultResponse.of(HttpStatus.OK, "멤버가 존재합니다.",response);
+		return ResponseEntity.status(resultResponse.getStatus()).body(resultResponse);
+	}
+
+	@PostMapping("/selectType")
+	public ResponseEntity<ResultResponse> selectType(@RequestBody selectTypeRequestDto dto){
+		memberService.selectType(dto.getUuid(),dto.getType());
+		ResultResponse resultResponse = ResultResponse.of(HttpStatus.OK, "결제타입 설정 완료");
 		return ResponseEntity.status(resultResponse.getStatus()).body(resultResponse);
 	}
 

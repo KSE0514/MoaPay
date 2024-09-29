@@ -118,4 +118,13 @@ public class MemberServiceImpl implements MemberService{
 		return response;
 	}
 
+	@Override
+	@Transactional
+	public void selectType(String uuid,String type){
+		Member member = memberRepository.findByUuid(UUID.fromString(uuid)).orElseThrow(() -> new BusinessException(
+			HttpStatus.BAD_REQUEST, "회원이 존재하지 않습니다."));
+		member.updatePaymentType(type);
+		memberRepository.save(member);
+	}
+
 }

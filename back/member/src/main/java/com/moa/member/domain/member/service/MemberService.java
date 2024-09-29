@@ -12,4 +12,5 @@ public interface MemberService {
 	JoinResponseDto join(JoinRequestDto joinRequestDto) throws IOException;
 	TokenDto login(LoginRequestDto dto) throws Exception;
 	isMemberResponseDto isMember(String phoneNumber);
+	void selectType(String uuid,String type);
 }
