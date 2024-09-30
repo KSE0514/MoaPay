@@ -38,17 +38,15 @@ public class MessageServiceImpl implements MessageService{
 	@Value("${coolsms.fromnumber}")
 	private String fromNumber;
 
-	private final MessageRepository messageRepository;
+	@Autowired
+	MessageRepository messageRepository;
 	DefaultMessageService defaultMessageService;
 
-<<<<<<< HEAD
-=======
 	public MessageServiceImpl(DefaultMessageService defaultMessageService) {
 		this.defaultMessageService = defaultMessageService;
 	}
 
 
->>>>>>> 1f7e7400ef4441d12f2bd5957de590d377f98f37
 	// 빈 초기화 후에 NurigoApp을 초기화하는 메서드
 	@PostConstruct
 	public void initializeMessageService() {
