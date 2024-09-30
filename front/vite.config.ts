@@ -4,9 +4,12 @@ import { VitePWA } from "vite-plugin-pwa";
 import path from "path";
 
 export default defineConfig({
+<<<<<<< HEAD
   define: {
     "process.env.VITE_BASE_URL": JSON.stringify("http://api-gateway:8765"),
   },
+=======
+>>>>>>> 1f7e7400ef4441d12f2bd5957de590d377f98f37
   plugins: [
     react(),
     VitePWA({

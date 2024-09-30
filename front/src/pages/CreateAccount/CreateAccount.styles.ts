@@ -90,6 +90,7 @@ export const Form = styled.div`
   }
   //인증번호 파트
   .auth-btn {
+    position: relative;
     display: flex;
     & > button {
       border-radius: 10px;
@@ -99,6 +100,24 @@ export const Form = styled.div`
       font-weight: 800;
       color: white;
       background-color: var(--light-purple);
+    }
+    .time {
+      font-size: 15px;
+      top: 0;
+      position: absolute;
+      height: 100%;
+      width: fit-content;
+      display: flex;
+      align-items: center;
+      @media screen and (min-width: 380px) and (max-width: 400px) {
+        left: 36%;
+      }
+      @media screen and (max-width: 380px) {
+        left: 35%;
+      }
+      @media screen and (min-width: 400px) and (max-width: 460px) {
+        left: 33%;
+      }
     }
   }
   //확인버튼

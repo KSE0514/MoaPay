@@ -57,6 +57,7 @@ const List = ({ consumptionList }: Props) => {
           </div>
         </ListItem>
       ))}
+      <div className="last-box"></div>
     </Wrapper>
   );
 };

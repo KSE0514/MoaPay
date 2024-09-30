@@ -11,4 +11,5 @@ public class CreateMyCardRequestDto {
     private UUID memberId;
     private UUID cardProductId;
     private UUID accountId;
+    private long cardLimit;
 }

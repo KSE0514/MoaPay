@@ -2,13 +2,24 @@ package com.moa.member.domain.member.service;
 
 import java.io.IOException;
 import java.util.Optional;
+import java.util.UUID;
 
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.moa.member.domain.member.model.dto.JoinResponseDto;
+import com.moa.member.domain.member.model.dto.LoginRequestDto;
+import com.moa.member.domain.member.model.dto.isMemberResponseDto;
+import com.moa.member.domain.member.security.JwtTokenProvider;
+import com.moa.member.domain.member.security.MemberPrincipalDetails;
+import com.moa.member.domain.member.security.TokenDto;
 import com.moa.member.global.exception.BusinessException;
 import com.moa.member.domain.member.model.Member;
 import com.moa.member.domain.member.model.dto.JoinRequestDto;
@@ -21,22 +32,26 @@ import lombok.extern.slf4j.Slf4j;
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
 @Slf4j
-public class MemberServiceImpl implements MemberService{
+public class MemberServiceImpl implements MemberService {
 
 	private final MemberRepository memberRepository;
+	private final JwtTokenProvider jwtTokenProvider;
+	private final DaoAuthenticationProvider memberAuthenticationProvider;
+	private final PasswordEncoder passwordEncoder;
 
 	@Override
 	@Transactional
-	public JoinResponseDto join(JoinRequestDto joinRequestDto){
-
-		//join하기 전에 문자인증 마쳐야한다
-		//핸드폰 번호 존재하면 실패 -> 이게 번호 인증에 있어야 될것같기도하고????
-		Member member=joinRequestDto.toEntity();
-		Optional<Member> memberOptional=memberRepository.findByPhoneNumber(member.getPhoneNumber());
-
-		if(memberOptional.isPresent()){
+	public JoinResponseDto join(JoinRequestDto joinRequestDto) {
+		//핸드폰 번호는 겹칠 수 없다. 고유한 값.
+		Optional<Member> memberOptional = memberRepository.findByPhoneNumber(joinRequestDto.getPhoneNumber());
+		if (memberOptional.isPresent()) {
 			throw new BusinessException(HttpStatus.BAD_REQUEST, "이미 존재하는 회원입니다.");
 		}
+
+		String phone = joinRequestDto.getPhoneNumber();
+		String password = passwordEncoder.encode(phone);
+
+		Member member = joinRequestDto.toEntity(password);
 
 		memberRepository.save(member);
 
@@ -54,9 +69,61 @@ public class MemberServiceImpl implements MemberService{
 
 	}
 
+	@Override
+	public TokenDto login(LoginRequestDto dto) {
 
+		if (dto.getSimplePassword() != null) {
 
+			// simplePassword로 로그인
+			Member member = memberRepository.findByUuid(UUID.fromString(dto.getUuid()))
+				.orElseThrow(() -> new BusinessException(HttpStatus.BAD_REQUEST, "회원이 존재하지 않습니다."));
 
+			// 비밀번호 검증 (단순 비밀번호의 경우)
+			if (!passwordEncoder.matches(dto.getSimplePassword(), member.getSimplePassword())) {
+				throw new BusinessException(HttpStatus.UNAUTHORIZED, "비밀번호가 일치하지 않습니다.");
+			}
 
+		}
+
+		// 기존 UUID와 전화번호로 로그인
+		UsernamePasswordAuthenticationToken authToken =
+			new UsernamePasswordAuthenticationToken(dto.getUuid(), dto.getPhoneNumber());
+		Authentication authentication = memberAuthenticationProvider.authenticate(authToken);
+		SecurityContextHolder.getContext().setAuthentication(authentication);
+
+		String accessToken = jwtTokenProvider.generateAccessToken(
+			SecurityContextHolder.getContext().getAuthentication());
+
+		// 기존 리프레시 토큰 조회
+		String refreshToken = jwtTokenProvider.getRefreshTokenByUuid(dto.getUuid());
+
+		// 리프레시 토큰이 없으면 새로 생성
+		if (refreshToken == null) {
+			refreshToken = jwtTokenProvider.generateRefreshToken(
+				SecurityContextHolder.getContext().getAuthentication());
+		}
+
+		return new TokenDto(accessToken, refreshToken);
+	}
+
+	@Override
+	public isMemberResponseDto isMember(String phoneNumber) {
+		Member member = memberRepository.findByPhoneNumber(phoneNumber).orElseThrow(() -> new BusinessException(
+			HttpStatus.BAD_REQUEST, "회원이 존재하지 않습니다."));
+		isMemberResponseDto response = isMemberResponseDto.builder()
+			.uuid(member.getUuid().toString())
+			.phoneNumber(phoneNumber)
+			.build();
+		return response;
+	}
+
+	@Override
+	@Transactional
+	public void selectType(String uuid, String type) {
+		Member member = memberRepository.findByUuid(UUID.fromString(uuid)).orElseThrow(() -> new BusinessException(
+			HttpStatus.BAD_REQUEST, "회원이 존재하지 않습니다."));
+		member.updatePaymentType(type);
+		memberRepository.save(member);
+	}
 
 }
