@@ -25,6 +25,7 @@ interface JoinUserInfo {
 
 const CreateAccount = () => {
   const baseUrl = import.meta.env.VITE_BASE_URL;
+  const baseUrl1 = `http://localhost:18040/`;
   const navigate = useNavigate();
   const [limitTime, setLimitTime] = useState<number>(2000); // 초기 값 2000으로 설정
   const timerRef = useRef<NodeJS.Timeout | null>(null); //타이머
@@ -66,7 +67,7 @@ const CreateAccount = () => {
       });
     }
     //인증번호가 바뀌는 것이 아닌 필드가 바뀌면 인증상태를 false로 변경
-    if (name != "verification_code") {
+    if (name != "verification_code" && name != "email" && name != "address") {
       setSMSAuthSent(false);
       setEndSMSAuth(false);
       if (timerRef.current) {
@@ -153,9 +154,9 @@ const CreateAccount = () => {
     }
     // 인증번호 발급하기
     try {
-      // await axios.post(`https://j11c201.p.ssafy.io/api/moapay/member/sendSMS`, {
-      //   phoneNumber: joinUserInfo.phone_number,
-      // });
+      await axios.post(`${baseUrl1}moapay/member/sendSMS`, {
+        phoneNumber: joinUserInfo.phone_number,
+      });
       setSMSAuthSent(true); // 인증번호 발급됨
       startLimitTime();
     } catch (e) {
@@ -168,10 +169,12 @@ const CreateAccount = () => {
    */
 
   const checkAuthNumber = async () => {
+    console.log("hello");
     // 유효성 검사 통과하지 못한 경우
     if (!validateFields()) {
       return;
     }
+    console.log("h1");
     // 타이머 멈추기
     if (timerRef.current) {
       clearInterval(timerRef.current);
@@ -185,15 +188,18 @@ const CreateAccount = () => {
       }
       setLimitTime(2000);
     }
+    console.log("h2");
     try {
-      //인증번호 확인하기
-      // const response = await axios.post(
-      //   `https://j11c201.p.ssafy.io/api/moapay/member/verification`,
-      //   {
-      //     phoneNumber: joinUserInfo.phone_number,
-      //     code: joinUserInfo.verification_code,
-      //   }
-      // );
+      console.log(joinUserInfo.verification_code);
+      // 인증번호 확인하기
+      const response = await axios.post(
+        `${baseUrl1}moapay/member/verification`,
+        {
+          phoneNumber: joinUserInfo.phone_number,
+          code: joinUserInfo.verification_code,
+        }
+      );
+      console.log(response);
       setEndSMSAuth(true);
     } catch (e) {
       const error = e as AxiosError; // AxiosError로 타입 단언
@@ -206,11 +212,7 @@ const CreateAccount = () => {
       }
       //인증번호가 틀린 경우 - 인증번호 다시 입력하도록 함
     }
-
-    //확인 후 맞으면 알리기
-    // if () {
-    // setEndSMSAuth(true);
-    // }
+    console.log("h4");
   };
 
   /**
@@ -222,29 +224,29 @@ const CreateAccount = () => {
       return;
     }
 
-    // try {
-    //   //인증번호가 일치하면 존재하는 멤버인지 확인해야함
-    //   //요청 결과에 따라 비밀번호 로그인 또는 회원가입으로 전달
-    //   // const existUserCheckResponse = await axios.post(``, {});
-    //   //회원이 없는 경우
-    //   if (existUserCheckResponse.data) {
-    //     //회원가입
-    //     setJoinMode(true);
-    //   } else {
-    //     navigate(PATH.PASSWORD_LOGIN, {
-    //       state: {
-    //         ment: `앱을 켜려면\n비밀번호를 눌러주세요`,
-    //         back: false,
-    //         mode: "NewLogin",
-    //       },
-    //     });
-    //   }
-    // } catch (e) {
-    //   const error = e as AxiosError; // AxiosError로 타입 단언
-    //   console.log(error);
-    // }
+    try {
+      //인증번호가 일치하면 존재하는 멤버인지 확인해야함
+      //요청 결과에 따라 비밀번호 로그인 또는 회원가입으로 전달
+      // const existUserCheckResponse = await axios.post(``, {});
+      //회원이 없는 경우
+      // if (existUserCheckResponse.data) {
+      //   //회원가입
+      //   setJoinMode(true);
+      // } else {
+      //   navigate(PATH.PASSWORD_LOGIN, {
+      //     state: {
+      //       ment: `앱을 켜려면\n비밀번호를 눌러주세요`,
+      //       back: false,
+      //       mode: "NewLogin",
+      //     },
+      //   });
+      // }
+    } catch (e) {
+      const error = e as AxiosError; // AxiosError로 타입 단언
+      console.log(error);
+    }
 
-    //test - 회원가입
+    // test - 회원가입
     setJoinMode(true);
 
     //test - 계정이 있는 경우
@@ -261,45 +263,43 @@ const CreateAccount = () => {
    * 4. 회원가입
    */
   const join = async () => {
+    console.log(endSMSAuth);
     //회원 가입 요청 보내기
     if (!endSMSAuth) return;
-    // try {
-    //   const response = await axios.post(
-    //     `https://j11c201.p.ssafy.io/api/moapay/member/join`,
-    //     {
-    //       name: joinUserInfo.name,
-    //       birthDate: formatBirthDate(joinUserInfo.birth_date),
-    //       gender: Number(joinUserInfo.gender), //1~4로 넘겨주면 F,M 판단해서 db에 넣기
-    //       phoneNumber: joinUserInfo.phone_number,
-    //       email: joinUserInfo.email,
-    //       address: joinUserInfo.address,
-    //     }
-    //   );
-    //   if (response.status == 200) {
-    //     //로그인 상태로 변경하기
-    //     console.log(response);
-    //     setUserInfo(response.data.data.id, response.data.data.name);
-    //     // 응답 받으면 생체인식 설정으로 이동시키기
-    //     navigate(PATH.PASSWORD_LOGIN, {
-    //       state: {
-    //         ment: `간편 비밀번호를\n입력해주세요`,
-    //         back: false,
-    //         mode: "Join",
-    //       },
-    //     });
-    //   }
-    // } catch (e) {
-    //   console.log(e);
-    // }
+    try {
+      const response = await axios.post(`${baseUrl1}moapay/member/join`, {
+        name: joinUserInfo.name,
+        birthDate: formatBirthDate(joinUserInfo.birth_date),
+        gender: Number(joinUserInfo.gender), //1~4로 넘겨주면 F,M 판단해서 db에 넣기
+        phoneNumber: joinUserInfo.phone_number,
+        email: joinUserInfo.email,
+        address: joinUserInfo.address,
+      });
+      if (response.status == 200) {
+        //로그인 상태로 변경하기
+        console.log(response);
+        setUserInfo(response.data.data.id, response.data.data.name);
+        // 응답 받으면 생체인식 설정으로 이동시키기
+        navigate(PATH.PASSWORD_LOGIN, {
+          state: {
+            ment: `간편 비밀번호를\n입력해주세요`,
+            back: false,
+            mode: "Join",
+          },
+        });
+      }
+    } catch (e) {
+      console.log(e);
+    }
     // test
-    localStorage.setItem("hasLoggedInBefore", "true");
-    navigate(PATH.PASSWORD_LOGIN, {
-      state: {
-        ment: `간편 비밀번호를 설정합니다.\n 6자리 비밀번호를 입력해주세요`,
-        back: false,
-        mode: "Join",
-      },
-    });
+    // localStorage.setItem("hasLoggedInBefore", "true");
+    // navigate(PATH.PASSWORD_LOGIN, {
+    //   state: {
+    //     ment: `간편 비밀번호를 설정합니다.\n 6자리 비밀번호를 입력해주세요`,
+    //     back: false,
+    //     mode: "Join",
+    //   },
+    // });
   };
 
   return (

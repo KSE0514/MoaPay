@@ -61,10 +61,11 @@ public class WebAuthnRegisterController{
 	private final RelyingParty relyingParty;
 	private final MemberRepository memberRepository;
 	public WebAuthnRegisterController(MemberRepository memberRepository, EmptyCredentialRepository credentialRepository) {
+	//////////////////////////////////꼭 !!!!!!!!!!!!!!!! id 값 서버 주소로 변경하기 ////////////////////////////////
 		// RelyingParty 설정
 		this.relyingParty = RelyingParty.builder()
 			.identity(RelyingPartyIdentity.builder()
-				.id("j11c201.p.ssafy.io")  // 서버 도메인
+					.id("moapay-7e24e.web.app")  // 포트 번호를 포함하여 설정
 				.name("moapay")    // 서버 이름
 				.build())
 			.credentialRepository(credentialRepository)  // 빈 CredentialRepository 주입
@@ -95,7 +96,8 @@ public class WebAuthnRegisterController{
 
 		PublicKeyCredentialCreationOptions options = PublicKeyCredentialCreationOptions.builder()
 				.rp(RelyingPartyIdentity.builder()
-						.id("j11c201.p.ssafy.io")
+						//////////////////////////////////꼭 !!!!!!!!!!!!!!!! id 값 서버 주소로 변경하기 ////////////////////////////////
+						.id("moapay-7e24e.web.app")  // 포트 번호를 포함하여 설정
 						.name("moapay")
 						.build())
 				.user(userEntity)
@@ -228,6 +230,8 @@ public class WebAuthnRegisterController{
 			return ResponseEntity.status(resultResponse.getStatus()).body(resultResponse);
 		}
 	}
+
+
 
 }
 

@@ -8,14 +8,6 @@ import lombok.Setter;
 @Getter
 @Setter
 public class SimplePwdRequestDto {
-
+	private String uuid;
 	private String simplePassword;
-
-	public Member toEntity(){
-		return Member.builder()
-			.simplePassword(simplePassword)
-			.build();
-	}
-
-
 }
