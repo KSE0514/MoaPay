@@ -4,4 +4,5 @@ import org.springframework.stereotype.Service;
 
 public interface SimpleService {
 	void register(String uuid, String simplePassword);
+	void verify(String uuid, String simplePassword);
 }
