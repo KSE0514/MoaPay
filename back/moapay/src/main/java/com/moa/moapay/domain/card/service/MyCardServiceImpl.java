@@ -45,10 +45,10 @@ public class MyCardServiceImpl implements MyCardService {
                             .map(benefit -> CardBenefitDto
                                     .builder()
                                     .categoryName(benefit.getCardBenefitCategory().getName())
-                                    .categoryType(String.valueOf(benefit.getCategoryType()))
-                                    .benefitDesc(benefit.getBenefitDesc())
-                                    .benefitValue(benefit.getBenefitValue())
                                     .benefitType(benefit.getBenefitType())
+                                    .benefitUnit(benefit.getBenefitUnit())
+                                    .benefitValue(benefit.getBenefitValue())
+                                    .benefitDesc(benefit.getBenefitDesc())
                                     .benefitPoint(benefit.getBenefitPoint())
                                     .build())
                             .collect(Collectors.toList());
@@ -67,10 +67,10 @@ public class MyCardServiceImpl implements MyCardService {
                     return MyCardInfoDto.builder()
                             .cvc(myCard.getCvc())
                             .cardNumber(String.valueOf(myCard.getCardNumber()))
-                            .charges(myCard.getCharges())
+                            .amount(myCard.getAmount())
                             .cardLimit(myCard.getCardLimit())
                             .benefitUsage(myCard.getBenefitUsage())
-                            .performanceOk(myCard.isPerformanceOk())
+                            .performanceFlag(myCard.isPerformanceFlag())
                             .cardInfo(cardInfo)
                             .build();
                 }).collect(Collectors.toList());
@@ -91,7 +91,7 @@ public class MyCardServiceImpl implements MyCardService {
                             .map(benefit -> CardBenefitDto
                                     .builder()
                                     .categoryName(benefit.getCardBenefitCategory().getName())
-                                    .categoryType(String.valueOf(benefit.getCategoryType()))
+                                    .benefitUnit(benefit.getBenefitUnit())
                                     .benefitDesc(benefit.getBenefitDesc())
                                     .benefitValue(benefit.getBenefitValue())
                                     .benefitType(benefit.getBenefitType())
