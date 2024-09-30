@@ -7,17 +7,28 @@ import { useAuthStore } from "../../store/AuthStore";
 
 const SelectType = () => {
   const navigate = useNavigate();
+  const { id } = useAuthStore();
   const { isLoggedIn, Login } = useAuthStore((state) => ({
     isLoggedIn: state.isLoggedIn,
     Login: state.Login,
   }));
 
-  const [isLoading, setIsLoading] = useState(false);
-  const SettingType = (type: string) => {
+  const SettingType = async (type: string) => {
     //요청보내기
     try {
-      axios.post(``, { type }, { withCredentials: true });
-      navigate(PATH.BRING_CARD);
+      const response = await axios.post(
+        `moapay/member/selectType`,
+        { type: type, uuid: id },
+        {
+          withCredentials: true,
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("accessToken")}`, // Authorization 헤더에 Bearer 토큰 추가
+          },
+        }
+      );
+      if (response?.status == 200) {
+        navigate(PATH.BRING_CARD);
+      }
     } catch (e) {
       const error = e as AxiosError;
       console.log(error);
@@ -30,26 +41,25 @@ const SelectType = () => {
   }, []);
   return (
     <Wrapper>
-      {isLoading ? (
+      <div>
         <Story></Story>
-      ) : (
         <SelectView>
-          <div
+          <button
             onClick={() => {
               SettingType("benefit");
             }}
           >
             혜택형
-          </div>
-          <div
+          </button>
+          <button
             onClick={() => {
               SettingType("perform");
             }}
           >
             실적형
-          </div>
+          </button>
         </SelectView>
-      )}
+      </div>
     </Wrapper>
   );
 };

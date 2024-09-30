@@ -16,8 +16,12 @@ import {
 } from "./PasswordLogin.styles";
 import { PATH } from "../../constants/path";
 import axios from "axios";
+import { useAuthStore } from "../../store/AuthStore";
 
 const PasswordLogin: React.FC = () => {
+  const baseUrl = import.meta.env.VITE_BASE_URL;
+  const baseUrl1 = `http://localhost:18040/`;
+  const { id } = useAuthStore();
   const location = useLocation();
   const navigate = useNavigate();
   const { back, mode } =
@@ -182,12 +186,18 @@ const PasswordLogin: React.FC = () => {
             try {
               console.log("here");
               //생체정보 설정을 위해 이동 - 선택 가능
-              // const response = await axios.post(``);
-              // if (response.status == 201) {
-              navigate(PATH.SETTING_BIOMETRICS_LOGIN, {
-                state: { mode: "Join" },
-              });
-              // }
+              const response = await axios.post(
+                `${baseUrl1}moapay/member/simple/register`,
+                {
+                  uuid: id,
+                  simplePassword: password,
+                }
+              );
+              if (response.status == 201) {
+                navigate(PATH.SETTING_BIOMETRICS_LOGIN, {
+                  state: { mode: "Join" },
+                });
+              }
             } catch (error) {
               console.error("Error during password setting:", error);
             }

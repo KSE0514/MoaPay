@@ -91,9 +91,9 @@ const BiometricsLogin = () => {
       <div className="area">
         <Header>
           <h1>생체 로그인</h1>
-          <p>
+          <p style={{ whiteSpace: "pre-wrap", textAlign: "center" }}>
             {!error
-              ? "잘못된 인증입니다. 다시 시도하세요"
+              ? "잘못된 인증입니다.\n다시 시도하세요"
               : "생체 인증을 진행해주세요"}
           </p>
           <div>
@@ -103,7 +103,8 @@ const BiometricsLogin = () => {
               viewBox="0 0 24 24"
               stroke-width="1.5"
               stroke="currentColor"
-              className="size-6">
+              className="size-6"
+            >
               <path
                 stroke-linecap="round"
                 stroke-linejoin="round"
@@ -121,7 +122,8 @@ const BiometricsLogin = () => {
         <Button
           onClick={() => {
             handleBiometricLogin();
-          }}>
+          }}
+        >
           인증하기
         </Button>
         <div
@@ -134,7 +136,8 @@ const BiometricsLogin = () => {
                 mode: "Login",
               },
             });
-          }}>
+          }}
+        >
           간편 비밀번호로 로그인
         </div>
       </div>
