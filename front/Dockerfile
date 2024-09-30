@@ -3,8 +3,9 @@ FROM node:20.15.0 AS build
 # 작업 디렉토리 설정
 WORKDIR /app
 
+
 # package.json 및 package-lock.json 복사
-COPY package*.json ./
+COPY package.json ./
 
 # 의존성 설치
 RUN npm install
@@ -22,7 +23,7 @@ FROM nginx:alpine
 COPY --from=build /app/dist /usr/share/nginx/html
 
 # Nginx의 설정파일을 변경합니다.
-COPY nginx.conf /etc/nginx/conf.d/default.conf
+COPY default.conf /etc/nginx/conf.d/default.conf
 
 # 포트 80을 노출
 EXPOSE 80

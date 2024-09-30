@@ -3,14 +3,18 @@ spring:
     name: member
 
   config:
-    import: "configserver:http://localhost:8888"
+    import: "configserver:${SPRING_CLOUD_CONFIG_URI:http://localhost:8888}"
 
   cloud:
     config:
       name: member
+<<<<<<< HEAD
+      profile: ${SPRING_PROFILES_ACTIVE:local}
+=======
       profile: local
 
 server:
   servlet:
     session:
       timeout: 30m  # 세션 타임아웃을 30분으로 설정
+>>>>>>> 1f7e7400ef4441d12f2bd5957de590d377f98f37
