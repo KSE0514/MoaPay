@@ -41,7 +41,7 @@ public class CardController {
     }
 
     @PostMapping("/cancel")
-    public ResponseEntity<ResultResponse> canclePay(@RequestBody CancelPayRequestDto dto) {
+    public ResponseEntity<ResultResponse> cancelPay(@RequestBody CancelPayRequestDto dto) {
         log.info("cancel payment : {}", dto.getPaymentId());
         CancelPayResponseDto responseDto  = cardService.cancelPay(dto);
         ResultResponse resultResponse = ResultResponse.of(HttpStatus.OK, "결제 취소 완료", responseDto);
