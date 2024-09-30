@@ -7,12 +7,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.moa.member.domain.member.model.dto.JoinRequestDto;
-import com.moa.member.domain.member.model.dto.JoinResponseDto;
-import com.moa.member.domain.member.model.dto.SimplePwdRequestDto;
-import com.moa.member.domain.member.model.dto.simpleVerifyRequestDto;
-import com.moa.member.domain.member.repository.MemberRepository;
-import com.moa.member.domain.member.service.MemberService;
+
+import com.moa.member.domain.member.model.dto.SimpleRequestDto;
 import com.moa.member.domain.member.service.SimpleService;
 import com.moa.member.global.response.ResultResponse;
 
@@ -28,14 +24,14 @@ public class SimpleController {
 	private final SimpleService simpleService;
 
 	@PostMapping("/register")
-	public ResponseEntity<ResultResponse> join(@RequestBody SimplePwdRequestDto dto) throws Exception {
+	public ResponseEntity<ResultResponse> join(@RequestBody SimpleRequestDto dto) throws Exception {
 		simpleService.register(dto.getUuid(), dto.getSimplePassword());
 		ResultResponse resultResponse = ResultResponse.of(HttpStatus.OK, "간단 비밀번호 등록을 완료했습니다.");
 		return ResponseEntity.status(resultResponse.getStatus()).body(resultResponse);
 	}
 
 	@PostMapping("/verify")
-	public ResponseEntity<ResultResponse> verify(@RequestBody simpleVerifyRequestDto dto) throws Exception {
+	public ResponseEntity<ResultResponse> verify(@RequestBody SimpleRequestDto dto) throws Exception {
 		simpleService.verify(dto.getUuid(),dto.getSimplePassword());
 		ResultResponse resultResponse = ResultResponse.of(HttpStatus.OK, "인증 완료");
 		return ResponseEntity.status(resultResponse.getStatus()).body(resultResponse);
