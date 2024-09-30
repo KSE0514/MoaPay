@@ -1,5 +1,6 @@
 package com.moa.store.domain.order.controller;
 
+import com.moa.store.domain.order.model.dto.OrderListResponseDto;
 import com.moa.store.domain.order.model.dto.OrderResponseDto;
 import com.moa.store.domain.order.model.dto.UpdateOrderStatusRequestDto;
 import com.moa.store.domain.order.service.OrderService;
@@ -10,6 +11,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.UUID;
 
 @RestController
@@ -22,10 +24,10 @@ public class OrderController {
     // 가맹점 별 주문 조회, API 명세서 7행
     @GetMapping("/list/{merchantId}")
     public ResponseEntity<ResultResponse> getOrdersByMerchant(@PathVariable("merchantId") UUID merchantId) {
-        O
+        List<OrderListResponseDto> orderListResponseDto = orderService.getOrdersByMerchant(merchantId);
+        ResultResponse resultResponse = ResultResponse.of(HttpStatus.OK, "주문 상세 조회를 완료했습니다.", orderListResponseDto);
+        return ResponseEntity.status(resultResponse.getStatus()).body(resultResponse);
     }
-
-
 
     // 주문 상세 조회, API 명세서 8행
     @GetMapping("/detail/{orderId}")

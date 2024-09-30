@@ -1,0 +1,13 @@
+package com.moa.store.domain.paymentInfo.client;
+
+import org.springframework.cloud.openfeign.FeignClient;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+
+@FeignClient(name = "moapay", url = "https://j11c201.p.ssafy.io/api/")
+public interface MoaPayClient {
+
+	@PostMapping("moapay/core/code/QRcode")
+	GetQRCodeResponseDto getQRCode(@RequestBody GetQRCodeRequestDto getQRCodeRequestDto);
+
+}

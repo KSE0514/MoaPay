@@ -1,9 +1,11 @@
 package com.moa.store.domain.order.model;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.UUID;
 
 import com.fasterxml.uuid.Generators;
+import com.moa.store.domain.itemInfo.model.ItemInfo;
 import com.moa.store.domain.store.model.Store;
 
 import jakarta.persistence.Column;
@@ -16,6 +18,7 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.PrePersist;
 import jakarta.persistence.PreUpdate;
 import jakarta.validation.constraints.NotNull;
@@ -57,6 +60,9 @@ public class Order {
 	@Column(name = "state")
 	@Enumerated(EnumType.STRING)
 	private OrderStatus state;
+
+	@OneToMany(mappedBy = "order")
+	private List<ItemInfo> itemInfos;
 
 	@NotNull
 	@Column(name = "create_time")

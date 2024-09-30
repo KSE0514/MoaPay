@@ -1,4 +1,24 @@
 package com.moa.store.domain.paymentInfo.service;
 
-public class PaymentInfoServiceImpl {
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import com.moa.store.domain.paymentInfo.client.GetQRCodeRequestDto;
+import com.moa.store.domain.paymentInfo.client.GetQRCodeResponseDto;
+import com.moa.store.domain.paymentInfo.client.MoaPayClient;
+
+import lombok.RequiredArgsConstructor;
+
+@Service
+@RequiredArgsConstructor
+@Transactional(readOnly = true)
+public class PaymentInfoServiceImpl implements PaymentInfoService {
+
+	private final MoaPayClient client;
+
+	@Override
+	public GetQRCodeResponseDto getQRCode(GetQRCodeRequestDto getQRCodeRequestDto) {
+		GetQRCodeResponseDto qrCode = client.getQRCode(getQRCodeRequestDto);
+		return qrCode;
+	}
 }

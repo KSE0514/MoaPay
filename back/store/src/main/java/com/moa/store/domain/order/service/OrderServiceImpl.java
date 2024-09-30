@@ -34,27 +34,26 @@ public class OrderServiceImpl implements OrderService {
 
     @Override
     public List<OrderListResponseDto> getOrdersByMerchant(UUID merchantId) {
-        List<Order> order = orderRepository.findByStoreUuid(merchantId);
-        List<OrderListResponseDto> orders = new ArrayList<>();
-        List<ItemInfo> itemInfos;
-
-        for (Order o: order) {
-            itemInfos = itemInfoRepository.findByOrder(o);
+        List<Order> orders = orderRepository.findByStoreUuidWithItemInfos(merchantId);
+        return orders.stream().map(order -> {
+            List<ItemInfo> itemInfos = order.getItemInfos();
             ItemInfo firstItem = itemInfos.isEmpty() ? null : itemInfos.get(0);
-            if (firstItem != null) {
-                orders.add(OrderListResponseDto.builder()
-                        .orderId(o.getUuid())
-                        .customerId(o.getCustomerId())
-                        .totalPrice(o.getTotalPrice())
-                        .state(o.getState().toString())
-                        .titleItem(TitleItemDto.builder().itemId(firstItem.getUuid()).itemName(firstItem.getItemName()).build())
-                        .itemCount(itemInfos.size())
-                        .createTime(o.getCreateTime())
-                        .updateTime(o.getUpdateTime())
-                        .build());
-            }
-        }
-        return orders;
+            return OrderListResponseDto.builder()
+                .orderId(order.getUuid())
+                .customerId(order.getCustomerId())
+                .totalPrice(order.getTotalPrice())
+                .state(order.getState().toString())
+                .titleItem(firstItem != null
+                    ? TitleItemDto.builder()
+                    .itemId(firstItem.getUuid())
+                    .itemName(firstItem.getItemName())
+                    .build()
+                    : null)
+                .itemCount(itemInfos.size())
+                .createTime(order.getCreateTime())
+                .updateTime(order.getUpdateTime())
+                .build();
+        }).toList();
     }
 
     @Override
