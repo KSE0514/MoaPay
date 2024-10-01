@@ -7,8 +7,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 
 @FeignClient(name = "moapay", url = "https://j11c201.p.ssafy.io/api/")
 public interface MoaPayClient {
-
 	@PostMapping("moapay/core/code/QRcode")
 	GetQRCodeResponseDto getQRCode(@RequestBody CreateOrderResponseDto createOrderResponseDto);
-
 }
