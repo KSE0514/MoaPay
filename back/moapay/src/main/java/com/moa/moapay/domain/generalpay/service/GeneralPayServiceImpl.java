@@ -38,7 +38,7 @@ public class GeneralPayServiceImpl implements GeneralPayService{
         }
         // [1] payment에서 사용할 정보 redis에 저장
         // HASH SET을 이용하여 여러 정보를 저장하도록 한다
-        generalPayRedisRepository.registerPaymentInformation(requestCode, dto);
+        // generalPayRedisRepository.registerPaymentInformation(requestCode, dto);
 
         // [2] 사용할 카드 선택
         // FIX인 경우, 주어진 값을 기반으로 사용할 카드 값을 가져온다.

@@ -21,16 +21,17 @@ public class GeneralPayRedisRepository {
     public boolean registRequestId(UUID requestId) {
         // redis 레포에 삽입을 시도하고, 만일 이미 있는 값이었다면 false를 반환한다
         ValueOperations<String, String> ops = redisTemplate.opsForValue();
-        boolean succeed = ops.setIfAbsent(requestId.toString(), "checked");
+        String key = "general-pay-id"+requestId.toString();
+        boolean succeed = ops.setIfAbsent(key, "checked");
         if(succeed) {
-            redisTemplate.expire(requestId.toString(), 10, TimeUnit.MINUTES);
+            redisTemplate.expire(key, 10, TimeUnit.MINUTES);
         }
         return succeed;
     }
 
     public void registerPaymentInformation(UUID code, ExecuteGeneralPayRequestDto dto) {
         HashOperations<String, String, String> ops = redisTemplate.opsForHash();
-        String key = code.toString();
+        String key = "general-pay-id"+code.toString();
         ops.put(key, "orderId", dto.getOrderId().toString());
         ops.put(key, "merchantId", dto.getMerchantId().toString());
         // 일단은 주문ID와 상점ID만 넣고, 추후 필요한 정보 있으면 더 넣기로

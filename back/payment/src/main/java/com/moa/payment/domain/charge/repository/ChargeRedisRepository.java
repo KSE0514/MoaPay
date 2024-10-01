@@ -19,9 +19,10 @@ public class ChargeRedisRepository {
     public boolean registRequestCode(UUID code) {
         // redis 레포에 삽입을 시도하고, 만일 이미 있는 값이었다면 false를 반환한다
         ValueOperations<String, String> ops = redisTemplate.opsForValue();
-        boolean succeed = ops.setIfAbsent(code.toString(), "checked");
+        String key = "payment-code:"+code.toString();
+        boolean succeed = ops.setIfAbsent(key, "checked");
         if(succeed) {
-            redisTemplate.expire(code.toString(), 10, TimeUnit.MINUTES);
+            redisTemplate.expire(key, 10, TimeUnit.MINUTES);
         }
         return succeed;
     }
