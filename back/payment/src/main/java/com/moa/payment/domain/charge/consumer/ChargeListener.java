@@ -63,7 +63,7 @@ public class ChargeListener {
             // vo에 들은 requestCode를 기반으로 알람을 보낸다
             // 카드 이미지 URL같은 것도 같이 보내줘야하나...
             // todo : client 응답형식 자세히 지정 지정
-            notificationService.sendEvent(requestCode, resultVO);
+//            notificationService.sendEvent(requestCode, resultVO);
             
         } catch(Exception e) {
             // 에러가 발생하는 경우, 에러 관련 응답을 클라이언트에 전달

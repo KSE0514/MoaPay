@@ -13,7 +13,6 @@ import java.util.concurrent.ConcurrentHashMap;
 @RequiredArgsConstructor
 public class EmitterRepository {
 
-    // TODO: 레디스 pub-sub 기반으로 작동하도록 하기
     // 동시성 문제 처리를 위해 thread-safe한 자료구조 사용
     private final Map<UUID, SseEmitter> emitters = new ConcurrentHashMap<>();
 
