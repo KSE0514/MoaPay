@@ -29,7 +29,15 @@ const CreateAccount = () => {
   const navigate = useNavigate();
   const [limitTime, setLimitTime] = useState<number>(2000); // 초기 값 2000으로 설정
   const timerRef = useRef<NodeJS.Timeout | null>(null); //타이머
-  const { id, setUserInfo } = useAuthStore(); // 유저 정보
+  const {
+    id,
+    setUserInfo,
+    setMode,
+    setAccessToken,
+    setRefreshToken,
+    setIsLoggedIn,
+    setPhoneNumber,
+  } = useAuthStore(); // 유저 정보
   const [joinMode, setJoinMode] = useState<boolean>(false); // 회원가입 모드
   const [beforeStarting, setBeforeStarting] = useState<boolean>(true);
   const [validationErrors, setValidationErrors] = useState<{
@@ -193,7 +201,6 @@ const CreateAccount = () => {
       }
     }
     try {
-      console.log(joinUserInfo.verification_code);
       // 인증번호 확인하기
       const response = await axios.post(
         `${baseUrl1}moapay/member/verification`,
@@ -205,7 +212,6 @@ const CreateAccount = () => {
           withCredentials: true, // 쿠키 또는 인증 정보 포함
         }
       );
-      console.log(response);
       // 200일때 아래 함수 2개 실행
       if (response?.status == 200) {
         if (timerRef.current) {
@@ -216,7 +222,6 @@ const CreateAccount = () => {
       }
     } catch (e) {
       const error = e as AxiosError; // AxiosError로 타입 단언
-      console.log(error);
       if (error.response?.status == 400) {
         //인증번호가 틀린 경우 - 인증번호 다시 입력하도록 함
         setValidationErrors((prevErrors) => ({
@@ -225,7 +230,6 @@ const CreateAccount = () => {
         }));
       }
     }
-    setEndSMSAuth(true);
   };
 
   /**
@@ -249,18 +253,20 @@ const CreateAccount = () => {
           withCredentials: true, // 쿠키 또는 인증 정보 포함
         }
       );
+      console.log(existUserCheckResponse);
       // 회원이 없는 경우
-      if (!existUserCheckResponse.data.data.isExist) {
+      if (!existUserCheckResponse.data.data.exist) {
         //회원가입
+        setMode("Join");
         setJoinMode(true);
       } else {
-        navigate(PATH.PASSWORD_LOGIN, {
-          state: {
-            ment: `앱을 켜려면\n비밀번호를 눌러주세요`,
-            back: false,
-            mode: "NewLogin",
-          },
-        });
+        setPhoneNumber(existUserCheckResponse.data.data.phoneNumber);
+        setUserInfo(
+          existUserCheckResponse.data.data.uuid,
+          existUserCheckResponse.data.data.name
+        );
+        setMode("NewLogin");
+        navigate(PATH.PASSWORD_LOGIN, {});
       }
     } catch (e) {
       const error = e as AxiosError; // AxiosError로 타입 단언
@@ -297,10 +303,10 @@ const CreateAccount = () => {
         address: joinUserInfo.address,
       });
       if (response.status == 200) {
-        await setUserInfo(response.data.data.id, response.data.data.name);
+        setUserInfo(response.data.data.id, response.data.data.name);
         //로그인 보내기
         const loginResponse = await axios.post(
-          `${baseUrl1}/moapay/member/login`,
+          `${baseUrl1}moapay/member/login`,
           {
             uuid: response.data.data.id,
             phoneNumber: joinUserInfo.phone_number,
@@ -310,22 +316,12 @@ const CreateAccount = () => {
           }
         );
         if (loginResponse.status == 200) {
-          localStorage.setItem(
-            "accessToken",
-            loginResponse.data.data.token.accessToken
-          );
-          localStorage.setItem(
-            "refreshToken",
-            loginResponse.data.data.token.refreshToken
-          );
-          // 응답 받으면 생체인식 설정으로 이동시키기
-          navigate(PATH.PASSWORD_LOGIN, {
-            state: {
-              ment: `간편 비밀번호를\n입력해주세요`,
-              back: false,
-              mode: "Join",
-            },
-          });
+          // 응답 받으면 생체인식 설정으로 이동시키기c
+          console.log(loginResponse);
+          setIsLoggedIn(true);
+          setAccessToken(loginResponse.data.data.token.accessToken);
+          setRefreshToken(loginResponse.data.data.token.refreshToken);
+          navigate(PATH.PASSWORD_LOGIN);
         }
       }
     } catch (e) {

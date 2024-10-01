@@ -26,7 +26,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import axios from "axios";
 
 interface data {
-  cateory: string;
+  category: string;
   money: number;
   per: number;
 }
@@ -94,26 +94,26 @@ const Statistics = () => {
 
   // test data
   const [dataList, setDataList] = useState<data[] | null>([
-    { cateory: "간편결제", money: 50000, per: 2.5 },
-    { cateory: "교육", money: 250000, per: 12.5 },
-    { cateory: "교통", money: 50000, per: 2.5 },
-    { cateory: "마트·편의점", money: 50000, per: 2.5 },
-    { cateory: "미용", money: 100000, per: 5.0 },
-    { cateory: "보험", money: 50000, per: 2.5 },
-    { cateory: "숙박", money: 250000, per: 12.5 },
-    { cateory: "생활", money: 50000, per: 2.5 },
-    { cateory: "쇼핑", money: 50000, per: 2.5 },
-    { cateory: "식비", money: 100000, per: 5.0 },
-    { cateory: "연회비", money: 50000, per: 2.5 },
-    { cateory: "온라인 쇼핑", money: 250000, per: 12.5 },
-    { cateory: "의료", money: 50000, per: 2.5 },
-    { cateory: "주거·통신", money: 50000, per: 2.5 },
-    { cateory: "자동차", money: 100000, per: 5.0 },
-    { cateory: "취미", money: 50000, per: 2.5 },
-    { cateory: "카페", money: 250000, per: 12.5 },
-    { cateory: "해외", money: 50000, per: 2.5 },
-    { cateory: "항공·여행", money: 50000, per: 2.5 },
-    { cateory: "ALL", money: 100000, per: 5.0 },
+    { category: "간편결제", money: 50000, per: 2.5 },
+    { category: "교육", money: 250000, per: 12.5 },
+    { category: "교통", money: 50000, per: 2.5 },
+    { category: "마트·편의점", money: 50000, per: 2.5 },
+    { category: "미용", money: 100000, per: 5.0 },
+    { category: "보험", money: 50000, per: 2.5 },
+    { category: "숙박", money: 250000, per: 12.5 },
+    { category: "생활", money: 50000, per: 2.5 },
+    { category: "쇼핑", money: 50000, per: 2.5 },
+    { category: "식비", money: 100000, per: 5.0 },
+    { category: "연회비", money: 50000, per: 2.5 },
+    { category: "온라인 쇼핑", money: 250000, per: 12.5 },
+    { category: "의료", money: 50000, per: 2.5 },
+    { category: "주거·통신", money: 50000, per: 2.5 },
+    { category: "자동차", money: 100000, per: 5.0 },
+    { category: "취미", money: 50000, per: 2.5 },
+    { category: "카페", money: 250000, per: 12.5 },
+    { category: "해외", money: 50000, per: 2.5 },
+    { category: "항공·여행", money: 50000, per: 2.5 },
+    { category: "ALL", money: 100000, per: 5.0 },
   ]);
 
   const handlePrevMonth = () => {

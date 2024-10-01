@@ -48,7 +48,7 @@ public class SecurityConfig {
 
 	@Bean
 	public AuthenticationManager authenticationManager(
-		AuthenticationConfiguration authenticationConfiguration
+			AuthenticationConfiguration authenticationConfiguration
 	) throws Exception {
 		return authenticationConfiguration.getAuthenticationManager();
 	}
@@ -91,10 +91,10 @@ public class SecurityConfig {
 
 		config.setAllowCredentials(true);
 		config.setAllowedOrigins(
-			List.of("https://localhost:8765", "http://localhost:8765","http://localhost:5173",
-				"https://localhost", "http://localhost",
-				"https://moapay-7e24e.web.app",
-				"https://j11c201.p.ssafy.io", "http://j11c201.p.ssafy.io"));
+				List.of("https://localhost:8765", "http://localhost:8765","http://localhost:5173",
+						"https://localhost", "http://localhost",
+						"https://moapay-7e24e.web.app",
+						"https://j11c201.p.ssafy.io", "http://j11c201.p.ssafy.io"));
 		config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"));
 		config.setAllowedHeaders(List.of("*"));
 		config.setExposedHeaders(List.of("*"));
@@ -104,3 +104,4 @@ public class SecurityConfig {
 		return source;
 	}
 }
+

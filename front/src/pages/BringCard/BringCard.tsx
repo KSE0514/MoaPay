@@ -18,6 +18,7 @@ import { MyCardList } from "../../constants/card";
 
 const BringCard = () => {
   const { cardList, setCardList, removeCard } = useCardStore();
+  const { mode, setMode } = useAuthStore();
   const navigate = useNavigate();
   const [isLoding, setIsLoding] = useState(false);
   const [before, setBefore] = useState(true);
@@ -46,6 +47,12 @@ const BringCard = () => {
   const settingCard = () => {
     //카드 등록 요청 보내기
     // await axios.post(``, { cardList });
+    if (mode === "Join") {
+      setMode("");
+    }
+    if (mode === "NewLogin") {
+      setMode("");
+    }
     navigate(PATH.HOME);
   };
 

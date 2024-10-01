@@ -121,6 +121,7 @@ public class MemberServiceImpl implements MemberService {
 				.isExist(true)
 				.uuid(member.get().getUuid().toString())
 				.phoneNumber(phoneNumber)
+				.name(member.get().getName().toString())
 				.build();
 		return response;
 	}

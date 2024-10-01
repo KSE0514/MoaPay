@@ -221,6 +221,7 @@ public class WebAuthnRegisterController {
 				.publicKey(registrationResult.getKeyId().getId().toString())  // 공개키 저장
 				.credentialId(credentialId)  // 자격 증명 ID 저장
 				.authenticatorData(attestationObject.getBytes())  // AttestationObject 저장
+				.password(member.getPassword())
 				.build();
 
 			// Member 정보 저장

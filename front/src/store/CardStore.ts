@@ -1,4 +1,6 @@
 import { create } from "zustand";
+import { persist } from "zustand/middleware";
+
 // 혜택 인터페이스 정의
 export interface Benefit {
   categoryName: string;
@@ -42,23 +44,24 @@ interface CardState {
   clearCards: () => void; // 카드 리스트 초기화 함수
 }
 
-export const useCardStore = create<CardState>((set) => ({
-  cardList: [], // 초기 카드 리스트는 빈 배열
-
-  //백엔드에서 받아온 전체 카드리스트
-  setCardList: (newCardList) => set({ cardList: newCardList }),
-
-  // 카드 추가 함수
-  addCard: (card) => set((state) => ({ cardList: [...state.cardList, card] })),
-
-  // 카드 삭제 함수 (id로 삭제)
-  removeCard: (index) =>
-    set((state) => {
-      const newCardList = [...state.cardList]; // Create a copy of the current cardList
-      newCardList.splice(index, 1); // Remove the card at the specified index
-      return { cardList: newCardList }; // Return the updated state
+export const useCardStore = create<CardState>()(
+  persist(
+    (set) => ({
+      cardList: [],
+      setCardList: (newCardList: Card[]) => set({ cardList: newCardList }),
+      addCard: (card: Card) =>
+        set((state) => ({ cardList: [...state.cardList, card] })),
+      removeCard: (index) =>
+        set((state) => {
+          const newCardList = [...state.cardList]; // Create a copy of the current cardList
+          newCardList.splice(index, 1); // Remove the card at the specified index
+          return { cardList: newCardList }; // Return the updated state
+        }),
+      clearCards: () => set(() => ({ cardList: [] })),
     }),
-
-  // 카드 리스트 초기화 함수
-  clearCards: () => set(() => ({ cardList: [] })),
-}));
+    {
+      name: "card-storage", // localStorage에 저장될 키 이름
+      getStorage: () => localStorage, // 기본적으로 localStorage에 저장
+    }
+  )
+);
