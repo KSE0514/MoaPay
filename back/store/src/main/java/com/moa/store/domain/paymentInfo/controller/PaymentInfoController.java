@@ -23,12 +23,12 @@ public class PaymentInfoController {
 	private PaymentInfoService paymentInfoService;
 
 	// 오프라인 결제, API 명세서 2행
-	@PostMapping("/offline/barcode")
-	public ResponseEntity<ResultResponse> offlineBarcodePayRequest(@RequestBody String barcode) {
-
-		ResultResponse resultResponse = ResultResponse.of(HttpStatus.OK, "오프라인 결제", merchant);
-		return ResponseEntity.status(resultResponse.getStatus()).body(resultResponse);
-	}
+//	@PostMapping("/offline/barcode")
+//	public ResponseEntity<ResultResponse> offlineBarcodePayRequest(@RequestBody String barcode) {
+//
+//		ResultResponse resultResponse = ResultResponse.of(HttpStatus.OK, "오프라인 결제", merchant);
+//		return ResponseEntity.status(resultResponse.getStatus()).body(resultResponse);
+//	}
 
 	// 온라인 구매, API 명세서 3행
 	@PostMapping("/online/purchase")
@@ -39,10 +39,10 @@ public class PaymentInfoController {
 	}
 
 	// 결제 결과 저장, API 명세서 4행
-	@PostMapping("/online/result")
-	public ResponseEntity<ResultResponse> savePayment(@RequestBody PaymentResultRequestDto paymentResultRequestDto) {
-
-		ResultResponse resultResponse = ResultResponse.of(HttpStatus.OK, "결제 내용을 저장했습니다.", merchant);
-		return ResponseEntity.status(resultResponse.getStatus()).body(resultResponse);
-	}
+//	@PostMapping("/online/result")
+//	public ResponseEntity<ResultResponse> savePayment(@RequestBody PaymentResultRequestDto paymentResultRequestDto) {
+//
+//		ResultResponse resultResponse = ResultResponse.of(HttpStatus.OK, "결제 내용을 저장했습니다.", merchant);
+//		return ResponseEntity.status(resultResponse.getStatus()).body(resultResponse);
+//	}
 }
