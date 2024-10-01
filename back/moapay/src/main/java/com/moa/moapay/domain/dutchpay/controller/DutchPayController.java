@@ -4,9 +4,11 @@ import com.moa.moapay.domain.dutchpay.model.dto.DutchPayRoomJoinDto;
 import com.moa.moapay.domain.dutchpay.model.dto.DutchPayStartRequestDto;
 import com.moa.moapay.domain.dutchpay.model.dto.DutchRoomInfo;
 import com.moa.moapay.domain.dutchpay.service.DutchPayService;
+import com.moa.moapay.global.response.ResultResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.messaging.handler.annotation.DestinationVariable;
 import org.springframework.messaging.handler.annotation.MessageMapping;
@@ -21,17 +23,14 @@ import java.util.UUID;
 @RequestMapping("/dutchpay")
 @CrossOrigin(origins = "*")
 public class DutchPayController {
-
     private final DutchPayService dutchPayService;
-
     // 방 생성 엔드포인트
     @PostMapping("/createRoom")
-    public ResponseEntity<String> createRoom(@Valid @RequestBody DutchPayStartRequestDto dutchPayStartRequestDto) {
+    public ResponseEntity<ResultResponse> createRoom(@Valid @RequestBody DutchPayStartRequestDto dutchPayStartRequestDto) {
         log.info("Creating Dutch pay room");
         UUID uuid = dutchPayService.createDutchRoom(dutchPayStartRequestDto);
-        String joinUrl = "http://localhost:18020/dutchpay/join/" + uuid.toString();
-        return ResponseEntity.ok(String.valueOf(uuid)); // 성공적으로 방이 생성되었음을 /응답 형식 변경 해야 할듯
+        ResultResponse resultResponse = ResultResponse.of(HttpStatus.CREATED, "더치페이 룸 생성", uuid);
+        return ResponseEntity.status(resultResponse.getStatus()).body(resultResponse);
     }
-
 
 }
