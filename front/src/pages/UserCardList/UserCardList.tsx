@@ -186,7 +186,9 @@ const UserCardList = () => {
                     height: rotate[index] ? "90px" : "57px",
                     transform: rotate[index] ? "rotate(-90deg)" : "none", // 회전시키기
                     marginLeft: rotate[index] ? "17.5px" : "0",
+                    userSelect: "none", // 드래그 방지
                   }}
+                  draggable="false" // 이미지 드래그 방지
                 />
                 <div>{card.name}</div>
               </div>
@@ -199,6 +201,9 @@ const UserCardList = () => {
                   width="30"
                   height="30"
                   viewBox="0 0 30 30"
+                  style={{
+                    cursor: "move",
+                  }}
                 >
                   <path d="M 3 7 A 1.0001 1.0001 0 1 0 3 9 L 27 9 A 1.0001 1.0001 0 1 0 27 7 L 3 7 z M 3 14 A 1.0001 1.0001 0 1 0 3 16 L 27 16 A 1.0001 1.0001 0 1 0 27 14 L 3 14 z M 3 21 A 1.0001 1.0001 0 1 0 3 23 L 27 23 A 1.0001 1.0001 0 1 0 27 21 L 3 21 z"></path>
                 </svg>
