@@ -2,16 +2,13 @@ package com.moa.payment.domain.notification.service;
 
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
+import java.util.UUID;
+
 public interface NotificationService {
-    <T> void customNotify(Long userId, T data, String comment, String type);
 
-    void paynotify(Long userId, Object data, String comment);
-
-    void sendToClient(Long userId, Object data, String comment);
-
-    <T> void sendToClient(Long userId, T data, String comment, String type);
-
-    SseEmitter createEmitter(Long id);
-    SseEmitter subscribe(Long id);
-    void sendEvent(Long sendId, Object data);
+//    <T> void sendToClient(UUID code, T data, String comment);
+    void initialSend(UUID code, SseEmitter emitter);
+    SseEmitter createEmitter(UUID id);
+    SseEmitter subscribe(UUID id);
+//    void sendEvent(UUID sendId, Object data);
 }

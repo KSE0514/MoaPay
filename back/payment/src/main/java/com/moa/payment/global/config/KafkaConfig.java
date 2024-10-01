@@ -1,6 +1,5 @@
 package com.moa.payment.global.config;
 
-import com.moa.payment.global.kafkaVo.KafkaMsgVo;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.common.serialization.StringDeserializer;
 import org.springframework.context.annotation.Bean;

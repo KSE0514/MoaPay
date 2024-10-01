@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequiredArgsConstructor
 @Slf4j
-@RequestMapping("/moapay/core/code")
+@RequestMapping("/code")
 public class CodeController {
 
     private final CodeService codeService;

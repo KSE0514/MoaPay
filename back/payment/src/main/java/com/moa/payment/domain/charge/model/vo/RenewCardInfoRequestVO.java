@@ -5,17 +5,16 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-import java.util.List;
 import java.util.UUID;
 
 @Getter
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class ExecutePaymentRequestVO {
-
-    private UUID merchantId;
-    private UUID requestCode;
-    private List<PaymentCardInfoVO> paymentInfoList;
-
+public class RenewCardInfoRequestVO {
+    private UUID cardId;
+    private long amount;
+    private boolean benefitActivated;
+    private long benefitBalance;
+    private long remainedBenefit;
 }

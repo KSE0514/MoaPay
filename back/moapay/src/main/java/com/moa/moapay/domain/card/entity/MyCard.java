@@ -22,28 +22,28 @@ public class MyCard {
     private long id;
 
     @NotNull
-    @Column(name = "uuid", columnDefinition = "binary(16)", nullable = false)
+    @Column(name = "uuid", columnDefinition = "binary(16)", nullable = false, updatable = false)
     private UUID uuid;
 
     @NotNull
-    @Column(name = "cardNumber", unique = true)
+    @Column(name = "card_number", unique = true, length = 30)
     private String cardNumber;
 
     @NotNull
-    @Column(name = "cvc")
+    @Column(name = "cvc", columnDefinition = "char(3)")
     private String cvc;
 
     @NotNull
-    @Column(name = "performance")
-    private boolean performanceOk;
+    @Column(name = "performance_flag", columnDefinition = "tinyint(1)")
+    private boolean performanceFlag;
 
     @NotNull
     @Column(name = "card_limit")
     private Long cardLimit;
 
     @NotNull
-    @Column(name = "charges")
-    private Long charges;
+    @Column(name = "amount")
+    private Long amount;
 
     @NotNull
     @Column(name = "benefit_usage")
@@ -54,7 +54,7 @@ public class MyCard {
     private UUID memberId;
 
     @NotNull
-    @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    @JoinColumn(name = "product_id", referencedColumnName = "id")
+    @ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @JoinColumn(name = "product_id")
     private CardProduct cardProduct;
 }
