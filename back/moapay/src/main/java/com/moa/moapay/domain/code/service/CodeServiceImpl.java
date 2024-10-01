@@ -76,4 +76,24 @@ public class CodeServiceImpl implements CodeService {
                 .barcode(code)
                 .build();
     }
+
+    @Override
+    public GetBarcodeInfoResponseDto getBarcodeInfo(String barcode) {
+        log.info("get barcode info");
+        HashMap<String, String> searchedInfo = redisRepository.findBarcodeInfo(barcode);
+        UUID memberId = UUID.fromString(searchedInfo.get("memberId"));
+        CardSelectionType type = CardSelectionType.valueOf(searchedInfo.get("type"));
+        String cardNumber = null;
+        String cvc = null;
+        if(type == CardSelectionType.FIX) {
+            cardNumber = searchedInfo.get("cardNumber");
+            cvc = searchedInfo.get("cvc");
+        }
+        return GetBarcodeInfoResponseDto.builder()
+                .memberId(memberId)
+                .type(type)
+                .cardNumber(cardNumber)
+                .cvc(cvc)
+                .build();
+    }
 }

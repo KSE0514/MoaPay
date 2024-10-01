@@ -2,6 +2,7 @@ package com.moa.moapay.domain.generalpay.controller;
 
 import com.moa.moapay.domain.card.entity.MyCard;
 import com.moa.moapay.domain.generalpay.model.dto.ExecuteGeneralPayRequestDto;
+import com.moa.moapay.domain.generalpay.model.dto.ExecuteOfflinePayRequestDto;
 import com.moa.moapay.domain.generalpay.service.GeneralPayService;
 import com.moa.moapay.global.response.ResultResponse;
 import lombok.RequiredArgsConstructor;
@@ -26,6 +27,14 @@ public class GeneralPayController {
         // 응답은 비동기식 SSE로 보낼 예정이므로, response 본문은 비워서 보낸다
         log.info("execute general pay : {}", dto.toString());
         generalPayService.executeGeneralPay(dto);
+        ResultResponse resultResponse = ResultResponse.of(HttpStatus.OK, "결제 요청 전송 완료");
+        return ResponseEntity.status(resultResponse.getStatus()).body(resultResponse);
+    }
+
+    @PostMapping("/offline")
+    public ResponseEntity<ResultResponse> executeOfflinePay(@RequestBody ExecuteOfflinePayRequestDto dto) {
+        log.info("execute offline pay : {}", dto.getBarcode());
+        generalPayService.executeOfflinePay(dto);
         ResultResponse resultResponse = ResultResponse.of(HttpStatus.OK, "결제 요청 전송 완료");
         return ResponseEntity.status(resultResponse.getStatus()).body(resultResponse);
     }

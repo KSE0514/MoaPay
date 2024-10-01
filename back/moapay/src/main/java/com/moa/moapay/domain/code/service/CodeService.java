@@ -7,4 +7,5 @@ public interface CodeService {
     GetQRInfoResponseDto getQRInfo(String QRCode);
     void disableQRCode(String QRCode);
     GetBarcodeResponseDto getBarcode(GetBarcodeRequestDto dto);
+    GetBarcodeInfoResponseDto getBarcodeInfo(String barcode);
 }
