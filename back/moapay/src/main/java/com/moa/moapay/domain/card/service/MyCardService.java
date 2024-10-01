@@ -8,6 +8,6 @@ import java.util.List;
 
 public interface MyCardService {
     List<MyCardInfoDto> getMyCardInfo(HttpServletRequest request);
-
     List<CardInfoResponseDto> getAllCard();
+
 }

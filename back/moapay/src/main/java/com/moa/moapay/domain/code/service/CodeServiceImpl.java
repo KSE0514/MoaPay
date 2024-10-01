@@ -1,11 +1,13 @@
 package com.moa.moapay.domain.code.service;
 
-import com.moa.moapay.domain.code.model.dto.GetQRCodeRequestDto;
-import com.moa.moapay.domain.code.model.dto.GetQRCodeResponseDto;
-import com.moa.moapay.domain.code.model.dto.GetQRInfoResponseDto;
+import com.moa.moapay.domain.card.entity.MyCard;
+import com.moa.moapay.domain.card.repository.MyCardRepository;
+import com.moa.moapay.domain.code.model.dto.*;
 import com.moa.moapay.domain.code.repository.CodeRedisRepository;
+import com.moa.moapay.global.exception.BusinessException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import java.util.HashMap;
@@ -17,6 +19,7 @@ import java.util.UUID;
 public class CodeServiceImpl implements CodeService {
 
     private final CodeRedisRepository redisRepository;
+    private final MyCardRepository myCardRepository;
 
     @Override
     public GetQRCodeResponseDto getQRCode(GetQRCodeRequestDto dto) {
@@ -24,14 +27,14 @@ public class CodeServiceImpl implements CodeService {
         int QRCode;
         while(true) {
             QRCode = (int)(Math.random() * 10000000);
-            if(redisRepository.QRCodeRegistTest("QR:" + String.valueOf(QRCode))) break; // 성공적으로 등록되었다면 return
+            if(redisRepository.QRCodeRegistTest(QRCode)) break; // 성공적으로 등록되었다면 return
         }
         // [2] 중복 아닌 거 확인했다면 그 값 기반으로 나머지 결제정보 등록
-        redisRepository.RegistQRCodeInfo(QRCode, dto);
+        String code = redisRepository.RegistQRCodeInfo(QRCode, dto);
 
         // [3] QRcode 리턴
         return GetQRCodeResponseDto.builder()
-                .QRCode(String.valueOf(QRCode))
+                .QRCode(code)
                 .build();
     }
 
@@ -50,5 +53,24 @@ public class CodeServiceImpl implements CodeService {
     @Override
     public void disableQRCode(String QRCode) {
         redisRepository.disableQRCodeInfo(QRCode);
+    }
+
+    @Override
+    public GetBarcodeResponseDto getBarcode(GetBarcodeRequestDto dto) {
+        // 정보를 등록하기 전, 정보 유효성 검사를 시행
+        MyCard myCard = myCardRepository.findByCardNumber(dto.getCardNumber())
+                .orElseThrow(() -> new BusinessException(HttpStatus.BAD_REQUEST, "유효하지 않은 정보입니다."));
+        if(!myCard.getCvc().equals(dto.getCvc())) {
+            throw new BusinessException(HttpStatus.BAD_REQUEST, "유효하지 않은 정보입니다.");
+        }
+        int barcode;
+        while(true) {
+            barcode = (int)(Math.random() * 100000000);
+            if(redisRepository.barcodeRegistTest(barcode)) break; // 성공적으로 등록되었다면 return
+        }
+        String code = redisRepository.registBarcodeInfo(barcode, dto);
+        return GetBarcodeResponseDto.builder()
+                .barcode(code)
+                .build();
     }
 }
