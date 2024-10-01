@@ -2,6 +2,7 @@ package com.moa.moapay.domain.code.repository;
 
 import com.moa.moapay.domain.code.model.dto.GetBarcodeRequestDto;
 import com.moa.moapay.domain.code.model.dto.GetQRCodeRequestDto;
+import com.moa.moapay.domain.generalpay.model.CardSelectionType;
 import com.moa.moapay.global.exception.BusinessException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -94,9 +95,12 @@ public class CodeRedisRepository {
         HashOperations<String, String, String> ops = redisTemplate.opsForHash();
         String code = codeToString(barcode, 8);
         String key = "BAR:"+code;
+        ops.put(key, "memberId", dto.getMemberId().toString());
         ops.put(key, "type", dto.getType().toString());
-        ops.put(key, "cardNumber", dto.getCardNumber());
-        ops.put(key, "cvc", dto.getCvc());
+        if(dto.getType() == CardSelectionType.FIX) {
+            ops.put(key, "cardNumber", dto.getCardNumber());
+            ops.put(key, "cvc", dto.getCvc());
+        }
         // 데이터를 전부 넣은 후, TIL 설정
         redisTemplate.expire(key, barcodeExpire, TimeUnit.MINUTES);
         return code;
@@ -109,6 +113,7 @@ public class CodeRedisRepository {
             throw new BusinessException(HttpStatus.BAD_REQUEST, "요청한 코드와 대응되는 정보가 없습니다.");
         }
         HashMap<String, String> result = new HashMap<>();
+        result.put("memberId", ops.get(key, "memberId"));
         result.put("type", ops.get(key, "type"));
         result.put("cardNumber", ops.get(key, "cardNumber"));
         result.put("cvc", ops.get(key, "cvc"));

@@ -4,6 +4,7 @@ import com.moa.moapay.domain.card.entity.MyCard;
 import com.moa.moapay.domain.card.repository.MyCardRepository;
 import com.moa.moapay.domain.code.model.dto.*;
 import com.moa.moapay.domain.code.repository.CodeRedisRepository;
+import com.moa.moapay.domain.generalpay.model.CardSelectionType;
 import com.moa.moapay.global.exception.BusinessException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -58,10 +59,12 @@ public class CodeServiceImpl implements CodeService {
     @Override
     public GetBarcodeResponseDto getBarcode(GetBarcodeRequestDto dto) {
         // 정보를 등록하기 전, 정보 유효성 검사를 시행
-        MyCard myCard = myCardRepository.findByCardNumber(dto.getCardNumber())
-                .orElseThrow(() -> new BusinessException(HttpStatus.BAD_REQUEST, "유효하지 않은 정보입니다."));
-        if(!myCard.getCvc().equals(dto.getCvc())) {
-            throw new BusinessException(HttpStatus.BAD_REQUEST, "유효하지 않은 정보입니다.");
+        if(dto.getType() == CardSelectionType.FIX) {
+            MyCard myCard = myCardRepository.findByCardNumber(dto.getCardNumber())
+                    .orElseThrow(() -> new BusinessException(HttpStatus.BAD_REQUEST, "유효하지 않은 정보입니다."));
+            if(!myCard.getCvc().equals(dto.getCvc()) || !dto.getMemberId().equals(myCard.getMemberId())) {
+                throw new BusinessException(HttpStatus.BAD_REQUEST, "유효하지 않은 정보입니다.");
+            }
         }
         int barcode;
         while(true) {
