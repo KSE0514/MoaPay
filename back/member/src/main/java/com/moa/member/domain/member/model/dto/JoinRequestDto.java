@@ -18,7 +18,7 @@ public class JoinRequestDto {
 	private String email;
 	private String address;
 
-	public Member toEntity(){
+	public Member toEntity(String password){
 
 		String genderChar;
 
@@ -33,6 +33,7 @@ public class JoinRequestDto {
 			.birthDate(birthDate)
 			.gender(genderChar)
 			.phoneNumber(phoneNumber)
+			.password(password)
 			.email(email)
 			.address(address)
 			.build();

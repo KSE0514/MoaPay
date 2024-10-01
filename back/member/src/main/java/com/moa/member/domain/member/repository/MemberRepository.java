@@ -10,7 +10,8 @@ import com.moa.member.domain.member.model.Member;
 
 @Repository
 public interface MemberRepository extends JpaRepository<Member,Long> {
-	Optional<Member> findByPhoneNumber(String email);
+	Optional<Member> findByPhoneNumber(String phoneNumber);
 	Member findByName(String name);
-	Member findByUuid(UUID uuid);
+	Optional<Member> findByUuid(UUID uuid);
+	Member findByCredentialId(String CredentialId);
 }

@@ -1,19 +1,10 @@
 package com.moa.member.domain.member.controller;
 
-import com.moa.member.domain.member.security.JwtTokenProvider;
-import com.moa.member.global.exception.BusinessException;
-import com.yubico.webauthn.data.ClientRegistrationExtensionOutputs;
-
 import java.security.SecureRandom;
 import java.util.Arrays;
 import java.util.Base64;
 import java.util.Map;
-import java.util.Optional;
-import java.util.Set;
 import java.util.UUID;
-
-import jakarta.servlet.http.HttpServletResponse;
-import jakarta.servlet.http.HttpSession;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseCookie;
@@ -23,52 +14,51 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.moa.member.domain.member.model.Member;
 import com.moa.member.domain.member.repository.EmptyCredentialRepository;
 import com.moa.member.domain.member.repository.MemberRepository;
 import com.moa.member.domain.member.security.JwtTokenProvider;
+import com.moa.member.global.exception.BusinessException;
 import com.moa.member.global.response.ResultResponse;
-import com.yubico.webauthn.CredentialRepository;
-import com.yubico.webauthn.data.AuthenticatorAttestationResponse;
-import com.yubico.webauthn.data.AuthenticatorResponse;
-import com.yubico.webauthn.data.ClientExtensionOutputs;
-import com.yubico.webauthn.data.PublicKeyCredential;
-import com.yubico.webauthn.data.PublicKeyCredentialType; // PublicKeyCredentialType 임포트
+import com.yubico.webauthn.AssertionRequest;
+import com.yubico.webauthn.FinishAssertionOptions;
 import com.yubico.webauthn.FinishRegistrationOptions;
 import com.yubico.webauthn.RelyingParty;
 import com.yubico.webauthn.data.AttestationConveyancePreference;
+import com.yubico.webauthn.data.AuthenticatorAttestationResponse;
 import com.yubico.webauthn.data.AuthenticatorSelectionCriteria;
 import com.yubico.webauthn.data.ByteArray;
 import com.yubico.webauthn.data.COSEAlgorithmIdentifier;
+import com.yubico.webauthn.data.ClientExtensionOutputs;
+import com.yubico.webauthn.data.ClientRegistrationExtensionOutputs;
+import com.yubico.webauthn.data.PublicKeyCredential;
 import com.yubico.webauthn.data.PublicKeyCredentialCreationOptions;
-import com.yubico.webauthn.data.PublicKeyCredentialEntity;
+import com.yubico.webauthn.data.PublicKeyCredentialDescriptor;
 import com.yubico.webauthn.data.PublicKeyCredentialParameters;
+import com.yubico.webauthn.data.PublicKeyCredentialRequestOptions;
 import com.yubico.webauthn.data.PublicKeyCredentialType;
 import com.yubico.webauthn.data.RelyingPartyIdentity;
 import com.yubico.webauthn.data.UserIdentity;
 import com.yubico.webauthn.data.UserVerificationRequirement;
+import com.yubico.webauthn.data.PublicKeyCredentialType;
 
 import jakarta.servlet.http.HttpServletRequest;
-import lombok.AllArgsConstructor;
-import lombok.NoArgsConstructor;
-import lombok.RequiredArgsConstructor;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
 
 @RestController
 @Slf4j
-@RequestMapping("/moapay/member/authn/register")
-public class WebAuthnRegisterController {
+@RequestMapping("/moapay/member/authn/certify")
+public class WebAuthnCertifyController {
 
 	private final RelyingParty relyingParty;
 	private final MemberRepository memberRepository;
 	private final JwtTokenProvider jwtTokenProvider;
 
-	public WebAuthnRegisterController(MemberRepository memberRepository,
-		EmptyCredentialRepository credentialRepository, JwtTokenProvider jwtTokenProvider) {
-		//////////////////////////////////꼭 !!!!!!!!!!!!!!!! id 값 서버 주소로 변경하기 ////////////////////////////////
+	public WebAuthnCertifyController(MemberRepository memberRepository, EmptyCredentialRepository credentialRepository,
+		JwtTokenProvider jwtTokenProvider) {
 		// RelyingParty 설정
 		this.relyingParty = RelyingParty.builder()
 			.identity(RelyingPartyIdentity.builder()
@@ -85,10 +75,12 @@ public class WebAuthnRegisterController {
 	public PublicKeyCredentialCreationOptions getRegistrationOptions(
 		HttpServletRequest request,
 		HttpServletResponse response) {  // HttpServletResponse 추가
+
 		String token = jwtTokenProvider.getJwtTokenFromRequestHeader(request);
 		String uuid = jwtTokenProvider.getUuidFromToken(token);
 		Member member = memberRepository.findByUuid(UUID.fromString(uuid))
 			.orElseThrow(() -> new BusinessException(HttpStatus.BAD_REQUEST, "회원이 존재하지 않습니다."));
+
 
 		// UserIdentity 생성
 		UserIdentity userEntity = UserIdentity.builder()
@@ -136,7 +128,7 @@ public class WebAuthnRegisterController {
 
 		response.addHeader("Set-Cookie", jsessionCookie.toString());  // 쿠키를 응답에 추가
 
-		// 클라이언트에게 옵션 전송 (세션에 저장 가능)
+		// 클라이언트에게 옵션 전송 & 세션에 저장
 		request.getSession().setAttribute("registrationOptions", options);
 		PublicKeyCredentialCreationOptions save = (PublicKeyCredentialCreationOptions)request.getSession()
 			.getAttribute("registrationOptions");
@@ -147,30 +139,20 @@ public class WebAuthnRegisterController {
 	}
 
 	@PostMapping("/verify")
-	public ResponseEntity<ResultResponse> verifyRegistration(@RequestBody Map<String, Object> responseData,
-		HttpServletRequest request) {
+	public ResponseEntity<ResultResponse> verifyAuthentication(@RequestBody Map<String, Object> responseData, HttpServletRequest request) {
 		try {
-			String token = jwtTokenProvider.getJwtTokenFromRequestHeader(request);
-			String uuid = jwtTokenProvider.getUuidFromToken(token);
-			Member member = memberRepository.findByUuid(UUID.fromString(uuid))
-				.orElseThrow(() -> new BusinessException(HttpStatus.BAD_REQUEST, "회원이 존재하지 않습니다."));
+			// 세션에서 챌린지를 가져옴
+			PublicKeyCredentialCreationOptions option = (PublicKeyCredentialCreationOptions) request.getSession().getAttribute("registrationOptions");
+			ByteArray challenge = option.getChallenge(); // options에서 챌린지를 가져옴
 
-			HttpSession session = request.getSession(false);
-			if (session == null) {
-				System.out.println("세션이 없습니다.");
-			} else {
-				System.out.println("세션이 존재합니다: " + session.getId());
+			if (challenge == null) {
+				return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+					.body(ResultResponse.of(HttpStatus.BAD_REQUEST, "챌린지가 유효하지 않습니다."));
 			}
 
-			// 세션에서 등록 옵션을 가져옴
-			PublicKeyCredentialCreationOptions options = (PublicKeyCredentialCreationOptions)request.getSession()
-				.getAttribute("registrationOptions");
-			System.out.print("option : ");
-			System.out.println(options);
-
 			// 클라이언트로부터 전달받은 데이터에서 자격 증명 ID와 응답 데이터 추출
-			String credentialId = (String)responseData.get("id");
-			Map<String, Object> response = (Map<String, Object>)responseData.get("response");
+			String credentialId = (String) responseData.get("id");
+			Map<String, Object> response = (Map<String, Object>) responseData.get("response");
 
 			// AuthenticatorResponse는 별도의 형태로 변환해야 함 (AttestationObject와 ClientDataJSON 필요)
 			byte[] attestationObjectBytes = Base64.getUrlDecoder().decode((String)response.get("attestationObject"));
@@ -180,6 +162,13 @@ public class WebAuthnRegisterController {
 			ByteArray attestationObject = new ByteArray(attestationObjectBytes);
 			ByteArray clientDataJSON = new ByteArray(clientDataJSONBytes);
 
+
+			// 사용자 정보 조회 (이름으로 조회, 실제로는 JWT 기반 인증을 추천)
+			Member member = memberRepository.findByCredentialId(credentialId);
+			if (member == null) {
+				return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+					.body(ResultResponse.of(HttpStatus.UNAUTHORIZED, "사용자를 찾을 수 없습니다."));
+			}
 			// AuthenticatorAttestationResponse 생성
 			AuthenticatorAttestationResponse attestationResponse = AuthenticatorAttestationResponse.builder()
 				.attestationObject(attestationObject)
@@ -190,47 +179,53 @@ public class WebAuthnRegisterController {
 			ClientRegistrationExtensionOutputs clientExtensions = ClientRegistrationExtensionOutputs.builder()
 				.build();  // 빈 확장 객체
 
+
 			// PublicKeyCredential 생성
 			PublicKeyCredential credential = PublicKeyCredential.builder()
 				.id(new ByteArray(credentialId.getBytes()))  // 자격 증명 ID
 				.response(attestationResponse)  // 생성된 AuthenticatorAttestationResponse 객체
-				.clientExtensionResults(clientExtensions)  // 빈 확장 객체 전달
+				.clientExtensionResults(clientExtensions)  // 클라이언트 확장 결과 (없을 경우 빈 객체)
 				.type(PublicKeyCredentialType.PUBLIC_KEY)  // 자격 증명 타입
 				.build();
 
-			// 등록 검증 완료
-			var registrationResult = relyingParty.finishRegistration(
-				FinishRegistrationOptions.builder()
-					.request(options)
+			// PublicKeyCredentialRequestOptions 생성
+			PublicKeyCredentialRequestOptions options = PublicKeyCredentialRequestOptions.builder()
+				.challenge(challenge) // 서버에서 제공한 챌린지
+				.rpId("moapay.com") // 서버 도메인
+				.allowCredentials(Arrays.asList(
+					PublicKeyCredentialDescriptor.builder()
+						.id(new ByteArray(credentialId.getBytes())) // 자격 증명 ID
+						.type(PublicKeyCredentialType.PUBLIC_KEY) // 자격 증명 타입
+						.build()
+				)) // 허용된 자격 증명 목록
+				.build();
+
+			// AssertionRequest 생성
+			AssertionRequest assertionRequest = AssertionRequest.builder()
+				.publicKeyCredentialRequestOptions(options)
+				.username(member.getName()) // 사용자 이름
+				.build();
+
+			// 서버에서 사용자 인증 정보 검증
+			var authenticationResult = relyingParty.finishAssertion(
+				FinishAssertionOptions.builder()
+					.request(assertionRequest)  // AssertionRequest를 전달
 					.response(credential)
 					.build()
 			);
 
-			// Member 정보 업데이트 (기존 데이터 유지)
-			Member updatedMember = Member.builder()
-				.id(member.getId())
-				.name(member.getName())
-				.birthDate(member.getBirthDate())
-				.gender(member.getGender())
-				.phoneNumber(member.getPhoneNumber())
-				.email(member.getEmail())
-				.address(member.getAddress())
-				.uuid(member.getUuid())  // UUID 유지
-				.createTime(member.getCreateTime())
-				.updateTime(member.getUpdateTime())
-				.publicKey(registrationResult.getKeyId().getId().toString())  // 공개키 저장
-				.credentialId(credentialId)  // 자격 증명 ID 저장
-				.authenticatorData(attestationObject.getBytes())  // AttestationObject 저장
-				.build();
-
-			// Member 정보 저장
-			memberRepository.save(updatedMember);
-
-			ResultResponse resultResponse = ResultResponse.of(HttpStatus.OK, "검증 성공: 일치");
-			return ResponseEntity.status(resultResponse.getStatus()).body(resultResponse);
+			if (authenticationResult.isSuccess()) {
+				// 인증 성공 시 처리 (로그인/결제)
+				ResultResponse resultResponse = ResultResponse.of(HttpStatus.OK, "인증 성공");
+				return ResponseEntity.status(resultResponse.getStatus()).body(resultResponse);
+			} else {
+				// 인증 실패 시 처리
+				ResultResponse resultResponse = ResultResponse.of(HttpStatus.UNAUTHORIZED, "인증 실패");
+				return ResponseEntity.status(resultResponse.getStatus()).body(resultResponse);
+			}
 		} catch (Exception e) {
-			log.error("등록 검증 실패: ", e);
-			ResultResponse resultResponse = ResultResponse.of(HttpStatus.BAD_REQUEST, "검증 실패: 불일치");
+			log.error("인증 과정에서 오류 발생: ", e);
+			ResultResponse resultResponse = ResultResponse.of(HttpStatus.BAD_REQUEST, "인증 오류 발생");
 			return ResponseEntity.status(resultResponse.getStatus()).body(resultResponse);
 		}
 	}
@@ -238,4 +233,3 @@ public class WebAuthnRegisterController {
 
 
 }
-
