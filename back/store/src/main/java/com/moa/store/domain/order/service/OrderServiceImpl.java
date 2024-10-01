@@ -5,14 +5,15 @@ import com.moa.store.domain.itemInfo.model.dto.ItemInfoDto;
 import com.moa.store.domain.itemInfo.repository.ItemInfoRepository;
 import com.moa.store.domain.order.model.Order;
 import com.moa.store.domain.order.model.OrderStatus;
-import com.moa.store.domain.order.model.dto.OrderListResponseDto;
-import com.moa.store.domain.order.model.dto.OrderResponseDto;
-import com.moa.store.domain.order.model.dto.TitleItemDto;
-import com.moa.store.domain.order.model.dto.UpdateOrderStatusRequestDto;
+import com.moa.store.domain.order.model.dto.*;
 import com.moa.store.domain.order.repository.OrderRepository;
 import com.moa.store.domain.paymentInfo.model.PaymentInfo;
 import com.moa.store.domain.paymentInfo.model.dto.PaymentInfoDto;
 import com.moa.store.domain.paymentInfo.repository.PaymentInfoRepository;
+import com.moa.store.domain.product.model.Product;
+import com.moa.store.domain.product.repository.ProductRepository;
+import com.moa.store.domain.store.model.Store;
+import com.moa.store.domain.store.repository.StoreRepository;
 import com.moa.store.global.exception.BusinessException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -22,6 +23,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -29,8 +31,10 @@ import java.util.UUID;
 public class OrderServiceImpl implements OrderService {
 
     private final OrderRepository orderRepository;
+    private final StoreRepository storeRepository;
     private final ItemInfoRepository itemInfoRepository;
     private final PaymentInfoRepository paymentInfoRepository;
+    private final ProductRepository productRepository;
 
     @Override
     public List<OrderListResponseDto> getOrdersByMerchant(UUID merchantId) {
@@ -108,5 +112,45 @@ public class OrderServiceImpl implements OrderService {
         }
         order.updateState(String.valueOf(status));
         return getOrderResponse(updateOrderStatusRequestDto.getOrderId());
+    }
+
+    public List<ItemInfo> createItemInfos(Order order, List<OrderItemDto> orderItems) {
+        return orderItems.stream().map((item) -> {
+            Product product = productRepository.findByUuid(item.getItemId())
+                    .orElseThrow(() -> new BusinessException(HttpStatus.BAD_REQUEST, "상품의 UUID를 확인해주세요"));
+            return ItemInfo.builder()
+                    .item(product)
+                    .order(order)
+                    .itemName(product.getName())
+                    .quantity(item.getQuantity())
+                    .price(item.getPrice())
+                    .build();
+        }).toList();
+    }
+
+    @Override
+    @Transactional
+    public CreateOrderResponseDto createOrder(CreateOrderRequestDto createOrderRequestDto) {
+        Store store = storeRepository.findByUuid(createOrderRequestDto.getMerchantId())
+                .orElseThrow(() -> new BusinessException(HttpStatus.BAD_REQUEST, "가맹점 UUID를 확인해주세요."));
+
+        Order order = Order.builder()
+                .state(OrderStatus.OrderCreated)
+                .customerId(createOrderRequestDto.getCustomerId())
+                .totalPrice(createOrderRequestDto.getTotalPrice())
+                .store(store)
+                .build();
+
+        Order savedOrder = orderRepository.save(order);
+        List<ItemInfo> itemInfos = createItemInfos(savedOrder, createOrderRequestDto.getItem());
+        List<ItemInfo> savedItemInfos = itemInfoRepository.saveAll(itemInfos);
+        savedOrder.getItemInfos().addAll(savedItemInfos);
+
+        return CreateOrderResponseDto.builder()
+                .orderId(savedOrder.getUuid())
+                .merchantId(store.getUuid())
+                .merchantName(store.getName())
+                .categoryId(store.getCategoryId())
+                .build();
     }
 }

@@ -1,5 +1,6 @@
 package com.moa.store.domain.paymentInfo.client;
 
+import com.moa.store.domain.order.model.dto.CreateOrderResponseDto;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -8,6 +9,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 public interface MoaPayClient {
 
 	@PostMapping("moapay/core/code/QRcode")
-	GetQRCodeResponseDto getQRCode(@RequestBody GetQRCodeRequestDto getQRCodeRequestDto);
+	GetQRCodeResponseDto getQRCode(@RequestBody CreateOrderResponseDto createOrderResponseDto);
 
 }

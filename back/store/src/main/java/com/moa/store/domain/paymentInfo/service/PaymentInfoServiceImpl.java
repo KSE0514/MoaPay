@@ -1,5 +1,6 @@
 package com.moa.store.domain.paymentInfo.service;
 
+import com.moa.store.domain.order.model.dto.CreateOrderResponseDto;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -17,7 +18,7 @@ public class PaymentInfoServiceImpl implements PaymentInfoService {
 	private final MoaPayClient client;
 
 	@Override
-	public GetQRCodeResponseDto getQRCode(GetQRCodeRequestDto getQRCodeRequestDto) {
+	public GetQRCodeResponseDto getQRCode(CreateOrderResponseDto getQRCodeRequestDto) {
 		GetQRCodeResponseDto qrCode = client.getQRCode(getQRCodeRequestDto);
 		return qrCode;
 	}

@@ -1,5 +1,12 @@
 package com.moa.store.domain.paymentInfo.controller;
 
+import com.moa.store.domain.itemInfo.service.ItemInfoService;
+import com.moa.store.domain.order.model.Order;
+import com.moa.store.domain.order.model.dto.CreateOrderResponseDto;
+import com.moa.store.domain.order.model.dto.SaveOrderRequestDto;
+import com.moa.store.domain.order.service.OrderService;
+import com.moa.store.domain.store.model.Store;
+import com.moa.store.domain.store.repository.StoreRepository;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -20,6 +27,7 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class PaymentInfoController {
 
+	private OrderService orderService;
 	private PaymentInfoService paymentInfoService;
 
 	// 오프라인 결제, API 명세서 2행
@@ -32,8 +40,8 @@ public class PaymentInfoController {
 
 	// 온라인 구매, API 명세서 3행
 	@PostMapping("/online/purchase")
-	public ResponseEntity<ResultResponse> onlinePurchasePayRequest(@RequestBody GetQRCodeRequestDto getQRCodeRequestDto) {
-		GetQRCodeResponseDto QRCodeResponseDto = paymentInfoService.getQRCode(getQRCodeRequestDto);
+	public ResponseEntity<ResultResponse> onlinePurchasePayRequest(@RequestBody CreateOrderResponseDto createOrderResponseDto) {
+		GetQRCodeResponseDto QRCodeResponseDto = paymentInfoService.getQRCode(createOrderResponseDto);
 		ResultResponse resultResponse = ResultResponse.of(HttpStatus.OK, "QR코드 발급이 완료되었습니다.", QRCodeResponseDto);
 		return ResponseEntity.status(resultResponse.getStatus()).body(resultResponse);
 	}

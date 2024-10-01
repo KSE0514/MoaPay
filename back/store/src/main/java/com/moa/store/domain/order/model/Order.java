@@ -1,6 +1,7 @@
 package com.moa.store.domain.order.model;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
@@ -62,7 +63,7 @@ public class Order {
 	private OrderStatus state;
 
 	@OneToMany(mappedBy = "order")
-	private List<ItemInfo> itemInfos;
+	private List<ItemInfo> itemInfos = new ArrayList<>();
 
 	@NotNull
 	@Column(name = "create_time")
