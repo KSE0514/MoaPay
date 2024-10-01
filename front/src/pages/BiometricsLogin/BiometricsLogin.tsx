@@ -1,90 +1,105 @@
 import axios from "axios"; // axios 임포트
-import { AxiosResponse } from "axios";
 import { Button, Header, Wrapper } from "./BiometricsLogin.styles";
 import { useNavigate } from "react-router-dom";
 import { PATH } from "../../constants/path";
 import { useState } from "react";
+import { useAuthStore } from "../../store/AuthStore";
+
 const BiometricsLogin = () => {
+  const baseUrl = import.meta.env.VITE_BASE_URL;
+  const baseUrl1 = `http://localhost:18040/`;
   const navigate = useNavigate();
+  const { name, accessToken, mode } = useAuthStore();
   const [error, setError] = useState<boolean>(false);
+
+  // Base64 URL Safe 변환 함수
+  const base64urlToUint8Array = (base64String: string): Uint8Array => {
+    const base64 = base64String.replace(/-/g, "+").replace(/_/g, "/");
+    const padding = "=".repeat((4 - (base64.length % 4)) % 4); // 패딩 추가
+    const base64WithPadding = base64 + padding;
+    const binaryString = atob(base64WithPadding);
+    return Uint8Array.from(binaryString, (char) => char.charCodeAt(0));
+  };
+
   const handleBiometricLogin = async () => {
     try {
-      // 2. 서버로부터 WebAuthn 인증 옵션(챌린지 포함)을 가져옴
-      //    - '/api/auth/webauthn/options' 경로로 GET 요청을 보내서 서버로부터 인증 옵션을 받아옴.
-      //    - 이 옵션에는 인증에 필요한 '챌린지'(서버가 제공하는 일회용 코드)와 공용키 정보가 포함됨.
-      const options = await axios
-        .get(``)
-        .then((res: AxiosResponse) => res.data);
-      //    - res.data: 서버에서 응답한 데이터를 받아오는 부분.
+      // 서버로부터 WebAuthn 인증 옵션을 가져옴
+      const response = await axios.get(
+        `${baseUrl1}moapay/member/authn/certify/options`,
+        {
+          withCredentials: true,
+          headers: {
+            Authorization: `Bearer ${accessToken}`, // Authorization 헤더에 Bearer 토큰 추가
+          },
+        }
+      );
 
-      // 3. 사용자에게 생체 인증을 요청하는 부분
-      //    - WebAuthn API의 navigator.credentials.get() 함수를 통해 생체인증을 요청.
-      //    - 이 과정에서 사용자의 지문, 얼굴 인식 등을 통해 인증이 시도됨.
-      const authenticationResponse = await navigator.credentials.get({
-        publicKey: options, // 서버에서 받아온 WebAuthn 옵션을 통해 사용자 인증 요청
+      const options = response.data;
+      console.log("Received WebAuthn Options from Server: ", options);
+
+      // challenge를 Uint8Array로 변환
+      console.log("Original challenge from server:", options.challenge);
+      const challengeAsUint8Array = base64urlToUint8Array(options.challenge);
+      console.log("Converted to Uint8Array:", challengeAsUint8Array);
+      options.challenge = challengeAsUint8Array.buffer;
+      console.log("ArrayBuffer for WebAuthn API:", options.challenge);
+
+      // allowCredentials 처리 (내장 인증 장치를 명시적으로 지정)
+      options.allowCredentials = options.allowCredentials.map(
+        (cred: PublicKeyCredentialDescriptor) => {
+          const id =
+            typeof cred.id === "string"
+              ? base64urlToUint8Array(cred.id)
+              : cred.id;
+
+          return {
+            ...cred,
+            id, // 변환된 id 사용
+            transports: ["internal"], // 지문 인식을 위해 내장 인증 장치 지정
+          };
+        }
+      );
+
+      // 확실하게 appid를 제거하는 코드 추가
+      if (options.extensions && "appid" in options.extensions) {
+        delete options.extensions.appid;
+        console.log("Removed appid from extensions");
+      }
+
+      console.log("Final WebAuthn Options before Authentication: ", options);
+      console.log(
+        "allowCredentials after conversion:",
+        options.allowCredentials
+      );
+
+      // WebAuthn API 호출
+      const attestationResponse = await navigator.credentials.get({
+        publicKey: options,
       });
-      //    - publicKey: 서버에서 받은 WebAuthn 옵션을 사용하여 사용자에게 생체인증을 요청함.
-      //    - 인증이 완료되면 authenticationResponse에 결과가 담김.
 
-      // 4. 서버에 인증 결과를 전송하여 검증
-      //    - 생체인증을 통해 생성된 'authenticationResponse'를 서버에 POST 요청으로 전송.
-      //    - 이 응답은 사용자의 인증 결과를 담고 있으며, 서버는 이를 검증하여 인증이 성공했는지 확인함.
-      const verification = await axios.post(``, authenticationResponse);
-      //    - POST 요청: 인증 결과를 서버에 전송하기 위해 사용됨.
-      //    - authenticationResponse: WebAuthn을 통해 사용자 인증을 완료한 후 반환된 객체.
-      // 5. 서버로부터 받은 인증 결과를 처리
-      //    - 서버는 인증이 성공했는지 여부를 응답으로 보내줌.
+      console.log("WebAuthn Attestation Response: ", attestationResponse);
+
+      // 서버에 인증 결과 전송하여 검증
+      const verification = await axios.post(
+        `${baseUrl1}moapay/member/authn/certify/verify`,
+        {
+          attestationResponse,
+        },
+        {
+          withCredentials: true,
+        }
+      );
+
       if (verification.data.verified) {
-        // 서버로부터 verified 값이 true이면, 인증이 성공한 것
-        console.log("생체 인증 성공");
+        console.log("Authentication successful");
         navigate(PATH.HOME);
       } else {
         setError(true);
       }
     } catch (err) {
-      // 6. 오류가 발생한 경우
-      //    - 인증 과정에서 오류가 발생하면 catch 블록이 실행되며, 오류 메시지를 출력.
-      console.error("인증 중 오류 발생:", err);
+      console.error("Authentication error:", err);
     }
   };
-
-  // //test 코드
-  // const handleBiometricLogin = async () => {
-  //   try {
-  //     // 2. 임의로 WebAuthn 인증 옵션 생성
-  //     const options: PublicKeyCredentialRequestOptions = {
-  //       challenge: Uint8Array.from("test-challenge", (c) => c.charCodeAt(0)), // 임의의 챌린지
-  //       rpId: window.location.hostname, // Relying Party ID (테스트에서는 localhost)
-  //       allowCredentials: [
-  //         {
-  //           id: new Uint8Array(16), // 임의의 credential ID
-  //           type: "public-key" as const, // 타입을 명시적으로 "public-key"로 설정
-  //         },
-  //       ],
-  //       userVerification: "preferred", // 사용자 검증
-  //       timeout: 60000, // 60초 대기
-  //     };
-
-  //     // 3. 사용자에게 생체 인증을 요청
-  //     const authenticationResponse = await navigator.credentials.get({
-  //       publicKey: options,
-  //     });
-
-  //     // 4. 인증 결과 서버에 전송
-  //     const verification = await axios.post(
-  //       "/api/auth/webauthn/verify",
-  //       authenticationResponse
-  //     );
-
-  //     // 5. 서버로부터 받은 인증 결과 처리
-  //     if (verification.data.verified) {
-  //       console.log("생체 인증 성공");
-  //       navigate(PATH.HOME);
-  //     }
-  //   } catch (err) {
-  //     console.error("인증 중 오류 발생:", err);
-  //   }
-  // };
 
   return (
     <Wrapper>
@@ -119,13 +134,7 @@ const BiometricsLogin = () => {
             />
           </div>
         </Header>
-        <Button
-          onClick={() => {
-            handleBiometricLogin();
-          }}
-        >
-          인증하기
-        </Button>
+        <Button onClick={handleBiometricLogin}>인증하기</Button>
         <div
           style={{ marginTop: "20px" }}
           onClick={() => {
@@ -144,4 +153,5 @@ const BiometricsLogin = () => {
     </Wrapper>
   );
 };
+
 export default BiometricsLogin;

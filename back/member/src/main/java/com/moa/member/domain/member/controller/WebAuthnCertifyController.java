@@ -1,8 +1,10 @@
 package com.moa.member.domain.member.controller;
 
+import com.yubico.webauthn.data.AuthenticatorAssertionResponse;
 import java.security.SecureRandom;
 import java.util.Arrays;
 import java.util.Base64;
+import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
@@ -24,7 +26,6 @@ import com.moa.member.global.exception.BusinessException;
 import com.moa.member.global.response.ResultResponse;
 import com.yubico.webauthn.AssertionRequest;
 import com.yubico.webauthn.FinishAssertionOptions;
-import com.yubico.webauthn.FinishRegistrationOptions;
 import com.yubico.webauthn.RelyingParty;
 import com.yubico.webauthn.data.AttestationConveyancePreference;
 import com.yubico.webauthn.data.AuthenticatorAttestationResponse;
@@ -72,154 +73,108 @@ public class WebAuthnCertifyController {
 	}
 
 	@GetMapping("/options")
-	public PublicKeyCredentialCreationOptions getRegistrationOptions(
-		HttpServletRequest request,
-		HttpServletResponse response) {  // HttpServletResponse 추가
-
+	public PublicKeyCredentialRequestOptions getAuthenticationOptions(HttpServletRequest request, HttpServletResponse response) {
+		// JWT 토큰을 사용하여 사용자 정보 가져오기
 		String token = jwtTokenProvider.getJwtTokenFromRequestHeader(request);
 		String uuid = jwtTokenProvider.getUuidFromToken(token);
 		Member member = memberRepository.findByUuid(UUID.fromString(uuid))
-			.orElseThrow(() -> new BusinessException(HttpStatus.BAD_REQUEST, "회원이 존재하지 않습니다."));
-
-
-		// UserIdentity 생성
-		UserIdentity userEntity = UserIdentity.builder()
-			.name(member.getName())
-			.displayName("moapay")
-			.id(new ByteArray(member.getUuid().toString().getBytes()))
-			.build();
+				.orElseThrow(() -> new BusinessException(HttpStatus.BAD_REQUEST, "회원이 존재하지 않습니다."));
 
 		// 랜덤 챌린지 생성
 		byte[] challengeBytes = new byte[32];
 		new SecureRandom().nextBytes(challengeBytes);
 		ByteArray challenge = new ByteArray(challengeBytes);
 
-		PublicKeyCredentialCreationOptions options = PublicKeyCredentialCreationOptions.builder()
-			.rp(RelyingPartyIdentity.builder()
-				//////////////////////////////////꼭 !!!!!!!!!!!!!!!! id 값 서버 주소로 변경하기 ////////////////////////////////
-				.id("moapay-7e24e.web.app")  // 포트 번호를 포함하여 설정
-				.name("moapay")
-				.build())
-			.user(userEntity)
-			.challenge(challenge)
-			.pubKeyCredParams(Arrays.asList(
-				PublicKeyCredentialParameters.builder()
-					.alg(COSEAlgorithmIdentifier.ES256)
-					.type(PublicKeyCredentialType.PUBLIC_KEY)
-					.build(),
-				PublicKeyCredentialParameters.builder()
-					.alg(COSEAlgorithmIdentifier.RS256)
-					.type(PublicKeyCredentialType.PUBLIC_KEY)
-					.build()
-			))
-			.authenticatorSelection(AuthenticatorSelectionCriteria.builder()
-				.userVerification(UserVerificationRequirement.PREFERRED)
-				.build())
-			.attestation(AttestationConveyancePreference.NONE)
-			.build();
+		// 사용자의 등록된 자격 증명 ID를 가져와 허용된 자격 증명 목록에 추가
+		List<PublicKeyCredentialDescriptor> allowCredentials = Arrays.asList(
+				PublicKeyCredentialDescriptor.builder()
+						.id(new ByteArray(member.getCredentialId().getBytes()))  // 실제로 저장된 자격 증명 ID
+						.type(PublicKeyCredentialType.PUBLIC_KEY)
+						.build()
+		);
+
+		// 인증 옵션 생성
+		PublicKeyCredentialRequestOptions options = PublicKeyCredentialRequestOptions.builder()
+				.challenge(challenge)  // 랜덤 챌린지
+				.rpId("moapay-7e24e.web.app")  // 인증 요청을 처리할 서버 도메인
+				.allowCredentials(allowCredentials)  // 허용된 자격 증명 (유저의 자격 증명 ID)
+				.userVerification(UserVerificationRequirement.PREFERRED)  // 사용자 인증 요구 수준
+				.timeout(60000)  // 60초로 설정
+				.build();
+
+		// 세션에 인증 요청 옵션 저장
+		request.getSession().setAttribute("authnRequestOptions", options);
 
 		// 쿠키 설정
 		ResponseCookie jsessionCookie = ResponseCookie.from("JSESSIONID", request.getSession().getId())
-			.httpOnly(true)
-			.path("/")
-			.secure(true)  // HTTPS 환경에서만 동작
-			.sameSite("None")  // Cross-site 요청을 허용
-			.build();
+				.httpOnly(true)
+				.path("/")
+				.secure(true)  // HTTPS 환경에서만 동작
+				.sameSite("None")  // Cross-site 요청을 허용
+				.build();
 
 		response.addHeader("Set-Cookie", jsessionCookie.toString());  // 쿠키를 응답에 추가
-
-		// 클라이언트에게 옵션 전송 & 세션에 저장
-		request.getSession().setAttribute("registrationOptions", options);
-		PublicKeyCredentialCreationOptions save = (PublicKeyCredentialCreationOptions)request.getSession()
-			.getAttribute("registrationOptions");
-		System.out.print("save option : ");
-		System.out.println(save);
-
-		return options;
+		System.out.println(options);
+		return options;  // 클라이언트로 인증 옵션 반환
 	}
 
 	@PostMapping("/verify")
 	public ResponseEntity<ResultResponse> verifyAuthentication(@RequestBody Map<String, Object> responseData, HttpServletRequest request) {
 		try {
-			// 세션에서 챌린지를 가져옴
-			PublicKeyCredentialCreationOptions option = (PublicKeyCredentialCreationOptions) request.getSession().getAttribute("registrationOptions");
-			ByteArray challenge = option.getChallenge(); // options에서 챌린지를 가져옴
+			// 세션에서 챌린지를 가져옴 (인증에 사용되는 PublicKeyCredentialRequestOptions)
+			PublicKeyCredentialRequestOptions options = (PublicKeyCredentialRequestOptions) request.getSession().getAttribute("authnRequestOptions");
+			ByteArray challenge = options.getChallenge();
 
 			if (challenge == null) {
 				return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-					.body(ResultResponse.of(HttpStatus.BAD_REQUEST, "챌린지가 유효하지 않습니다."));
+						.body(ResultResponse.of(HttpStatus.BAD_REQUEST, "챌린지가 유효하지 않습니다."));
 			}
 
 			// 클라이언트로부터 전달받은 데이터에서 자격 증명 ID와 응답 데이터 추출
 			String credentialId = (String) responseData.get("id");
 			Map<String, Object> response = (Map<String, Object>) responseData.get("response");
 
-			// AuthenticatorResponse는 별도의 형태로 변환해야 함 (AttestationObject와 ClientDataJSON 필요)
-			byte[] attestationObjectBytes = Base64.getUrlDecoder().decode((String)response.get("attestationObject"));
+			// 필요한 필드 추출 (authenticatorData, clientDataJSON, signature)
+			byte[] authenticatorDataBytes = Base64.getUrlDecoder().decode((String)response.get("authenticatorData"));
 			byte[] clientDataJSONBytes = Base64.getUrlDecoder().decode((String)response.get("clientDataJSON"));
+			byte[] signatureBytes = Base64.getUrlDecoder().decode((String)response.get("signature"));
 
-			// ByteArray 객체로 변환
-			ByteArray attestationObject = new ByteArray(attestationObjectBytes);
-			ByteArray clientDataJSON = new ByteArray(clientDataJSONBytes);
-
-
-			// 사용자 정보 조회 (이름으로 조회, 실제로는 JWT 기반 인증을 추천)
-			Member member = memberRepository.findByCredentialId(credentialId);
-			if (member == null) {
-				return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
-					.body(ResultResponse.of(HttpStatus.UNAUTHORIZED, "사용자를 찾을 수 없습니다."));
-			}
-			// AuthenticatorAttestationResponse 생성
-			AuthenticatorAttestationResponse attestationResponse = AuthenticatorAttestationResponse.builder()
-				.attestationObject(attestationObject)
-				.clientDataJSON(clientDataJSON)
-				.build();
+			// AuthenticatorAssertionResponse 생성
+			AuthenticatorAssertionResponse assertionResponse = AuthenticatorAssertionResponse.builder()
+					.authenticatorData(new ByteArray(authenticatorDataBytes))
+					.clientDataJSON(new ByteArray(clientDataJSONBytes))
+					.signature(new ByteArray(signatureBytes))
+					.build();
 
 			// 빈 확장 결과 생성
-			ClientRegistrationExtensionOutputs clientExtensions = ClientRegistrationExtensionOutputs.builder()
-				.build();  // 빈 확장 객체
-
+			ClientExtensionOutputs clientExtensions = null;
 
 			// PublicKeyCredential 생성
 			PublicKeyCredential credential = PublicKeyCredential.builder()
-				.id(new ByteArray(credentialId.getBytes()))  // 자격 증명 ID
-				.response(attestationResponse)  // 생성된 AuthenticatorAttestationResponse 객체
-				.clientExtensionResults(clientExtensions)  // 클라이언트 확장 결과 (없을 경우 빈 객체)
-				.type(PublicKeyCredentialType.PUBLIC_KEY)  // 자격 증명 타입
-				.build();
-
-			// PublicKeyCredentialRequestOptions 생성
-			PublicKeyCredentialRequestOptions options = PublicKeyCredentialRequestOptions.builder()
-				.challenge(challenge) // 서버에서 제공한 챌린지
-				.rpId("moapay.com") // 서버 도메인
-				.allowCredentials(Arrays.asList(
-					PublicKeyCredentialDescriptor.builder()
-						.id(new ByteArray(credentialId.getBytes())) // 자격 증명 ID
-						.type(PublicKeyCredentialType.PUBLIC_KEY) // 자격 증명 타입
-						.build()
-				)) // 허용된 자격 증명 목록
-				.build();
+					.id(new ByteArray(credentialId.getBytes()))
+					.response(assertionResponse)
+					.clientExtensionResults(clientExtensions)
+					.type(PublicKeyCredentialType.PUBLIC_KEY)
+					.build();
 
 			// AssertionRequest 생성
 			AssertionRequest assertionRequest = AssertionRequest.builder()
-				.publicKeyCredentialRequestOptions(options)
-				.username(member.getName()) // 사용자 이름
-				.build();
+					.publicKeyCredentialRequestOptions(options)
+					.username("testUser")  // 사용자의 이름
+					.build();
 
 			// 서버에서 사용자 인증 정보 검증
 			var authenticationResult = relyingParty.finishAssertion(
-				FinishAssertionOptions.builder()
-					.request(assertionRequest)  // AssertionRequest를 전달
-					.response(credential)
-					.build()
+					FinishAssertionOptions.builder()
+							.request(assertionRequest)
+							.response(credential)
+							.build()
 			);
 
 			if (authenticationResult.isSuccess()) {
-				// 인증 성공 시 처리 (로그인/결제)
 				ResultResponse resultResponse = ResultResponse.of(HttpStatus.OK, "인증 성공");
 				return ResponseEntity.status(resultResponse.getStatus()).body(resultResponse);
 			} else {
-				// 인증 실패 시 처리
 				ResultResponse resultResponse = ResultResponse.of(HttpStatus.UNAUTHORIZED, "인증 실패");
 				return ResponseEntity.status(resultResponse.getStatus()).body(resultResponse);
 			}
@@ -229,7 +184,6 @@ public class WebAuthnCertifyController {
 			return ResponseEntity.status(resultResponse.getStatus()).body(resultResponse);
 		}
 	}
-
 
 
 }

@@ -157,25 +157,25 @@ const CreateAccount = () => {
    * 1. 인증번호 받아오기
    */
   const getAuthNumber = async () => {
-    if (!validateFields()) {
-      return; // 유효성 검사 통과하지 못하면 중단
-    }
-    // 인증번호 발급하기
-    try {
-      await axios.post(
-        `${baseUrl1}moapay/member/sendSMS`,
-        {
-          phoneNumber: joinUserInfo.phone_number,
-        },
-        {
-          withCredentials: true, // 쿠키 또는 인증 정보 포함
-        }
-      );
-      setSMSAuthSent(true); // 인증번호 발급됨
-      startLimitTime();
-    } catch (e) {
-      console.log(e);
-    }
+    // if (!validateFields()) {
+    //   return; // 유효성 검사 통과하지 못하면 중단
+    // }
+    // // 인증번호 발급하기
+    // try {
+    //   await axios.post(
+    //     `${baseUrl1}moapay/member/sendSMS`,
+    //     {
+    //       phoneNumber: joinUserInfo.phone_number,
+    //     },
+    //     {
+    //       withCredentials: true, // 쿠키 또는 인증 정보 포함
+    //     }
+    //   );
+    //   setSMSAuthSent(true); // 인증번호 발급됨
+    //   startLimitTime();
+    // } catch (e) {
+    //   console.log(e);
+    // }
     setSMSAuthSent(true); // 인증번호 발급됨
   };
 
@@ -184,52 +184,53 @@ const CreateAccount = () => {
    */
 
   const checkAuthNumber = async () => {
-    // 유효성 검사 통과하지 못한 경우
-    if (!validateFields()) {
-      return;
-    }
-    // 타이머 멈추기
-    if (timerRef.current) {
-      if (limitTime <= 0) {
-        clearInterval(timerRef.current);
-        setValidationErrors((prevErrors) => ({
-          ...prevErrors,
-          timeout: true, // verification_code 필드에 오류 상태 추가
-        }));
-        setLimitTime(2000);
-        return;
-      }
-    }
-    try {
-      // 인증번호 확인하기
-      const response = await axios.post(
-        `${baseUrl1}moapay/member/verification`,
-        {
-          phoneNumber: joinUserInfo.phone_number,
-          code: joinUserInfo.verification_code,
-        },
-        {
-          withCredentials: true, // 쿠키 또는 인증 정보 포함
-        }
-      );
-      // 200일때 아래 함수 2개 실행
-      if (response?.status == 200) {
-        if (timerRef.current) {
-          clearInterval(timerRef.current);
-        }
-        setEndSMSAuth(true);
-        setLimitTime(2000);
-      }
-    } catch (e) {
-      const error = e as AxiosError; // AxiosError로 타입 단언
-      if (error.response?.status == 400) {
-        //인증번호가 틀린 경우 - 인증번호 다시 입력하도록 함
-        setValidationErrors((prevErrors) => ({
-          ...prevErrors,
-          verification_code: true, // verification_code 필드에 오류 상태 추가
-        }));
-      }
-    }
+    // // 유효성 검사 통과하지 못한 경우
+    // if (!validateFields()) {
+    //   return;
+    // }
+    // // 타이머 멈추기
+    // if (timerRef.current) {
+    //   if (limitTime <= 0) {
+    //     clearInterval(timerRef.current);
+    //     setValidationErrors((prevErrors) => ({
+    //       ...prevErrors,
+    //       timeout: true, // verification_code 필드에 오류 상태 추가
+    //     }));
+    //     setLimitTime(2000);
+    //     return;
+    //   }
+    // }
+    // try {
+    //   // 인증번호 확인하기
+    //   const response = await axios.post(
+    //     `${baseUrl1}moapay/member/verification`,
+    //     {
+    //       phoneNumber: joinUserInfo.phone_number,
+    //       code: joinUserInfo.verification_code,
+    //     },
+    //     {
+    //       withCredentials: true, // 쿠키 또는 인증 정보 포함
+    //     }
+    //   );
+    //   // 200일때 아래 함수 2개 실행
+    //   if (response?.status == 200) {
+    //     if (timerRef.current) {
+    //       clearInterval(timerRef.current);
+    //     }
+    //     setEndSMSAuth(true);
+    //     setLimitTime(2000);
+    //   }
+    // } catch (e) {
+    //   const error = e as AxiosError; // AxiosError로 타입 단언
+    //   if (error.response?.status == 400) {
+    //     //인증번호가 틀린 경우 - 인증번호 다시 입력하도록 함
+    //     setValidationErrors((prevErrors) => ({
+    //       ...prevErrors,
+    //       verification_code: true, // verification_code 필드에 오류 상태 추가
+    //     }));
+    //   }
+    // }
+    setEndSMSAuth(true);
   };
 
   /**

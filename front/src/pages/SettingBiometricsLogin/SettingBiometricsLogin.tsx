@@ -62,36 +62,36 @@ const SettingBiometricsLogin = () => {
       await removeNullValues(options);
       // 2. WebAuthn 등록을 진행
       const attestationResponse = await startRegistration(options);
+      console.log("등록결과");
+      console.log(attestationResponse);
       // 지연을 추가하여 세션 쿠키가 설정될 시간을 확보
-      setTimeout(async () => {
-        // 3. 등록된 생체인증 정보를 서버에 전송하여 저장
-        const registerResult = await axios.post(
-          `${baseUrl1}moapay/member/authn/register/verify`,
-          {
-            id: attestationResponse.id,
-            rawId: attestationResponse.rawId,
-            response: {
-              attestationObject: attestationResponse.response.attestationObject,
-              clientDataJSON: attestationResponse.response.clientDataJSON,
-            },
-            type: attestationResponse.type,
-            clientExtensionResults: attestationResponse.clientExtensionResults,
-            authenticatorAttachment:
-              attestationResponse.authenticatorAttachment,
+      // 3. 등록된 생체인증 정보를 서버에 전송하여 저장
+      const registerResult = await axios.post(
+        `${baseUrl1}moapay/member/authn/register/verify`,
+        {
+          id: attestationResponse.id,
+          rawId: attestationResponse.rawId,
+          response: {
+            attestationObject: attestationResponse.response.attestationObject,
+            clientDataJSON: attestationResponse.response.clientDataJSON,
           },
-          {
-            withCredentials: true,
-            headers: {
-              Authorization: `Bearer ${accessToken}`, // Authorization 헤더에 Bearer 토큰 추가
-            },
-          }
-        );
-        console.log(registerResult);
-        if (registerResult.status == 200) {
-          setBioLogin(true);
-          setSettingFinish(true);
+          type: attestationResponse.type,
+          clientExtensionResults: attestationResponse.clientExtensionResults,
+          authenticatorAttachment: attestationResponse.authenticatorAttachment,
+        },
+        {
+          withCredentials: true,
+          headers: {
+            Authorization: `Bearer ${accessToken}`, // Authorization 헤더에 Bearer 토큰 추가
+          },
         }
-      }, 1000); // 1초 지연 (필요에 따라 지연 시간을 조정 가능)
+      );
+      console.log(registerResult);
+      if (registerResult.status == 200) {
+        setBioLogin(true);
+        setSettingFinish(true);
+      }
+      // 1초 지연 (필요에 따라 지연 시간을 조정 가능)
     } catch (e) {
       console.log(e);
     }
