@@ -1,71 +1,48 @@
 version: "3"
 services:
-  # frontend / blue, green
-  frontend-blue:
-    build:
-      context: ./front
-      dockerfile: Dockerfile
-    container_name: frontend-blue
-    ports:
-      - "3000:3000"
-    networks:
-      - webnet
-    restart: always
-
   frontend-green:
     build:
       context: ./front
       dockerfile: Dockerfile
     container_name: frontend-green
     ports:
-      - "3001:3000"
+      - "3001:80"
     networks:
       - webnet
     restart: always
 
   # eureka, api-gateway는 blue-green 전략을 사용하지 않는다.
-  eureka-server:
+  eureka-server-green:
     build:
-      context: ./back/eureka-server
+      context: ./back/eureka
       dockerfile: Dockerfile
     container_name: eureka-server
     ports:
-      - "8761:8761"
+      - "8762:8761"
     networks:
       - webnet
     restart: always
+    environment:
+      - SPRING_PROFILES_ACTIVE=prod
+      - SPRING_CLOUD_CONFIG_URI=http://config-server:8888
 
-  api-gateway:
+  api-gateway-green:
     build:
       context: ./back/gateway
       dockerfile: Dockerfile
     container_name: api-gateway
     ports:
-      - "8765:8765"
+      - "8766:8765"
     depends_on:
-      - eureka-server
+      - eureka-server-green
     networks:
       - webnet
     restart: always
-
-  # payment / green, blue
-  payment-blue:
-    build:
-      context: ./back/payment
-      dockerfile: Dockerfile
-    container_name: payment-blue
-    ports:
-      - "18010:8080"
-    networks:
-      - webnet
-    depends_on:
-      - eureka-server
-      - api-gateway
-      - payment-mysql
-      - payment-redis
     environment:
       - SPRING_PROFILES_ACTIVE=prod
+      - SPRING_CLOUD_CONFIG_URI=http://config-server:8888
 
+  # payment / blue, green
   payment-green:
     build:
       context: ./back/payment
@@ -76,31 +53,14 @@ services:
     networks:
       - webnet
     depends_on:
-      - eureka-server
-      - api-gateway
-      - payment-mysql
-      - payment-redis
+      - eureka-server-green
+      - api-gateway-green
     environment:
       - SPRING_PROFILES_ACTIVE=prod
+      - SPRING_CLOUD_CONFIG_URI=http://config-server:8888
+      - SPRING_PROFILES_COLOR=green
 
   # moapay / blue, green
-  moapay-blue:
-    build:
-      context: ./back/moapay
-      dockerfile: Dockerfile
-    container_name: moapay-blue
-    ports:
-      - "18020:8080"
-    networks:
-      - webnet
-    depends_on:
-      - eureka-server
-      - api-gateway
-      - moapay-mysql
-      - moapay-redis
-    environment:
-      - SPRING_PROFILES_ACTIVE=prod
-
   moapay-green:
     build:
       context: ./back/moapay
@@ -111,31 +71,32 @@ services:
     networks:
       - webnet
     depends_on:
-      - eureka-server
-      - api-gateway
-      - moapay-mysql
-      - moapay-redis
+      - eureka-server-green
+      - api-gateway-green
     environment:
       - SPRING_PROFILES_ACTIVE=prod
+      - SPRING_CLOUD_CONFIG_URI=http://config-server:8888
+      - SPRING_PROFILES_COLOR=green
 
-  # member / blue, green
-  member-blue:
+  # settlement / blue, green
+  settlement-green:
     build:
-      context: ./back/member
+      context: ./back/settlement
       dockerfile: Dockerfile
-    container_name: member-blue
+    container_name: settlement-green
     ports:
-      - "18040:8080"
+      - "18031:8080"
     networks:
       - webnet
     depends_on:
-      - eureka-server
-      - api-gateway
-      - member-mysql
-      - member-redis
+      - eureka-server-green
+      - api-gateway-green
     environment:
       - SPRING_PROFILES_ACTIVE=prod
+      - SPRING_CLOUD_CONFIG_URI=http://config-server:8888
+      - SPRING_PROFILES_COLOR=green
 
+  # member / blue, green
   member-green:
     build:
       context: ./back/member
@@ -146,29 +107,14 @@ services:
     networks:
       - webnet
     depends_on:
-      - eureka-server
-      - api-gateway
-      - member-mysql
-      - member-redis
+      - eureka-server-green
+      - api-gateway-green
     environment:
-      - SPRING_PROFILES_ACTIVE=prod
+      - SPRING_PROFILES_ACTIVE=prod, green
+      - SPRING_CLOUD_CONFIG_URI=http://config-server:8888
+      - SPRING_PROFILES_COLOR=green
 
   # notification / blue, green
-  # notification-blue:
-  #   build:
-  #     context: ./back/notification
-  #     dockerfile: Dockerfile
-  #   container_name: notification-blue
-  #   ports:
-  #     - "18060:8080"
-  #   networks:
-  #     - webnet
-  #   depends_on:
-  #     - eureka-server
-  #     - api-gateway
-  #   environment:
-  #     - SPRING_PROFILES_ACTIVE=prod
-
   # notification-green:
   #   build:
   #     context: ./back/notification
@@ -185,7 +131,7 @@ services:
   #     - SPRING_PROFILES_ACTIVE=prod
 
   # cardbank는 moapay 서비스가 아니므로, blue-green 전략을 사용하지 않는다.
-  cardbank:
+  cardbank-green:
     build:
       context: ./back/cardbank
       dockerfile: Dockerfile
@@ -195,14 +141,14 @@ services:
     networks:
       - webnet
     depends_on:
-      - eureka-server
-      - api-gateway
-      - cardbank-mysql
+      - eureka-server-green
+      - api-gateway-green
     environment:
       - SPRING_PROFILES_ACTIVE=prod
+      - SPRING_CLOUD_CONFIG_URI=http://config-server:8888
 
   # store는 moapay 서비스가 아니므로, blue-green 전략을 사용하지 않는다.
-  store:
+  store-green:
     build:
       context: ./back/store
       dockerfile: Dockerfile
@@ -212,11 +158,11 @@ services:
     networks:
       - webnet
     depends_on:
-      - eureka-server
-      - api-gateway
-      - store-mysql
+      - eureka-server-green
+      - api-gateway-green
     environment:
       - SPRING_PROFILES_ACTIVE=prod
+      - SPRING_CLOUD_CONFIG_URI=http://config-server:8888
 
 networks:
   webnet:
