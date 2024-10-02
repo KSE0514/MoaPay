@@ -1,6 +1,5 @@
 package com.moa.payment.domain.charge.model.dto;
 
-import com.moa.payment.domain.charge.model.vo.PaymentResultCardInfoVO;
 import lombok.*;
 
 import java.time.LocalDateTime;
@@ -18,5 +17,5 @@ public class PaymentResultDto {
     private long totalAmount;
     private LocalDateTime createTime;
     private int usedCardCount;
-    private List<PaymentResultCardInfoVO> paymentResultInfoList;
+    private List<PaymentResultCardInfoDto> paymentResultCardInfoList;
 }

@@ -31,7 +31,6 @@ public class CardListener {
         for(LinkedHashMap<String, Object> info : receivedList) {
             renewList.add(objectMapper.convertValue(info, PaymentResultCardInfoVO.class));
         }
-        log.info("first element : {}", renewList.get(0).toString());
         myCardService.renewCardInfo(renewList);
     }
 }

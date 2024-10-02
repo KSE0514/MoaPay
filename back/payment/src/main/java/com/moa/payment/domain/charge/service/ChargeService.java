@@ -8,5 +8,5 @@ import java.util.UUID;
 
 public interface ChargeService {
     ExecutePaymentResultVO executePayment(ExecutePaymentRequestVO vo);
-    PaymentResultDto makePaymentResultDto(ExecutePaymentResultVO vo, UUID requestId);
+    PaymentResultDto makePaymentResultDto(ExecutePaymentResultVO resultVo, ExecutePaymentRequestVO requestVO);
 }

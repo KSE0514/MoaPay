@@ -1,6 +1,5 @@
-package com.moa.moapay.domain.card.model.vo;
+package com.moa.moapay.domain.generalpay.model.vo;
 
-import com.moa.moapay.domain.generalpay.model.vo.PaymentCardInfoVO;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;

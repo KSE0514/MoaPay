@@ -36,13 +36,9 @@ public class ChargeListener {
             List<PaymentResultCardInfoVO> renewList = resultVO.getPaymentResultInfoList();
             Map<String, Object> map = new HashMap<>();
             map.put("renewList", renewList);
-            log.info("try to send renewList");
             kafkaTemplate.send("request.renew-card-info", "1", map);
-            // json 형식으로 해 줄 필요 있을듯.
-            // todo : client 응답형식 자세히 지정 지정
-            PaymentResultDto resultDto = chargeService.makePaymentResultDto(resultVO, executePaymentRequestVO.getRequestId());
+            PaymentResultDto resultDto = chargeService.makePaymentResultDto(resultVO, executePaymentRequestVO);
             notificationService.sendCompleteMessage(executePaymentRequestVO.getRequestId(), resultDto);
-            log.info("on message operation ended at charge listener");
         } catch(Exception e) {
             // 에러가 발생하는 경우, 에러 관련 응답을 클라이언트에 전달
             // todo : 에러 발생시 어떻게 대처할지 구상

@@ -44,7 +44,6 @@ public class NotificationServiceImpl implements NotificationService {
         // redis publish를 이용해 emitter를 갖고있을 listener에게 메시지를 보낸다
         Long subscriberCount = redisEmitterTemplate.convertAndSend(id.toString(), resultDto);
         log.info("convert and send done");
-        System.out.println(subscriberCount);
         log.info("subscriberCount: {}", subscriberCount);
     }
 

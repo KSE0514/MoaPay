@@ -8,9 +8,11 @@ import com.moa.payment.domain.charge.model.ProcessingStatus;
 import com.moa.payment.domain.charge.model.dto.*;
 import com.moa.payment.domain.charge.model.vo.*;
 import com.moa.payment.domain.charge.repository.PaymentLogRepository;
+import com.moa.payment.global.exception.BusinessException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -128,9 +130,9 @@ public class ChargeServiceImpl implements ChargeService {
         // 전부 결제에 성공했다면 성공 로그 발송
         // 궁금하니까 로그 찍어보기...
         log.info("pay succeeded : {}", merchantName);
-        for(PaymentResultCardInfoVO v : paymentResultInfoList) {
-            log.info(v.toString());
-        }
+//        for(PaymentResultCardInfoVO v : paymentResultInfoList) {
+//            log.info(v.toString());
+//        }
         return ExecutePaymentResultVO.builder()
                 .merchantName(merchantName)
                 .status(PaymentResultStatus.SUCCEED)
@@ -139,21 +141,42 @@ public class ChargeServiceImpl implements ChargeService {
     }
 
     @Override
-    public PaymentResultDto makePaymentResultDto(ExecutePaymentResultVO vo, UUID requestId) {
+    public PaymentResultDto makePaymentResultDto(ExecutePaymentResultVO resultVo, ExecutePaymentRequestVO requestVO) {
         log.info("making PaymentResultDto...");
         long totalAmount = 0;
         int usedCardCount = 0;
-        for(PaymentResultCardInfoVO v : vo.getPaymentResultInfoList()) {
-            totalAmount += v.getActualAmount();
+        List<PaymentResultCardInfoDto> paymentResultCardInfoList = new ArrayList<>();
+        for(int i = 0 ; i < resultVo.getPaymentResultInfoList().size() ; ++i) {
+            PaymentCardInfoVO requestCardInfo = requestVO.getPaymentInfoList().get(i);
+            PaymentResultCardInfoVO resultCardInfo = resultVo.getPaymentResultInfoList().get(i);
+            if(!requestCardInfo.getCardId().equals(resultCardInfo.getCardId())) {
+                throw new BusinessException(HttpStatus.INTERNAL_SERVER_ERROR, "카드 정보 불일치!!!");
+            }
+            totalAmount += resultCardInfo.getActualAmount();
             usedCardCount++;
+            paymentResultCardInfoList.add(
+                    PaymentResultCardInfoDto.builder()
+                            .paymentId(resultCardInfo.getPaymentId())
+                            .cardName(requestCardInfo.getCardName())
+                            .imageUrl(requestCardInfo.getImageUrl())
+                            .cardId(requestCardInfo.getCardId())
+                            .cardNumber(requestCardInfo.getCardNumber())
+                            .amount(requestCardInfo.getAmount())
+                            .actualAmount(resultCardInfo.getActualAmount())
+                            .performance(requestCardInfo.getPerformance())
+                            .benefitActivated(resultCardInfo.isBenefitActivated())
+                            .benefitUsage(requestCardInfo.getBenefitUsage()+resultCardInfo.getBenefitBalance())
+                            .benefitDetail(resultCardInfo.getBenefitDetail())
+                            .build()
+            );
         }
         return PaymentResultDto.builder()
-                .requestId(requestId)
-                .merchantName(vo.getMerchantName())
+                .requestId(requestVO.getRequestId())
+                .merchantName(resultVo.getMerchantName())
                 .totalAmount(totalAmount)
                 .createTime(LocalDateTime.now())
                 .usedCardCount(usedCardCount)
-                .paymentResultInfoList(vo.getPaymentResultInfoList())
+                .paymentResultCardInfoList(paymentResultCardInfoList)
                 .build();
     }
 }
