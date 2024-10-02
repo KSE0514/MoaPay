@@ -5,26 +5,29 @@ import com.moa.payment.domain.charge.entity.PaymentLog;
 import com.moa.payment.domain.charge.model.PayStatus;
 import com.moa.payment.domain.charge.model.PaymentResultStatus;
 import com.moa.payment.domain.charge.model.ProcessingStatus;
-import com.moa.payment.domain.charge.model.dto.CancelPayRequestDto;
-import com.moa.payment.domain.charge.model.dto.CancelPayResponseDto;
-import com.moa.payment.domain.charge.model.dto.CardPaymentRequestDto;
-import com.moa.payment.domain.charge.model.dto.CardPaymentResponseDto;
+import com.moa.payment.domain.charge.model.dto.*;
 import com.moa.payment.domain.charge.model.vo.*;
 import com.moa.payment.domain.charge.repository.PaymentLogRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestClient;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
+import java.time.Instant;
+import java.time.LocalDateTime;
 import java.util.*;
 
 @Service
 @Slf4j
 @RequiredArgsConstructor
 public class ChargeServiceImpl implements ChargeService {
+
+    @Value("${external-url.cardbank}")
+    private String cardbankUrl;
 
     private final RestClient restClient;
     private final ObjectMapper objectMapper;
@@ -47,7 +50,7 @@ public class ChargeServiceImpl implements ChargeService {
                     .amount(paymentInfo.getAmount())
                     .build();
             ResponseEntity<Map> paymentResponse = restClient.post()
-                    .uri("http://localhost:18100/cardbank/card/pay")
+                    .uri(cardbankUrl+"/card/pay")
                     .contentType(MediaType.APPLICATION_JSON)
                     .body(paymentRequestDto)
                     .retrieve()
@@ -70,7 +73,7 @@ public class ChargeServiceImpl implements ChargeService {
                             .cvc(cardInfo.getCvc())
                             .build();
                     ResponseEntity<Map> cancelResponse = restClient.post()
-                            .uri("http://localhost:18100/cardbank/card/cancel")
+                            .uri(cardbankUrl+"/card/cancel")
                             .contentType(MediaType.APPLICATION_JSON)
                             .body(requestDto)
                             .retrieve()
@@ -110,8 +113,11 @@ public class ChargeServiceImpl implements ChargeService {
             // 저장에도 성공했다면 성공 리스트에 넣는다
             paymentResultInfoList.add(
                     PaymentResultCardInfoVO.builder()
+                            .paymentId(paymentResponseDto.getPaymentId())
                             .cardId(paymentInfo.getCardId())
-                            .amount(paymentResponseDto.getAmount())
+                            .cardNumber(paymentInfo.getCardNumber())
+                            .amount(paymentInfo.getAmount())
+                            .actualAmount(paymentResponseDto.getAmount())
                             .benefitActivated(paymentResponseDto.isBenefitActivated())
                             .benefitBalance(paymentResponseDto.getBenefitBalance())
                             .remainedBenefit(paymentResponseDto.getRemainedBenefit())
@@ -129,6 +135,25 @@ public class ChargeServiceImpl implements ChargeService {
                 .merchantName(merchantName)
                 .status(PaymentResultStatus.SUCCEED)
                 .paymentResultInfoList(paymentResultInfoList)
+                .build();
+    }
+
+    @Override
+    public PaymentResultDto makePaymentResultDto(ExecutePaymentResultVO vo, UUID requestId) {
+        log.info("making PaymentResultDto...");
+        long totalAmount = 0;
+        int usedCardCount = 0;
+        for(PaymentResultCardInfoVO v : vo.getPaymentResultInfoList()) {
+            totalAmount += v.getActualAmount();
+            usedCardCount++;
+        }
+        return PaymentResultDto.builder()
+                .requestId(requestId)
+                .merchantName(vo.getMerchantName())
+                .totalAmount(totalAmount)
+                .createTime(LocalDateTime.now())
+                .usedCardCount(usedCardCount)
+                .paymentResultInfoList(vo.getPaymentResultInfoList())
                 .build();
     }
 }

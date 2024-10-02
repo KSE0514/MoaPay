@@ -54,7 +54,7 @@ public class MyCard {
     private UUID memberId;
 
     @NotNull
-    @ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "product_id")
     private CardProduct cardProduct;
 }

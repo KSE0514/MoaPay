@@ -13,7 +13,7 @@ import java.util.UUID;
 @NoArgsConstructor
 @AllArgsConstructor
 public class ExecutePaymentRequestVO {
-
+    private UUID requestId;
     private UUID merchantId;
     private List<PaymentCardInfoVO> paymentInfoList;
 

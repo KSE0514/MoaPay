@@ -111,6 +111,7 @@ public class GeneralPayServiceImpl implements GeneralPayService{
 
         // [3] 요청 전송
         ExecutePaymentRequestVO requestVo = ExecutePaymentRequestVO.builder()
+                .requestId(dto.getRequestId())
                 .merchantId(dto.getMerchantId())
                 .paymentInfoList(cardInfoList)
                 .build();

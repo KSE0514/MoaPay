@@ -1,6 +1,7 @@
 package com.moa.payment.domain.notification.service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.moa.payment.domain.charge.model.dto.PaymentResultDto;
 import com.moa.payment.domain.notification.listener.RedisSubscribeListener;
 import com.moa.payment.domain.notification.repository.EmitterRepository;
 import lombok.RequiredArgsConstructor;
@@ -36,10 +37,10 @@ public class NotificationServiceImpl implements NotificationService {
     }
 
     @Override
-    public void sendCompleteMessage(UUID id) {
+    public void sendCompleteMessage(UUID id, PaymentResultDto resultDto) {
         log.info("send charge complete message");
         // redis publish를 이용해 emitter를 갖고있을 listener에게 메시지를 보낸다
-        redisTemplate.convertAndSend(id.toString(), id.toString());
+        redisTemplate.convertAndSend(id.toString(), resultDto);
     }
 
     @Override

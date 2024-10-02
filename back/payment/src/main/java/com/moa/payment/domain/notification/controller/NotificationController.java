@@ -27,7 +27,7 @@ public class NotificationController {
 
     @PostMapping("/send-data/{id}")
     public void sendData(@PathVariable UUID id) {
-        notificationService.sendCompleteMessage(id);
+        notificationService.sendCompleteMessage(id, null);
     }
 
 }

@@ -32,7 +32,6 @@ public class MyCardServiceImpl implements MyCardService {
 
     @Override
     public List<MyCardInfoDto> getMyCardInfo(HttpServletRequest request) {
-
         // todo: 여기서 쿠키를 뜯어서 UUID 찾기
         // 이건 테스트용
         UUID memberId = UUID.fromString("550e8400-e29b-41d4-a716-446655440000");
@@ -86,7 +85,6 @@ public class MyCardServiceImpl implements MyCardService {
     @Override
     public List<CardInfoResponseDto> getAllCard() {
 
-//        List<CardProduct> cards = cardProductRepository.findAll();
         List<CardProduct> cards = myCardQueryRepository.findAll();
 
         List<CardInfoResponseDto> cardsDto = cards.stream().map(
@@ -121,13 +119,13 @@ public class MyCardServiceImpl implements MyCardService {
     }
 
     @Override
-    @Transactional
     public void renewCardInfo(List<PaymentResultCardInfoVO> renewList) {
-        log.info("renew my_card info");
-        for(PaymentResultCardInfoVO vo : renewList) {
+        for(int i = 0 ; i < renewList.size() ; i++) {
+            PaymentResultCardInfoVO vo = renewList.get(i);
             // 맞지 않는 부분이 있다면, 현재 값을 기준으로 갱신해주는 게 맞을 것 같긴 한데...
             MyCard myCard = myCardRepository.findByUuid(vo.getCardId())
                     .orElseThrow(() -> new BusinessException(HttpStatus.BAD_REQUEST, "유효하지 않은 정보입니다."));
+            log.info("found myCard : {}", myCard.getUuid());
             long amount = myCard.getAmount();
             long benefitUsage = myCard.getBenefitUsage();
             MyCard newCard = myCard.toBuilder()
@@ -135,7 +133,7 @@ public class MyCardServiceImpl implements MyCardService {
                     .amount(amount+vo.getAmount())
                     .benefitUsage(benefitUsage+vo.getBenefitBalance())
                     .build();
-            myCardRepository.save(newCard); // todo: update 시행 안되는 중...
+            myCardRepository.save(newCard);
         }
     }
 }
