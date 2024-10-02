@@ -1,6 +1,6 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
-import {
+import { 
   Wrapper,
   PaymentWaiting,
   Result,
@@ -13,9 +13,12 @@ import {
   HomeBtn,
 } from './Payment.styles';
 
+import { Swiper as SwiperInstance } from "swiper/types"; // Swiper 타입 불러오기
 import { Swiper, SwiperSlide } from 'swiper/react';
+// import { Pagination } from 'swiper';  // Pagination 모듈을 swiper 패키지에서 불러오기
 // import 'swiper/swiper-bundle.min.css';
 import "./../../../node_modules/swiper/swiper-bundle.min.css"
+// import './../../../node_modules/swiper/modules/pagination.min.css'; 
 
 
 import cardImg1 from "./../../assets/image/cards/신용카드이미지/1_신한카드_Mr.Life.png"
@@ -23,6 +26,14 @@ import cardImg2 from "./../../assets/image/cards/신용카드이미지/12_올바
 
 // 테스트용 정보(추후 지울 예정)
 const results = [
+  {
+    name: "신한카드 Mr.Life",
+    img: cardImg1,
+    rec: 253200, // 실적
+    rec2: 3000000, // 전체 실적
+    ad: 1200, //혜택
+    sumad: 5600, // 혜택 누적 금액
+  },
   {
     name: "신한카드 Mr.Life",
     img: cardImg1,
@@ -41,12 +52,20 @@ const results = [
   }
 ]
 
-const result = results[1]
+// const result = results[1]
 
 const Payment = () => {
   const nav = useNavigate()
   const [rotate, setRotate] = useState(false);
   const [isLoading, setIsLoading] = useState<boolean>(false);
+
+  const [swiperInstance, setSwiperInstance] = useState<SwiperInstance>(); // 초기값을 undefined로 설정
+  const [activeIndex, setActiveIndex] = useState(0);
+
+  const handleNavClick = (index: number) => {
+    swiperInstance?.slideTo(index); // swiperInstance가 존재할 때만 slideTo 호출
+  };
+
 
   const currentYear = new Date().getFullYear();  // 현재 년도 가져오기
   const currentMonth = new Date().getMonth() + 1; // 월은 0부터 시작하기 때문에 +1
@@ -98,7 +117,15 @@ const Payment = () => {
       // 결제가 완료되었을 경우(받은 혜택 및 누적 실적 보여주는 화면)
      <Result>
       <ResultBox>
-        <Swiper spaceBetween={50} slidesPerView={1}>
+        <Swiper 
+          onSwiper={(swiper) => setSwiperInstance(swiper)} // Swiper 인스턴스 저장
+          onSlideChange={(swiper) => setActiveIndex(swiper.activeIndex)} // 슬라이드 변경 시 인덱스 업데이트
+          spaceBetween={50} slidesPerView={1}
+          // pagination={{
+          //   clickable: true,
+          // }}
+          // modules={[Pagination]}  // Pagination 모듈 추가
+        >
           {results.map((result, index) => (
             <SwiperSlide key={index}>
 
@@ -141,7 +168,27 @@ const Payment = () => {
             </SwiperSlide>
           ))}
         </Swiper>
+      
+      {/* 하단 네브바 (점) */}
+      <div style={{ textAlign: 'center', marginTop: '0px' }}>
+        {results.map((_, index) => (
+          <span
+            key={index}
+            onClick={() => handleNavClick(index)}
+            style={{
+              display: 'inline-block',
+              width: '10px',
+              height: '10px',
+              borderRadius: '50%',
+              backgroundColor: activeIndex === index ? 'black' : 'gray',
+              margin: '0 5px',
+              cursor: 'pointer',
+            }}
+          ></span>
+        ))}
+      </div>
       </ResultBox>
+      
       <HomeBtn onClick={clickHomeBtn}>
       <svg xmlns="http://www.w3.org/2000/svg" x="0px" y="0px" fill='white' width="60" height="60" viewBox="0 0 24 24">
           <path d="M 12 2 A 1 1 0 0 0 11.289062 2.296875 L 1.203125 11.097656 A 0.5 0.5 0 0 0 1 11.5 A 0.5 0.5 0 0 0 1.5 12 L 4 12 L 4 20 C 4 20.552 4.448 21 5 21 L 9 21 C 9.552 21 10 20.552 10 20 L 10 14 L 14 14 L 14 20 C 14 20.552 14.448 21 15 21 L 19 21 C 19.552 21 20 20.552 20 20 L 20 12 L 22.5 12 A 0.5 0.5 0 0 0 23 11.5 A 0.5 0.5 0 0 0 22.796875 11.097656 L 12.716797 2.3027344 A 1 1 0 0 0 12.710938 2.296875 A 1 1 0 0 0 12 2 z"></path>
