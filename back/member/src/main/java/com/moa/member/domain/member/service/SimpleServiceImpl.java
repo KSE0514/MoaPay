@@ -37,4 +37,14 @@ public class SimpleServiceImpl implements SimpleService {
 
 	}
 
+	@Override
+	public void verify(String uuid, String simplePassword){
+		Member member = memberRepository.findByUuid(UUID.fromString(uuid)).orElseThrow(() -> new BusinessException(
+			HttpStatus.BAD_REQUEST, "회원이 존재하지 않습니다."));
+		// 비밀번호 검증
+		if (!passwordEncoder.matches(simplePassword, member.getSimplePassword())) {
+			throw new BusinessException(HttpStatus.UNAUTHORIZED, "비밀번호가 일치하지 않습니다.");
+		}
+	}
+
 }

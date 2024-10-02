@@ -1,9 +1,6 @@
 package com.moa.payment.domain.charge.model.vo;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.util.UUID;
 
@@ -11,20 +8,14 @@ import java.util.UUID;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
+@ToString
 public class PaymentCardInfoVO {
     private UUID cardId;
+    private String cardName;
+    private String imageUrl;
     private String cardNumber;
     private String cvc;
-    private String categoryId;
     private long amount;
-
-    @Override
-    public String toString() {
-        return "PaymentCardInfoVO{" +
-                "cardId=" + cardId +
-                ", cardNumber='" + cardNumber + '\'' +
-                ", cvc='" + cvc + '\'' +
-                ", amount=" + amount +
-                '}';
-    }
+    private long performance;
+    private long benefitUsage;
 }
