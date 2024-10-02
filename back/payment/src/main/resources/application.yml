@@ -3,9 +3,9 @@ spring:
     name: payment
 
   config:
-    import: "configserver:http://localhost:8888"
+    import: "configserver:${SPRING_CLOUD_CONFIG_URI:http://localhost:8888}"
 
   cloud:
     config:
       name: payment
-      profile: local
+      profile: ${SPRING_PROFILES_ACTIVE:local}

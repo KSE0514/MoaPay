@@ -1,34 +1,20 @@
 package com.moa.moapay.domain.card.model.dto;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 @Builder
 @AllArgsConstructor
 @Getter
+@ToString
 @NoArgsConstructor
 public class MyCardInfoDto {
 
     private String cardNumber;
     private String cvc;
-    private boolean performanceOk;
+    private boolean performanceFlag;
     private Long cardLimit;
-    private Long charges;
+    private Long amount;
     private Long benefitUsage;
     private CardInfoResponseDto cardInfo;
 
-    @Override
-    public String toString() {
-        return "MyCardInfoDto{" +
-                "cardInfo=" + cardInfo +
-                ", cardNumber='" + cardNumber + '\'' +
-                ", cvc='" + cvc + '\'' +
-                ", performanceOk=" + performanceOk +
-                ", cardLimit=" + cardLimit +
-                ", charges=" + charges +
-                ", benefitUsage=" + benefitUsage +
-                '}';
-    }
 }

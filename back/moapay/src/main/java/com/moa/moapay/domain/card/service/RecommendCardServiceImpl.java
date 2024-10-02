@@ -60,7 +60,7 @@ public class RecommendCardServiceImpl implements RecommendCardService {
                                 // 그냥 엔티티를 반환 할 수 도 있지만 나중에 유지보수를 위해 DTO 생성후 리턴
                                 return CardBenefitDto.builder()
                                         .categoryName(categoryName)
-                                        .categoryType(String.valueOf(benefit.getCategoryType()))
+                                        .benefitUnit(benefit.getBenefitUnit())
                                         .benefitDesc(benefit.getBenefitDesc())
                                         .benefitValue(benefit.getBenefitValue())
                                         .benefitType(benefit.getBenefitType())
