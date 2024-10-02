@@ -161,6 +161,19 @@ export const Etc = styled.div`
   font-weight: 700;
 `
 
+export const DotNav = styled.div`
+  text-align: center;
+
+  & > span{
+    display: inline-block;
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    margin: 0 5px;
+    cursor: pointer;
+  }
+`
+
 export const HomeBtn = styled.div`
   display: flex;
   flex-direction: column;

@@ -10,6 +10,7 @@ import {
   Content,
   Record,
   Etc,
+  DotNav,
   HomeBtn,
 } from './Payment.styles';
 
@@ -23,6 +24,7 @@ import "./../../../node_modules/swiper/swiper-bundle.min.css"
 
 import cardImg1 from "./../../assets/image/cards/신용카드이미지/1_신한카드_Mr.Life.png"
 import cardImg2 from "./../../assets/image/cards/신용카드이미지/12_올바른_FLEX_카드.png"
+// import cardImg2 from "./../../assets/image/cards/신용카드이미지/34_American_Express®_Green_Card_Edition2.png"
 
 // 테스트용 정보(추후 지울 예정)
 const results = [
@@ -56,11 +58,12 @@ const results = [
 
 const Payment = () => {
   const nav = useNavigate()
-  const [rotate, setRotate] = useState(false);
+  const [rotate, setRotate] = useState<boolean[]>(Array(results.length).fill(false));
   const [isLoading, setIsLoading] = useState<boolean>(false);
 
+  // DotNav를 위한 변수들
   const [swiperInstance, setSwiperInstance] = useState<SwiperInstance>(); // 초기값을 undefined로 설정
-  const [activeIndex, setActiveIndex] = useState(0);
+  const [activeIndex, setActiveIndex] = useState(0); // 화면에 띄워지고 있는 결과 페이지를 지정하기 위한 변수
 
   const handleNavClick = (index: number) => {
     swiperInstance?.slideTo(index); // swiperInstance가 존재할 때만 slideTo 호출
@@ -75,13 +78,22 @@ const Payment = () => {
   }
   // 카드 가로, 세로 길이에 따른 회전 여부 판단 핸들러
   const handleImageLoad = (
-    event: React.SyntheticEvent<HTMLImageElement, Event>
+    event: React.SyntheticEvent<HTMLImageElement, Event>,
+    index: number
   ) => {
     const imgElement = event.currentTarget;
-    if (imgElement.naturalWidth < imgElement.naturalHeight) {
-      setRotate(true);
-    }
+    
+    // naturalWidth와 naturalHeight로 회전 여부 결정
+    const shouldRotate = imgElement.naturalWidth < imgElement.naturalHeight;
+  
+    // 함수형 업데이트 사용하여 회전 상태를 업데이트
+    setRotate(prevRotate => {
+      const newRotate = [...prevRotate];
+      newRotate[index] = shouldRotate;
+      return newRotate;
+    });
   };
+  
   
   return (
     <Wrapper>
@@ -121,10 +133,6 @@ const Payment = () => {
           onSwiper={(swiper) => setSwiperInstance(swiper)} // Swiper 인스턴스 저장
           onSlideChange={(swiper) => setActiveIndex(swiper.activeIndex)} // 슬라이드 변경 시 인덱스 업데이트
           spaceBetween={50} slidesPerView={1}
-          // pagination={{
-          //   clickable: true,
-          // }}
-          // modules={[Pagination]}  // Pagination 모듈 추가
         >
           {results.map((result, index) => (
             <SwiperSlide key={index}>
@@ -133,20 +141,21 @@ const Payment = () => {
                 <div>{result.name}</div>
                 <CardImg
                   style={{
-                    paddingTop: rotate? '20px' : '60px',
-                    paddingBottom: rotate? '0px' : '30px',
+                    paddingTop: rotate[index]? '20px' : '60px',
+                    paddingBottom: rotate[index]? '0px' : '30px',
                   }}
                 >
                   <img
-                    onLoad={(event) => handleImageLoad(event)} // 이미지가 로드되면 handleImageLoad 호출
+                    onLoad={(event) => handleImageLoad(event, index)} // 이미지가 로드되면 handleImageLoad 호출
                     style={{
+                      visibility: rotate[index] !== undefined ? 'visible' : 'hidden', // 로드 완료되면 표시
                       // position: "absolute", 19 30 38 60 9.5 15
-                      width: rotate ? "133px" : "210px", // 회전 여부에 따라 width와 height 변경
-                      height: rotate ? "210px" : "133px",
-                      transform: rotate ? "rotate(-90deg)" : "none", // 회전시키기
+                      width: rotate[index] ? "133px" : "210px", // 회전 여부에 따라 width와 height 변경
+                      height: rotate[index] ? "210px" : "133px",
+                      transform: rotate[index] ? "rotate(-90deg)" : "none", // 회전시키기
                       // marginLeft: rotate ? "17.5px" : "0",
                       borderRadius: '10px',
-                      boxShadow: rotate? '-6px 0px 5px rgba(0, 0, 0, 0.3)' : '0px 6px 5px rgba(0, 0, 0, 0.3)' , // 이미지에 그림자 추가
+                      boxShadow: rotate[index]? '-6px 0px 5px rgba(0, 0, 0, 0.3)' : '0px 6px 5px rgba(0, 0, 0, 0.3)' , // 이미지에 그림자 추가
                     }}
                     src={result.img} alt={result.name} />
                 </CardImg>
@@ -168,25 +177,18 @@ const Payment = () => {
             </SwiperSlide>
           ))}
         </Swiper>
-      
       {/* 하단 네브바 (점) */}
-      <div style={{ textAlign: 'center', marginTop: '0px' }}>
+      <DotNav>
         {results.map((_, index) => (
           <span
             key={index}
             onClick={() => handleNavClick(index)}
             style={{
-              display: 'inline-block',
-              width: '10px',
-              height: '10px',
-              borderRadius: '50%',
               backgroundColor: activeIndex === index ? 'black' : 'gray',
-              margin: '0 5px',
-              cursor: 'pointer',
             }}
           ></span>
         ))}
-      </div>
+      </DotNav>
       </ResultBox>
       
       <HomeBtn onClick={clickHomeBtn}>
