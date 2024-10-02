@@ -3,8 +3,13 @@ package com.moa.moapay.domain.card.service;
 import com.moa.moapay.domain.card.entity.CardProduct;
 import com.moa.moapay.domain.card.entity.MyCard;
 import com.moa.moapay.domain.card.model.dto.*;
+import com.moa.moapay.domain.card.model.dto.CardBenefitDto;
+import com.moa.moapay.domain.card.model.dto.CardInfoResponseDto;
+import com.moa.moapay.domain.card.model.dto.MyCardInfoDto;
+import com.moa.moapay.domain.card.model.vo.PaymentResultCardInfoVO;
 import com.moa.moapay.domain.card.repository.CardProductRepository;
 import com.moa.moapay.domain.card.repository.MyCardQueryRepository;
+import com.moa.moapay.domain.card.repository.MyCardRepository;
 import com.moa.moapay.global.exception.BusinessException;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
@@ -14,6 +19,7 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestClient;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -26,6 +32,7 @@ public class MyCardServiceImpl implements MyCardService {
     private final CardProductRepository cardProductRepository;
     private final MyCardQueryRepository myCardQueryRepository;
     private final RestClient restClient;
+    private final MyCardRepository myCardRepository;
 
     @Override
     public List<MyCardInfoDto> getMyCardInfo(HttpServletRequest request) {
@@ -189,6 +196,23 @@ public class MyCardServiceImpl implements MyCardService {
     }
 
 
+    @Transactional
+    public void renewCardInfo(List<PaymentResultCardInfoVO> renewList) {
+        log.info("renew my_card info");
+        for(PaymentResultCardInfoVO vo : renewList) {
+            // 맞지 않는 부분이 있다면, 현재 값을 기준으로 갱신해주는 게 맞을 것 같긴 한데...
+            MyCard myCard = myCardRepository.findByUuid(vo.getCardId())
+                    .orElseThrow(() -> new BusinessException(HttpStatus.BAD_REQUEST, "유효하지 않은 정보입니다."));
+            long amount = myCard.getAmount();
+            long benefitUsage = myCard.getBenefitUsage();
+            MyCard newCard = myCard.toBuilder()
+                    .performanceFlag(vo.isBenefitActivated())
+                    .amount(amount+vo.getAmount())
+                    .benefitUsage(benefitUsage+vo.getBenefitBalance())
+                    .build();
+            myCardRepository.save(newCard); // todo: update 시행 안되는 중...
+        }
+    }
 }
 
 
