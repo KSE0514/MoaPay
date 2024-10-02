@@ -31,11 +31,16 @@ const SettingBiometricsLogin = () => {
       .replace(/=+$/, "");
   }
 
+  /**
+   * 백엔드에서 챌린지만 받아오기
+   * 해당 챌린지 넣어서 등록 진행하기
+   *
+   */
   const biometricsRegister = async () => {
     try {
       // Uint8Array를 base64url 문자열로 변환
       const userId = base64urlEncode(
-        Uint8Array.from("UZSL85T=", (c) => c.charCodeAt(0))
+        Uint8Array.from(`${name}`, (c) => c.charCodeAt(0))
       );
 
       const options: PublicKeyCredentialCreationOptionsJSON = {
@@ -43,13 +48,13 @@ const SettingBiometricsLogin = () => {
           Uint8Array.from("AQIDBAUGBwgJCgsMDQ4PEA", (c) => c.charCodeAt(0))
         ),
         rp: {
-          name: "Local Development",
-          id: window.location.hostname,
+          name: "moapay",
+          id: "moapay-7e24e.web.app",
         },
         user: {
           id: userId,
-          name: "user@example.com",
-          displayName: "John Doe",
+          name: `${name}`,
+          displayName: `${name}`,
         },
         pubKeyCredParams: [
           {

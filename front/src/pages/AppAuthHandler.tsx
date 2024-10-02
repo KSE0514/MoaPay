@@ -8,6 +8,7 @@ const AppAuthHandler: React.FC = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
+    localStorage.setItem("lastInURI", window.location.pathname);
     //앱의 시각 상태 변경되었을 때 실행될 함수
     const handleVisibilityChange = () => {
       //백그라운드로 옮겨질 경우
@@ -69,7 +70,10 @@ const AppAuthHandler: React.FC = () => {
       // lastActiveTime이 있으면, 사용자가 앱을 백그라운드에 두었다가 다시 돌아온 상태입니다.
       else {
         console.log("2");
-        const lastInURI = localStorage.getItem("lastInURI") || "/home";
+        const lastInURI =
+          (localStorage.getItem("lastInURI") !== "/"
+            ? localStorage.getItem("lastInURI")
+            : "/home") || "/home";
         // lastInURI가 null이 아닌 경우에만 navigate 호출
         if (lastInURI) {
           navigate(lastInURI);

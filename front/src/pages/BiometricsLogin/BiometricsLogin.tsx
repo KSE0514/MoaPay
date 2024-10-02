@@ -65,10 +65,9 @@ const BiometricsLogin = () => {
       console.log(credential);
 
       if (credential) {
-        console.log("인증 성공", credential);
-        alert("WebAuthn 인증 성공!");
+        navigate(PATH.HOME);
       } else {
-        console.error("인증 실패");
+        setError(true);
       }
     } catch (err) {
       console.error("인증 중 오류 발생:", err);
@@ -81,7 +80,7 @@ const BiometricsLogin = () => {
         <Header>
           <h1>생체 로그인</h1>
           <p style={{ whiteSpace: "pre-wrap", textAlign: "center" }}>
-            {!error
+            {error
               ? "잘못된 인증입니다.\n다시 시도하세요"
               : "생체 인증을 진행해주세요"}
           </p>
