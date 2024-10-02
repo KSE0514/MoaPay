@@ -5,14 +5,17 @@ import com.moa.moapay.domain.card.entity.MyCard;
 import com.moa.moapay.domain.card.model.dto.CardBenefitDto;
 import com.moa.moapay.domain.card.model.dto.CardInfoResponseDto;
 import com.moa.moapay.domain.card.model.dto.MyCardInfoDto;
+import com.moa.moapay.domain.card.model.vo.PaymentResultCardInfoVO;
 import com.moa.moapay.domain.card.repository.CardProductRepository;
 import com.moa.moapay.domain.card.repository.MyCardQueryRepository;
+import com.moa.moapay.domain.card.repository.MyCardRepository;
 import com.moa.moapay.global.exception.BusinessException;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.UUID;
@@ -25,6 +28,7 @@ public class MyCardServiceImpl implements MyCardService {
 
     private final CardProductRepository cardProductRepository;
     private final MyCardQueryRepository myCardQueryRepository;
+    private final MyCardRepository myCardRepository;
 
     @Override
     public List<MyCardInfoDto> getMyCardInfo(HttpServletRequest request) {
@@ -45,10 +49,10 @@ public class MyCardServiceImpl implements MyCardService {
                             .map(benefit -> CardBenefitDto
                                     .builder()
                                     .categoryName(benefit.getCardBenefitCategory().getName())
-                                    .categoryType(String.valueOf(benefit.getCategoryType()))
-                                    .benefitDesc(benefit.getBenefitDesc())
-                                    .benefitValue(benefit.getBenefitValue())
                                     .benefitType(benefit.getBenefitType())
+                                    .benefitUnit(benefit.getBenefitUnit())
+                                    .benefitValue(benefit.getBenefitValue())
+                                    .benefitDesc(benefit.getBenefitDesc())
                                     .benefitPoint(benefit.getBenefitPoint())
                                     .build())
                             .collect(Collectors.toList());
@@ -67,10 +71,10 @@ public class MyCardServiceImpl implements MyCardService {
                     return MyCardInfoDto.builder()
                             .cvc(myCard.getCvc())
                             .cardNumber(String.valueOf(myCard.getCardNumber()))
-                            .charges(myCard.getCharges())
+                            .amount(myCard.getAmount())
                             .cardLimit(myCard.getCardLimit())
                             .benefitUsage(myCard.getBenefitUsage())
-                            .performanceOk(myCard.isPerformanceOk())
+                            .performanceFlag(myCard.isPerformanceFlag())
                             .cardInfo(cardInfo)
                             .build();
                 }).collect(Collectors.toList());
@@ -91,7 +95,7 @@ public class MyCardServiceImpl implements MyCardService {
                             .map(benefit -> CardBenefitDto
                                     .builder()
                                     .categoryName(benefit.getCardBenefitCategory().getName())
-                                    .categoryType(String.valueOf(benefit.getCategoryType()))
+                                    .benefitUnit(benefit.getBenefitUnit())
                                     .benefitDesc(benefit.getBenefitDesc())
                                     .benefitValue(benefit.getBenefitValue())
                                     .benefitType(benefit.getBenefitType())
@@ -114,6 +118,25 @@ public class MyCardServiceImpl implements MyCardService {
         ).collect(Collectors.toList());
 
         return cardsDto;
+    }
+
+    @Override
+    @Transactional
+    public void renewCardInfo(List<PaymentResultCardInfoVO> renewList) {
+        log.info("renew my_card info");
+        for(PaymentResultCardInfoVO vo : renewList) {
+            // 맞지 않는 부분이 있다면, 현재 값을 기준으로 갱신해주는 게 맞을 것 같긴 한데...
+            MyCard myCard = myCardRepository.findByUuid(vo.getCardId())
+                    .orElseThrow(() -> new BusinessException(HttpStatus.BAD_REQUEST, "유효하지 않은 정보입니다."));
+            long amount = myCard.getAmount();
+            long benefitUsage = myCard.getBenefitUsage();
+            MyCard newCard = myCard.toBuilder()
+                    .performanceFlag(vo.isBenefitActivated())
+                    .amount(amount+vo.getAmount())
+                    .benefitUsage(benefitUsage+vo.getBenefitBalance())
+                    .build();
+            myCardRepository.save(newCard); // todo: update 시행 안되는 중...
+        }
     }
 }
 

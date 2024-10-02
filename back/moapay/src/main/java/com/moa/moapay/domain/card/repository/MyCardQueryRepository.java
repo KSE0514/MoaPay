@@ -50,4 +50,13 @@ public class MyCardQueryRepository {
                 .join(cardBenefit.cardBenefitCategory, benefitCategory).fetchJoin()
                 .fetch();
     }
+
+    public UUID findUuidByCardNumber(String cardNumber) {
+        QMyCard myCard = QMyCard.myCard;
+        return queryFactory
+                .select(myCard.uuid)
+                .from(myCard)
+                .where(myCard.cardNumber.eq(cardNumber))
+                .fetchOne();
+    }
 }
