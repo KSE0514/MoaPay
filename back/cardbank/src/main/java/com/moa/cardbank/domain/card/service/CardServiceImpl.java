@@ -9,6 +9,7 @@ import com.moa.cardbank.domain.account.service.AccountService;
 import com.moa.cardbank.domain.card.entity.*;
 import com.moa.cardbank.domain.card.model.*;
 import com.moa.cardbank.domain.card.model.dto.*;
+import com.moa.cardbank.domain.card.model.dto.getMyCard.*;
 import com.moa.cardbank.domain.card.repository.*;
 import com.moa.cardbank.domain.member.entity.Member;
 import com.moa.cardbank.domain.member.repository.MemberRepository;
@@ -21,9 +22,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -383,5 +383,47 @@ public class CardServiceImpl implements CardService {
                 .myCardNumber(newCard.getCardNumber())
                 .cvc(newCard.getCvc())
                 .build();
+    }
+
+    @Override
+    public List<GetMyCardsResponseDto> getMyCards(GetMyCardsRequestDto getMyCardsRequestDto) {
+
+        List<MyCard> myCards = myCardRepository.findByMemberId(getMyCardsRequestDto.getMemberUuid());
+
+        List<GetMyCardsResponseDto> responseDtos = myCards.stream().map(
+                myCard -> {
+                    CardProductDto cardProductDto = CardProductDto
+                            .builder()
+                            .cardProductUuid(myCard.getProduct().getUuid())
+                            .cardProductName(myCard.getProduct().getName())
+                            .cardProductType(myCard.getProduct().getType())
+                            .cardProductPerformance(myCard.getProduct().getPerformance())
+                            .cardProductAnnualFee(myCard.getProduct().getAnnualFee())
+                            .cardProductAnnualFeeForeign(myCard.getProduct().getAnnualFeeForeign())
+                            .cardProductBenefitTotalLimit(myCard.getProduct().getBenefitTotalLimit())
+                            .cardProductImgUrl(myCard.getProduct().getImageUrl())
+                            .cardProductCompanyName(myCard.getProduct().getCompanyName())
+                            .build();
+
+                    AccountDto accountDto = AccountDto
+                            .builder()
+                            .accountNumber(myCard.getAccount().getNumber())
+                            .accountUuid(myCard.getAccount().getUuid())
+                            .balance(myCard.getAccount().getBalance())
+                            .build();
+
+                    return GetMyCardsResponseDto.builder()
+                            .uuid(myCard.getUuid())
+                            .cardNumber(myCard.getCardNumber())
+                            .cvc(myCard.getCvc())
+                            .benefitUseage(myCard.getBenefitUsage())
+                            .cardLimit(myCard.getCardLimit())
+                            .accounts(accountDto)
+                            .cardProduct(cardProductDto)
+                            .build();
+                }
+        ).collect(Collectors.toList());
+
+        return responseDtos;
     }
 }

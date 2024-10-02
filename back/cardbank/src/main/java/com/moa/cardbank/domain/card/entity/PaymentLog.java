@@ -19,6 +19,7 @@ import java.util.UUID;
 @Builder(toBuilder = true)
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
+@ToString
 public class PaymentLog {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
