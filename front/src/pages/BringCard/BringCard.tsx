@@ -17,24 +17,29 @@ import Modal from "../../components/dutch/Modal/Modal";
 import { MyCardList } from "../../constants/card";
 
 const BringCard = () => {
+  const baseUrl = import.meta.env.VITE_BASE_URL;
+  const baseUrl1 = `http://localhost:18100/`;
   const { cardList, setCardList, removeCard } = useCardStore();
-  const { mode, setMode } = useAuthStore();
   const navigate = useNavigate();
   const [isLoding, setIsLoding] = useState(false);
   const [before, setBefore] = useState(true);
+  const { name, accessToken, mode, setMode } = useAuthStore();
   const bringCard = async () => {
     setIsLoding(true);
     //카드 데이터 가져오기
     try {
-      // const response = await axios.get(
-      //   `http://localhost:18020/moapay/core/card/mycard`,
-      //   { withCredentials: true }
-      // );
-      //로딩상태 풀고 카드 선택 뷰 보이도록 설정
-      // setCardList(response.data);
+      //   const response = await axios.get(`${baseUrl1}moapay/core/card/mycard`, {
+      //     withCredentials: true,
+      //     headers: {
+      //       Authorization: `Bearer ${accessToken}`,
+      //     },
+      //   });
+      //   // 로딩상태 풀고 카드 선택 뷰 보이도록 설정
+      //   // setCardList(response.data);
+      //   console.log(response);
 
       //Test
-      setCardList(MyCardList);
+      // setCardList(MyCardList);
       //추가
       setIsLoding(false);
       setBefore(false);

@@ -26,7 +26,7 @@ const AppAuthHandler: React.FC = () => {
           const timeDiff = Date.now() - parseInt(lastBackgroundTime, 10);
 
           //백그라운드에서 머무른 시간이 1분을 초과한 경우
-          if (timeDiff > 1000) {
+          if (timeDiff > 600000) {
             console.log("step1");
             //이전 로그인 기록이 있는 경우
             if (isLoggedIn) {
