@@ -11,4 +11,5 @@ public class PaymentResultRequestDto {
 	private UUID orderId;
 	private String cardNumber;
 	private long amount;
+	private long actualAmount;
 }

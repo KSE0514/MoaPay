@@ -1,10 +1,17 @@
 package com.moa.store.domain.paymentInfo.service;
 
+import com.moa.store.domain.order.model.Order;
 import com.moa.store.domain.order.model.dto.CreateOrderRequestDto;
 import com.moa.store.domain.order.model.dto.CreateOrderResponseDto;
+import com.moa.store.domain.order.repository.OrderRepository;
 import com.moa.store.domain.order.service.OrderService;
+import com.moa.store.domain.paymentInfo.model.PaymentInfo;
+import com.moa.store.domain.paymentInfo.model.ProcessingStatus;
+import com.moa.store.domain.paymentInfo.model.dto.PaymentResultRequestDto;
+import com.moa.store.domain.paymentInfo.repository.PaymentInfoRepository;
 import com.moa.store.global.exception.BusinessException;
 import feign.FeignException;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -20,7 +27,9 @@ import lombok.RequiredArgsConstructor;
 public class PaymentInfoServiceImpl implements PaymentInfoService {
 
 	private final MoaPayClient client;
+	private final PaymentInfoRepository paymentInfoRepository;
 	private final OrderService orderService;
+	private final OrderRepository orderRepository;
 
 	@Override
 	@Transactional
@@ -37,5 +46,20 @@ public class PaymentInfoServiceImpl implements PaymentInfoService {
 		} catch (Exception e) {
 			throw new BusinessException(HttpStatus.INTERNAL_SERVER_ERROR, "주문 처리 중 오류가 발생했습니다: " + e.getMessage());
 		}
+	}
+
+	@Override
+	@Transactional
+	public void savePaymentInfo(PaymentResultRequestDto paymentResultRequestDto) {
+		Order order = orderRepository.findByUuid(paymentResultRequestDto.getOrderId())
+			.orElseThrow(() -> new BusinessException(HttpStatus.BAD_REQUEST, "주문 UUID를 확인해주세요"));
+		PaymentInfo paymentInfo = PaymentInfo.builder()
+			.cardNumber(paymentResultRequestDto.getCardNumber())
+			.amount(paymentResultRequestDto.getAmount())
+			.actualAmount(paymentResultRequestDto.getAmount())
+			.order(order)
+			.status(ProcessingStatus.APPROVED)
+			.build();
+		paymentInfoRepository.save(paymentInfo);
 	}
 }
