@@ -37,7 +37,6 @@ public class ChargeServiceImpl implements ChargeService {
 
     @Override
     public ExecutePaymentResultVO executePayment(ExecutePaymentRequestVO vo) {
-        // todo : 카드사로 요청 보내는 uri를 config 기반으로 변경
         List<PaymentCardInfoVO> paymentInfoList = vo.getPaymentInfoList();
         List<PaymentCardInfoVO> succeedPaymentInfoList = new ArrayList<>();
         List<UUID> succeedPaymentIdList = new ArrayList<>();
@@ -143,6 +142,14 @@ public class ChargeServiceImpl implements ChargeService {
     @Override
     public PaymentResultDto makePaymentResultDto(ExecutePaymentResultVO resultVo, ExecutePaymentRequestVO requestVO) {
         log.info("making PaymentResultDto...");
+        if(resultVo.getStatus() == PaymentResultStatus.FAILED) {
+            // 실패한 경우, 최소한의 데이터만 전송
+            return PaymentResultDto.builder()
+                    .status(PaymentResultStatus.FAILED)
+                    .requestId(requestVO.getRequestId())
+                    .merchantName(resultVo.getMerchantName())
+                    .build();
+        }
         long totalAmount = 0;
         int usedCardCount = 0;
         List<PaymentResultCardInfoDto> paymentResultCardInfoList = new ArrayList<>();
@@ -172,6 +179,7 @@ public class ChargeServiceImpl implements ChargeService {
             );
         }
         return PaymentResultDto.builder()
+                .status(PaymentResultStatus.SUCCEED)
                 .requestId(requestVO.getRequestId())
                 .merchantName(resultVo.getMerchantName())
                 .totalAmount(totalAmount)

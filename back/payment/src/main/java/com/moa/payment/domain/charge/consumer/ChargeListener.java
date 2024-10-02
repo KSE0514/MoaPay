@@ -1,6 +1,7 @@
 package com.moa.payment.domain.charge.consumer;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.moa.payment.domain.charge.model.PaymentResultStatus;
 import com.moa.payment.domain.charge.model.dto.PaymentResultDto;
 import com.moa.payment.domain.charge.model.vo.*;
 import com.moa.payment.domain.charge.repository.ChargeRedisRepository;
@@ -31,12 +32,14 @@ public class ChargeListener {
             ExecutePaymentRequestVO executePaymentRequestVO = objectMapper.convertValue(vo, ExecutePaymentRequestVO.class);
             log.info("get payment request : {}", executePaymentRequestVO.getRequestId());
             ExecutePaymentResultVO resultVO = chargeService.executePayment(executePaymentRequestVO);
-            log.info("transfer payment result...");
-            // 결제가 완료되었으므로, 결제 관련 데이터 갱신 요청을 보내야 함
-            List<PaymentResultCardInfoVO> renewList = resultVO.getPaymentResultInfoList();
-            Map<String, Object> map = new HashMap<>();
-            map.put("renewList", renewList);
-            kafkaTemplate.send("request.renew-card-info", "1", map);
+            if(resultVO.getStatus() == PaymentResultStatus.SUCCEED) {
+                log.info("transfer payment result...");
+                // 결제가 완료되었으므로, 결제 관련 데이터 갱신 요청을 보내야 함
+                List<PaymentResultCardInfoVO> renewList = resultVO.getPaymentResultInfoList();
+                Map<String, Object> map = new HashMap<>();
+                map.put("renewList", renewList);
+                kafkaTemplate.send("request.renew-card-info", "1", map);
+            }
             PaymentResultDto resultDto = chargeService.makePaymentResultDto(resultVO, executePaymentRequestVO);
             notificationService.sendCompleteMessage(executePaymentRequestVO.getRequestId(), resultDto);
         } catch(Exception e) {
