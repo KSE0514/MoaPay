@@ -22,6 +22,7 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 import com.moa.member.domain.member.security.JwtAccessDeniedHandler;
 import com.moa.member.domain.member.security.JwtAuthenticationEntryPoint;
+//import com.moa.member.domain.member.security.JwtFilter;
 import com.moa.member.domain.member.security.JwtFilter;
 import com.moa.member.domain.member.security.JwtTokenProvider;
 import com.moa.member.domain.member.security.MemberDetailsServiceImpl;
@@ -33,69 +34,69 @@ import lombok.RequiredArgsConstructor;
 @EnableWebSecurity
 public class SecurityConfig {
 
-	private final MemberDetailsServiceImpl memberDetailsService;
-	private final JwtTokenProvider jwtTokenProvider;
-	private final JwtAccessDeniedHandler jwtAccessDeniedHandler;
-	private final JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint;
+    private final MemberDetailsServiceImpl memberDetailsService;
+    private final JwtTokenProvider jwtTokenProvider;
+    private final JwtAccessDeniedHandler jwtAccessDeniedHandler;
+    private final JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint;
 
-	@Bean
-	public PasswordEncoder passwordEncoder() {
-		return new BCryptPasswordEncoder();
-	}
+    @Bean
+    public PasswordEncoder passwordEncoder() {
+        return new BCryptPasswordEncoder();
+    }
 
-	@Bean
-	public AuthenticationManager authenticationManager(
-		AuthenticationConfiguration authenticationConfiguration
-	) throws Exception {
-		return authenticationConfiguration.getAuthenticationManager();
-	}
+    @Bean
+    public AuthenticationManager authenticationManager(
+        AuthenticationConfiguration authenticationConfiguration
+    ) throws Exception {
+        return authenticationConfiguration.getAuthenticationManager();
+    }
 
-	@Bean
-	public DaoAuthenticationProvider memberAuthenticationProvider() {
-		DaoAuthenticationProvider provider = new DaoAuthenticationProvider();
-		provider.setUserDetailsService(memberDetailsService);
-		provider.setPasswordEncoder(passwordEncoder());
-		return provider;
-	}
+    @Bean
+    public DaoAuthenticationProvider memberAuthenticationProvider() {
+        DaoAuthenticationProvider provider = new DaoAuthenticationProvider();
+        provider.setUserDetailsService(memberDetailsService);
+        provider.setPasswordEncoder(passwordEncoder());
+        return provider;
+    }
 
-	@Bean
-	public SecurityFilterChain memberFilterChain(HttpSecurity http) throws Exception {
-		http
-			.httpBasic(AbstractHttpConfigurer::disable)
-			.authenticationProvider(memberAuthenticationProvider())
-			.csrf(AbstractHttpConfigurer::disable)
-			.sessionManagement((session) -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-			.cors(Customizer.withDefaults())
-			.formLogin(AbstractHttpConfigurer::disable)
-			.logout(AbstractHttpConfigurer::disable)
-			.authorizeRequests()    // 다음 리퀘스트에 대한 사용권한 체크
-			//.requestMatchers("/**").permitAll() // 모든 주소 허용
-			.requestMatchers("/moapay/member/login","/moapay/member/join","/moapay/member/sendSMS","/moapay/member/verification","/moapay/member/isMember").permitAll() // 허용된 주소
-			.anyRequest().authenticated() // Authentication 필요한 주소
-			.and()
-			.exceptionHandling((exceptionHandling) -> exceptionHandling
-				.authenticationEntryPoint(jwtAuthenticationEntryPoint)
-				.accessDeniedHandler(jwtAccessDeniedHandler))
-			.addFilterBefore(new JwtFilter(jwtTokenProvider), UsernamePasswordAuthenticationFilter.class);
-		return http.build();
-	}
+    @Bean
+    public SecurityFilterChain memberFilterChain(HttpSecurity http) throws Exception {
+        http
+            .httpBasic(AbstractHttpConfigurer::disable)
+            .authenticationProvider(memberAuthenticationProvider())
+            .csrf(AbstractHttpConfigurer::disable)
+            .sessionManagement((session) -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+            .cors(Customizer.withDefaults())
+            .formLogin(AbstractHttpConfigurer::disable)
+            .logout(AbstractHttpConfigurer::disable)
+            .authorizeRequests()    // 다음 리퀘스트에 대한 사용권한 체크
+            .requestMatchers("/**").permitAll() // 모든 주소 허용
+            //.requestMatchers("/moapay/member/login","/moapay/member/join","/moapay/member/sendSMS","/moapay/member/verification","/moapay/member/isMember").permitAll() // 허용된 주소
+            //.anyRequest().authenticated() // Authentication 필요한 주소
+            .and()
+            .exceptionHandling((exceptionHandling) -> exceptionHandling
+                .authenticationEntryPoint(jwtAuthenticationEntryPoint)
+                .accessDeniedHandler(jwtAccessDeniedHandler))
+            .addFilterBefore(new JwtFilter(jwtTokenProvider), UsernamePasswordAuthenticationFilter.class);
+        return http.build();
+    }
 
-	@Bean
-	public CorsConfigurationSource corsConfigurationSource() {
-		CorsConfiguration config = new CorsConfiguration();
+    @Bean
+    public CorsConfigurationSource corsConfigurationSource() {
+        CorsConfiguration config = new CorsConfiguration();
 
-		config.setAllowCredentials(true);
-		config.setAllowedOrigins(
-			List.of("https://localhost:8765", "http://localhost:8765",
-				"https://localhost", "http://localhost",
-				"https://moapay-7e24e.web.app",
-				"https://j11c201.p.ssafy.io", "http://j11c201.p.ssafy.io"));
-		config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"));
-		config.setAllowedHeaders(List.of("*"));
-		config.setExposedHeaders(List.of("*"));
+        config.setAllowCredentials(true);
+        config.setAllowedOrigins(
+            List.of("https://localhost:8765", "http://localhost:8765",
+                "https://localhost", "http://localhost",
+                "https://moapay-7e24e.web.app",
+                "https://j11c201.p.ssafy.io", "http://j11c201.p.ssafy.io"));
+        config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"));
+        config.setAllowedHeaders(List.of("*"));
+        config.setExposedHeaders(List.of("*"));
 
-		UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-		source.registerCorsConfiguration("/**", config);
-		return source;
-	}
+        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+        source.registerCorsConfiguration("/**", config);
+        return source;
+    }
 }
