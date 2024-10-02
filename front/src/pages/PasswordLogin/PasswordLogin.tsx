@@ -112,6 +112,8 @@ const PasswordLogin: React.FC = () => {
     const verifyPassword = async () => {
       if (password.length === 6) {
         if (mode === "") {
+          console.log("verifty password");
+          console.log(password);
           try {
             // 비밀번호 확인 요청
             const response = await axios.post(
@@ -141,6 +143,8 @@ const PasswordLogin: React.FC = () => {
             setPassword("");
           }
         } else if (mode === "NewLogin") {
+          console.log("login password");
+          console.log(password);
           try {
             const response = await axios.post(
               `${baseUrl1}moapay/member/login`,
@@ -217,7 +221,8 @@ const PasswordLogin: React.FC = () => {
           //단 Join일때와 SettingPassword일때는 다른 요청을 보내야한다.
           if (mode == "Join") {
             try {
-              console.log("here");
+              console.log("here join password");
+              console.log(password);
               //생체정보 설정을 위해 이동 - 선택 가능
               const response = await axios.post(
                 `${baseUrl1}moapay/member/simple/register`,

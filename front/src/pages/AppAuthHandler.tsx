@@ -44,25 +44,31 @@ const AppAuthHandler: React.FC = () => {
 
     //앱이 시작될 때 실행될 함수
     const handleAppStart = () => {
+      console.log("here...why?");
       // 마지막 활성화 시간을 localStorage에서 가져옵니다.
       const lastActiveTime = localStorage.getItem("lastActiveTime");
 
+      console.log("lastActiveTime: " + lastActiveTime);
       // 사용자가 이전에 로그인한 적이 있는지 확인합니다.
       // "hasLoggedInBefore" 값이 "true"이면 이전에 로그인한 상태를 의미합니다.
 
       // 만약 lastActiveTime이 없으면 앱이 처음 시작되었거나 완전히 종료되었다가 다시 실행된 것입니다.
       if (!lastActiveTime) {
+        console.log(1);
         // 사용자가 이전에 로그인한 적이 있는 경우, 간편 로그인 화면으로 이동합니다.
         if (isLoggedIn) {
+          console.log("1-1");
           requestLogin();
         }
         // 사용자가 이전에 로그인한 적이 없으면 회원가입 페이지로 이동합니다.
         else {
+          console.log("1-2");
           requestCreateAccount();
         }
       }
       // lastActiveTime이 있으면, 사용자가 앱을 백그라운드에 두었다가 다시 돌아온 상태입니다.
       else {
+        console.log("2");
         const lastInURI = localStorage.getItem("lastInURI") || "/home";
         // lastInURI가 null이 아닌 경우에만 navigate 호출
         if (lastInURI) {

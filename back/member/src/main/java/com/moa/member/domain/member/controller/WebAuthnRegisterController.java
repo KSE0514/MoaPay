@@ -121,7 +121,6 @@ public class WebAuthnRegisterController {
 								.build()
 				))
 				.authenticatorSelection(AuthenticatorSelectionCriteria.builder()
-						.authenticatorAttachment(AuthenticatorAttachment.PLATFORM)  // 플랫폼 인증기 명시
 						.userVerification(UserVerificationRequirement.REQUIRED)
 						.build())
 				.attestation(AttestationConveyancePreference.INDIRECT)  // 필요시 증명 요구
@@ -171,6 +170,7 @@ public class WebAuthnRegisterController {
 
 			// AuthenticatorResponse는 별도의 형태로 변환해야 함 (AttestationObject와 ClientDataJSON 필요)
 			byte[] attestationObjectBytes = Base64.getUrlDecoder().decode((String)response.get("attestationObject"));
+			System.out.println("Attestation Object Size: " + attestationObjectBytes.length);  // 데이터 크기 출력
 			byte[] clientDataJSONBytes = Base64.getUrlDecoder().decode((String)response.get("clientDataJSON"));
 
 			// ByteArray 객체로 변환

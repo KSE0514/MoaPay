@@ -12,92 +12,66 @@ const BiometricsLogin = () => {
   const { name, accessToken, mode } = useAuthStore();
   const [error, setError] = useState<boolean>(false);
 
-  // Base64 URL Safe 변환 함수
-  const base64urlToUint8Array = (base64String: string): Uint8Array => {
-    const base64 = base64String.replace(/-/g, "+").replace(/_/g, "/");
-    const padding = "=".repeat((4 - (base64.length % 4)) % 4); // 패딩 추가
-    const base64WithPadding = base64 + padding;
-    const binaryString = atob(base64WithPadding);
-    return Uint8Array.from(binaryString, (char) => char.charCodeAt(0));
+  // Base64 URL로 인코딩된 문자열을 Uint8Array로 변환하는 함수
+  const base64UrlToUint8Array = (base64Url: string): Uint8Array => {
+    const base64 = base64Url.replace(/-/g, "+").replace(/_/g, "/");
+    const paddedBase64 = base64.padEnd(
+      base64.length + ((4 - (base64.length % 4)) % 4),
+      "="
+    );
+    const binaryString = atob(paddedBase64);
+    const len = binaryString.length;
+    const bytes = new Uint8Array(len);
+    for (let i = 0; i < len; i++) {
+      bytes[i] = binaryString.charCodeAt(i);
+    }
+    return bytes;
   };
 
   const handleBiometricLogin = async () => {
     try {
-      // 서버로부터 WebAuthn 인증 옵션을 가져옴
-      const response = await axios.get(
-        `${baseUrl1}moapay/member/authn/certify/options`,
-        {
-          withCredentials: true,
-          headers: {
-            Authorization: `Bearer ${accessToken}`, // Authorization 헤더에 Bearer 토큰 추가
-          },
-        }
-      );
-
-      const options = response.data;
-      console.log("Received WebAuthn Options from Server: ", options);
-
-      // challenge를 Uint8Array로 변환
-      console.log("Original challenge from server:", options.challenge);
-      const challengeAsUint8Array = base64urlToUint8Array(options.challenge);
-      console.log("Converted to Uint8Array:", challengeAsUint8Array);
-      options.challenge = challengeAsUint8Array.buffer;
-      console.log("ArrayBuffer for WebAuthn API:", options.challenge);
-
-      // allowCredentials 처리 (내장 인증 장치를 명시적으로 지정)
-      options.allowCredentials = options.allowCredentials.map(
-        (cred: PublicKeyCredentialDescriptor) => {
-          const id =
-            typeof cred.id === "string"
-              ? base64urlToUint8Array(cred.id)
-              : cred.id;
-
-          return {
-            ...cred,
-            id, // 변환된 id 사용
-            transports: ["internal"], // 지문 인식을 위해 내장 인증 장치 지정
-          };
-        }
-      );
-
-      // 확실하게 appid를 제거하는 코드 추가
-      if (options.extensions && "appid" in options.extensions) {
-        delete options.extensions.appid;
-        console.log("Removed appid from extensions");
+      // localStorage에서 WebAuthn id 가져오기
+      const storedId = localStorage.getItem("webauthnId");
+      if (!storedId) {
+        throw new Error("등록된 생체 인증 ID가 없습니다.");
       }
 
-      console.log("Final WebAuthn Options before Authentication: ", options);
-      console.log(
-        "allowCredentials after conversion:",
-        options.allowCredentials
-      );
+      // Base64 URL로 인코딩된 storedId를 Uint8Array로 변환
+      const idUint8Array = base64UrlToUint8Array(storedId);
+
+      // 변환된 id를 publicKeyCredentialRequestOptions에 사용
+      const publicKeyCredentialRequestOptions: PublicKeyCredentialRequestOptions =
+        {
+          challenge: new Uint8Array([
+            0x8c, 0x84, 0x47, 0x7c, 0x52, 0xbc, 0x9a, 0x23, 0x45, 0x32, 0x98,
+            0xaf, 0xa7, 0xbc, 0x6e, 0x99,
+          ]),
+          allowCredentials: [
+            {
+              id: idUint8Array, // Base64 URL에서 Uint8Array로 변환된 id 사용
+              type: "public-key",
+              transports: ["internal" as AuthenticatorTransport], // 올바른 타입 설정
+            },
+          ],
+          userVerification: "preferred",
+          timeout: 60000, // 60초로 설정
+        };
 
       // WebAuthn API 호출
-      const attestationResponse = await navigator.credentials.get({
-        publicKey: options,
+      const credential = await navigator.credentials.get({
+        publicKey: publicKeyCredentialRequestOptions,
       });
+      console.log("credential");
+      console.log(credential);
 
-      console.log("WebAuthn Attestation Response: ", attestationResponse);
-
-      // 서버에 인증 결과 전송하여 검증
-      const verification = await axios.post(
-        `${baseUrl1}moapay/member/authn/certify/verify`,
-        {
-          attestationResponse,
-        },
-        {
-          withCredentials: true,
-        }
-      );
-
-      if (verification.data.verified) {
-        console.log("Authentication successful");
-        navigate(PATH.HOME);
+      if (credential) {
+        console.log("인증 성공", credential);
+        alert("WebAuthn 인증 성공!");
       } else {
-        setError(true);
+        console.error("인증 실패");
       }
     } catch (err) {
-      console.error("Authentication error:", err);
+      console.error("인증 중 오류 발생:", err);
     }
   };
 

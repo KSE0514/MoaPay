@@ -23,77 +23,68 @@ const SettingBiometricsLogin = () => {
   const { Login, setBioLogin } = useAuthStore();
   const [settingFinish, setSettingFinish] = useState<boolean>(false);
   const navigate = useNavigate();
-  type NestedObject = {
-    [key: string]:
-      | string
-      | number
-      | boolean
-      | null
-      | undefined
-      | NestedObject
-      | NestedObject[];
-  };
-
-  const removeNullValues = async (obj: NestedObject): Promise<void> => {
-    Object.keys(obj).forEach((key) => {
-      if (obj[key] === null || obj[key] === undefined) {
-        delete obj[key]; // null 또는 undefined인 속성 제거
-      } else if (typeof obj[key] === "object" && !Array.isArray(obj[key])) {
-        // 중첩된 객체가 있는 경우 재귀적으로 처리
-        removeNullValues(obj[key] as NestedObject);
-      }
-    });
-  };
+  function base64urlEncode(buffer: Uint8Array): string {
+    // Base64 인코딩 후, base64url 형식으로 변환 (문자열의 +, /를 -, _로 대체하고 패딩을 제거)
+    return btoa(String.fromCharCode.apply(null, Array.from(buffer)))
+      .replace(/\+/g, "-")
+      .replace(/\//g, "_")
+      .replace(/=+$/, "");
+  }
 
   const biometricsRegister = async () => {
     try {
-      // 1. 서버로부터 WebAuthn 등록 옵션을 가져옴
-      const response = await axios.get(
-        `${baseUrl1}moapay/member/authn/register/options`,
-        {
-          withCredentials: true,
-          headers: {
-            Authorization: `Bearer ${accessToken}`, // Authorization 헤더에 Bearer 토큰 추가
-          },
-        }
+      // Uint8Array를 base64url 문자열로 변환
+      const userId = base64urlEncode(
+        Uint8Array.from("UZSL85T=", (c) => c.charCodeAt(0))
       );
-      const options = response.data;
-      // rp.id를 window.location.hostname으로 변경
-      await removeNullValues(options);
-      // 2. WebAuthn 등록을 진행
-      const attestationResponse = await startRegistration(options);
-      console.log("등록결과");
-      console.log(attestationResponse);
-      // 지연을 추가하여 세션 쿠키가 설정될 시간을 확보
-      // 3. 등록된 생체인증 정보를 서버에 전송하여 저장
-      const registerResult = await axios.post(
-        `${baseUrl1}moapay/member/authn/register/verify`,
-        {
-          id: attestationResponse.id,
-          rawId: attestationResponse.rawId,
-          response: {
-            attestationObject: attestationResponse.response.attestationObject,
-            clientDataJSON: attestationResponse.response.clientDataJSON,
-          },
-          type: attestationResponse.type,
-          clientExtensionResults: attestationResponse.clientExtensionResults,
-          authenticatorAttachment: attestationResponse.authenticatorAttachment,
+
+      const options: PublicKeyCredentialCreationOptionsJSON = {
+        challenge: base64urlEncode(
+          Uint8Array.from("AQIDBAUGBwgJCgsMDQ4PEA", (c) => c.charCodeAt(0))
+        ),
+        rp: {
+          name: "Local Development",
+          id: window.location.hostname,
         },
-        {
-          withCredentials: true,
-          headers: {
-            Authorization: `Bearer ${accessToken}`, // Authorization 헤더에 Bearer 토큰 추가
+        user: {
+          id: userId,
+          name: "user@example.com",
+          displayName: "John Doe",
+        },
+        pubKeyCredParams: [
+          {
+            type: "public-key",
+            alg: -7, // ES256
           },
-        }
-      );
-      console.log(registerResult);
-      if (registerResult.status == 200) {
+          {
+            type: "public-key",
+            alg: -257, // RS256
+          },
+        ],
+        authenticatorSelection: {
+          authenticatorAttachment: "platform",
+          requireResidentKey: false,
+          userVerification: "preferred",
+        },
+        timeout: 60000,
+        attestation: "direct",
+        excludeCredentials: [],
+        extensions: {},
+      };
+
+      // WebAuthn 등록 진행
+      const attestationResponse = await startRegistration(options);
+
+      if (attestationResponse) {
+        console.log("result: ", attestationResponse);
+
+        // id 값을 localStorage에 저장
+        localStorage.setItem("webauthnId", attestationResponse.id);
         setBioLogin(true);
         setSettingFinish(true);
       }
-      // 1초 지연 (필요에 따라 지연 시간을 조정 가능)
     } catch (e) {
-      console.log(e);
+      console.error("WebAuthn 등록 중 오류 발생:", e);
     }
   };
 
