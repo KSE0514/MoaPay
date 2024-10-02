@@ -104,16 +104,21 @@ export const Result = styled.div`
 `
 
 export const ResultBox = styled.div`
+  background-color: white;
+  border: 3px solid black;
+  padding: 30px 20px;
+  border-radius: 25px;
+  width: 85%;
+  height: 70%;
+  margin: 0 auto;
+  overflow: auto;
+`
+
+export const ResultBoxInner = styled.div`
   display: flex;
   flex-direction: column;
   // gap: 20px;
   align-items: center;
-  background-color: white;
-  width: 85%;
-  height: 70%;
-  border: 3px solid black;
-  padding: 30px 20px;
-  border-radius: 25px;
   margin: 0 auto;
   font-size: 22px;
   text-align: center;
