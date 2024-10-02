@@ -1,10 +1,12 @@
 package com.moa.gateway.global.config;
 
 import java.util.List;
+import java.util.Objects;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.ReactiveAuthenticationManager;
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -18,6 +20,8 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.server.SecurityWebFilterChain;
+import org.springframework.security.web.server.authentication.AuthenticationWebFilter;
+import org.springframework.security.web.server.authentication.ServerAuthenticationConverter;
 import org.springframework.security.web.server.context.NoOpServerSecurityContextRepository;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
@@ -25,28 +29,47 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import org.springframework.web.cors.reactive.CorsWebFilter;
 import org.springframework.web.server.WebFilter;
 
-import com.moa.gateway.security.AuthorizationHeaderFilter;
+import com.moa.gateway.global.exception.BusinessException;
+import com.moa.gateway.security.JwtUtil;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import reactor.core.publisher.Mono;
 
 @Configuration
 @EnableWebFluxSecurity
 @RequiredArgsConstructor
+@Slf4j
 public class SecurityConfig {
 
-	@Bean
-	public PasswordEncoder passwordEncoder() {
-		return new BCryptPasswordEncoder();
+	//private final AuthorizationHeaderFilter authorizationHeaderFilter;
+
+	private final JwtUtil jwtUtil;
+
+	private AuthenticationWebFilter authenticationWebFilter() {
+		ReactiveAuthenticationManager authenticationManager = Mono::just;
+
+		AuthenticationWebFilter authenticationWebFilter
+			= new AuthenticationWebFilter(authenticationManager);
+		authenticationWebFilter.setServerAuthenticationConverter(serverAuthenticationConverter());
+		return authenticationWebFilter;
 	}
 
-	// @Bean
-	// public AuthenticationManager authenticationManager(
-	// 	AuthenticationConfiguration authenticationConfiguration
-	// ) throws Exception {
-	// 	return authenticationConfiguration.getAuthenticationManager();
-	// }
+	private ServerAuthenticationConverter serverAuthenticationConverter(){
+		return exchange -> {
+			String token = jwtUtil.resolveToken(exchange.getRequest());
+			System.out.println("config gateway 토큰: "+token);
 
-	private final AuthorizationHeaderFilter authorizationHeaderFilter;
+			try {
+				if(!Objects.isNull(token) && jwtUtil.validateJwtToken(token)){
+					return Mono.justOrEmpty(jwtUtil.getAuthentication(token));
+				}
+			} catch (BusinessException e) {
+				log.error(e.getMessage(), e);
+			}
+			return Mono.empty();
+		};
+	}
 
 	@Bean
 	public SecurityWebFilterChain securityWebFilterChain(ServerHttpSecurity http) {
@@ -61,25 +84,9 @@ public class SecurityConfig {
 				.pathMatchers("/moapay/member/login","/moapay/member/join","/moapay/member/sendSMS","/moapay/member/verification","/moapay/member/isMember").permitAll()
 				.anyExchange().authenticated() //나머지 경로는 인증 필요
 			)
+			.addFilterBefore(authenticationWebFilter(), SecurityWebFiltersOrder.AUTHENTICATION)
 			.build();
 	}
-
-	// @Bean
-	// public SecurityFilterChain gatewayFilterChain(HttpSecurity http) throws Exception {
-	// 	http
-	// 		.httpBasic(AbstractHttpConfigurer::disable)
-	// 		.csrf(AbstractHttpConfigurer::disable)
-	// 		.sessionManagement((session) -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-	// 		.cors(Customizer.withDefaults())
-	// 		.formLogin(AbstractHttpConfigurer::disable)
-	// 		.logout(AbstractHttpConfigurer::disable)
-	// 		.authorizeRequests()    // 다음 리퀘스트에 대한 사용권한 체크
-	// 		.requestMatchers("/eureka/**").permitAll()
-	// 		.requestMatchers("/**").permitAll() // 모든 주소 허용
-	// 		//.requestMatchers("/moapay/member/login","/moapay/member/join","/moapay/member/sendSMS","/moapay/member/verification","/moapay/member/isMember").permitAll() // 허용된 주소
-	// 		.anyRequest().authenticated();
-	// 	return http.build();
-	// }
 
 	@Bean
 	public CorsConfigurationSource corsConfigurationSource() {
@@ -88,7 +95,7 @@ public class SecurityConfig {
 		config.setAllowCredentials(true);
 		config.setAllowedOrigins(
 			List.of("https://localhost:8765", "http://localhost:8765",
-				"https://localhost", "http://localhost",
+				"https://localhost", "http://localhost", "http://localhost:5173",
 				"https://moapay-7e24e.web.app",
 				"https://j11c201.p.ssafy.io", "http://j11c201.p.ssafy.io"));
 		config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"));

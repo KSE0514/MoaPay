@@ -5,6 +5,8 @@ import java.util.Date;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
+import javax.crypto.SecretKey;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -19,6 +21,7 @@ import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
+import io.jsonwebtoken.security.Keys;
 import jakarta.annotation.PostConstruct;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -33,8 +36,11 @@ public class JwtTokenProvider {
 	private final RedisTemplate<String, String> redisTemplate;
 	private final MemberDetailsServiceImpl memberDetailsService;
 
-	@Value("${spring.jwt.secret}")
-	private String secretKey;
+
+	// @Value("${spring.jwt.secret}")
+	// private String secretKeyString;
+	//
+	// private String secretKey;
 
 	@Value("${spring.jwt.token.access-expiration-time}")
 	private long accessExpirationTime;
@@ -42,9 +48,21 @@ public class JwtTokenProvider {
 	@Value("${spring.jwt.token.refresh-expiration-time}")
 	private long refreshExpirationTime;
 
+	private SecretKey secretKey;
+
+	@Value("${spring.jwt.secret}")
+	private String secretKeyString; // 비밀 키 문자열
+
 	@PostConstruct
 	protected void init() {
-		secretKey = Base64.getEncoder().encodeToString(secretKey.getBytes());
+		// 비밀 키 문자열이 Base64로 인코딩된 것이 아니라면, 이를 사용하여 SecretKey 생성
+		// 비밀 키는 최소 512비트(64바이트) 이상이어야 합니다.
+		if (secretKeyString.length() < 64) {
+			throw new IllegalArgumentException("비밀 키는 최소 512비트(64바이트)이어야 합니다.");
+		}
+
+		// 비밀 키를 안전하게 생성
+		secretKey = Keys.hmacShaKeyFor(secretKeyString.getBytes());
 	}
 
 	public String generateAccessToken(Authentication authentication) {
