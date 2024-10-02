@@ -164,6 +164,7 @@ public class ChargeServiceImpl implements ChargeService {
                             .amount(requestCardInfo.getAmount())
                             .actualAmount(resultCardInfo.getActualAmount())
                             .performance(requestCardInfo.getPerformance())
+                            .usedAmount(requestCardInfo.getUsedAmount()+resultCardInfo.getActualAmount())
                             .benefitActivated(resultCardInfo.isBenefitActivated())
                             .benefitUsage(requestCardInfo.getBenefitUsage()+resultCardInfo.getBenefitBalance())
                             .benefitDetail(resultCardInfo.getBenefitDetail())
