@@ -65,7 +65,7 @@ public class CardController {
         return ResponseEntity.status(resultResponse.getStatus()).body(resultResponse);
     }
 
-    @PostMapping("/sable")
+    @PostMapping("/able")
     public ResponseEntity<ResultResponse> sableCard(@Valid @RequestBody MyCardStatusRequestDto ableCardRequestDto ) {
         myCardService.ableCard(ableCardRequestDto);
         ResultResponse resultResponse = ResultResponse.of(HttpStatus.OK, "카드 비활성화 완료");
