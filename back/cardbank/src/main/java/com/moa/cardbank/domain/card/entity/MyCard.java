@@ -7,6 +7,7 @@ import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import lombok.*;
 
+import java.util.List;
 import java.util.UUID;
 
 @Entity
@@ -67,12 +68,15 @@ public class MyCard {
     private long accountId;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "product_id", insertable = false, updatable = false)
+    @JoinColumn(name = "product_id", referencedColumnName = "id",insertable = false, updatable = false)
     private CardProduct product;
 
     @NotNull
     @Column(name = "product_id")
     private long productId;
+
+    @OneToMany(mappedBy = "id", fetch = FetchType.LAZY)
+    private List<PaymentLog> paymentLog;
 
     @PrePersist
     public void prePersist() {
