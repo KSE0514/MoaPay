@@ -147,7 +147,25 @@ export const DutchWaiting = styled.div`
 `;
 
 export const DutchFin = styled.div`
-  & > div {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  width: 100%;
+`
+
+export const FinContent = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  position: absolute;
+  // justify-content:center;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+
+  font-size: 23px;
+
+  & > div:nth-of-type(1) {
     width: 90px;
     height: 90px;
     border-radius: 100%;
@@ -155,22 +173,42 @@ export const DutchFin = styled.div`
     margin: auto;
     // align-items: center;
     background-color: #C5CAFF;
+    position: relative;
   }
 
-  & > div > svg{
-    // align-items: center;
-    display: flex;
-    // margin: auto;
-    // padding: 0 33%;
+  & > div:nth-of-type(1) > svg{
+    position: absolute;
+    text-align: center;
+    justify-content: center;
+    align-items: center;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
   }
 `
-
 
 export const Bottom = styled.div`
   position: absolute;
-  bottom: 0;
+  width: 100%;
+  bottom: 10px;
+  text-align: center;
+
+  // absolute 요소 중앙 정렬
+  left: 50%;
+  transform: translate(-50%, -50%);
 `
 
+export const Btn = styled.button`
+  background-color: white;
+  width: 78%;
+  height: 60px;
+  font-size: 19px;
+  font-weight: 700;
+  border: 2px solid black;
+  border-radius: 10px;
+  padding: 10px;
+  cursor: pointer;
+`
 
 export const BackImg = styled.div`
   // display: flex;

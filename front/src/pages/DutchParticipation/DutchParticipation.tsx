@@ -4,7 +4,7 @@ import Modal from "../../components/dutch/Modal/Modal";
 import Payment from "../../components/dutch/Payment/Payment";
 import SquareBtn from "../../components/dutch/SquareBtn/SquareBtn";
 import { useNavigate } from "react-router-dom";
-import { Wrapper, Top, Title, Timer, ProcessContainer, ProcessLine, Process, Step, Main, DutchWaiting, DutchFin, Bottom, BackImg } from './DutchParticipation.styles';
+import { Wrapper, Top, Title, Timer, ProcessContainer, ProcessLine, Process, Step, Main, DutchWaiting, DutchFin, FinContent, Bottom, Btn, BackImg } from './DutchParticipation.styles';
 import { useEffect, useState } from "react";
 
 const DutchParticipation = () => {
@@ -13,7 +13,9 @@ const DutchParticipation = () => {
   const [memberNum, setMemberNum] = useState(''); // 참여자 수 입력 받는 변수
   const [isOpen, setIsOpen] = useState(false); // 더치페이 나가기 모달 상태 관리
   const [timeLeft, setTimeLeft] = useState(600); // 10분(600초) 카운트다운을 위한 상태 관리
-  const [process, setProcess] = useState(0) // 진행 단계
+  const [process, setProcess] = useState(2) // 진행 단계
+
+  const [stop, setStop] = useState(false)
 
   const goHome = () => {
     nav("/home");
@@ -58,6 +60,13 @@ const DutchParticipation = () => {
 
     setProcess(3); // 다음 화면으로 전환
   }
+
+  // 모달-더치페이 중단 버튼 클릭
+  const onClickStop = () => {
+    setStop(true)
+  }
+
+  
   useEffect(() => {
     console.log(`Process changed to ${process}`);
   }, [process]);
@@ -133,28 +142,28 @@ const DutchParticipation = () => {
             </Step>
             <Step
               style={{
-                fontSize: process === 3 ? "20px" :  "17px",
-                fontWeight: process === 3 ? "700" :  "none",
-                color: 3 < process ? "#868686" : "black"
+                fontSize: (process === 3 || process === 4) ? "20px" :  "17px",
+                fontWeight: (process === 3 || process === 4) ? "700" :  "none",
+                color: 4 < process ? "#868686" : "black"
               }}
             >
               <div
                 style={{
-                  backgroundColor: process === 3? "#8748F3": (3 < process ? "black": "white")
+                  backgroundColor: (process === 3 || process === 4)? "#8748F3": (4 < process ? "black": "white")
                 }}
               ></div>
               <div>정산 대기</div>
             </Step>
             <Step
               style={{
-                fontSize: process === 4 ? "20px" :  "17px",
-                fontWeight: process === 4 ? "700" :  "none",
-                color: 4 < process ? "#868686" : "black"
+                fontSize: process === 5 ? "20px" :  "17px",
+                fontWeight: process === 5 ? "700" :  "none",
+                color: 5 < process ? "#868686" : "black"
               }}
             >
               <div
                 style={{
-                  backgroundColor: process === 4? "#8748F3": (4 < process ? "black": "white")
+                  backgroundColor: process === 5? "#8748F3": (5 < process ? "black": "white")
                 }}
               ></div>
               <div>완료</div>
@@ -176,26 +185,37 @@ const DutchParticipation = () => {
         {process === 3? (
           <DutchWaiting>
             <div>
-              <span>정</span>
-              <span>산</span>
+              <span>결</span>
+              <span>제</span>
               <span> </span>
-              <span>대</span>
-              <span>기</span>
+              <span>진</span>
+              <span>행</span>
               <span>중</span>
               <span>.</span>
               <span>.</span>
               <span>.</span>
             </div>
-            <div>다른 사람의 결제를 기다리는 중이에요!</div>
+            <div>결제 완료 시 웃는 얼굴로 변해요!</div>
           </DutchWaiting>
         ): null}
         {process === 4 ? (
+          <div>
+            다른 사람 결제 대기 화면
+          </div>
+        ) : null }
+        {process === 5 ? (
           <DutchFin>
-            <div>
-              <svg xmlns="http://www.w3.org/2000/svg" x="0px" y="0px" width="48" height="48" viewBox="0 0 24 24">
-                <path d="M 20.738281 5.9941406 A 1.250125 1.250125 0 0 0 19.878906 6.3730469 L 9 17.234375 L 4.1152344 12.361328 A 1.250125 1.250125 0 1 0 2.3496094 14.130859 L 8.1171875 19.884766 A 1.250125 1.250125 0 0 0 9.8828125 19.884766 L 21.644531 8.140625 A 1.250125 1.250125 0 0 0 20.738281 5.9941406 z"></path>
-              </svg>
-            </div>
+            <FinContent>
+              <div>
+                <svg xmlns="http://www.w3.org/2000/svg" fill="white" x="0px" y="0px" width="48" height="48" viewBox="0 0 24 24">
+                  <path d="M 20.738281 5.9941406 A 1.250125 1.250125 0 0 0 19.878906 6.3730469 L 9 17.234375 L 4.1152344 12.361328 A 1.250125 1.250125 0 1 0 2.3496094 14.130859 L 8.1171875 19.884766 A 1.250125 1.250125 0 0 0 9.8828125 19.884766 L 21.644531 8.140625 A 1.250125 1.250125 0 0 0 20.738281 5.9941406 z"></path>
+                </svg>
+              </div>
+              <div>더치페이 완료!</div>
+            </FinContent>
+            <Bottom>
+              <Btn onClick={goHome}>홈으로 돌아가기</Btn>
+            </Bottom>
           </DutchFin>
         ): null}
       </Main>
@@ -214,23 +234,27 @@ const DutchParticipation = () => {
       {/* [종료 버튼 미완]더치페이 나가기 모달 */}
       {isOpen && (
         <Modal isOpen={isOpen} onClose={closeModal}>
-          <svg
-            onClick={closeModal}
-            xmlns="http://www.w3.org/2000/svg"
-            x="0px"
-            y="0px"
-            width="20"
-            height="20"
-            viewBox="0 0 48 48"
-          >
+          <svg onClick={closeModal} xmlns="http://www.w3.org/2000/svg" x="0px" y="0px" width="20" height="20" viewBox="0 0 48 48">
             <path d="M 38.982422 6.9707031 A 2.0002 2.0002 0 0 0 37.585938 7.5859375 L 24 21.171875 L 10.414062 7.5859375 A 2.0002 2.0002 0 0 0 8.9785156 6.9804688 A 2.0002 2.0002 0 0 0 7.5859375 10.414062 L 21.171875 24 L 7.5859375 37.585938 A 2.0002 2.0002 0 1 0 10.414062 40.414062 L 24 26.828125 L 37.585938 40.414062 A 2.0002 2.0002 0 1 0 40.414062 37.585938 L 26.828125 24 L 40.414062 10.414062 A 2.0002 2.0002 0 0 0 38.982422 6.9707031 z"></path>
           </svg>
-          <div>더치페이를 중단 시키시겠습니까?</div>
+          {stop ? 
+            <div>정말 더치페이를 중단하시겠습니까?</div>
+          :
+            <div>더치페이를 중단 시키시겠습니까?</div>
+          }
           <div>
             {/* <button onClick={closeModal}>취소</button> */}
-            <button>중단</button>
-            {/* 종료(중단)버튼: 더치페이 주최자는 더치페이가 모두에게 종료되도록하고 참가자는 참가자 본인만 종료되도록 해야함 */}
-            <button onClick={goHome}>홈으로</button>
+            {/* 종료(중단)버튼: 더치페이 주최자는 더치페이가 모두에게 종료되도록하고 참가자는 참가자 본인만 종료되도록 해야함  */}
+            {stop ? 
+              <button>예</button>
+            :
+              <button onClick={onClickStop}>중단</button>
+            }
+            {stop ? 
+              <button onClick={() => {setStop(false)}}>취소</button>
+            :
+              <button onClick={goHome}>홈으로</button>
+            }
           </div>
         </Modal>
       )}

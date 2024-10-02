@@ -2,6 +2,7 @@ import Product from "../Product/Product";
 // import SquareBtn from "../SquareBtn/SquareBtn";
 import { useState } from "react";
 
+import Modal from "../Modal/Modal";
 import line from "./../../../assets/image/dutch_line_white.png"
 import testCard from "./../../../assets/image/cards/신용카드이미지/12_올바른_FLEX_카드.png"
 import testCard2 from "./../../../assets/image/cards/신용카드이미지/14_JADE_Classic.png"
@@ -32,6 +33,7 @@ interface PaymentProps {
 
 const Payment = ({onClick}: PaymentProps) => {
   const [rotate, setRotate] = useState(false);
+  const [isOpen, setIsOpen] = useState<boolean>(false);
 
   // 카드 가로, 세로 길이에 따른 회전 여부 판단 핸들러
   const handleImageLoad = (
@@ -43,6 +45,16 @@ const Payment = ({onClick}: PaymentProps) => {
       setRotate(true);
     }
   };
+
+  // 다른 카드 선택하기 버튼을 눌렀을 경우
+  const onClickChangeCard = () => {
+    setIsOpen(true)
+  }
+
+  const onClose = () => {
+    setIsOpen(false)
+  }
+
   return (
     <Wrapper>
       {/* 상품 이름 및 경로를 어떻게 가져올 것인지에 대해서 생각해봐야 함 */}
@@ -68,7 +80,7 @@ const Payment = ({onClick}: PaymentProps) => {
           src={testMainCard.img} />
           <div>{testMainCard.name}</div>
         </CardInfo>
-         <div>다른카드 선택하기</div>
+         <div onClick={onClickChangeCard}>다른카드 선택하기</div>
       <Bottom>
         {/* 결제 금액 넘겨 받아야 함 */}
         <Btn onClick={onClick}>7,000원 결제하기</Btn> 
@@ -76,7 +88,10 @@ const Payment = ({onClick}: PaymentProps) => {
       </Bottom>
       </Card>
 
-
+      <Modal isOpen={isOpen} onClose={onClose}>
+            <div>결제 카드 선택</div>
+            <div></div>
+      </Modal>
     </Wrapper>
   )
 }
