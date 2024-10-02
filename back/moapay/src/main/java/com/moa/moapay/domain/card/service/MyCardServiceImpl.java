@@ -37,7 +37,6 @@ public class MyCardServiceImpl implements MyCardService {
 
     @Override
     public List<MyCardInfoDto> getMyCardInfo(HttpServletRequest request) {
-
         // todo: 여기서 쿠키를 뜯어서 UUID 찾기
         // 이건 테스트용
         UUID memberId = UUID.fromString("550e8400-e29b-41d4-a716-446655440000");
@@ -91,7 +90,6 @@ public class MyCardServiceImpl implements MyCardService {
     @Override
     public List<CardInfoResponseDto> getAllCard() {
 
-//        List<CardProduct> cards = cardProductRepository.findAll();
         List<CardProduct> cards = myCardQueryRepository.findAll();
 
         List<CardInfoResponseDto> cardsDto = cards.stream().map(
@@ -126,6 +124,23 @@ public class MyCardServiceImpl implements MyCardService {
     }
 
     @Override
+    public void renewCardInfo(List<PaymentResultCardInfoVO> renewList) {
+        for (PaymentResultCardInfoVO vo : renewList) {
+            // 맞지 않는 부분이 있다면, 현재 값을 기준으로 갱신해주는 게 맞을 것 같긴 한데...
+            MyCard myCard = myCardRepository.findByUuid(vo.getCardId())
+                    .orElseThrow(() -> new BusinessException(HttpStatus.BAD_REQUEST, "유효하지 않은 정보입니다."));
+            log.info("found myCard : {}", myCard.getUuid());
+            long amount = myCard.getAmount();
+            long benefitUsage = myCard.getBenefitUsage();
+            MyCard newCard = myCard.toBuilder()
+                    .performanceFlag(vo.isBenefitActivated())
+                    .amount(amount + vo.getAmount())
+                    .benefitUsage(benefitUsage + vo.getBenefitBalance())
+                    .build();
+            myCardRepository.save(newCard);
+        }
+    }
+
     public List<GetMyCardsResponseDto> getMyCardFromCardBank(GetMyCardsRequestDto getMyCardsRequestDto) {
 
         // TODO : 맴버 인증 과정 추가 내 카드목록 마이데이터 불러오기전
@@ -194,25 +209,6 @@ public class MyCardServiceImpl implements MyCardService {
         }
 
         return null;
-    }
-
-
-    @Transactional
-    public void renewCardInfo(List<PaymentResultCardInfoVO> renewList) {
-        log.info("renew my_card info");
-        for (PaymentResultCardInfoVO vo : renewList) {
-            // 맞지 않는 부분이 있다면, 현재 값을 기준으로 갱신해주는 게 맞을 것 같긴 한데...
-            MyCard myCard = myCardRepository.findByUuid(vo.getCardId())
-                    .orElseThrow(() -> new BusinessException(HttpStatus.BAD_REQUEST, "유효하지 않은 정보입니다."));
-            long amount = myCard.getAmount();
-            long benefitUsage = myCard.getBenefitUsage();
-            MyCard newCard = myCard.toBuilder()
-                    .performanceFlag(vo.isBenefitActivated())
-                    .amount(amount + vo.getAmount())
-                    .benefitUsage(benefitUsage + vo.getBenefitBalance())
-                    .build();
-            myCardRepository.save(newCard); // todo: update 시행 안되는 중...
-        }
     }
 
     @Override
