@@ -14,7 +14,7 @@ public class ExecuteGeneralPayRequestDto {
     private UUID requestId; // 프론트에서 생성해서 전달, 전송 버튼 누를 때마다 생성하지 말고 할 것
     private UUID orderId;
     private UUID merchantId;
-    private String categoryId;
+//    private String categoryId;
     private CardSelectionType cardSelectionType;
     private long totalPrice;
     private String cardNumber;

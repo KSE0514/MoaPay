@@ -1,8 +1,6 @@
 package com.moa.moapay.domain.code.controller;
 
-import com.moa.moapay.domain.code.model.dto.GetQRCodeRequestDto;
-import com.moa.moapay.domain.code.model.dto.GetQRCodeResponseDto;
-import com.moa.moapay.domain.code.model.dto.GetQRInfoResponseDto;
+import com.moa.moapay.domain.code.model.dto.*;
 import com.moa.moapay.domain.code.service.CodeService;
 import com.moa.moapay.global.response.ResultResponse;
 import lombok.RequiredArgsConstructor;
@@ -37,6 +35,13 @@ public class CodeController {
     public ResponseEntity<ResultResponse> disableQRCode(@PathVariable String QRCode) {
         codeService.disableQRCode(QRCode);
         ResultResponse resultResponse = ResultResponse.of(HttpStatus.OK, "QR코드를 비활성화했습니다.");
+        return ResponseEntity.status(resultResponse.getStatus()).body(resultResponse);
+    }
+
+    @PostMapping("/barcode")
+    public ResponseEntity<ResultResponse> getBarcode(@RequestBody GetBarcodeRequestDto dto) {
+        GetBarcodeResponseDto responseDto = codeService.getBarcode(dto);
+        ResultResponse resultResponse = ResultResponse.of(HttpStatus.OK, "바코드를 발급했습니다.", responseDto);
         return ResponseEntity.status(resultResponse.getStatus()).body(resultResponse);
     }
 

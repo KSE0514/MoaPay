@@ -2,10 +2,11 @@ package com.moa.payment.domain.notification.service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.moa.payment.domain.notification.listener.RedisSubscribeListener;
-import com.moa.payment.domain.notification.repository.EmitterRedisRepository;
 import com.moa.payment.domain.notification.repository.EmitterRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.data.redis.listener.ChannelTopic;
 import org.springframework.data.redis.listener.RedisMessageListenerContainer;
 import org.springframework.stereotype.Service;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
@@ -22,32 +23,24 @@ public class NotificationServiceImpl implements NotificationService {
     private final EmitterRepository emitterRepository;
     private final RedisMessageListenerContainer redisMessageListenerContainer;
     private final RedisSubscribeListener redisSubscribeListener;
+    private final RedisTemplate<String, String> redisTemplate;
 
     @Override
     public SseEmitter subscribe(UUID code) {
         SseEmitter emitter = createEmitter(code);
         initialSend(code, emitter);
         log.info("sendToClient done");
+        // emitter 저장 이후, 주어진 코드를 기반으로 listener가 구독하도록 지시
+        redisMessageListenerContainer.addMessageListener(redisSubscribeListener, new ChannelTopic(code.toString()));
         return emitter;
     }
 
-//    @Override
-//    public void sendToClient(UUID code, Object data, String comment) {
-//        SseEmitter emitter = emitterRepository.getById(code);
-//        if (emitter != null) {
-//            try {
-//                String jsonData = new ObjectMapper().writeValueAsString(data); // 데이터를 JSON으로 변환
-//                emitter.send(SseEmitter.event()
-//                        .id(code.toString())
-//                        .name("sse")
-//                        .data(jsonData) // 변환된 JSON 데이터를 보냄
-//                        .comment(comment));
-//            } catch (IOException e) {
-//                emitter.completeWithError(e);
-//            }
-//        }
-//    }
-
+    @Override
+    public void sendCompleteMessage(UUID id) {
+        log.info("send charge complete message");
+        // redis publish를 이용해 emitter를 갖고있을 listener에게 메시지를 보낸다
+        redisTemplate.convertAndSend(id.toString(), id.toString());
+    }
 
     @Override
     public void initialSend(UUID code, SseEmitter emitter) {
@@ -57,7 +50,7 @@ public class NotificationServiceImpl implements NotificationService {
                 emitter.send(SseEmitter.event()
                         .id(code.toString())
                         .name("sse")
-                        .data(jsonData) // 변환된 JSON 데이터를 보냄
+                        .data(jsonData) // 변환된 JSON 데이터를 전송
                         .comment("sse 접속 성공"));
             } catch (IOException e) {
                 emitter.completeWithError(e);
@@ -74,19 +67,4 @@ public class NotificationServiceImpl implements NotificationService {
         emitter.onTimeout(() -> emitterRepository.deleteById(id));
         return emitter;
     }
-
-//    @Override
-//    public void sendEvent(UUID code, Object data) {
-//        log.info("send event");
-//        SseEmitter emitter = emitterRepository.getById(code);
-//        if(emitter != null) {
-//            try {
-//                emitter.send(SseEmitter.event().id(code.toString()).name("결제 완료").data(null));
-//                // 결제 프로세스가 완료되면 더이상 구독은 필요 없으므로 emitter를 종료시킨다
-//                emitter.complete();
-//            } catch (IOException e) {
-//                emitter.completeWithError(e);
-//            }
-//        }
-//    }
 }
