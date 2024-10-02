@@ -6,6 +6,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.UUID;
 
 @Repository
 public interface CardProductRepository extends JpaRepository<CardProduct, Long> {
@@ -15,4 +16,5 @@ public interface CardProductRepository extends JpaRepository<CardProduct, Long> 
             "JOIN FETCH cp.benefits cb")
     List<CardProduct> findAllWithBenefits();
 
+    CardProduct findByUuid(UUID uuid);
 }

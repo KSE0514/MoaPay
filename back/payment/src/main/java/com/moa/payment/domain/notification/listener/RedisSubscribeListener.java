@@ -43,10 +43,10 @@ public class RedisSubscribeListener implements MessageListener {
             try {
                 emitter.send(SseEmitter.event().id(code.toString()).name("payment-completed").data(resultDto));
                 // 결제 프로세스가 완료되면 더이상 구독은 필요 없으므로 emitter를 종료시킨다
-//                emitter.complete();
+                emitter.complete();
                 // 이후 해당 토픽에 대한 구독 상태 해제
-//                log.info("remove message listener...");
-//                redisMessageListenerContainer.removeMessageListener(this, new ChannelTopic(code.toString()));
+                log.info("remove message listener...");
+                redisMessageListenerContainer.removeMessageListener(this, new ChannelTopic(code.toString()));
             } catch (IOException e) {
                 e.printStackTrace();
                 emitter.completeWithError(e);
