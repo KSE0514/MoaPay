@@ -13,4 +13,6 @@ public interface CardService {
     CreateMyCardResponseDto createMyCard(CreateMyCardRequestDto dto);
 
     List<GetMyCardsResponseDto> getMyCards(GetMyCardsRequestDto getMyCardsRequestDto);
+
+    CardRestResponseDto registration(CardRegistrationRequestDto registrationRequestDto);
 }

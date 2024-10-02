@@ -26,4 +26,10 @@ public interface MyCardRepository extends JpaRepository<MyCard, Long> {
             "(SELECT mc.id FROM MyCard mc WHERE mc.member.uuid = :memberId)")
     List<PaymentLog> findPaymentLogsByMemberId(UUID memberId);
 
+    @Query("SELECT mc FROM MyCard mc " +
+           "JOIN FETCH mc.product cp " +
+           "JOIN FETCH mc.account ac " +
+           "JOIN FETCH mc.member mb " +
+           "WHERE mc.cardNumber = :cardNumber")
+    MyCard findByCardNumber(String cardNumber);
 }

@@ -69,4 +69,14 @@ public class CardController {
         return ResponseEntity.status(resultResponse.getStatus()).body(resultResponse);
     }
 
+    @PostMapping("/registration")
+    public ResponseEntity<?> registration(@RequestBody CardRegistrationRequestDto registrationRequestDto) {
+        log.info("registration request : {}", registrationRequestDto.getCardNumber());
+        CardRestResponseDto cardRestResponseDto = cardService.registration(registrationRequestDto);
+        log.info(cardRestResponseDto.toString());
+        ResultResponse resultResponse = ResultResponse.of(HttpStatus.OK, "카드 추가 확인", cardRestResponseDto);
+        return ResponseEntity.status(resultResponse.getStatus()).body(resultResponse);
+//        return cardRestResponseDto;
+    }
+
 }

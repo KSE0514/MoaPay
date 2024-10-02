@@ -1,11 +1,9 @@
 package com.moa.moapay.domain.card.service;
 
-import com.moa.moapay.domain.card.model.dto.CardInfoResponseDto;
-import com.moa.moapay.domain.card.model.dto.GetMyCardsRequestDto;
-import com.moa.moapay.domain.card.model.dto.GetMyCardsResponseDto;
-import com.moa.moapay.domain.card.model.dto.MyCardInfoDto;
+import com.moa.moapay.domain.card.model.dto.*;
 import com.moa.moapay.domain.card.model.vo.PaymentResultCardInfoVO;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.validation.Valid;
 
 import java.util.List;
 import java.util.UUID;
@@ -16,4 +14,6 @@ public interface MyCardService {
 
     List<GetMyCardsResponseDto> getMyCardFromCardBank(GetMyCardsRequestDto getMyCardsRequestDto);
     void renewCardInfo(List<PaymentResultCardInfoVO> renewList);
+
+    void registrationCard(CardRegistrationRequestDto registrationRequestDto);
 }

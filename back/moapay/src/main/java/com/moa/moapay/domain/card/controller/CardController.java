@@ -1,9 +1,6 @@
 package com.moa.moapay.domain.card.controller;
 
-import com.moa.moapay.domain.card.model.dto.CardInfoResponseDto;
-import com.moa.moapay.domain.card.model.dto.GetMyCardsRequestDto;
-import com.moa.moapay.domain.card.model.dto.GetMyCardsResponseDto;
-import com.moa.moapay.domain.card.model.dto.MyCardInfoDto;
+import com.moa.moapay.domain.card.model.dto.*;
 import com.moa.moapay.domain.card.service.MyCardService;
 import com.moa.moapay.domain.card.service.RecommendCardService;
 import com.moa.moapay.global.response.ResultResponse;
@@ -52,6 +49,13 @@ public class CardController {
     public ResponseEntity<ResultResponse> getCard(@Valid @RequestBody GetMyCardsRequestDto getMyCardsRequestDto) {
         List<GetMyCardsResponseDto> myCardFromCardBank = myCardService.getMyCardFromCardBank(getMyCardsRequestDto);
         ResultResponse resultResponse = ResultResponse.of(HttpStatus.OK, "카드 불러오기", myCardFromCardBank);
+        return ResponseEntity.status(resultResponse.getStatus()).body(resultResponse);
+    }
+
+    @PostMapping("/registration")
+    public ResponseEntity<ResultResponse> registrationCard(@Valid @RequestBody CardRegistrationRequestDto registrationRequestDto) {
+        myCardService.registrationCard(registrationRequestDto);
+        ResultResponse resultResponse = ResultResponse.of(HttpStatus.CREATED, "카드 추가 완료");
         return ResponseEntity.status(resultResponse.getStatus()).body(resultResponse);
     }
 }

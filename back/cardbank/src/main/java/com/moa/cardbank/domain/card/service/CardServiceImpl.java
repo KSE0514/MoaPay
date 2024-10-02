@@ -426,4 +426,38 @@ public class CardServiceImpl implements CardService {
 
         return responseDtos;
     }
+
+    @Override
+    public CardRestResponseDto registration(CardRegistrationRequestDto registrationRequestDto) {
+
+        MyCard myCard = myCardRepository.findByCardNumber(registrationRequestDto.getCardNumber());
+
+        if(myCard == null) {
+            throw new BusinessException(HttpStatus.NOT_FOUND, "카드사에 등록된 나의 카드가 없습니다.");
+        }
+
+        CardRestResponseDto cardRestResponseDto = CardRestResponseDto
+                .builder()
+                .uuid(myCard.getUuid())
+                .cardNumber(myCard.getCardNumber())
+                .cvc(myCard.getCvc())
+                .performanceFlag(myCard.getPerformanceFlag())
+                .benefitUsage(myCard.getBenefitUsage())
+                .cardProductUuid(myCard.getProduct().getUuid())
+                .cardProductName(myCard.getProduct().getName())
+                .cardProductCompanyName(myCard.getProduct().getCompanyName())
+                .cardProductBenefitTotalLimit(myCard.getProduct().getBenefitTotalLimit())
+                .cardProductType(String.valueOf(myCard.getProduct().getType()))
+                .cardProductAnnualFee(myCard.getProduct().getAnnualFee())
+                .cardProductAnnualFeeForeign(myCard.getProduct().getAnnualFeeForeign())
+                .cardProductImgUrl(myCard.getProduct().getImageUrl())
+                .accountUuid(myCard.getAccount().getUuid())
+                .accountNumber(myCard.getAccount().getNumber())
+                .balance(myCard.getAccount().getBalance())
+                .amount(myCard.getAmount())
+                .cardLimit(myCard.getCardLimit())
+                .build();
+
+        return cardRestResponseDto;
+    }
 }

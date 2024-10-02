@@ -67,7 +67,7 @@ public class MyCard {
     @Column(name = "account_id")
     private long accountId;
 
-    @OneToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "product_id", referencedColumnName = "id",insertable = false, updatable = false)
     private CardProduct product;
 

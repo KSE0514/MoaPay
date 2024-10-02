@@ -3,9 +3,6 @@ package com.moa.moapay.domain.card.service;
 import com.moa.moapay.domain.card.entity.CardProduct;
 import com.moa.moapay.domain.card.entity.MyCard;
 import com.moa.moapay.domain.card.model.dto.*;
-import com.moa.moapay.domain.card.model.dto.CardBenefitDto;
-import com.moa.moapay.domain.card.model.dto.CardInfoResponseDto;
-import com.moa.moapay.domain.card.model.dto.MyCardInfoDto;
 import com.moa.moapay.domain.card.model.vo.PaymentResultCardInfoVO;
 import com.moa.moapay.domain.card.repository.CardProductRepository;
 import com.moa.moapay.domain.card.repository.MyCardQueryRepository;
@@ -18,10 +15,14 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
-import org.springframework.web.client.RestClient;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.client.HttpClientErrorException;
+import org.springframework.web.client.RestClient;
 
-import java.util.*;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Service
@@ -199,7 +200,7 @@ public class MyCardServiceImpl implements MyCardService {
     @Transactional
     public void renewCardInfo(List<PaymentResultCardInfoVO> renewList) {
         log.info("renew my_card info");
-        for(PaymentResultCardInfoVO vo : renewList) {
+        for (PaymentResultCardInfoVO vo : renewList) {
             // 맞지 않는 부분이 있다면, 현재 값을 기준으로 갱신해주는 게 맞을 것 같긴 한데...
             MyCard myCard = myCardRepository.findByUuid(vo.getCardId())
                     .orElseThrow(() -> new BusinessException(HttpStatus.BAD_REQUEST, "유효하지 않은 정보입니다."));
@@ -207,11 +208,59 @@ public class MyCardServiceImpl implements MyCardService {
             long benefitUsage = myCard.getBenefitUsage();
             MyCard newCard = myCard.toBuilder()
                     .performanceFlag(vo.isBenefitActivated())
-                    .amount(amount+vo.getAmount())
-                    .benefitUsage(benefitUsage+vo.getBenefitBalance())
+                    .amount(amount + vo.getAmount())
+                    .benefitUsage(benefitUsage + vo.getBenefitBalance())
                     .build();
             myCardRepository.save(newCard); // todo: update 시행 안되는 중...
         }
+    }
+
+    @Override
+    @Transactional
+    public void registrationCard(CardRegistrationRequestDto registrationRequestDto) {
+
+        List<MyCard> myCards = myCardRepository.findAllByMemberId(registrationRequestDto.getMemberUuid());
+
+        for(MyCard myCard : myCards) {
+            if(myCard.getCardNumber().equals(registrationRequestDto.getCardNumber())) {
+                throw new BusinessException(HttpStatus.CONFLICT, "카드 데이터가 이미 존재합니다.");
+            }
+        }
+
+        try {
+            ResponseEntity<CardRestWrapperDto> responseEntity = restClient.post()
+                    .uri("http://localhost:18100/cardbank/card/registration")
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .body(registrationRequestDto)
+                    .retrieve()
+                    .toEntity(CardRestWrapperDto.class);
+
+            if (responseEntity.getStatusCode().is2xxSuccessful()) {
+                CardRestTemplateDto cardData = responseEntity.getBody().getData();
+                log.info("cardData = {} ", cardData);
+
+                // 이제 카드 상품 받았으니 저장해야지
+                UUID memberUuid = registrationRequestDto.getMemberUuid();
+                CardProduct cardProduct = cardProductRepository.findByUuid(cardData.getCardProductUuid());
+
+                MyCard myCard = MyCard.builder()
+                        .uuid(UUID.randomUUID())
+                        .cardNumber(cardData.getCardNumber())
+                        .cvc(cardData.getCvc())
+                        .cardProduct(cardProduct)
+                        .performanceFlag(cardData.isPerformanceFlag())
+                        .amount(cardData.getAmount())
+                        .benefitUsage(cardData.getBenefitUsage())
+                        .cardLimit(cardData.getCardLimit())
+                        .memberId(memberUuid)
+                        .build();
+
+                myCardRepository.save(myCard);
+            }
+        } catch (HttpClientErrorException e) {
+            throw new BusinessException(HttpStatus.NOT_FOUND, "카드사에 해당 상품이 없습니다.");
+        }
+
     }
 }
 
