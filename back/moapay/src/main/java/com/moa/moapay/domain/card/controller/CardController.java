@@ -13,7 +13,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.UUID;
 
 @RestController
 @RequiredArgsConstructor
@@ -56,6 +55,20 @@ public class CardController {
     public ResponseEntity<ResultResponse> registrationCard(@Valid @RequestBody CardRegistrationRequestDto registrationRequestDto) {
         myCardService.registrationCard(registrationRequestDto);
         ResultResponse resultResponse = ResultResponse.of(HttpStatus.CREATED, "카드 추가 완료");
+        return ResponseEntity.status(resultResponse.getStatus()).body(resultResponse);
+    }
+
+    @PostMapping("/disable")
+    public ResponseEntity<ResultResponse> disableCard(@Valid @RequestBody MyCardStatusRequestDto disableCardRequestDto ) {
+        myCardService.disableCard(disableCardRequestDto);
+        ResultResponse resultResponse = ResultResponse.of(HttpStatus.OK, "카드 비활성화 완료");
+        return ResponseEntity.status(resultResponse.getStatus()).body(resultResponse);
+    }
+
+    @PostMapping("/sable")
+    public ResponseEntity<ResultResponse> sableCard(@Valid @RequestBody MyCardStatusRequestDto ableCardRequestDto ) {
+        myCardService.ableCard(ableCardRequestDto);
+        ResultResponse resultResponse = ResultResponse.of(HttpStatus.OK, "카드 비활성화 완료");
         return ResponseEntity.status(resultResponse.getStatus()).body(resultResponse);
     }
 }
