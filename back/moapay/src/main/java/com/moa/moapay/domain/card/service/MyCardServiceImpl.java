@@ -79,6 +79,7 @@ public class MyCardServiceImpl implements MyCardService {
                             .cardLimit(myCard.getCardLimit())
                             .benefitUsage(myCard.getBenefitUsage())
                             .performanceFlag(myCard.isPerformanceFlag())
+                            .cardStatus(myCard.isCardStatus())
                             .cardInfo(cardInfo)
                             .build();
                 }).collect(Collectors.toList());
@@ -257,6 +258,41 @@ public class MyCardServiceImpl implements MyCardService {
             throw new BusinessException(HttpStatus.NOT_FOUND, "카드사에 해당 상품이 없습니다.");
         }
 
+    }
+
+    /**
+     * 카드 비활성화
+     * @param disableCardRequestDto
+     */
+    @Override
+    public void disableCard(MyCardStatusRequestDto disableCardRequestDto) {
+
+        List<MyCard> myCards = myCardRepository.findAllByMemberId(disableCardRequestDto.getMemberUuid());
+        boolean cardExists = myCards.stream()
+                .anyMatch(myCard -> myCard.getCardNumber().equals(disableCardRequestDto.getCardNumber()));
+
+        if (cardExists) {
+            myCardRepository.updateCardStatus(disableCardRequestDto.getCardNumber(), false);
+        } else {
+            throw new BusinessException(HttpStatus.NOT_FOUND, "요청하신 카드가 없습니다.");
+        }
+    }
+
+    /**
+     * 카드 활성화
+     * @param ableCardRequestDto
+     */
+    @Override
+    public void ableCard(MyCardStatusRequestDto ableCardRequestDto) {
+        List<MyCard> myCards = myCardRepository.findAllByMemberId(ableCardRequestDto.getMemberUuid());
+        boolean cardExists = myCards.stream()
+                .anyMatch(myCard -> myCard.getCardNumber().equals(ableCardRequestDto.getCardNumber()));
+
+        if (cardExists) {
+            myCardRepository.updateCardStatus(ableCardRequestDto.getCardNumber(), true);
+        } else {
+            throw new BusinessException(HttpStatus.NOT_FOUND, "요청하신 카드가 없습니다.");
+        }
     }
 }
 
