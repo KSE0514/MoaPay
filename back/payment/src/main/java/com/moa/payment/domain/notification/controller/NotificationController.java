@@ -1,5 +1,6 @@
 package com.moa.payment.domain.notification.controller;
 
+import com.moa.payment.domain.charge.model.dto.PaymentResultDto;
 import com.moa.payment.domain.notification.service.NotificationService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -27,7 +28,7 @@ public class NotificationController {
 
     @PostMapping("/send-data/{id}")
     public void sendData(@PathVariable UUID id) {
-        notificationService.sendCompleteMessage(id, null);
+        notificationService.sendCompleteMessage(id, PaymentResultDto.builder().requestId(id).build());
     }
 
 }

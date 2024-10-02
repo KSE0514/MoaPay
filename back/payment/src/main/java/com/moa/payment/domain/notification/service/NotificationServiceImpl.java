@@ -24,7 +24,7 @@ public class NotificationServiceImpl implements NotificationService {
     private final EmitterRepository emitterRepository;
     private final RedisMessageListenerContainer redisMessageListenerContainer;
     private final RedisSubscribeListener redisSubscribeListener;
-    private final RedisTemplate<String, String> redisTemplate;
+    private final RedisTemplate<String, Object> redisEmitterTemplate;
 
     @Override
     public SseEmitter subscribe(UUID code) {
@@ -38,9 +38,14 @@ public class NotificationServiceImpl implements NotificationService {
 
     @Override
     public void sendCompleteMessage(UUID id, PaymentResultDto resultDto) {
-        log.info("send charge complete message");
+        log.info("send charge complete message: {} - {}", id.toString(), resultDto);
+        // 이하는 디버깅용(추후 삭제)
+//        log.info("emitter : "+emitterRepository.getById(id));
         // redis publish를 이용해 emitter를 갖고있을 listener에게 메시지를 보낸다
-        redisTemplate.convertAndSend(id.toString(), resultDto);
+        Long subscriberCount = redisEmitterTemplate.convertAndSend(id.toString(), resultDto);
+        log.info("convert and send done");
+        System.out.println(subscriberCount);
+        log.info("subscriberCount: {}", subscriberCount);
     }
 
     @Override
@@ -64,8 +69,9 @@ public class NotificationServiceImpl implements NotificationService {
         SseEmitter emitter = new SseEmitter(DEFAULT_TIMEOUT);
         // 어차피 timeout이 지나면 사라지므로 따로 삭제 처리는 하지 않는다
         emitterRepository.save(id, emitter);
-        emitter.onCompletion(() -> emitterRepository.deleteById(id));
-        emitter.onTimeout(() -> emitterRepository.deleteById(id));
+        emitter.onCompletion(() -> {emitterRepository.deleteById(id); log.info("emitter completed - current size : {}", emitterRepository.size());});
+        emitter.onTimeout(() -> {emitterRepository.deleteById(id); log.info("emitter timeout - current size : {}", emitterRepository.size());});
+        log.info("added new emitter - current emitterRepository size : {}", emitterRepository.size());
         return emitter;
     }
 }

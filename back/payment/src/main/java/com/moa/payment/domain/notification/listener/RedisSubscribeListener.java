@@ -22,14 +22,14 @@ import java.util.UUID;
 @Slf4j
 public class RedisSubscribeListener implements MessageListener {
 
-    private final RedisTemplate<String, String> redisTemplate;
+    private final RedisTemplate<String, Object> redisEmitterTemplate;
     private final ObjectMapper objectMapper;
     private final EmitterRepository emitterRepository;
     private final RedisMessageListenerContainer redisMessageListenerContainer;
 
     @Override
     public void onMessage(Message message, byte[] pattern) {
-        String publishMessage = redisTemplate.getStringSerializer().deserialize(message.getBody());
+        String publishMessage = redisEmitterTemplate.getStringSerializer().deserialize(message.getBody());
         log.info("received message : {}", publishMessage);
         // 이중 try문... 이대로 괜찮은가...?
         try {
@@ -43,13 +43,16 @@ public class RedisSubscribeListener implements MessageListener {
             try {
                 emitter.send(SseEmitter.event().id(code.toString()).name("payment-completed").data(resultDto));
                 // 결제 프로세스가 완료되면 더이상 구독은 필요 없으므로 emitter를 종료시킨다
-                emitter.complete();
+//                emitter.complete();
                 // 이후 해당 토픽에 대한 구독 상태 해제
-                redisMessageListenerContainer.removeMessageListener(this, new ChannelTopic(code.toString()));
+//                log.info("remove message listener...");
+//                redisMessageListenerContainer.removeMessageListener(this, new ChannelTopic(code.toString()));
             } catch (IOException e) {
+                e.printStackTrace();
                 emitter.completeWithError(e);
             }
         } catch (JsonProcessingException e) {
+            e.printStackTrace();
             log.error(e.getMessage());
         }
     }
