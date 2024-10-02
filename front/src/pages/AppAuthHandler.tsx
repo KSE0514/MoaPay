@@ -26,7 +26,7 @@ const AppAuthHandler: React.FC = () => {
           const hasLoggedInBefore =
             localStorage.getItem("hasLoggedInBefore") === "true";
           //백그라운드에서 머무른 시간이 1분을 초과한 경우
-          if (timeDiff > 10) {
+          if (timeDiff > 60000) {
             //이전 로그인 기록이 있는 경우
             if (hasLoggedInBefore) {
               requestLogin();

@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import {
   Form,
@@ -25,15 +25,18 @@ interface JoinUserInfo {
 
 const CreateAccount = () => {
   const baseUrl = import.meta.env.VITE_BASE_URL;
+  const baseUrl1 = `http://localhost:18040/`;
   const navigate = useNavigate();
-  const { isLoggedIn, setIsLoggedIn, setUserInfo } = useAuthStore();
-  const [isAuth, setIsAuth] = useState<boolean>(false); //인증 여부
+  const [limitTime, setLimitTime] = useState<number>(2000); // 초기 값 2000으로 설정
+  const timerRef = useRef<NodeJS.Timeout | null>(null); //타이머
+  const { setUserInfo } = useAuthStore(); // 유저 정보
+  const [joinMode, setJoinMode] = useState<boolean>(false); // 회원가입 모드
   const [beforeStarting, setBeforeStarting] = useState<boolean>(true);
-  const [btnMent, setBtnMent] = useState<string>("인증번호 받기");
   const [validationErrors, setValidationErrors] = useState<{
     [key: string]: boolean;
   }>({});
-  const [authSent, setAuthSent] = useState<boolean>(false); // 인증번호가 발급되었는지 여부
+  const [SMSAuthSent, setSMSAuthSent] = useState<boolean>(false); // 인증번호가 발급되었는지 여부
+  const [endSMSAuth, setEndSMSAuth] = useState<boolean>(false); // 인증번호 인증 완료 여부
   const [joinUserInfo, setjoinUserInfo] = useState<JoinUserInfo>({
     name: "",
     phone_number: "",
@@ -62,6 +65,15 @@ const CreateAccount = () => {
         const { [name]: _, ...rest } = prevErrors; // name 필드를 제외한 나머지 오류만 유지
         return rest;
       });
+    }
+    //인증번호가 바뀌는 것이 아닌 필드가 바뀌면 인증상태를 false로 변경
+    if (name != "verification_code" && name != "email" && name != "address") {
+      setSMSAuthSent(false);
+      setEndSMSAuth(false);
+      if (timerRef.current) {
+        clearInterval(timerRef.current);
+        setLimitTime(2000);
+      }
     }
   };
 
@@ -114,6 +126,25 @@ const CreateAccount = () => {
     setValidationErrors(errors);
     return Object.keys(errors).length === 0;
   };
+
+  // 인증번호 제한 시간 타이머
+  const startLimitTime = () => {
+    let timeRemaining = 180; // 3분 설정
+    timerRef.current = setInterval(() => {
+      timeRemaining -= 1;
+      setLimitTime(timeRemaining);
+      if (timeRemaining <= 0) {
+        clearInterval(timerRef.current!); // 타이머 중단
+      }
+    }, 1000); // 1초마다 실행
+  };
+
+  // 분:초 형식으로 시간 변환
+  const formatTime = (time: number) => {
+    const minutes = Math.floor(time / 60); // 분 계산
+    const seconds = time % 60; // 초 계산
+    return `${minutes}:${seconds < 10 ? `0${seconds}` : seconds}`; // 1:30 형식으로 반환
+  };
   /**
    * 1. 인증번호 받아오기
    */
@@ -123,55 +154,56 @@ const CreateAccount = () => {
     }
     // 인증번호 발급하기
     try {
-      await axios.post(`http://localhost:18040/payment/member/sendSMS`, {
+      await axios.post(`${baseUrl1}moapay/member/sendSMS`, {
         phoneNumber: joinUserInfo.phone_number,
       });
-      setAuthSent(true); // 인증번호 발급됨
-      setBtnMent("인증번호 재발송");
+      setSMSAuthSent(true); // 인증번호 발급됨
+      startLimitTime();
     } catch (e) {
-      const error = e as AxiosError; // e를 AxiosError로 단언
-      console.log(error);
+      console.log(e);
     }
   };
 
   /**
-   * 2. 인증번호 확인 후 존재하는 유저인지 판단
+   * 2. 인증번호 확인
    */
 
-  const checkUser = async () => {
+  const checkAuthNumber = async () => {
+    console.log("hello");
     // 유효성 검사 통과하지 못한 경우
     if (!validateFields()) {
       return;
     }
+    console.log("h1");
+    // 타이머 멈추기
+    if (timerRef.current) {
+      clearInterval(timerRef.current);
+      if (limitTime <= 0) {
+        setValidationErrors((prevErrors) => ({
+          ...prevErrors,
+          timeout: true, // verification_code 필드에 오류 상태 추가
+        }));
+        setLimitTime(2000);
+        return;
+      }
+      setLimitTime(2000);
+    }
+    console.log("h2");
     try {
-      //인증번호 확인하기
+      console.log(joinUserInfo.verification_code);
+      // 인증번호 확인하기
       const response = await axios.post(
-        `http://localhost:18040/payment/member/verification`,
+        `${baseUrl1}moapay/member/verification`,
         {
           phoneNumber: joinUserInfo.phone_number,
           code: joinUserInfo.verification_code,
         }
       );
-      //인증번호가 일치하면 존재하는 멤버인지 확인해야함
-      if (response.status == 200) {
-        //요청 결과에 따라 비밀번호 로그인 또는 회원가입으로 전달
-        const existUserCheckResponse = await axios.post(``, {});
-        //회원이 없는 경우
-        if (existUserCheckResponse.data) {
-          //회원가입
-          setIsAuth(true);
-        } else {
-          navigate(PATH.PASSWORD_LOGIN, {
-            state: {
-              ment: `앱을 켜려면\n비밀번호를 눌러주세요`,
-              back: false,
-              mode: "NewLogin",
-            },
-          });
-        }
-      }
+      console.log(response);
+      setEndSMSAuth(true);
     } catch (e) {
-      const error = e as AxiosError; // e를 AxiosError로 단언
+      const error = e as AxiosError; // AxiosError로 타입 단언
+      console.log(error);
       if (error.response?.status == 400) {
         setValidationErrors((prevErrors) => ({
           ...prevErrors,
@@ -180,9 +212,42 @@ const CreateAccount = () => {
       }
       //인증번호가 틀린 경우 - 인증번호 다시 입력하도록 함
     }
+    console.log("h4");
+  };
 
-    //test - 회원가입
-    // setIsAuth(true);
+  /**
+   * 3. 존재하는 유저인지 판단
+   */
+  const checkUser = async () => {
+    // 유효성 검사 통과하지 못한 경우
+    if (!validateFields()) {
+      return;
+    }
+
+    try {
+      //인증번호가 일치하면 존재하는 멤버인지 확인해야함
+      //요청 결과에 따라 비밀번호 로그인 또는 회원가입으로 전달
+      // const existUserCheckResponse = await axios.post(``, {});
+      //회원이 없는 경우
+      // if (existUserCheckResponse.data) {
+      //   //회원가입
+      //   setJoinMode(true);
+      // } else {
+      //   navigate(PATH.PASSWORD_LOGIN, {
+      //     state: {
+      //       ment: `앱을 켜려면\n비밀번호를 눌러주세요`,
+      //       back: false,
+      //       mode: "NewLogin",
+      //     },
+      //   });
+      // }
+    } catch (e) {
+      const error = e as AxiosError; // AxiosError로 타입 단언
+      console.log(error);
+    }
+
+    // test - 회원가입
+    setJoinMode(true);
 
     //test - 계정이 있는 경우
     // navigate(PATH.PASSWORD_LOGIN, {
@@ -195,27 +260,25 @@ const CreateAccount = () => {
   };
 
   /**
-   * 3. 회원가입
+   * 4. 회원가입
    */
   const join = async () => {
+    console.log(endSMSAuth);
     //회원 가입 요청 보내기
+    if (!endSMSAuth) return;
     try {
-      const response = await axios.post(
-        `http://localhost:18040/payment/member/join`,
-        {
-          name: joinUserInfo.name,
-          birthDate: formatBirthDate(joinUserInfo.birth_date),
-          gender: Number(joinUserInfo.gender), //1~4로 넘겨주면 F,M 판단해서 db에 넣기
-          phoneNumber: joinUserInfo.phone_number,
-          email: joinUserInfo.email,
-          address: joinUserInfo.address,
-        }
-      );
+      const response = await axios.post(`${baseUrl1}moapay/member/join`, {
+        name: joinUserInfo.name,
+        birthDate: formatBirthDate(joinUserInfo.birth_date),
+        gender: Number(joinUserInfo.gender), //1~4로 넘겨주면 F,M 판단해서 db에 넣기
+        phoneNumber: joinUserInfo.phone_number,
+        email: joinUserInfo.email,
+        address: joinUserInfo.address,
+      });
       if (response.status == 200) {
         //로그인 상태로 변경하기
-        localStorage.setItem("hasLoggedInBefore", "true");
-        setIsLoggedIn(true);
-        setUserInfo(response.data.id, response.data.name);
+        console.log(response);
+        setUserInfo(response.data.data.id, response.data.data.name);
         // 응답 받으면 생체인식 설정으로 이동시키기
         navigate(PATH.PASSWORD_LOGIN, {
           state: {
@@ -226,10 +289,9 @@ const CreateAccount = () => {
         });
       }
     } catch (e) {
-      const error = e as AxiosError; // e를 AxiosError로 단언
-      console.log(error);
+      console.log(e);
     }
-    //test
+    // test
     // localStorage.setItem("hasLoggedInBefore", "true");
     // navigate(PATH.PASSWORD_LOGIN, {
     //   state: {
@@ -255,7 +317,7 @@ const CreateAccount = () => {
         </LogoView>
       ) : (
         <MessageAuthenticationForm className={beforeStarting ? "" : "fade-in"}>
-          {isAuth ? (
+          {joinMode ? (
             <Header>
               회원가입을 위해
               <br />
@@ -280,7 +342,7 @@ const CreateAccount = () => {
                 name="name"
                 value={joinUserInfo.name}
                 onChange={handleChange}
-                disabled={authSent}
+                disabled={endSMSAuth}
                 style={{
                   borderColor: validationErrors.name ? "red" : "",
                 }}
@@ -305,7 +367,7 @@ const CreateAccount = () => {
                 name="birth_date"
                 value={joinUserInfo.birth_date}
                 onChange={handleChange}
-                disabled={authSent}
+                disabled={endSMSAuth}
                 style={{
                   borderColor: validationErrors.birth_date ? "red" : "",
                 }}
@@ -317,7 +379,7 @@ const CreateAccount = () => {
                   name="gender"
                   value={joinUserInfo.gender}
                   onChange={handleChange}
-                  disabled={authSent}
+                  disabled={endSMSAuth}
                   style={{
                     borderColor: validationErrors.gender ? "red" : "",
                   }}
@@ -340,7 +402,7 @@ const CreateAccount = () => {
                 name="telecom"
                 value={joinUserInfo.telecom}
                 onChange={handleChange}
-                disabled={authSent}
+                disabled={endSMSAuth}
                 style={{
                   borderColor: validationErrors.telecom ? "red" : "",
                 }}
@@ -366,33 +428,61 @@ const CreateAccount = () => {
                 name="phone_number"
                 value={joinUserInfo.phone_number}
                 onChange={handleChange}
-                disabled={authSent}
+                disabled={endSMSAuth}
                 style={{
                   borderColor: validationErrors.phone_number ? "red" : "",
                 }}
               />
             </div>
 
-            {!isAuth && (
+            {!joinMode && (
               <div>
                 {validationErrors.verification_code && (
                   <p style={{ width: "50%" }} className="error">
                     잘못된 인증번호입니다.
                   </p>
                 )}
+                {validationErrors.timeout && (
+                  <p style={{ width: "50%" }} className="error">
+                    만료된 인증번호입니다.
+                  </p>
+                )}
+                {endSMSAuth && (
+                  <p
+                    className="error"
+                    style={{ color: endSMSAuth ? "green" : "" }}
+                  >
+                    인증되었습니다.
+                  </p>
+                )}
                 <div className="form-row auth-btn">
-                  <input
-                    value={joinUserInfo.verification_code}
-                    type="text"
-                    placeholder="인증번호"
-                    name="verification_code"
-                    onChange={handleChange}
-                  />
-                  <button onClick={getAuthNumber}>{btnMent}</button>
+                  <div>
+                    <input
+                      style={{ borderColor: endSMSAuth ? "green" : "" }}
+                      disabled={endSMSAuth}
+                      value={joinUserInfo.verification_code}
+                      type="text"
+                      placeholder="인증번호"
+                      name="verification_code"
+                      onChange={handleChange}
+                    />
+                    <div>
+                      {limitTime !== 2000 && (
+                        <div className="error time">
+                          {formatTime(limitTime)}
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                  {SMSAuthSent ? (
+                    <button onClick={checkAuthNumber}>인증하기</button>
+                  ) : (
+                    <button onClick={getAuthNumber}>인증번호 받기</button>
+                  )}
                 </div>
               </div>
             )}
-            {isAuth && (
+            {joinMode && (
               <>
                 <div className="form-row">
                   <input
@@ -415,10 +505,14 @@ const CreateAccount = () => {
               </>
             )}
             <button
-              className={isAuth ? "join-btn" : "ready-btn"}
-              onClick={isAuth ? join : checkUser}
+              className={joinMode ? "join-btn" : "ready-btn"}
+              onClick={joinMode ? join : checkUser}
+              style={{
+                backgroundColor: endSMSAuth ? "var(--light-purple)" : "",
+                color: endSMSAuth ? "white" : "",
+              }}
             >
-              {isAuth ? "회원가입" : "확인"}
+              {joinMode ? "회원가입" : "확인"}
             </button>
           </Form>
         </MessageAuthenticationForm>

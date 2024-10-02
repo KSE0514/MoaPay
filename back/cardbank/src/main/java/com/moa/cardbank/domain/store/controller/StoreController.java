@@ -16,7 +16,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequiredArgsConstructor
 @Slf4j
-@RequestMapping("/bank/store")
+@RequestMapping("/store")
 public class StoreController {
     private final StoreService storeService;
 

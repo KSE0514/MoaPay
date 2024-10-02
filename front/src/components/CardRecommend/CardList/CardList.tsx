@@ -1,24 +1,11 @@
 import { useState } from "react";
 import { CardInfo } from "./CardList.styles";
 import CardDetail from "../CardDetail/CardDetail";
-
-interface benefit {
-  category: string;
-  explanation: string;
-}
-
-interface card {
-  name: string; // 카드명
-  image_url: string; // 이미지 url
-  type: number; // 카드 종류 - 신용, 체크
-  annual_fee: number; // 연회비
-  performance: number; // 전월 실적
-  benefits: benefit[]; // 혜택
-}
+import { Card } from "../../../store/CardStore";
 
 interface Props {
-  cardList: card[];
-  onCardClick: (card: card) => void;
+  cardList: Card[];
+  onCardClick: (card: Card) => void;
 }
 
 const CardList = ({ cardList, onCardClick }: Props) => {
@@ -26,7 +13,7 @@ const CardList = ({ cardList, onCardClick }: Props) => {
   const [translateX, setTranslateX] = useState<{ [key: number]: number }>({});
   const [startX, setStartX] = useState<number | null>(null); // 터치 시작 위치 저장
   const [showCardDetail, setShowCardDetail] = useState<boolean>(false); // 새로운 화면 표시 여부
-  const [selectedCard, setSelectedCard] = useState<card | null>(null);
+  const [selectedCard, setSelectedCard] = useState<Card | null>(null);
   const [animationExecuted, setAnimationExecuted] = useState<boolean>(false); // 애니메이션이 실행된 상태 추적
 
   // 이미지 로드 시 회전 여부 설정
@@ -105,8 +92,8 @@ const CardList = ({ cardList, onCardClick }: Props) => {
           >
             <div>
               <img
-                src={card.image_url}
-                alt={card.name}
+                src={card.cardInfo.imageUrl}
+                alt={card.cardInfo.cardName}
                 onLoad={(event) => handleImageLoad(event, index)} // 이미지가 로드되면 handleImageLoad 호출
                 style={{
                   width: rotate[index] ? "57px" : "90px", // 회전 여부에 따라 width와 height 변경
@@ -116,7 +103,7 @@ const CardList = ({ cardList, onCardClick }: Props) => {
                 }}
               />
             </div>
-            <h3>{card.name}</h3> {/* 카드명 */}
+            <h3>{card.cardInfo.cardName}</h3> {/* 카드명 */}
           </div>
         </CardInfo>
       ))}
