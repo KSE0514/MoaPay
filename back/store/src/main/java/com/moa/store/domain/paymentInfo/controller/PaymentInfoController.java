@@ -22,12 +22,11 @@ public class PaymentInfoController {
 	private PaymentInfoService paymentInfoService;
 
 	// 오프라인 결제, API 명세서 2행
-	@PostMapping("/offline/barcode")
-	public ResponseEntity<ResultResponse> offlineBarcodePayRequest(@RequestBody String barcode) {
-
-		ResultResponse resultResponse = ResultResponse.of(HttpStatus.OK, "오프라인 결제");
-		return ResponseEntity.status(resultResponse.getStatus()).body(resultResponse);
-	}
+	// @PostMapping("/offline/barcode")
+	// public ResponseEntity<ResultResponse> offlineBarcodePayRequest(@RequestBody String barcode) {
+	// 	ResultResponse resultResponse = ResultResponse.of(HttpStatus.OK, "오프라인 결제");
+	// 	return ResponseEntity.status(resultResponse.getStatus()).body(resultResponse);
+	// }
 
 	// 온라인 구매, API 명세서 3행
 	@PostMapping("/online/purchase")

@@ -1,7 +1,10 @@
 package com.moa.store.domain.paymentInfo.client;
 
 import com.moa.store.domain.order.model.dto.CreateOrderResponseDto;
+import com.moa.store.global.response.ResultResponse;
+
 import org.springframework.cloud.openfeign.FeignClient;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 
@@ -9,4 +12,9 @@ import org.springframework.web.bind.annotation.RequestBody;
 public interface MoaPayClient {
 	@PostMapping("moapay/core/code/QRcode")
 	GetQRCodeResponseDto getQRCode(@RequestBody CreateOrderResponseDto createOrderResponseDto);
+
+	@PostMapping("moapay/core/generalpay/offline")
+	ResponseEntity<ResultResponse> executeOfflinePay
+		(@RequestBody ExecuteOfflinePayRequestDto executeOfflinePayRequestDto);
+
 }
