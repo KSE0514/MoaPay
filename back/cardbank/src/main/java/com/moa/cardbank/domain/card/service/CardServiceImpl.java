@@ -9,6 +9,7 @@ import com.moa.cardbank.domain.account.service.AccountService;
 import com.moa.cardbank.domain.card.entity.*;
 import com.moa.cardbank.domain.card.model.*;
 import com.moa.cardbank.domain.card.model.dto.*;
+import com.moa.cardbank.domain.card.model.dto.getMyCard.*;
 import com.moa.cardbank.domain.card.repository.*;
 import com.moa.cardbank.domain.member.entity.Member;
 import com.moa.cardbank.domain.member.repository.MemberRepository;
@@ -21,9 +22,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -325,7 +325,6 @@ public class CardServiceImpl implements CardService {
         // [4] 사용 혜택량 변경
         // 환불한만큼 사용 혜택 현황을 돌려놓는다. < 일단은 그냥 진행...
         // 단, 현재 혜택한도를 넘는 이상으로 돌려주지는 않는다
-        // todo : 할인내역 기록해서 그 값 기반으로 사용 혜택량(my_card), 카드 총 사용량 변동시키기
         long newAmount = myCard.getAmount() - newPaymentLog.getAmount(); // 사용금액은 취소된 결제금액만큼 차감
         long newBenefitUsage = Math.max(myCard.getBenefitUsage() - totalBenefit, 0); // 혜택 사용량도 차감해주나 0 미만으로 차감해주지는 않음
         MyCard newMyCard = myCard.toBuilder()
@@ -383,5 +382,81 @@ public class CardServiceImpl implements CardService {
                 .myCardNumber(newCard.getCardNumber())
                 .cvc(newCard.getCvc())
                 .build();
+    }
+
+    @Override
+    public List<GetMyCardsResponseDto> getMyCards(GetMyCardsRequestDto getMyCardsRequestDto) {
+
+        List<MyCard> myCards = myCardRepository.findByMemberId(getMyCardsRequestDto.getMemberUuid());
+
+        List<GetMyCardsResponseDto> responseDtos = myCards.stream().map(
+                myCard -> {
+                    CardProductDto cardProductDto = CardProductDto
+                            .builder()
+                            .cardProductUuid(myCard.getProduct().getUuid())
+                            .cardProductName(myCard.getProduct().getName())
+                            .cardProductType(myCard.getProduct().getType())
+                            .cardProductPerformance(myCard.getProduct().getPerformance())
+                            .cardProductAnnualFee(myCard.getProduct().getAnnualFee())
+                            .cardProductAnnualFeeForeign(myCard.getProduct().getAnnualFeeForeign())
+                            .cardProductBenefitTotalLimit(myCard.getProduct().getBenefitTotalLimit())
+                            .cardProductImgUrl(myCard.getProduct().getImageUrl())
+                            .cardProductCompanyName(myCard.getProduct().getCompanyName())
+                            .build();
+
+                    AccountDto accountDto = AccountDto
+                            .builder()
+                            .accountNumber(myCard.getAccount().getNumber())
+                            .accountUuid(myCard.getAccount().getUuid())
+                            .balance(myCard.getAccount().getBalance())
+                            .build();
+
+                    return GetMyCardsResponseDto.builder()
+                            .uuid(myCard.getUuid())
+                            .cardNumber(myCard.getCardNumber())
+                            .cvc(myCard.getCvc())
+                            .benefitUseage(myCard.getBenefitUsage())
+                            .cardLimit(myCard.getCardLimit())
+                            .accounts(accountDto)
+                            .cardProduct(cardProductDto)
+                            .build();
+                }
+        ).collect(Collectors.toList());
+
+        return responseDtos;
+    }
+
+    @Override
+    public CardRestResponseDto registration(CardRegistrationRequestDto registrationRequestDto) {
+
+        MyCard myCard = myCardRepository.findByCardNumber(registrationRequestDto.getCardNumber());
+
+        if(myCard == null) {
+            throw new BusinessException(HttpStatus.NOT_FOUND, "카드사에 등록된 나의 카드가 없습니다.");
+        }
+
+        CardRestResponseDto cardRestResponseDto = CardRestResponseDto
+                .builder()
+                .uuid(myCard.getUuid())
+                .cardNumber(myCard.getCardNumber())
+                .cvc(myCard.getCvc())
+                .performanceFlag(myCard.getPerformanceFlag())
+                .benefitUsage(myCard.getBenefitUsage())
+                .cardProductUuid(myCard.getProduct().getUuid())
+                .cardProductName(myCard.getProduct().getName())
+                .cardProductCompanyName(myCard.getProduct().getCompanyName())
+                .cardProductBenefitTotalLimit(myCard.getProduct().getBenefitTotalLimit())
+                .cardProductType(String.valueOf(myCard.getProduct().getType()))
+                .cardProductAnnualFee(myCard.getProduct().getAnnualFee())
+                .cardProductAnnualFeeForeign(myCard.getProduct().getAnnualFeeForeign())
+                .cardProductImgUrl(myCard.getProduct().getImageUrl())
+                .accountUuid(myCard.getAccount().getUuid())
+                .accountNumber(myCard.getAccount().getNumber())
+                .balance(myCard.getAccount().getBalance())
+                .amount(myCard.getAmount())
+                .cardLimit(myCard.getCardLimit())
+                .build();
+
+        return cardRestResponseDto;
     }
 }

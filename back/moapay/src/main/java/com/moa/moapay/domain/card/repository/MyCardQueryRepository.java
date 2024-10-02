@@ -59,4 +59,14 @@ public class MyCardQueryRepository {
                 .where(myCard.cardNumber.eq(cardNumber))
                 .fetchOne();
     }
+
+    public MyCard findByCardNumberFetchJoin(String cardNumber) {
+        QMyCard myCard = QMyCard.myCard;
+        QCardProduct cardProduct = QCardProduct.cardProduct;
+        return queryFactory
+                .selectFrom(myCard)
+                .join(myCard.cardProduct, cardProduct).fetchJoin()
+                .where(myCard.cardNumber.eq(cardNumber))
+                .fetchOne();
+    }
 }

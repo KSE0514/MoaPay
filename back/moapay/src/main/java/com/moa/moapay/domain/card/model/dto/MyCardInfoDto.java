@@ -16,5 +16,5 @@ public class MyCardInfoDto {
     private Long amount;
     private Long benefitUsage;
     private CardInfoResponseDto cardInfo;
-
+    private boolean cardStatus;
 }

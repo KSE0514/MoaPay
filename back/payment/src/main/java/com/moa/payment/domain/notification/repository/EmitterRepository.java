@@ -29,4 +29,8 @@ public class EmitterRepository {
         return emitters.get(id);
     }
 
+    public int size() {
+        return emitters.size();
+    }
+
 }

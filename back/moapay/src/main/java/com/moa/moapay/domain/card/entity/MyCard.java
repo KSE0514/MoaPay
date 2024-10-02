@@ -2,6 +2,7 @@ package com.moa.moapay.domain.card.entity;
 
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
+import jakarta.ws.rs.DefaultValue;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -53,8 +54,12 @@ public class MyCard {
     @Column(name = "member_id",  columnDefinition = "binary(16)")
     private UUID memberId;
 
+    @DefaultValue("true")
+    @Column(name = "card_status")
+    private boolean cardStatus;
+
     @NotNull
-    @ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "product_id")
     private CardProduct cardProduct;
 }
