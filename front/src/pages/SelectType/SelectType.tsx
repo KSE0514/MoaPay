@@ -6,8 +6,8 @@ import { PATH } from "../../constants/path";
 import { useAuthStore } from "../../store/AuthStore";
 
 const SelectType = () => {
-  const baseUrl = import.meta.env.VITE_BASE_URL;
-  const baseUrl1 = `http://localhost:18040/`;
+  // const baseUrl = import.meta.env.VITE_BASE_URL;
+  const baseUrl = `http://localhost:18040/`;
   const navigate = useNavigate();
   const [selectType, setSelectType] = useState<string | null>(null);
   const { id, accessToken, isLoggedIn, Login, mode } = useAuthStore();
@@ -23,7 +23,8 @@ const SelectType = () => {
     //요청보내기
     try {
       const response = await axios.post(
-        `${baseUrl}moapay/member/selectType`,
+        // `${baseUrl}moapay/member/selectType`,
+        `moapay/member/selectType`,
         { type: selectType, uuid: id },
         {
           withCredentials: true,

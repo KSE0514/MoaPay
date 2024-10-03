@@ -24,8 +24,8 @@ interface JoinUserInfo {
 }
 
 const CreateAccount = () => {
-  const baseUrl = import.meta.env.VITE_BASE_URL;
-  const baseUrl1 = `http://localhost:18040/`;
+  // const baseUrl = import.meta.env.VITE_BASE_URL;
+  const baseUrl = `http://localhost:18040/`;
   const navigate = useNavigate();
   const [limitTime, setLimitTime] = useState<number>(2000); // 초기 값 2000으로 설정
   const timerRef = useRef<NodeJS.Timeout | null>(null); //타이머
@@ -163,7 +163,8 @@ const CreateAccount = () => {
     // 인증번호 발급하기
     try {
       await axios.post(
-        `${baseUrl}moapay/member/sendSMS`,
+        // `${baseUrl}moapay/member/sendSMS`,
+        `moapay/member/sendSMS`,
         {
           phoneNumber: joinUserInfo.phone_number,
         },
@@ -203,7 +204,8 @@ const CreateAccount = () => {
     try {
       // 인증번호 확인하기
       const response = await axios.post(
-        `${baseUrl}moapay/member/verification`,
+        // `${baseUrl}moapay/member/verification`,
+        `moapay/member/verification`,
         {
           phoneNumber: joinUserInfo.phone_number,
           code: joinUserInfo.verification_code,
@@ -246,7 +248,8 @@ const CreateAccount = () => {
       // 인증번호가 일치하면 존재하는 멤버인지 확인해야함
       // 요청 결과에 따라 비밀번호 로그인 또는 회원가입으로 전달
       const existUserCheckResponse = await axios.post(
-        `${baseUrl}moapay/member/isMember`,
+        `moapay/member/isMember`,
+        // `${baseUrl}moapay/member/isMember`,
         {
           phoneNumber: joinUserInfo.phone_number,
         },
@@ -295,19 +298,24 @@ const CreateAccount = () => {
     //회원 가입 요청 보내기
     if (!endSMSAuth) return;
     try {
-      const response = await axios.post(`${baseUrl}moapay/member/join`, {
-        name: joinUserInfo.name,
-        birthDate: formatBirthDate(joinUserInfo.birth_date),
-        gender: Number(joinUserInfo.gender), //1~4로 넘겨주면 F,M 판단해서 db에 넣기
-        phoneNumber: joinUserInfo.phone_number,
-        email: joinUserInfo.email,
-        address: joinUserInfo.address,
-      });
+      const response = await axios.post(
+        // `${baseUrl}moapay/member/join`,
+        `moapay/member/join`,
+        {
+          name: joinUserInfo.name,
+          birthDate: formatBirthDate(joinUserInfo.birth_date),
+          gender: Number(joinUserInfo.gender), //1~4로 넘겨주면 F,M 판단해서 db에 넣기
+          phoneNumber: joinUserInfo.phone_number,
+          email: joinUserInfo.email,
+          address: joinUserInfo.address,
+        }
+      );
       if (response.status == 200) {
         setUserInfo(response.data.data.id, response.data.data.name);
         //로그인 보내기
         const loginResponse = await axios.post(
-          `${baseUrl}moapay/member/login`,
+          // `${baseUrl}moapay/member/login`,
+          `moapay/member/login`,
           {
             uuid: response.data.data.id,
             phoneNumber: joinUserInfo.phone_number,
