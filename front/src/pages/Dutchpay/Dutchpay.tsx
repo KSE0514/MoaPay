@@ -14,6 +14,7 @@ import {
   BackImg,
 } from './Dutchpay.styles'
 import { useEffect, useState } from "react";
+import { PATH } from "../../constants/path";
 
 const Dutchpay = () => {
   const nav = useNavigate()
@@ -62,7 +63,7 @@ const Dutchpay = () => {
 
 
   const goHome = () => {
-    nav("/home")
+    nav(PATH.HOME)
   }
 
   // 더치페이 나가기 버튼 클릭 시 모달 띄우기

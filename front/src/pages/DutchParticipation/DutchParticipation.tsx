@@ -6,6 +6,7 @@ import SquareBtn from "../../components/dutch/SquareBtn/SquareBtn";
 import { useNavigate } from "react-router-dom";
 import { Wrapper, Top, Title, Timer, ProcessContainer, ProcessLine, Process, Step, Main, DutchWaiting, DutchFin, FinContent, Bottom, Btn, BackImg } from './DutchParticipation.styles';
 import { useEffect, useState } from "react";
+import { PATH } from "../../constants/path";
 
 const DutchParticipation = () => {
   const nav = useNavigate();
@@ -18,7 +19,7 @@ const DutchParticipation = () => {
   const [stop, setStop] = useState(false)
 
   const goHome = () => {
-    nav("/home");
+    nav(PATH.HOME);
   };
 
   // 더치페이 나가기 버튼 클릭 시 모달 띄우기
@@ -201,6 +202,10 @@ const DutchParticipation = () => {
         {process === 4 ? (
           <div>
             다른 사람 결제 대기 화면
+            <div class="container">
+              <div id="spinner"></div>
+              
+            </div>
           </div>
         ) : null }
         {process === 5 ? (

@@ -54,3 +54,13 @@ export const Btn = styled.button`
   padding: 10px;
   cursor: pointer;
 `
+
+export const SelectModal = styled.div`
+  padding: 0px !important;
+  height: 400px;
+  overflow: auto;
+
+  & > div:nth-of-type(1) {
+    padding: 10px 0;
+  }
+`

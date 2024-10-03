@@ -2,6 +2,7 @@ import Product from "../Product/Product";
 // import SquareBtn from "../SquareBtn/SquareBtn";
 import { useState } from "react";
 
+import SelectCardList from "./../SelectCardList/SelectCardList"
 import Modal from "../Modal/Modal";
 import line from "./../../../assets/image/dutch_line_white.png"
 import testCard from "./../../../assets/image/cards/신용카드이미지/12_올바른_FLEX_카드.png"
@@ -14,6 +15,7 @@ import {
   CardInfo,
   Bottom,
   Btn,
+  SelectModal,
 } from "./Payment.styles"
 
 const testMainCard = {
@@ -33,6 +35,7 @@ interface PaymentProps {
 
 const Payment = ({onClick}: PaymentProps) => {
   const [rotate, setRotate] = useState(false);
+  const [selectedCard, setSelectedCard] = useState<object>({}); // 선택된 카드(결제 카드)
   const [isOpen, setIsOpen] = useState<boolean>(false);
 
   // 카드 가로, 세로 길이에 따른 회전 여부 판단 핸들러
@@ -49,6 +52,12 @@ const Payment = ({onClick}: PaymentProps) => {
   // 다른 카드 선택하기 버튼을 눌렀을 경우
   const onClickChangeCard = () => {
     setIsOpen(true)
+  }
+
+  // 결제할 카드를 선택했을 경우
+  const onSelectCard = (card: object) => {
+    console.log(`${card.id}번째 카드를 선택하였습니다.`)
+    setIsOpen(false)
   }
 
   const onClose = () => {
@@ -89,8 +98,10 @@ const Payment = ({onClick}: PaymentProps) => {
       </Card>
 
       <Modal isOpen={isOpen} onClose={onClose}>
+            <SelectModal>
             <div>결제 카드 선택</div>
-            <div></div>
+            <SelectCardList onSelectCard={onSelectCard} />
+            </SelectModal>
       </Modal>
     </Wrapper>
   )

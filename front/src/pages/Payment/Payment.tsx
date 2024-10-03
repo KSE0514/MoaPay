@@ -24,6 +24,7 @@ import "./../../../node_modules/swiper/swiper-bundle.min.css"
 
 import cardImg1 from "./../../assets/image/cards/신용카드이미지/1_신한카드_Mr.Life.png"
 import cardImg2 from "./../../assets/image/cards/신용카드이미지/12_올바른_FLEX_카드.png"
+import { PATH } from '../../constants/path';
 // import cardImg2 from "./../../assets/image/cards/신용카드이미지/34_American_Express®_Green_Card_Edition2.png"
 
 // 테스트용 정보(추후 지울 예정)
@@ -74,7 +75,7 @@ const Payment = () => {
   const currentMonth = new Date().getMonth() + 1; // 월은 0부터 시작하기 때문에 +1
 
   const clickHomeBtn = () => {
-    nav('/home')
+    nav(PATH.HOME)
   }
   // 카드 가로, 세로 길이에 따른 회전 여부 판단 핸들러
   const handleImageLoad = (
