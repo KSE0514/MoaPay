@@ -38,7 +38,6 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class JwtUtil {
 
-
 	private SecretKey secretKey;
 
 	@Value("${spring.jwt.secret}")
@@ -56,54 +55,53 @@ public class JwtUtil {
 		secretKey = Keys.hmacShaKeyFor(secretKeyString.getBytes());
 	}
 
-	public String getToken(ServerHttpRequest request){
+	public String getToken(ServerHttpRequest request) {
 		return request.getHeaders().getFirst(HttpHeaders.AUTHORIZATION);
 	}
 
-	public String resolveToken(ServerHttpRequest request){
+	public String resolveToken(ServerHttpRequest request) {
 		String bearerToken = getToken(request);
 
-		if(bearerToken !=null && bearerToken.startsWith("Bearer")){
+		if (bearerToken != null && bearerToken.startsWith("Bearer")) {
 			return bearerToken.substring(7);
 		}
 
 		return null;
 	}
 
-	public boolean validateJwtToken(String authToken){
+	public boolean validateJwtToken(String authToken) {
 		try {
 			Jwts.parserBuilder().setSigningKey(secretKey).build().parseClaimsJws(authToken);
 			return true;
 		} catch (ExpiredJwtException e) {
 			log.error("JWT token is expired: {}", e.getMessage());
-			throw new BusinessException(HttpStatus.UNAUTHORIZED,"토큰이 만료되었습니다.");
+			throw new BusinessException(HttpStatus.UNAUTHORIZED, "토큰이 만료되었습니다.");
 		} catch (UnsupportedJwtException e) {
 			log.error("JWT token is unsupported: {}", e.getMessage());
-			throw new BusinessException(HttpStatus.UNAUTHORIZED,"토큰이 없습니다.");
+			throw new BusinessException(HttpStatus.UNAUTHORIZED, "토큰이 없습니다.");
 		} catch (IllegalArgumentException e) {
 			log.error("JWT claims string is empty: {}", e.getMessage());
-			throw new BusinessException(HttpStatus.UNAUTHORIZED,"claim이 존재하지 않습니다.");
-		}catch (JwtException e){
+			throw new BusinessException(HttpStatus.UNAUTHORIZED, "claim이 존재하지 않습니다.");
+		} catch (JwtException e) {
 			log.error("Invalid JWT token: {}", e.getMessage());
-			throw new BusinessException(HttpStatus.UNAUTHORIZED,"유효하지 않는 토큰입니다.");
+			throw new BusinessException(HttpStatus.UNAUTHORIZED, "유효하지 않는 토큰입니다.");
 		}
 	}
 
-	public Authentication getAuthentication(String token){
+	public Authentication getAuthentication(String token) {
 		Claims claims = parseClaims(token);
 
-		String uuid=parseClaims(token).get("uuid", String.class);
+		String uuid = parseClaims(token).get("uuid", String.class);
 
 		MemberPrincipalDetails userDetails = new MemberPrincipalDetails(uuid);
 
 		return new UsernamePasswordAuthenticationToken(userDetails, "", userDetails.getAuthorities());
 	}
 
-
-	private Claims parseClaims(String accessToken){
+	private Claims parseClaims(String accessToken) {
 		try {
 			return Jwts.parserBuilder().setSigningKey(secretKey).build().parseClaimsJws(accessToken).getBody();
-		} catch(ExpiredJwtException e) {
+		} catch (ExpiredJwtException e) {
 			return e.getClaims();
 		}
 	}
