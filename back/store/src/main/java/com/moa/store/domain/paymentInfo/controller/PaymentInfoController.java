@@ -44,4 +44,3 @@ public class PaymentInfoController {
 		return ResponseEntity.status(resultResponse.getStatus()).body(resultResponse);
 	}
 }
-t
