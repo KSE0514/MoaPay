@@ -143,8 +143,7 @@ public class OrderServiceImpl implements OrderService {
 
         Order savedOrder = orderRepository.save(order);
         List<ItemInfo> itemInfos = createItemInfos(savedOrder, createOrderRequestDto.getItem());
-        List<ItemInfo> savedItemInfos = itemInfoRepository.saveAll(itemInfos);
-        savedOrder.getItemInfos().addAll(savedItemInfos);
+        itemInfoRepository.saveAll(itemInfos);
 
         return CreateOrderResponseDto.builder()
                 .orderId(savedOrder.getUuid())

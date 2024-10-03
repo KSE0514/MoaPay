@@ -32,7 +32,7 @@ import lombok.NoArgsConstructor;
 public class PaymentInfo {
 
 	@Id
-	@GeneratedValue(strategy = GenerationType.AUTO)
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 
 	@Column(columnDefinition = "binary(16)", unique = true, nullable = false, updatable = false)
