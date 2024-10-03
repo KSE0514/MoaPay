@@ -25,6 +25,8 @@ import DutchInvite from "../pages/DutchInvite/DutchInvite.tsx";
 import DutchParticipation from "../pages/DutchParticipation/DutchParticipation.tsx";
 import BringCard from "../pages/BringCard/BringCard.tsx";
 import SelectType from "../pages/SelectType/SelectType.tsx";
+import { elements } from "chart.js";
+import RegisterCard from "../pages/RegisterCard/RegisterCard.tsx";
 import Payment from "../pages/Payment/Payment.tsx";
 const router = createBrowserRouter([
   {
@@ -92,6 +94,7 @@ const router = createBrowserRouter([
             path: PATH.SELECT_TYPE,
             element: <SelectType />,
           },
+          { path: "add-card", element: <RegisterCard /> },
         ],
       },
       {
