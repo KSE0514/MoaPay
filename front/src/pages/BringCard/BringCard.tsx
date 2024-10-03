@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Button, Title, Wrapper } from "./BringCard.styles";
+import { Button, ImageView, Title, Wrapper } from "./BringCard.styles";
 import axios, { AxiosError } from "axios";
 import { useNavigate } from "react-router-dom";
 import { PATH } from "../../constants/path";
@@ -21,7 +21,7 @@ const BringCard = () => {
   const baseUrl1 = `http://localhost:18100/`;
   const { cardList, setCardList, removeCard } = useCardStore();
   const navigate = useNavigate();
-  const [isLoding, setIsLoding] = useState(false);
+  const [isLoding, setIsLoding] = useState(true);
   const [before, setBefore] = useState(true);
   const { name, accessToken, mode, setMode } = useAuthStore();
   const bringCard = async () => {
@@ -172,7 +172,25 @@ const BringCard = () => {
         <>
           {before ? (
             <>
-              <Title>카드를 불러오겠습니까?</Title>
+              <Title>
+                모아페이 사용을 위한
+                <br />
+                <span>카드 연결을 </span>진행하시겠습니까?
+              </Title>
+              <p
+                style={{
+                  color: "#84848",
+                  fontWeight: "400",
+                  marginTop: "5px",
+                }}
+              >
+                {/* 연결 진행 시 <br />
+                카드사에 연결된 <br /> */}
+                사용자님의 모든 카드 정보를 가져옵니다.
+              </p>
+              <ImageView>
+                <img src="/assets/image/card-payment.png" />
+              </ImageView>
               <Button onClick={bringCard}>불러오기</Button>
             </>
           ) : (

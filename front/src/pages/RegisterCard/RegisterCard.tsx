@@ -17,6 +17,7 @@ import { useAuthStore } from "../../store/AuthStore";
 import { useCardStore } from "../../store/CardStore";
 
 const RegisterCard: React.FC = () => {
+  const baseUrl = import.meta.env.VITE_BASE_URL;
   const baseUrl1 = `http://localhost:18020/`;
   const { id } = useAuthStore();
   const { addCard } = useCardStore();
@@ -67,7 +68,7 @@ const RegisterCard: React.FC = () => {
     setError(false); // 에러 초기화
     try {
       const response = await axios.post(
-        `${baseUrl1}moapay/core/card/registration`,
+        `${baseUrl}moapay/core/card/registration`,
         {
           memberUuid: id,
           cardNumber: cardNumber.join(""), // 카드 번호를 배열이 아닌 문자열로 전송
@@ -122,7 +123,8 @@ const RegisterCard: React.FC = () => {
                       width="47.834px"
                       height="47.834px"
                       viewBox="0 0 47.834 47.834"
-                      style={{ enableBackground: "new 0 0 47.834 47.834" }}>
+                      style={{ enableBackground: "new 0 0 47.834 47.834" }}
+                    >
                       <g>
                         <g>
                           <path
@@ -168,7 +170,8 @@ const RegisterCard: React.FC = () => {
                   width="47.834px"
                   height="47.834px"
                   viewBox="0 0 47.834 47.834"
-                  style={{ enableBackground: "new 0 0 47.834 47.834" }}>
+                  style={{ enableBackground: "new 0 0 47.834 47.834" }}
+                >
                   <g>
                     <g>
                       <path
@@ -223,7 +226,8 @@ const RegisterCard: React.FC = () => {
                 <select
                   id="card-expiration-month"
                   value={expirationMonth}
-                  onChange={handleMonthChange}>
+                  onChange={handleMonthChange}
+                >
                   <option value="" disabled>
                     MM
                   </option>
@@ -243,7 +247,8 @@ const RegisterCard: React.FC = () => {
                 <select
                   id="card-expiration-year"
                   value={expirationYear}
-                  onChange={handleYearChange}>
+                  onChange={handleYearChange}
+                >
                   <option value="" disabled>
                     YY
                   </option>

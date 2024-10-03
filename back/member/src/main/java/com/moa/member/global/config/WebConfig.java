@@ -16,4 +16,4 @@ public class WebConfig implements WebMvcConfigurer {
 				.allowCredentials(true) // 쿠키 인증 요청 허용 여부
 				.maxAge(3600); // 프리플라이트 요청 캐시 시간 설정 (선택)
 	}
-}
+}f
