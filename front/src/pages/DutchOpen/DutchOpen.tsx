@@ -54,8 +54,12 @@ const DutchOpen = () => {
     setIsCompleteSettingCheck(false);
   };
   const completeMemberSetting = () => {
-    setMemberSetComplete(true)
-    setIsCompleteSettingCheck(false);
+    setMemberSetComplete(true) // 나중에 지울 수도 있음
+    setIsCompleteSettingCheck(false); // 나중에 지울 수도 있음
+    nav(PATH.DUTCHPAY) // 더치페이 화면으로 이동
+
+
+    // stomp 열기...? 더치페이 방 여는 axios 요청
   };
 
   const onClickStop = () => {

@@ -6,8 +6,8 @@ import { PATH } from "../../constants/path";
 import { useAuthStore } from "../../store/AuthStore";
 
 const SelectType = () => {
-  const baseUrl = import.meta.env.VITE_BASE_URL;
-  const baseUrl1 = `http://localhost:18040/`;
+  // const baseUrl = import.meta.env.VITE_BASE_URL;
+  const baseUrl = `http://localhost:18040/`;
   const navigate = useNavigate();
   const [selectType, setSelectType] = useState<string | null>(null);
   const { id, accessToken, isLoggedIn, Login, mode } = useAuthStore();

@@ -16,8 +16,8 @@ import { useAuthStore } from "../../store/AuthStore";
 import { useCardStore } from "../../store/CardStore";
 
 const RegisterCard: React.FC = () => {
-  const baseUrl = import.meta.env.VITE_BASE_URL;
-  const baseUrl1 = `http://localhost:18020/`;
+  // const baseUrl = import.meta.env.VITE_BASE_URL;
+  const baseUrl = `http://localhost:18020/`;
   const { id } = useAuthStore();
   const { addCard } = useCardStore();
   const [cardNumber, setCardNumber] = useState(["", "", "", ""]);

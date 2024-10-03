@@ -19,8 +19,8 @@ import axios from "axios";
 import { useAuthStore } from "../../store/AuthStore";
 
 const PasswordLogin: React.FC = () => {
-  const baseUrl = import.meta.env.VITE_BASE_URL;
-  const baseUrl1 = `http://localhost:18040/`;
+  // const baseUrl = import.meta.env.VITE_BASE_URL;
+  const baseUrl = `http://localhost:18040/`;
   const {
     id,
     mode,
