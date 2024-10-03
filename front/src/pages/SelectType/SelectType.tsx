@@ -1,11 +1,5 @@
 import { act, useEffect, useState } from "react";
-import {
-  EndButton,
-  IntroduceView,
-  SelectView,
-  Story,
-  Wrapper,
-} from "./SelectType.styles";
+import { EndButton, SelectView, Wrapper } from "./SelectType.styles";
 import axios, { AxiosError } from "axios";
 import { useNavigate } from "react-router-dom";
 import { PATH } from "../../constants/path";
