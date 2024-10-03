@@ -1,11 +1,11 @@
     package com.moa.moapay.domain.card.entity;
 
+    import com.fasterxml.uuid.Generators;
+    import com.moa.moapay.domain.card.model.BenefitType;
+    import com.moa.moapay.domain.card.model.BenefitUnit;
     import jakarta.persistence.*;
     import jakarta.validation.constraints.NotNull;
-    import lombok.AllArgsConstructor;
-    import lombok.Builder;
-    import lombok.Getter;
-    import lombok.NoArgsConstructor;
+    import lombok.*;
     import org.hibernate.annotations.BatchSize;
 
     import java.util.UUID;
@@ -14,7 +14,8 @@
     @Table(name = "card_benefit")
     @Builder(toBuilder = true)
     @Getter
-    @NoArgsConstructor
+    @ToString
+    @NoArgsConstructor(access = AccessLevel.PROTECTED)
     @AllArgsConstructor
     @BatchSize(size = 100)
     public class CardBenefit {
@@ -39,36 +40,26 @@
 
         @NotNull
         @Enumerated(EnumType.STRING)
-        @Column(name = "category_type")
-        private CategoryType categoryType;
-
-        @NotNull
-        @Enumerated(EnumType.STRING)
         @Column(name = "benefit_type")
         private BenefitType benefitType;
 
         @NotNull
-        @Column(name = "benefit_value")
-        private float benefitValue;
+        @Enumerated(EnumType.STRING)
+        @Column(name = "benefit_unit")
+        private BenefitUnit benefitUnit;
 
-        @Column(name = "benefit_desc")
+        @NotNull
+        @Column(name = "benefit_value", columnDefinition = "float(20, 2)")
+        private double benefitValue;
+
+        @Column(name = "benefit_desc", length = 300)
         private String benefitDesc;
 
         @Column(name = "benefit_point")
         private int benefitPoint;
 
-        @Override
-        public String toString() {
-            return "CardBenefit{" +
-                    "id=" + id +
-                    ", uuid=" + uuid +
-                    ", cardProduct=" + cardProduct +
-                    ", cardBenefitCategory=" + cardBenefitCategory +
-                    ", categoryType=" + categoryType +
-                    ", benefitType=" + benefitType +
-                    ", benefitValue=" + benefitValue +
-                    ", benefitDesc='" + benefitDesc + '\'' +
-                    ", benefitPoint=" + benefitPoint +
-                    '}';
+        @PrePersist
+        private void prePersist() {
+            this.uuid = Generators.timeBasedEpochGenerator().generate();
         }
     }

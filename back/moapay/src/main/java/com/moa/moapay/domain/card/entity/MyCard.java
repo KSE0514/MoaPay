@@ -2,10 +2,13 @@ package com.moa.moapay.domain.card.entity;
 
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
+import jakarta.ws.rs.DefaultValue;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.DynamicInsert;
+
 import java.util.UUID;
 
 @Entity
@@ -14,6 +17,7 @@ import java.util.UUID;
 @Builder(toBuilder = true)
 @NoArgsConstructor
 @AllArgsConstructor
+@DynamicInsert
 public class MyCard {
 
     @Id
@@ -22,28 +26,28 @@ public class MyCard {
     private long id;
 
     @NotNull
-    @Column(name = "uuid", columnDefinition = "binary(16)", nullable = false)
+    @Column(name = "uuid", columnDefinition = "binary(16)", nullable = false, updatable = false)
     private UUID uuid;
 
     @NotNull
-    @Column(name = "cardNumber", unique = true)
+    @Column(name = "card_number", unique = true, length = 30)
     private String cardNumber;
 
     @NotNull
-    @Column(name = "cvc")
+    @Column(name = "cvc", columnDefinition = "char(3)")
     private String cvc;
 
     @NotNull
-    @Column(name = "performance")
-    private boolean performanceOk;
+    @Column(name = "performance_flag", columnDefinition = "tinyint(1)")
+    private boolean performanceFlag;
 
     @NotNull
     @Column(name = "card_limit")
     private Long cardLimit;
 
     @NotNull
-    @Column(name = "charges")
-    private Long charges;
+    @Column(name = "amount")
+    private Long amount;
 
     @NotNull
     @Column(name = "benefit_usage")
@@ -53,8 +57,12 @@ public class MyCard {
     @Column(name = "member_id",  columnDefinition = "binary(16)")
     private UUID memberId;
 
+    @DefaultValue("true")
+    @Column(name = "card_status")
+    private Boolean cardStatus;
+
     @NotNull
-    @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    @JoinColumn(name = "product_id", referencedColumnName = "id")
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "product_id")
     private CardProduct cardProduct;
 }
