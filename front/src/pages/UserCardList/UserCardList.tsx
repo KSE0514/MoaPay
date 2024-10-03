@@ -19,17 +19,17 @@ import {
 const UserCardList = () => {
   const CardList = [
     {
-      cardNumber: '001',
+      cardNumber: "001",
       name: "JADE Classic",
       img: testcard1,
     },
     {
-      cardNumber: '002',
+      cardNumber: "002",
       name: "올바른 FLEX 카드",
       img: testcard2,
     },
     {
-      cardNumber: '003',
+      cardNumber: "003",
       name: "삼성 iD SIMPLE 카드",
       img: testcard3,
     },
@@ -38,9 +38,9 @@ const UserCardList = () => {
   const { addCard, removeCard } = useCardStore(); // 더미데이터 채워질 시 해당 라인과 테스트용 cardList 삭제하고 위에 코드 주석 풀기
 
   // 카드 삭제 api 요청(백엔드에 요청시엔 cardNumber로 요청)
-  const deleteCard = async (index:number, cardNumber: string) => {
-    removeCard(index) // store의 CardList에서 카드 제거
-    console.log(index, "삭제할 카드 인덱스 확인용 콘솔")
+  const deleteCard = async (index: number, cardNumber: string) => {
+    removeCard(index); // store의 CardList에서 카드 제거
+    console.log(index, "삭제할 카드 인덱스 확인용 콘솔");
 
     // 백엔드에 카드 제거 요청
     try {
@@ -57,25 +57,24 @@ const UserCardList = () => {
     }
   };
 
+  //   try {
+  //     // const response = await axios.get(
+  //     //   `http://localhost:18020/moapay/core/card/mycard`,
+  //     //   { withCredentials: true }
+  //     // );
+  //     //로딩상태 풀고 카드 선택 뷰 보이도록 설정
+  //     // setCardList(response.data);
 
-//   try {
-//     // const response = await axios.get(
-//     //   `http://localhost:18020/moapay/core/card/mycard`,
-//     //   { withCredentials: true }
-//     // );
-//     //로딩상태 풀고 카드 선택 뷰 보이도록 설정
-//     // setCardList(response.data);
-
-//     //Test
-//     setCardList(MyCardList);
-//     //추가
-//     setIsLoding(false);
-//     setBefore(false);
-//   } catch (e) {
-//     const error = e as AxiosError; // AxiosError로 타입 단언
-//     console.log(error);
-//   }
-// };
+  //     //Test
+  //     setCardList(MyCardList);
+  //     //추가
+  //     setIsLoding(false);
+  //     setBefore(false);
+  //   } catch (e) {
+  //     const error = e as AxiosError; // AxiosError로 타입 단언
+  //     console.log(error);
+  //   }
+  // };
 
   const [isOpen, setIsOpen] = useState(false); // 더치페이 나가기 모달 상태 관리
   const [rotate, setRotate] = useState<{ [key: number]: boolean }>({});
@@ -87,9 +86,8 @@ const UserCardList = () => {
   const [swipeCard, setSwipeCard] = useState<number | null>(null); // 스와이프 된(삭제할) 카드의 index 값을 저장
   const [editMode, setEditMode] = useState(false); // 선택 삭제 모드
   const [selectedCards, setSelectedCards] = useState<number[]>([]); // 선택된 카드 목록
-  const [longPressTimeout, setLongPressTimeout] = useState<
-    NodeJS.Timeout | null
-  >(null); // 긴 터치를 위한 타이머
+  const [longPressTimeout, setLongPressTimeout] =
+    useState<NodeJS.Timeout | null>(null); // 긴 터치를 위한 타이머
 
   const closeModal = () => {
     setSwipeCard(null); // 모달에 전달됐던 카드 index값 다시 비우기
@@ -200,7 +198,13 @@ const UserCardList = () => {
                 backgroundColor: "white",
               }}
             >
-              {editMode ? <input type="radio" checked={selectedCards.includes(index)} onChange={() => toggleCardSelection(index)} /> : null}
+              {editMode ? (
+                <input
+                  type="radio"
+                  checked={selectedCards.includes(index)}
+                  onChange={() => toggleCardSelection(index)}
+                />
+              ) : null}
               <div
                 style={{
                   paddingLeft: editMode ? "15px" : "none",
@@ -265,7 +269,9 @@ const UserCardList = () => {
             }}
           >
             <button
-              onClick={() => deleteCard(swipeCard, CardList[swipeCard].cardNumber)}
+              onClick={() =>
+                deleteCard(swipeCard || 0, CardList[swipeCard || 0].cardNumber)
+              }
               style={{
                 fontSize: "18px",
                 width: "95px",
