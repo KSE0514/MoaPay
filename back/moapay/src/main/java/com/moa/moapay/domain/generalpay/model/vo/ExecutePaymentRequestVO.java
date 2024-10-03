@@ -1,6 +1,5 @@
-package com.moa.moapay.domain.card.model.vo;
+package com.moa.moapay.domain.generalpay.model.vo;
 
-import com.moa.moapay.domain.generalpay.model.vo.PaymentCardInfoVO;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -14,7 +13,7 @@ import java.util.UUID;
 @NoArgsConstructor
 @AllArgsConstructor
 public class ExecutePaymentRequestVO {
-
+    private UUID requestId;
     private UUID merchantId;
     private List<PaymentCardInfoVO> paymentInfoList;
 

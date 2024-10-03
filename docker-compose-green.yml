@@ -4,6 +4,7 @@ services:
     build:
       context: ./front
       dockerfile: Dockerfile
+    image: frontend:green # 이미지 이름 지정
     container_name: frontend-green
     ports:
       - "3001:80"
@@ -11,11 +12,11 @@ services:
       - webnet
     restart: always
 
-  # eureka, api-gateway는 blue-green 전략을 사용하지 않는다.
   eureka-server-green:
     build:
       context: ./back/eureka
       dockerfile: Dockerfile
+    image: eureka-server:green # 이미지 이름 지정
     container_name: eureka-server
     ports:
       - "8762:8761"
@@ -30,9 +31,10 @@ services:
     build:
       context: ./back/gateway
       dockerfile: Dockerfile
+    image: api-gateway:green # 이미지 이름 지정
     container_name: api-gateway
     ports:
-      - "8766:8765"
+      - "8765:8765"
     depends_on:
       - eureka-server-green
     networks:
@@ -42,11 +44,11 @@ services:
       - SPRING_PROFILES_ACTIVE=prod
       - SPRING_CLOUD_CONFIG_URI=http://config-server:8888
 
-  # payment / blue, green
   payment-green:
     build:
       context: ./back/payment
       dockerfile: Dockerfile
+    image: payment:green # 이미지 이름 지정
     container_name: payment-green
     ports:
       - "18011:8080"
@@ -60,11 +62,11 @@ services:
       - SPRING_CLOUD_CONFIG_URI=http://config-server:8888
       - SPRING_PROFILES_COLOR=green
 
-  # moapay / blue, green
   moapay-green:
     build:
       context: ./back/moapay
       dockerfile: Dockerfile
+    image: moapay:green # 이미지 이름 지정
     container_name: moapay-green
     ports:
       - "18021:8080"
@@ -78,11 +80,11 @@ services:
       - SPRING_CLOUD_CONFIG_URI=http://config-server:8888
       - SPRING_PROFILES_COLOR=green
 
-  # settlement / blue, green
   settlement-green:
     build:
       context: ./back/settlement
       dockerfile: Dockerfile
+    image: settlement:green # 이미지 이름 지정
     container_name: settlement-green
     ports:
       - "18031:8080"
@@ -96,11 +98,11 @@ services:
       - SPRING_CLOUD_CONFIG_URI=http://config-server:8888
       - SPRING_PROFILES_COLOR=green
 
-  # member / blue, green
   member-green:
     build:
       context: ./back/member
       dockerfile: Dockerfile
+    image: member:green # 이미지 이름 지정
     container_name: member-green
     ports:
       - "18041:8080"
@@ -110,31 +112,15 @@ services:
       - eureka-server-green
       - api-gateway-green
     environment:
-      - SPRING_PROFILES_ACTIVE=prod, green
+      - SPRING_PROFILES_ACTIVE=prod
       - SPRING_CLOUD_CONFIG_URI=http://config-server:8888
       - SPRING_PROFILES_COLOR=green
 
-  # notification / blue, green
-  # notification-green:
-  #   build:
-  #     context: ./back/notification
-  #     dockerfile: Dockerfile
-  #   container_name: notification-green
-  #   ports:
-  #     - "18061:8080"
-  #   networks:
-  #     - webnet
-  #   depends_on:
-  #     - eureka-server
-  #     - api-gateway
-  #   environment:
-  #     - SPRING_PROFILES_ACTIVE=prod
-
-  # cardbank는 moapay 서비스가 아니므로, blue-green 전략을 사용하지 않는다.
   cardbank-green:
     build:
       context: ./back/cardbank
       dockerfile: Dockerfile
+    image: cardbank:green # 이미지 이름 지정
     container_name: cardbank
     ports:
       - "18100:8080"
@@ -147,11 +133,11 @@ services:
       - SPRING_PROFILES_ACTIVE=prod
       - SPRING_CLOUD_CONFIG_URI=http://config-server:8888
 
-  # store는 moapay 서비스가 아니므로, blue-green 전략을 사용하지 않는다.
   store-green:
     build:
       context: ./back/store
       dockerfile: Dockerfile
+    image: store:green # 이미지 이름 지정
     container_name: store
     ports:
       - "18200:8080"

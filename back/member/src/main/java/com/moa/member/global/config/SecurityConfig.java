@@ -25,9 +25,11 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 import com.moa.member.domain.member.security.JwtAccessDeniedHandler;
 import com.moa.member.domain.member.security.JwtAuthenticationEntryPoint;
-import com.moa.member.domain.member.security.JwtFilter;
+//import com.moa.member.domain.member.security.JwtFilter;
+//import com.moa.member.domain.member.security.JwtFilter;
 import com.moa.member.domain.member.security.JwtTokenProvider;
 import com.moa.member.domain.member.security.MemberDetailsServiceImpl;
+//import com.moa.member.domain.member.security.MemberDetailsServiceImpl;
 
 import lombok.RequiredArgsConstructor;
 
@@ -47,9 +49,8 @@ public class SecurityConfig {
 	}
 
 	@Bean
-	public AuthenticationManager authenticationManager(
-			AuthenticationConfiguration authenticationConfiguration
-	) throws Exception {
+	public AuthenticationManager authenticationManager(AuthenticationConfiguration authenticationConfiguration) throws
+		Exception {
 		return authenticationConfiguration.getAuthenticationManager();
 	}
 
@@ -63,25 +64,23 @@ public class SecurityConfig {
 
 	@Bean
 	public SecurityFilterChain memberFilterChain(HttpSecurity http) throws Exception {
-		http
-				.httpBasic(AbstractHttpConfigurer::disable)
-				.authenticationProvider(memberAuthenticationProvider())
-				.csrf(AbstractHttpConfigurer::disable)
-				.sessionManagement((session) -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-//				.cors(cors -> cors.configurationSource(corsConfigurationSource())) // 명시적으로 CORS 설정 추가
-				.cors(Customizer.withDefaults())
-				.formLogin(AbstractHttpConfigurer::disable)
-				.logout(AbstractHttpConfigurer::disable)
-				.authorizeRequests()    // 다음 리퀘스트에 대한 사용권한 체크
-				//.requestMatchers("/**").permitAll() // 모든 주소 허용
-				.requestMatchers(HttpMethod.OPTIONS, "/**").permitAll() // OPTIONS 메서드 허용
-				.requestMatchers("/moapay/member/login","/moapay/member/join","/moapay/member/sendSMS","/moapay/member/verification","/moapay/member/isMember").permitAll() // 허용된 주소
-				.anyRequest().authenticated() // Authentication 필요한 주소
-				.and()
-				.exceptionHandling((exceptionHandling) -> exceptionHandling
-						.authenticationEntryPoint(jwtAuthenticationEntryPoint)
-						.accessDeniedHandler(jwtAccessDeniedHandler))
-				.addFilterBefore(new JwtFilter(jwtTokenProvider), UsernamePasswordAuthenticationFilter.class);
+		http.httpBasic(AbstractHttpConfigurer::disable)
+			.authenticationProvider(memberAuthenticationProvider())
+			.csrf(AbstractHttpConfigurer::disable)
+			.sessionManagement((session) -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+			.cors(Customizer.withDefaults())
+			.formLogin(AbstractHttpConfigurer::disable)
+			.logout(AbstractHttpConfigurer::disable)
+			.authorizeRequests()    // 다음 리퀘스트에 대한 사용권한 체크
+			.requestMatchers("/**")
+			.permitAll() // 모든 주소 허용
+			//.requestMatchers("/moapay/member/login","/moapay/member/join","/moapay/member/sendSMS","/moapay/member/verification","/moapay/member/isMember").permitAll() // 허용된 주소
+			//.anyRequest().authenticated() // Authentication 필요한 주소
+			.and()
+			.exceptionHandling(
+				(exceptionHandling) -> exceptionHandling.authenticationEntryPoint(jwtAuthenticationEntryPoint)
+					.accessDeniedHandler(jwtAccessDeniedHandler));
+		//.addFilterBefore(new JwtFilter(jwtTokenProvider), UsernamePasswordAuthenticationFilter.class);
 		return http.build();
 	}
 
@@ -91,10 +90,9 @@ public class SecurityConfig {
 
 		config.setAllowCredentials(true);
 		config.setAllowedOrigins(
-				List.of("https://localhost:8765", "http://localhost:8765","http://localhost:5173",
-						"https://localhost", "http://localhost",
-						"https://moapay-7e24e.web.app",
-						"https://j11c201.p.ssafy.io", "http://j11c201.p.ssafy.io"));
+			List.of("https://localhost:8765", "http://localhost:8765", "https://localhost", "http://localhost",
+				"http://localhost:5173", "https://localhost:5173", "https://moapay-7e24e.web.app",
+				"https://j11c201.p.ssafy.io", "https://j11c201.p.ssafy.io/api", "http://j11c201.p.ssafy.io"));
 		config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"));
 		config.setAllowedHeaders(List.of("*"));
 		config.setExposedHeaders(List.of("*"));
@@ -104,4 +102,3 @@ public class SecurityConfig {
 		return source;
 	}
 }
-

@@ -1,9 +1,6 @@
 package com.moa.payment.domain.charge.model.vo;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.util.UUID;
 
@@ -11,23 +8,15 @@ import java.util.UUID;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
+@ToString
 public class PaymentResultCardInfoVO {
+    private UUID paymentId;
     private UUID cardId;
-    private long amount;
+    private String cardNumber;
+    private long amount; // 결제 요청시 넣었던 금액
+    private long actualAmount; // 실제 결제된 금액
     private boolean benefitActivated;
     private long benefitBalance;
     private long remainedBenefit;
     private BenefitDetailVO benefitDetail;
-
-    @Override
-    public String toString() {
-        return "PaymentResultCardInfoVO{" +
-                "cardId=" + cardId +
-                ", amount=" + amount +
-                ", benefitActivated=" + benefitActivated +
-                ", benefitBalance=" + benefitBalance +
-                ", remainedBenefit=" + remainedBenefit +
-                ", benefitDetail=" + benefitDetail +
-                '}';
-    }
 }

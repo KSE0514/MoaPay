@@ -49,6 +49,15 @@ export const PartiInfo = styled.div`
     
 `
 
+export const WarningMessage = styled.div`
+  color: #D60000;
+  position: absolute;
+  width: 100%;
+  bottom: 5px;
+  // left: 2.5%;
+  text-align: center;
+`
+
 export const Btn = styled.div`
   position: absolute;
   width: 100%;

@@ -2,10 +2,13 @@ package com.moa.moapay.domain.card.entity;
 
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
+import jakarta.ws.rs.DefaultValue;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.DynamicInsert;
+
 import java.util.UUID;
 
 @Entity
@@ -14,6 +17,7 @@ import java.util.UUID;
 @Builder(toBuilder = true)
 @NoArgsConstructor
 @AllArgsConstructor
+@DynamicInsert
 public class MyCard {
 
     @Id
@@ -53,8 +57,12 @@ public class MyCard {
     @Column(name = "member_id",  columnDefinition = "binary(16)")
     private UUID memberId;
 
+    @DefaultValue("true")
+    @Column(name = "card_status")
+    private Boolean cardStatus;
+
     @NotNull
-    @ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "product_id")
     private CardProduct cardProduct;
 }

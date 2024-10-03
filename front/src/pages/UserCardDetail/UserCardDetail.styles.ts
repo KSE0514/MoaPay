@@ -38,6 +38,11 @@ export const Month = styled.div`
     }
 `
 
+export const DateTag = styled.div`
+  display: flex;
+  gap: 10px;
+`
+
 export const CardInfo = styled.div`
   display: flex;
   // gap: 30px;
@@ -76,12 +81,34 @@ export const CardInfo = styled.div`
 
 export const Main= styled.div`
   height: 75%;
-  padding: 7% 10%;
+  padding: 7% 8%;
   overflow: auto;
+  background-color: rgba(255, 255, 255, 0.7);
+  border: 2px solid #DBC5E9;
+  border-radius: 20px;
+  margin: 0px 25px;
 
 `
 
 export const Bottom = styled.div`
   position: absolute;
   bottom: 0;
+`
+
+export const DateInput = styled.div`
+  display: flex;
+  gap: 10px;
+  justify-content: space-around;
+  padding: 20px 10px;
+  align-items: center;
+  font-size: 17px;
+
+  & > input{
+    width: 100px;
+    height: 40px;
+    text-align: center;
+    border: 2px solid gray;
+    border-radius: 10px;
+    font-size: 17px;
+  }
 `
