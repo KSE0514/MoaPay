@@ -2,7 +2,10 @@ package com.moa.moapay.domain.card.service;
 
 import com.moa.moapay.domain.card.entity.CardProduct;
 import com.moa.moapay.domain.card.entity.MyCard;
+import com.moa.moapay.domain.card.model.CardType;
 import com.moa.moapay.domain.card.model.dto.*;
+import com.moa.moapay.domain.card.model.dto.getMyCard.GetMyCardDto;
+import com.moa.moapay.domain.card.model.dto.getMyCard.GetMyCardDtoWrapper;
 import com.moa.moapay.domain.card.model.vo.PaymentResultCardInfoVO;
 import com.moa.moapay.domain.card.repository.CardProductRepository;
 import com.moa.moapay.domain.card.repository.MyCardQueryRepository;
@@ -19,9 +22,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestClient;
 
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
@@ -142,84 +143,101 @@ public class MyCardServiceImpl implements MyCardService {
         }
     }
 
+    @Override
+    @Transactional
     public List<GetMyCardsResponseDto> getMyCardFromCardBank(GetMyCardsRequestDto getMyCardsRequestDto) {
 
         // TODO : 맴버 인증 과정 추가 내 카드목록 마이데이터 불러오기전
 
-        Map<String, UUID> member = new HashMap<>();
-        member.put("memberUuid", getMyCardsRequestDto.getMemberUuid());
-
         // 카드 뱅크에서 내 카드 목록을 가져오기 위한 REST API 호출
-        ResponseEntity<Map> responseEntity = restClient.post()
+        ResponseEntity<GetMyCardDtoWrapper> responseEntity = restClient.post()
                 .uri("http://localhost:18100/cardbank/card/getMyCards")
                 .contentType(MediaType.APPLICATION_JSON)
-                .body(member)
+                .body(getMyCardsRequestDto)
                 .retrieve()
-                .toEntity(Map.class);
+                .toEntity(GetMyCardDtoWrapper.class);
 
         // 응답 상태 코드 확인
         if (responseEntity.getStatusCode().is2xxSuccessful()) {
-            Map responseBody = responseEntity.getBody();
-
-            // 응답 로그 출력
-            log.info("Response from Card Bank: {}", responseBody);
-
-            // TODO: responseBody에서 CardInfoResponseDto 리스트 생성 로직 추가
-            List<Map<String, Object>> cards = (List<Map<String, Object>>) responseBody.get("data");
-
-            List<GetMyCardsResponseDto> cardInfoResponseDtos = cards.stream().map(
+            List<GetMyCardDto> response = responseEntity.getBody().getData();
+            List<GetMyCardsResponseDto> getMyCardsResponseDtos = response.stream().map(
                     card -> {
-                        Map<String, Object> cardProduct = (Map<String, Object>) card.get("cardProduct");
-                        Map<String, Object> account = (Map<String, Object>) card.get("accounts");
-
-                        // Number를 사용하여 Long으로 안전하게 변환
                         CardProductDto cardProductDto = CardProductDto.builder()
-                                .cardProductUuid(UUID.fromString(cardProduct.get("cardProductUuid").toString()))
-                                .cardProductName(cardProduct.get("cardProductName").toString())
-                                .cardProductType(cardProduct.get("cardProductType").toString())
-                                .cardProductPerformance(((Number) cardProduct.get("cardProductPerformance")).longValue())
-                                .cardProductAnnualFee(((Number) cardProduct.get("cardProductAnnualFee")).longValue())
-                                .cardProductAnnualFeeForeign(((Number) cardProduct.get("cardProductAnnualFeeForeign")).longValue())
-                                .cardProductBenefitTotalLimit(((Number) cardProduct.get("cardProductBenefitTotalLimit")).longValue())
-                                .cardProductCompanyName(cardProduct.get("cardProductCompanyName").toString())
-                                .cardProductImgUrl(cardProduct.get("cardProductImgUrl").toString())
+                                .cardProductUuid(card.getCardProduct().getCardProductUuid())
+                                .cardProductName(card.getCardProduct().getCardProductName())
+                                .cardProductCompanyName(card.getCardProduct().getCardProductCompanyName())
+                                .cardProductBenefitTotalLimit(card.getCardProduct().getCardProductBenefitTotalLimit())
+                                .cardProductType(card.getCardProduct().getCardProductType())
+                                .cardProductAnnualFee(card.getCardProduct().getCardProductAnnualFee())
+                                .cardProductAnnualFeeForeign(card.getCardProduct().getCardProductAnnualFeeForeign())
+                                .cardProductPerformance(card.getCardProduct().getCardProductPerformance())
+                                .cardProductImgUrl(card.getCardProduct().getCardProductImgUrl())
                                 .build();
 
                         AccountDto accountDto = AccountDto.builder()
-                                .accountUuid(UUID.fromString(account.get("accountUuid").toString()))
-                                .accountNumber(account.get("accountNumber").toString())
-                                .balance(((Number) account.get("balance")).longValue())
+                                .accountUuid(card.getAccounts().getAccountUuid())
+                                .accountNumber(card.getAccounts().getAccountNumber())
+                                .balance(card.getAccounts().getBalance())
                                 .build();
 
+                        CardProduct cardProduct = CardProduct.builder()
+                                .uuid(card.getCardProduct().getCardProductUuid())
+                                .annualFee(card.getCardProduct().getCardProductAnnualFee())
+                                .name(card.getCardProduct().getCardProductName())
+                                .type(CardType.valueOf(card.getCardProduct().getCardProductType()))
+                                .imageUrl(card.getCardProduct().getCardProductImgUrl())
+                                .companyName(card.getCardProduct().getCardProductCompanyName())
+                                .benefitTotalLimit(card.getCardProduct().getCardProductBenefitTotalLimit())
+                                .performance(card.getCardProduct().getCardProductPerformance())
+                                .annualFeeForeign(card.getCardProduct().getCardProductAnnualFeeForeign())
+                                .build();
+
+                        MyCard myCard = MyCard.builder()
+                                .uuid(card.getUuid())
+                                .amount(card.getAmount())
+                                .benefitUsage(card.getBenefitUsage())
+                                .cardLimit(card.getCardLimit())
+                                .cardNumber(card.getCardNumber())
+                                .cvc(card.getCvc())
+                                .memberId(getMyCardsRequestDto.getMemberUuid())
+                                .performanceFlag(card.isPerformanceFlag())
+                                .cardStatus(true)
+                                .cardProduct(cardProduct)
+                                .build();
+
+                        myCardRepository.save(myCard);
+
                         return GetMyCardsResponseDto.builder()
-                                .uuid(UUID.fromString(card.get("uuid").toString()))
-                                .cardLimit(((Number) card.get("cardLimit")).longValue())
-                                .cvc(card.get("cvc").toString())
-                                .cardNumber(card.get("cardNumber").toString())
-                                .benefitUsage(((Number) card.get("benefitUseage")).longValue())
-                                .amount(((Number) card.get("amout")).longValue())
-                                .performanceFlag((Boolean) card.get("performanceFlag"))
+                                .uuid(card.getUuid())
+                                .cardNumber(card.getCardNumber())
+                                .cvc(card.getCvc())
+                                .cardLimit(card.getCardLimit())
+                                .performanceFlag(card.isPerformanceFlag())
+                                .amount(card.getAmount())
+                                .benefitUsage(card.getBenefitUsage())
                                 .cardProduct(cardProductDto)
                                 .account(accountDto)
                                 .build();
                     }
             ).toList();
-            return cardInfoResponseDtos;
-        } else {
-            log.error("Failed to retrieve cards: {}", responseEntity.getStatusCode());
+            return getMyCardsResponseDtos;
         }
-
-        return null;
+        throw new BusinessException(HttpStatus.INTERNAL_SERVER_ERROR, "서버 에러");
     }
 
+    /**
+     * 카드 추가
+     * @param registrationRequestDto
+     * @return
+     */
     @Override
     @Transactional
-    public void registrationCard(CardRegistrationRequestDto registrationRequestDto) {
+    public GetMyCardsResponseDto registrationCard(CardRegistrationRequestDto registrationRequestDto) {
 
         List<MyCard> myCards = myCardRepository.findAllByMemberId(registrationRequestDto.getMemberUuid());
 
-        for(MyCard myCard : myCards) {
-            if(myCard.getCardNumber().equals(registrationRequestDto.getCardNumber())) {
+        for (MyCard myCard : myCards) {
+            if (myCard.getCardNumber().equals(registrationRequestDto.getCardNumber())) {
                 throw new BusinessException(HttpStatus.CONFLICT, "카드 데이터가 이미 존재합니다.");
             }
         }
@@ -253,15 +271,48 @@ public class MyCardServiceImpl implements MyCardService {
                         .build();
 
                 myCardRepository.save(myCard);
+
+                CardProductDto cardProductDto = CardProductDto.builder()
+                        .cardProductUuid(cardData.getCardProductUuid())
+                        .cardProductName(cardData.getCardProductName())
+                        .cardProductCompanyName(cardData.getCardProductCompanyName())
+                        .cardProductAnnualFee(cardData.getCardProductAnnualFee())
+                        .cardProductAnnualFeeForeign(cardData.getCardProductAnnualFeeForeign())
+                        .cardProductType(cardData.getCardProductType())
+                        .cardProductImgUrl(cardData.getCardProductImgUrl())
+                        .cardProductBenefitTotalLimit(cardData.getCardProductBenefitTotalLimit())
+                        .cardProductPerformance(cardData.getCardProductPerformance())
+                        .build();
+
+                AccountDto accountDto = AccountDto.builder()
+                        .accountUuid(cardData.getAccountUuid())
+                        .accountNumber(cardData.getAccountNumber())
+                        .balance(cardData.getBalance())
+                        .build();
+
+                GetMyCardsResponseDto getMyCardsResponseDto = GetMyCardsResponseDto.builder()
+                        .uuid(myCard.getUuid())
+                        .cardNumber(cardData.getCardNumber())
+                        .cvc(cardData.getCvc())
+                        .performanceFlag(cardData.isPerformanceFlag())
+                        .cardLimit(cardData.getCardLimit())
+                        .amount(cardData.getAmount())
+                        .benefitUsage(cardData.getBenefitUsage())
+                        .cardProduct(cardProductDto)
+                        .account(accountDto)
+                        .build();
+
+                return getMyCardsResponseDto;
             }
         } catch (HttpClientErrorException e) {
             throw new BusinessException(HttpStatus.NOT_FOUND, "카드사에 해당 상품이 없습니다.");
         }
-
+        throw new BusinessException(HttpStatus.INTERNAL_SERVER_ERROR, "카드사 서버 에러");
     }
 
     /**
      * 카드 비활성화
+     *
      * @param disableCardRequestDto
      */
     @Override
@@ -280,6 +331,7 @@ public class MyCardServiceImpl implements MyCardService {
 
     /**
      * 카드 활성화
+     *
      * @param ableCardRequestDto
      */
     @Override

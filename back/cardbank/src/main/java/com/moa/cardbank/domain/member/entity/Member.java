@@ -27,6 +27,10 @@ public class Member {
     @Column(name = "name", length = 10)
     private String name;
 
+    @NotNull
+    @Column(name = "phone_number", unique = true)
+    private String phoneNumber;
+
     @PrePersist
     public void prePersist() {
         this.uuid = Generators.timeBasedEpochGenerator().generate();

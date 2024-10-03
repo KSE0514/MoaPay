@@ -1,21 +1,16 @@
-package com.moa.cardbank.domain.card.model.dto.getMyCard;
+package com.moa.moapay.domain.card.model.dto.getMyCard;
 
-import com.moa.cardbank.domain.account.entity.Account;
-import com.moa.cardbank.domain.card.entity.CardProduct;
-import com.moa.cardbank.domain.card.entity.PaymentLog;
-import com.moa.cardbank.domain.member.entity.Member;
 import lombok.*;
 
-import java.util.List;
 import java.util.UUID;
 
 @Builder
 @Getter
 @Setter
-@ToString
 @NoArgsConstructor
 @AllArgsConstructor
-public class GetMyCardsResponseDto {
+@ToString
+public class GetMyCardDto {
     private UUID uuid;
     private String cardNumber;
     private String cvc;
