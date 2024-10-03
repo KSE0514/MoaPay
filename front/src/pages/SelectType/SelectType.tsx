@@ -1,5 +1,11 @@
 import { act, useEffect, useState } from "react";
-import { SelectView, Story, Wrapper } from "./SelectType.styles";
+import {
+  EndButton,
+  IntroduceView,
+  SelectView,
+  Story,
+  Wrapper,
+} from "./SelectType.styles";
 import axios, { AxiosError } from "axios";
 import { useNavigate } from "react-router-dom";
 import { PATH } from "../../constants/path";
@@ -9,18 +15,22 @@ const SelectType = () => {
   const baseUrl = import.meta.env.VITE_BASE_URL;
   const baseUrl1 = `http://localhost:18040/`;
   const navigate = useNavigate();
+  const [selectType, setSelectType] = useState<string | null>(null);
   const { id, accessToken, isLoggedIn, Login, mode } = useAuthStore();
   // const { isLoggedIn, Login } = useAuthStore((state) => ({
   //   isLoggedIn: state.isLoggedIn,
   //   Login: state.Login,
   // }));
 
-  const SettingType = async (type: string) => {
+  const SettingType = (type: string) => {
+    setSelectType(type);
+  };
+  const addType = async () => {
     //요청보내기
     try {
       const response = await axios.post(
         `${baseUrl1}moapay/member/selectType`,
-        { type: type, uuid: id },
+        { type: selectType, uuid: id },
         {
           withCredentials: true,
           headers: {
@@ -42,25 +52,29 @@ const SelectType = () => {
   };
   return (
     <Wrapper>
-      <div>
-        <Story></Story>
-        <SelectView>
-          <button
-            onClick={() => {
-              SettingType("benefit");
-            }}
-          >
-            혜택형
-          </button>
-          <button
-            onClick={() => {
-              SettingType("perform");
-            }}
-          >
-            실적형
-          </button>
-        </SelectView>
-      </div>
+      <p>
+        카드 결제 시 <span>우선순위를</span> <br /> 무엇으로 고려해
+        결제해드릴까요?
+      </p>
+
+      <SelectView>
+        <button
+          onClick={() => {
+            SettingType("benefit");
+          }}
+        >
+          혜택형
+        </button>
+        <button
+          onClick={() => {
+            SettingType("perform");
+          }}
+        >
+          실적형
+        </button>
+      </SelectView>
+
+      <EndButton onClick={addType}>확인</EndButton>
     </Wrapper>
   );
 };

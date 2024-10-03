@@ -1,35 +1,53 @@
 import styled from "styled-components";
 
 export const Wrapper = styled.div`
-  background-color: var(--light-purple);
-  height: 100%;
   width: 100%;
+  height: 100%;
   display: flex;
-  padding: 10% 0%;
-  justify-content: center;
-  & > div {
-    width: 80%;
-    background-color: white;
-    border-radius: 50px;
-    padding: 70px 10px 0px 10px;
+  flex-direction: column;
+  /* justify-content: center; */
+  align-items: center;
+  background: linear-gradient(120deg, #f1e5ff 5%, #dcbefc 50%, #ffc6ff);
+  padding: 20% 10% 100px 10%;
+  & > p {
+    font-size: 20px;
+    line-height: 30px;
+    margin-bottom: 30px;
+  }
+  & > p > span {
+    font-weight: bold;
   }
 `;
-export const Story = styled.div`
-  flex: 1;
-`;
+
 export const SelectView = styled.div`
+  justify-items: end;
   display: flex;
-  align-items: center;
   flex-direction: column;
-  gap: 10px;
+  align-items: center;
+  gap: 30px;
+  width: 100%;
+  height: 100%;
   button {
-    width: 80%;
-    padding: 10px 0px;
+    width: 100%;
+    height: 50%;
+    padding: 10px 30px;
     font-size: 18px;
     border: none;
     font-weight: bold;
-    border: 3px solid var(--light-purple);
     background-color: white;
-    border-radius: 5px;
+    border-radius: 20px;
   }
+  div {
+  }
+`;
+
+export const EndButton = styled.div`
+  margin-top: 30px;
+  background-color: #ab2dff;
+  width: 100%;
+  padding: 20px 0px;
+  text-align: center;
+  color: white;
+  font-weight: bold;
+  border-radius: 20px;
 `;

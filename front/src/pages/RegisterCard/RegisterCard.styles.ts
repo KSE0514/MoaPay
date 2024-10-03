@@ -73,7 +73,7 @@ export const CardFront = styled.div<{ isFlipped: boolean }>`
     color: #390b55;
     font-weight: bold;
     margin: 0 auto;
-    font-size: 23px;
+    font-size: 20px;
     height: 23px;
     margin-bottom: 10px;
   }
