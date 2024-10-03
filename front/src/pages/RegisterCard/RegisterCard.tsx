@@ -10,7 +10,6 @@ import {
   Wrapper,
   CardForm,
   ModalView,
-  Loading,
 } from "./RegisterCard.styles";
 import axios from "axios";
 import { useAuthStore } from "../../store/AuthStore";
@@ -123,7 +122,6 @@ const RegisterCard: React.FC = () => {
                       width="47.834px"
                       height="47.834px"
                       viewBox="0 0 47.834 47.834"
-                      style={{ enableBackground: "new 0 0 47.834 47.834" }}
                     >
                       <g>
                         <g>
@@ -170,7 +168,6 @@ const RegisterCard: React.FC = () => {
                   width="47.834px"
                   height="47.834px"
                   viewBox="0 0 47.834 47.834"
-                  style={{ enableBackground: "new 0 0 47.834 47.834" }}
                 >
                   <g>
                     <g>

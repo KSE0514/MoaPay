@@ -1,13 +1,12 @@
 import styled from "styled-components";
 
-export const Wrapper = styled.div`
-`
+export const Wrapper = styled.div``;
 
-export const Card = styled.div`
+export const CardView = styled.div`
   display: flex;
   justify-content: space-between;
   padding: 3px 20px;
-  
+
   align-items: center;
   font-size: 15px;
   position: relative; // 카드 내 이미지와 텍스트의 위치 제어를 위해 relative 추가
@@ -35,7 +34,7 @@ export const Card = styled.div`
     z-index: 1; // svg가 다른 요소에 가려지지 않게 z-index를 추가
   }
 
-  & > input[type='radio'] {
+  & > input[type="radio"] {
     -webkit-appearance: none;
     -moz-appearance: none;
     appearance: none;
@@ -47,7 +46,7 @@ export const Card = styled.div`
     cursor: pointer;
   }
 
-  & > input[type='radio']:checked {
+  & > input[type="radio"]:checked {
     background-color: #547cff;
     border: 2px solid white;
     box-shadow: 0 0 0 2px #c7c7c7;

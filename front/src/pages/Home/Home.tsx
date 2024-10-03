@@ -96,7 +96,7 @@ const Home = () => {
           console.log("QR 코드 인식 성공:", decodedText); // 디버깅 로그
           setQrResult(decodedText); // QR 코드 결과를 상태에 저장
           setIsCameraOn(false); // QR 코드 인식 후 카메라 끔
-  
+
           // QR 코드 결과가 URL일 경우 해당 페이지로 이동
           if (isValidUrl(decodedText)) {
             window.location.href = decodedText;
@@ -107,7 +107,7 @@ const Home = () => {
         }
       );
     }
-  
+
     // DOM 요소 텍스트 수정
     const updateQrScannerText = () => {
       // 'Scan an Image File' 텍스트 수정 (잘 적용된 부분)
@@ -117,7 +117,7 @@ const Home = () => {
       if (scanTypeSpan) {
         scanTypeSpan.innerText = "다른 방식으로 스캔하기";
       }
-  
+
       // 'Start Scanning' 버튼 텍스트 수정
       const startScanButton = document.getElementById(
         "html5-qrcode-button-camera-start"
@@ -125,7 +125,7 @@ const Home = () => {
       if (startScanButton) {
         startScanButton.innerText = "스캔 시작하기";
       }
-  
+
       // 'Stop Scanning' 버튼 텍스트 수정
       const stopScanButton = document.getElementById(
         "html5-qrcode-button-camera-stop"
@@ -133,7 +133,7 @@ const Home = () => {
       if (stopScanButton) {
         stopScanButton.innerText = "스캔 중지하기";
       }
-  
+
       // 'Choose Image - No image chosen' 텍스트 수정
       const ScanButton = document.getElementById(
         "html5-qrcode-button-camera-permission"
@@ -149,7 +149,7 @@ const Home = () => {
       if (fileButton) {
         fileButton.innerText = "이미지 선택하기";
       }
-  
+
       // 'Or drop an image to scan' 텍스트 수정
       const fileScanLabel = document.querySelector(
         '#qr-reader__dashboard_section_csr div[style*="Or drop an image"]'
@@ -157,7 +157,7 @@ const Home = () => {
       if (fileScanLabel) {
         fileScanLabel.textContent = "또는 이미지를 끌어다 놓으세요";
       }
-  
+
       // MutationObserver를 사용하여 'Requesting camera permissions...' 텍스트 변경 감지
       const cameraPermissionMessage = document.getElementById(
         "qr-reader__header_message"
@@ -165,21 +165,28 @@ const Home = () => {
       if (cameraPermissionMessage) {
         cameraPermissionMessage.innerText = "카메라 권한 요청 중...";
       }
-  
+
       // MutationObserver 생성
       const observer = new MutationObserver((mutationsList) => {
         mutationsList.forEach((mutation) => {
-          if (mutation.type === "childList" || mutation.type === "subtree") {
+          if (
+            mutation.type === "childList" ||
+            mutation.type === "attributes" ||
+            mutation.type === "characterData"
+          ) {
             const cameraPermissionMessage = document.getElementById(
               "qr-reader__header_message"
             );
-            if (cameraPermissionMessage && cameraPermissionMessage.innerText.includes("Requesting")) {
+            if (
+              cameraPermissionMessage &&
+              cameraPermissionMessage.innerText.includes("Requesting")
+            ) {
               cameraPermissionMessage.innerText = "카메라 권한 요청 중...";
             }
           }
         });
       });
-  
+
       // DOM 변화를 감시할 대상 설정
       const targetNode = document.getElementById("qr-reader");
       if (targetNode) {
@@ -188,16 +195,16 @@ const Home = () => {
           subtree: true,
         });
       }
-  
+
       // 컴포넌트가 언마운트될 때 MutationObserver 해제
       return () => observer.disconnect();
     };
-  
+
     // 요소가 비동기적으로 렌더링될 수 있으므로 약간의 지연 후 텍스트 수정
     const intervalId = setInterval(() => {
       updateQrScannerText();
     }, 500);
-  
+
     return () => {
       if (qrScannerRef.current) {
         qrScannerRef.current.clear();
@@ -207,8 +214,6 @@ const Home = () => {
       clearInterval(intervalId); // 컴포넌트가 언마운트될 때 타임아웃 제거
     };
   }, [isCameraOn]);
-  
-  
 
   // URL 유효한지 검사
   const isValidUrl = (string: string) => {
