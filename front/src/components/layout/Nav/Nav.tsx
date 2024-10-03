@@ -13,7 +13,8 @@ const Nav = () => {
   const location = useLocation(); // 현재 경로를 가져옴
   const matchBringCard = useMatch(`${PATH.BRING_CARD}/*`);
   const matchSelectType = useMatch(`${PATH.SELECT_TYPE}/*`);
-  const match = matchBringCard || matchSelectType;
+  const matchSelectPayMentType = useMatch(`${PATH.SELECT_PAYMENT_TYPE}/*`);
+  const match = matchBringCard || matchSelectType || matchSelectPayMentType;
   const movePage = (page: string) => {
     navigate(page);
   };
