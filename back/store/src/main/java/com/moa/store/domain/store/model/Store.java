@@ -25,7 +25,7 @@ import jakarta.validation.constraints.NotNull;
 public class Store {
 
 	@Id
-	@GeneratedValue(strategy = GenerationType.AUTO)
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 
 	@NotNull

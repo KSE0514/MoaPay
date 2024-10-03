@@ -1,4 +1,4 @@
-package com.moa.payment.domain.charge.model.vo;
+package com.moa.payment.domain.charge.model.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -12,10 +12,7 @@ import java.util.UUID;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class ExecutePaymentRequestVO {
-    private UUID requestId;
+public class SendResultToStoreRequestDto {
     private UUID orderId;
-    private UUID merchantId;
-    private List<PaymentCardInfoVO> paymentInfoList;
-
+    private List<StoreResultDto> paymentInfo;
 }

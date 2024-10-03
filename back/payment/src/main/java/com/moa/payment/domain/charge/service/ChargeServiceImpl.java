@@ -31,6 +31,9 @@ public class ChargeServiceImpl implements ChargeService {
     @Value("${external-url.cardbank}")
     private String cardbankUrl;
 
+    @Value("${external-url.store}")
+    private String storeUrl;
+
     private final RestClient restClient;
     private final ObjectMapper objectMapper;
     private final PaymentLogRepository paymentLogRepository;
@@ -187,5 +190,34 @@ public class ChargeServiceImpl implements ChargeService {
                 .usedCardCount(usedCardCount)
                 .paymentResultCardInfoList(paymentResultCardInfoList)
                 .build();
+    }
+
+    @Override
+    public void sendResultToStore(UUID orderId, ExecutePaymentResultVO vo) {
+        log.info("send result to store : {}", vo.getMerchantName());
+        List<StoreResultDto> paymentInfo = new ArrayList<>();
+        for(PaymentResultCardInfoVO resultVo : vo.getPaymentResultInfoList()) {
+            paymentInfo.add(
+                    StoreResultDto.builder()
+                            .cardNumber(resultVo.getCardNumber())
+                            .amount(resultVo.getAmount())
+                            .actualAmount(resultVo.getActualAmount())
+                            .build()
+            );
+        }
+        SendResultToStoreRequestDto dto = SendResultToStoreRequestDto.builder()
+                .orderId(orderId)
+                .paymentInfo(paymentInfo)
+                .build();
+
+        ResponseEntity<Map> res = restClient.post()
+                .uri(storeUrl+"/payment/online/result")
+                .contentType(MediaType.APPLICATION_JSON)
+                .body(dto)
+                .retrieve()
+                .toEntity(Map.class);
+        if(!res.getStatusCode().is2xxSuccessful()) {
+            log.error("send result to store error - {}", res.getStatusCode());
+        }
     }
 }

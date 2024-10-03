@@ -8,10 +8,10 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 
-@FeignClient(name = "moapay", url = "https://j11c201.p.ssafy.io/api/")
+@FeignClient(name = "moapay", url = "http://localhost:8765/")
 public interface MoaPayClient {
 	@PostMapping("moapay/core/code/QRcode")
-	GetQRCodeResponseDto getQRCode(@RequestBody CreateOrderResponseDto createOrderResponseDto);
+	ResponseEntity<ResultResponse> getQRCode(@RequestBody CreateOrderResponseDto createOrderResponseDto);
 
 	@PostMapping("moapay/core/generalpay/offline")
 	ResponseEntity<ResultResponse> executeOfflinePay
