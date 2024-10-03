@@ -11,6 +11,5 @@ import lombok.Data;
 @Builder
 public class PaymentResultRequestDto {
 	private UUID orderId;
-	private long totalPrice;
 	private List<PaymentResultDto> paymentInfo;
 }

@@ -39,6 +39,8 @@ public class ChargeListener {
                 Map<String, Object> map = new HashMap<>();
                 map.put("renewList", renewList);
                 kafkaTemplate.send("request.renew-card-info", "1", map);
+                // 이어서 결제 결과를 가맹점에 전달
+                chargeService.sendResultToStore(executePaymentRequestVO.getOrderId(), resultVO);
             }
             // 마지막으로 client에게 응답을 전송
             PaymentResultDto resultDto = chargeService.makePaymentResultDto(resultVO, executePaymentRequestVO);

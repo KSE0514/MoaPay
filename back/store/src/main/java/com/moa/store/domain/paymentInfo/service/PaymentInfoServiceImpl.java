@@ -1,18 +1,18 @@
 package com.moa.store.domain.paymentInfo.service;
 
-import java.util.UUID;
-
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.moa.store.domain.notification.model.ResultStatus;
+import com.moa.store.domain.notification.model.dto.NotifyDto;
+import com.moa.store.domain.notification.service.NotificationService;
 import com.moa.store.domain.order.model.Order;
 import com.moa.store.domain.order.model.OrderStatus;
 import com.moa.store.domain.order.model.dto.CreateOrderRequestDto;
 import com.moa.store.domain.order.model.dto.CreateOrderResponseDto;
-import com.moa.store.domain.order.model.dto.OrderResponseDto;
 import com.moa.store.domain.order.repository.OrderRepository;
 import com.moa.store.domain.order.service.OrderService;
-import com.moa.store.domain.paymentInfo.client.ExecuteOfflinePayRequestDto;
 import com.moa.store.domain.paymentInfo.model.PaymentInfo;
 import com.moa.store.domain.paymentInfo.model.ProcessingStatus;
+import com.moa.store.domain.paymentInfo.model.dto.GetQRCodeResponseDto;
 import com.moa.store.domain.paymentInfo.model.dto.PaymentResultDto;
 import com.moa.store.domain.paymentInfo.model.dto.PaymentResultRequestDto;
 import com.moa.store.domain.paymentInfo.repository.PaymentInfoRepository;
@@ -25,7 +25,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.moa.store.domain.paymentInfo.client.GetQRCodeResponseDto;
+import com.moa.store.domain.paymentInfo.client.getQRCodeFromMoaPayDto;
 import com.moa.store.domain.paymentInfo.client.MoaPayClient;
 import com.moa.store.global.response.ResultResponse;
 
@@ -42,6 +42,7 @@ public class PaymentInfoServiceImpl implements PaymentInfoService {
 	private final PaymentInfoRepository paymentInfoRepository;
 	private final OrderService orderService;
 	private final OrderRepository orderRepository;
+	private final NotificationService notificationService;
 
 	@Override
 	@Transactional
@@ -52,9 +53,15 @@ public class PaymentInfoServiceImpl implements PaymentInfoService {
 			if(getQRcode.getStatusCode() != HttpStatus.OK){
 				throw new BusinessException(HttpStatus.BAD_REQUEST, "QR 발급 중 문제가 발생했습니다.");
 			}
-			GetQRCodeResponseDto getQRCodeResponseDto = objectMapper.convertValue(getQRcode.getBody().getData(), GetQRCodeResponseDto.class);
-			log.info(getQRCodeResponseDto.toString());
-			return getQRCodeResponseDto;
+			getQRCodeFromMoaPayDto getQRCodeFromMoaPayDto = objectMapper.convertValue(getQRcode.getBody().getData(), getQRCodeFromMoaPayDto.class);
+			log.info(getQRCodeFromMoaPayDto.toString());
+
+            return GetQRCodeResponseDto.builder()
+					.orderId(createOrderResponseDto.getOrderId())
+					.QRCode(getQRCodeFromMoaPayDto.getQRCode())
+					.build();
+
+			// client에서는 QR 생성과 동시에 Id에 맞는 SSE 구독을 시행 (orderId를 기준으로 해도 될듯)
 		} catch (FeignException e) {
 			throw new BusinessException(HttpStatus.INTERNAL_SERVER_ERROR, "QR 코드 생성 중 오류가 발생했습니다(Feign 문제)");
 		} catch (Exception e) {
@@ -93,7 +100,12 @@ public class PaymentInfoServiceImpl implements PaymentInfoService {
 		if(totalAmount == order.getTotalPrice()) {
 			log.info("all payments are completed");
 			order.updateState("PayComplete");
+			NotifyDto notifyDto = NotifyDto.builder()
+					.orderId(order.getUuid())
+					.status(ResultStatus.SUCCEED)
+					.build();
 			// todo : 결제 완료 sse 알람 구현
+			notificationService.sendMessage(order.getUuid(), notifyDto);
 		} else {
 			// 다 끝난 게 아니라면 결제 프로세스를 진행중으로 변경
 			log.info("payment is in process... ");

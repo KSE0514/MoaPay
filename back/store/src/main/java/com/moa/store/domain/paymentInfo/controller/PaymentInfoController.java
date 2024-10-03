@@ -1,13 +1,14 @@
 package com.moa.store.domain.paymentInfo.controller;
 
 import com.moa.store.domain.order.model.dto.CreateOrderRequestDto;
+import com.moa.store.domain.paymentInfo.model.dto.GetQRCodeResponseDto;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import com.moa.store.domain.paymentInfo.client.GetQRCodeResponseDto;
+import com.moa.store.domain.paymentInfo.client.getQRCodeFromMoaPayDto;
 import com.moa.store.domain.paymentInfo.model.dto.PaymentResultRequestDto;
 import com.moa.store.domain.paymentInfo.service.PaymentInfoService;
 import com.moa.store.global.response.ResultResponse;
@@ -27,6 +28,8 @@ public class PaymentInfoController {
 	// 	ResultResponse resultResponse = ResultResponse.of(HttpStatus.OK, "오프라인 결제");
 	// 	return ResponseEntity.status(resultResponse.getStatus()).body(resultResponse);
 	// }
+	
+	// todo : 오프라인쪽 결제 매커니즘 연결
 
 	// 온라인 구매, API 명세서 3행
 	@PostMapping("/online/purchase")
