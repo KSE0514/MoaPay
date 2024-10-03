@@ -24,7 +24,6 @@ public class CardController {
 
     @PostMapping("/getMyCards")
     public ResponseEntity<?> getMyCards(@Valid @RequestBody GetMyCardsRequestDto getMyCardsRequestDto) {
-        log.info("MemberId = {}", getMyCardsRequestDto.getMemberUuid());
         List<GetMyCardsResponseDto> responseDto = cardService.getMyCards(getMyCardsRequestDto);
         log.info("return = {}", responseDto);
         ResultResponse resultResponse = ResultResponse.of(HttpStatus.OK, "내 카드 정보 조회", responseDto);
@@ -32,7 +31,6 @@ public class CardController {
     }
 
     /* 일반 카드 API */
-
     @PostMapping("/create")
     public ResponseEntity<ResultResponse> createCardProduct(@RequestBody CreateCardProductRequestDto dto){
         log.info("create card product : {}", dto.getName());
@@ -42,7 +40,6 @@ public class CardController {
     }
 
     /* 결제 관련 API */
-
     @PostMapping("/pay")
     public ResponseEntity<ResultResponse> executePay(@RequestBody ExecutePayRequestDto dto) {
         log.info("payment request : {}", dto.getCardNumber());
@@ -60,7 +57,6 @@ public class CardController {
     }
 
     /* 개인 카드 관련 API */
-
     @PostMapping("/my/create")
     public ResponseEntity<ResultResponse> createMycard(@RequestBody CreateMyCardRequestDto dto) {
         log.info("create my card");
@@ -76,7 +72,7 @@ public class CardController {
         log.info(cardRestResponseDto.toString());
         ResultResponse resultResponse = ResultResponse.of(HttpStatus.OK, "카드 추가 확인", cardRestResponseDto);
         return ResponseEntity.status(resultResponse.getStatus()).body(resultResponse);
-//        return cardRestResponseDto;
     }
+
 
 }

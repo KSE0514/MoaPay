@@ -18,13 +18,13 @@ public interface MyCardRepository extends JpaRepository<MyCard, Long> {
             "JOIN FETCH mc.product cp " +
             "JOIN FETCH mc.account ac " +
             "JOIN FETCH mc.member mb " +
-            "WHERE mb.uuid = :memberId")
-    List<MyCard> findByMemberId(UUID memberId);
+            "WHERE mb.phoneNumber = :phoneNumber")
+    List<MyCard> findByPhoneNumber(String phoneNumber);
 
     // PaymentLog를 별도로 가져오는 쿼리
     @Query("SELECT pl FROM PaymentLog pl WHERE pl.card.id IN " +
-            "(SELECT mc.id FROM MyCard mc WHERE mc.member.uuid = :memberId)")
-    List<PaymentLog> findPaymentLogsByMemberId(UUID memberId);
+            "(SELECT mc.id FROM MyCard mc JOIN mc.member mb WHERE mb.phoneNumber = :phoneNumber)")
+    List<PaymentLog> findPaymentLogsByMemberId(String phoneNumber);
 
     @Query("SELECT mc FROM MyCard mc " +
            "JOIN FETCH mc.product cp " +

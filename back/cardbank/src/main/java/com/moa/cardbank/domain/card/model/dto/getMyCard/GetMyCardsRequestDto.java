@@ -10,5 +10,5 @@ import java.util.UUID;
 @NoArgsConstructor
 @AllArgsConstructor
 public class GetMyCardsRequestDto {
-    private UUID memberUuid;
+    private String phoneNumber;
 }
