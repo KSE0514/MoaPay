@@ -164,7 +164,7 @@ const CreateAccount = () => {
     try {
       await axios.post(
         // `${baseUrl}moapay/member/sendSMS`,
-        `moapay/member/sendSMS`,
+        `api/moapay/member/sendSMS`,
         {
           phoneNumber: joinUserInfo.phone_number,
         },
@@ -205,7 +205,7 @@ const CreateAccount = () => {
       // 인증번호 확인하기
       const response = await axios.post(
         // `${baseUrl}moapay/member/verification`,
-        `moapay/member/verification`,
+        `/moapay/member/verification`,
         {
           phoneNumber: joinUserInfo.phone_number,
           code: joinUserInfo.verification_code,
