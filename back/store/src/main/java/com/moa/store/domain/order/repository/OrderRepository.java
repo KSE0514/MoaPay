@@ -13,5 +13,7 @@ public interface OrderRepository extends JpaRepository<Order, Long> {
     Optional<Order> findByUuid(UUID orderId);
     @Query("select o from Order o left join fetch o.itemInfos where o.store.uuid = :merchantId")
     List<Order> findByStoreUuidWithItemInfos(UUID merchantId);
+    @Query("select o from Order o left join fetch o.paymentInfos where o.uuid = :orderId")
+    Optional<Order> findByOrderId(UUID orderId);
     
 }

@@ -19,7 +19,7 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class PaymentInfoController {
 
-	private PaymentInfoService paymentInfoService;
+	private final PaymentInfoService paymentInfoService;
 
 	// 오프라인 결제, API 명세서 2행
 	// @PostMapping("/offline/barcode")

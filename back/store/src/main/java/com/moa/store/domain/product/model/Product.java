@@ -18,7 +18,7 @@ import com.moa.store.domain.product.model.dto.UpdateProductRequestDto;
 public class Product {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @NotNull

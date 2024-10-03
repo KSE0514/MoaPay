@@ -7,6 +7,7 @@ import java.util.UUID;
 
 import com.fasterxml.uuid.Generators;
 import com.moa.store.domain.itemInfo.model.ItemInfo;
+import com.moa.store.domain.paymentInfo.model.PaymentInfo;
 import com.moa.store.domain.store.model.Store;
 
 import jakarta.persistence.Column;
@@ -66,6 +67,9 @@ public class Order {
 
 	@OneToMany(mappedBy = "order")
 	private List<ItemInfo> itemInfos = new ArrayList<>();
+
+	@OneToMany(mappedBy = "order")
+	private List<PaymentInfo> paymentInfos;
 
 	@NotNull
 	@Column(name = "create_time")

@@ -1,5 +1,7 @@
 package com.moa.store.domain.paymentInfo.model.dto;
 
+import java.time.LocalDateTime;
+import java.util.List;
 import java.util.UUID;
 
 import lombok.Builder;
@@ -9,7 +11,6 @@ import lombok.Data;
 @Builder
 public class PaymentResultRequestDto {
 	private UUID orderId;
-	private String cardNumber;
-	private long amount;
-	private long actualAmount;
+	private long totalPrice;
+	private List<PaymentResultDto> paymentInfo;
 }

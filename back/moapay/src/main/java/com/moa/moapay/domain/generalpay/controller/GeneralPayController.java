@@ -25,9 +25,9 @@ public class GeneralPayController {
     @PostMapping("/pay")
     public ResponseEntity<ResultResponse> executeGeneralPay(@RequestBody ExecuteGeneralPayRequestDto dto) {
         // 응답은 비동기식 SSE로 보낼 예정이므로, response 본문은 비워서 보낸다
-        log.info("execute general pay : {}", dto.toString());
+        log.info("execute online pay : {}", dto.toString());
         generalPayService.executeGeneralPay(dto);
-        ResultResponse resultResponse = ResultResponse.of(HttpStatus.OK, "결제 요청 전송 완료");
+        ResultResponse resultResponse = ResultResponse.of(HttpStatus.OK, "온라인 결제 요청 전송 완료");
         return ResponseEntity.status(resultResponse.getStatus()).body(resultResponse);
     }
 
@@ -35,7 +35,7 @@ public class GeneralPayController {
     public ResponseEntity<ResultResponse> executeOfflinePay(@RequestBody ExecuteOfflinePayRequestDto dto) {
         log.info("execute offline pay : {}", dto.getBarcode());
         generalPayService.executeOfflinePay(dto);
-        ResultResponse resultResponse = ResultResponse.of(HttpStatus.OK, "결제 요청 전송 완료");
+        ResultResponse resultResponse = ResultResponse.of(HttpStatus.OK, "오프라인 결제 요청 전송 완료");
         return ResponseEntity.status(resultResponse.getStatus()).body(resultResponse);
     }
 

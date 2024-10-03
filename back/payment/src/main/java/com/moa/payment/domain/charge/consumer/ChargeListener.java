@@ -40,6 +40,7 @@ public class ChargeListener {
                 map.put("renewList", renewList);
                 kafkaTemplate.send("request.renew-card-info", "1", map);
             }
+            // 마지막으로 client에게 응답을 전송
             PaymentResultDto resultDto = chargeService.makePaymentResultDto(resultVO, executePaymentRequestVO);
             notificationService.sendCompleteMessage(executePaymentRequestVO.getRequestId(), resultDto);
         } catch(Exception e) {
