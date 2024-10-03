@@ -64,4 +64,7 @@ export default defineConfig({
     },
   },
   base: "/", // 빌드 시 루트 경로에서 리소스를 참조하도록 설정
+  optimizeDeps: {
+    include: ['swiper'], // swiper 포함
+  },
 });

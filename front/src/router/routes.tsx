@@ -25,9 +25,10 @@ import DutchInvite from "../pages/DutchInvite/DutchInvite.tsx";
 import DutchParticipation from "../pages/DutchParticipation/DutchParticipation.tsx";
 import BringCard from "../pages/BringCard/BringCard.tsx";
 import SelectType from "../pages/SelectType/SelectType.tsx";
+import Payment from "../pages/Payment/Payment.tsx";
 const router = createBrowserRouter([
   {
-    element: <AppAuthHandler />, // 최상위 레이아웃으로 AppAuthHandler 설정
+    // element: <AppAuthHandler />, // 최상위 레이아웃으로 AppAuthHandler 설정
     children: [
       {
         path: PATH.ROOT,
@@ -117,6 +118,10 @@ const router = createBrowserRouter([
       {
         path: PATH.DUTCHPARTICIPATION,
         element: <DutchParticipation />,
+      },
+      {
+        path: PATH.PAYMENT,
+        element: <Payment />,
       },
     ],
   },
