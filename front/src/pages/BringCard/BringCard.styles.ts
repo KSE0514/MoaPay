@@ -282,3 +282,8 @@ export const LoadingView = styled.div`
     }
   }
 `;
+
+export const RequestEnd = styled.div`
+  display: flex;
+  align-items: center;
+`;
