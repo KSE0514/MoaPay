@@ -80,7 +80,7 @@ public class MyCardServiceImpl implements MyCardService {
                             .cardLimit(myCard.getCardLimit())
                             .benefitUsage(myCard.getBenefitUsage())
                             .performanceFlag(myCard.isPerformanceFlag())
-                            .cardStatus(myCard.isCardStatus())
+                            .cardStatus(myCard.getCardStatus())
                             .cardInfo(cardInfo)
                             .build();
                 }).collect(Collectors.toList());

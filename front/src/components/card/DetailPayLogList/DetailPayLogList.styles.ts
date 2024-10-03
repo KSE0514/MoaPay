@@ -31,15 +31,24 @@ export const Content = styled.div`
   & > div > div:nth-of-type(1){
     width: 75px;
     height: 75px;
-    border: 2px solid black;
     border-radius: 100%;
+    text-align:center;
+    position: relative;
+    display: flex;
+    align-items: center; /* 수직 중앙 정렬 */
+    justify-content: center; /* 수평 중앙 정렬 */
   }
 
-  
+  & > div > div:nth-of-type(1) > img {
+    // width: 60%;
+    // height: auto; /* 이미지의 비율을 유지하면서 너비에 맞춰 크기 조정 */
+  }
+
   & > hr {
     border: 1px solid #B97DF9;
   }
-`
+`;
+
 
 export const Detail = styled.div`
   width: 70%;

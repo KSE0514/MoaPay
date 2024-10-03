@@ -302,3 +302,49 @@ export const PlusIcon = styled(FontAwesomeIcon)`
   border-radius: 50%;
   padding: 5px 5px;
 `;
+
+
+
+export const QrContainer = styled.div`
+  width: 100%;
+  
+  // border: 2px solid yellow;
+  position: relative;
+  padding: 0px;
+  border: 0 !important;
+
+  & > div:nth-of-type(1) > img {
+    display: none;
+  }
+
+  #qr-reader__scan_region{
+    min-height: 90px !important;
+  }
+
+  #qr-reader__dashboard_section_csr > div > button {
+    padding: 7px 10px; 
+  }
+
+  #qr-reader__dashboard_section > div > span{
+    display: inline-block;
+    padding-top: 9px !important;
+    font-size: 17px;
+    font-weight: 200;
+    color: gray;
+  }
+    
+  #qr-reader__dashboard_section > div > div:nth-of-type(2) {
+    border: none !important;
+    margin-bottom: 0 !important;
+    padding-bottom: 0 !important;
+  }
+  #qr-reader__dashboard_section > div > div:nth-of-type(2) > div {
+    display: none;
+  }
+
+  & button {
+    background-color: #E5AFFB;
+    border-radius: 10px;
+    padding: 7px 10px; 
+  }
+`

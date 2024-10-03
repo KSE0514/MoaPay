@@ -7,6 +7,8 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.DynamicInsert;
+
 import java.util.UUID;
 
 @Entity
@@ -15,6 +17,7 @@ import java.util.UUID;
 @Builder(toBuilder = true)
 @NoArgsConstructor
 @AllArgsConstructor
+@DynamicInsert
 public class MyCard {
 
     @Id
@@ -56,7 +59,7 @@ public class MyCard {
 
     @DefaultValue("true")
     @Column(name = "card_status")
-    private boolean cardStatus;
+    private Boolean cardStatus;
 
     @NotNull
     @ManyToOne(fetch = FetchType.LAZY)

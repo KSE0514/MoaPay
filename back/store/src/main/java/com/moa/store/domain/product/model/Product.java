@@ -11,8 +11,8 @@ import com.fasterxml.uuid.Generators;
 import com.moa.store.domain.product.model.dto.UpdateProductRequestDto;
 
 @Entity
-@Builder
 @Getter
+@Builder
 @AllArgsConstructor
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Product {
@@ -22,6 +22,7 @@ public class Product {
     private Long id;
 
     @NotNull
+    @Column(columnDefinition = "binary(16)", unique = true, nullable = false, updatable = false)
     private UUID uuid;
 
     @NotNull
@@ -40,6 +41,7 @@ public class Product {
     private LocalDateTime createTime;
 
     @NotNull
+    @Column(name = "update_time")
     private LocalDateTime updateTime;
 
     @PrePersist

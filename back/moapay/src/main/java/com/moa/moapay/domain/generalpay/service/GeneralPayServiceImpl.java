@@ -63,6 +63,7 @@ public class GeneralPayServiceImpl implements GeneralPayService{
                     .cardNumber(dto.getCardNumber())
                     .cvc(dto.getCvc())
                     .amount(dto.getTotalPrice()) // 전부 하나의 카드로 긁으므로 totalPrice와 동일
+                    .usedAmount(myCard.getAmount())
                     .performance(cardProduct.getPerformance())
                     .benefitUsage(myCard.getBenefitUsage())
                     .build();

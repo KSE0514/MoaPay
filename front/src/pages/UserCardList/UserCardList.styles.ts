@@ -33,12 +33,12 @@ export const EditMode = styled.div`
 `
 
 export const Card = styled.div`
-
   display: flex;
   justify-content: space-between;
   padding: 10px 20px;
   align-items: center;
   font-size: 18px;
+  position: relative; // 카드 내 이미지와 텍스트의 위치 제어를 위해 relative 추가
 
   & > div {
     width: 100%;
@@ -46,39 +46,41 @@ export const Card = styled.div`
     align-items: center;
     position: relative;
     height: 90px;
+    overflow: visible; // 요소가 잘리지 않도록 overflow를 visible로 설정
+    user-select: none; // 드래그 방지
   }
 
-  & > div > div{
+  & > div > div {
     width: 100%;
-    // overflow: hidden;
     padding-left: 110px;
+    overflow: visible; // 이미지와 텍스트가 카드 경계를 넘을 때 표시되도록 설정
+    user-select: none; // 텍스트 드래그 방지
   }
 
-  & > svg{
+  & > svg {
     margin-left: 15px;
+    z-index: 1; // svg가 다른 요소에 가려지지 않게 z-index를 추가
   }
 
-  & >input[type='radio'] {
-  -webkit-appearance: none; // 웹킷 브라우저에서 기본 스타일 제거
-  -moz-appearance: none; // 모질라 브라우저에서 기본 스타일 제거 
-  appearance: none; // 기본 브라우저에서 기본 스타일 제거
-  width: 18px;
-  height: 18px;
-  border: 2px solid #ccc; // 체크되지 않았을 때의 테두리 색상
-  border-radius: 100%;
-  outline: none; // focus 시에 나타나는 기본 스타일 제거
-  cursor: pointer;
-}
+  & > input[type='radio'] {
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+    width: 18px;
+    height: 18px;
+    border: 2px solid #ccc;
+    border-radius: 100%;
+    outline: none;
+    cursor: pointer;
+  }
 
-// 체크될 시에, 변화되는 스타일 설정
-& > input[type='radio']:checked {
-  background-color: #547CFF; // 체크 시 내부 원으로 표시될 색상
-  border: 2px solid white; // 테두리가 아닌, 테두리와 원 사이의 색상
-  box-shadow: 0 0 0 2px #C7C7C7; // 얘가 테두리가 됨
-  // 그림자로 테두리를 직접 만들어야 함 (퍼지는 정도를 0으로 주면 테두리처럼 보입니다.)
-  // 그림자가 없으면 그냥 설정한 색상이 꽉 찬 원으로만 나옵니다.
-}
-`
+  & > input[type='radio']:checked {
+    background-color: #547cff;
+    border: 2px solid white;
+    box-shadow: 0 0 0 2px #c7c7c7;
+  }
+`;
+
 
 export const CardBackground = styled.div`
   background-color: #D6D9FF;
@@ -116,3 +118,11 @@ export const Btn = styled.button`
 //   height: 15%;
 //   bottom: 0;
 // `
+
+export const CardWrapper = styled.div`
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  position: relative;
+  touch-action: none; /* 모바일 드래그 이벤트에 필요한 touch-action 비활성화 */
+`;
