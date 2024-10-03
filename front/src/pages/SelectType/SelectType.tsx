@@ -23,7 +23,8 @@ const SelectType = () => {
     //요청보내기
     try {
       const response = await axios.post(
-        `${baseUrl}moapay/member/selectType`,
+        // `${baseUrl}moapay/member/selectType`,
+        `moapay/member/selectType`,
         { type: selectType, uuid: id },
         {
           withCredentials: true,

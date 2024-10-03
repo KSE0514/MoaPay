@@ -2,7 +2,7 @@ import { useNavigate } from "react-router-dom";
 import { SelectView, Wrapper, Button, Title } from "./selectPaymentType.styles";
 import { PATH } from "../../constants/path";
 
-export const SelectPaymentType = () => {
+const SelectPaymentType = () => {
   const navigate = useNavigate();
   return (
     <Wrapper>
@@ -22,3 +22,5 @@ export const SelectPaymentType = () => {
     </Wrapper>
   );
 };
+
+export default SelectPaymentType;

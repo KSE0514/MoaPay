@@ -67,7 +67,8 @@ const RegisterCard: React.FC = () => {
     setError(false); // 에러 초기화
     try {
       const response = await axios.post(
-        `${baseUrl}moapay/core/card/registration`,
+        // `${baseUrl}moapay/core/card/registration`,
+        `moapay/core/card/registration`,
         {
           memberUuid: id,
           cardNumber: cardNumber.join(""), // 카드 번호를 배열이 아닌 문자열로 전송
