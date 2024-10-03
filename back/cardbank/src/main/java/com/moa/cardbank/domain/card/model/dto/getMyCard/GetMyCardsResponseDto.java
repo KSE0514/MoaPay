@@ -21,8 +21,8 @@ public class GetMyCardsResponseDto {
     private String cvc;
     private boolean performanceFlag;
     private long cardLimit;
-    private long amout;
-    private long benefitUseage;
+    private long amount;
+    private long benefitUsage;
 
     private CardProductDto cardProduct;
     private AccountDto accounts;

@@ -387,7 +387,7 @@ public class CardServiceImpl implements CardService {
     @Override
     public List<GetMyCardsResponseDto> getMyCards(GetMyCardsRequestDto getMyCardsRequestDto) {
 
-        List<MyCard> myCards = myCardRepository.findByMemberId(getMyCardsRequestDto.getMemberUuid());
+        List<MyCard> myCards = myCardRepository.findByPhoneNumber(getMyCardsRequestDto.getPhoneNumber());
 
         List<GetMyCardsResponseDto> responseDtos = myCards.stream().map(
                 myCard -> {
@@ -415,7 +415,7 @@ public class CardServiceImpl implements CardService {
                             .uuid(myCard.getUuid())
                             .cardNumber(myCard.getCardNumber())
                             .cvc(myCard.getCvc())
-                            .benefitUseage(myCard.getBenefitUsage())
+                            .benefitUsage(myCard.getBenefitUsage())
                             .cardLimit(myCard.getCardLimit())
                             .accounts(accountDto)
                             .cardProduct(cardProductDto)
