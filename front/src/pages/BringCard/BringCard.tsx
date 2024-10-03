@@ -5,6 +5,7 @@ import {
   Title,
   Wrapper,
   LoadingView,
+  RequestEnd,
 } from "./BringCard.styles";
 import axios, { AxiosError } from "axios";
 import { useNavigate } from "react-router-dom";
@@ -28,7 +29,7 @@ const BringCard = () => {
   const { cardList, setCardList, removeCard } = useCardStore();
   const navigate = useNavigate();
   const [isLoding, setIsLoding] = useState(true);
-  const [before, setBefore] = useState(true);
+  const [before, setBefore] = useState(false);
   const { name, accessToken, mode, setMode } = useAuthStore();
   const bringCard = async () => {
     setIsLoding(true);
@@ -285,7 +286,9 @@ const BringCard = () => {
               </LoadingView>
             </>
           ) : (
-            <div>등록완료되었습니다.</div>
+            <RequestEnd>
+              <div>등록완료되었습니다.</div>
+            </RequestEnd>
           )}
         </>
       ) : (
