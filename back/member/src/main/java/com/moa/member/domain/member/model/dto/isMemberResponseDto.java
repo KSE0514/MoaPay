@@ -10,6 +10,8 @@ import lombok.Setter;
 @Builder
 @AllArgsConstructor
 public class isMemberResponseDto {
+	private boolean isExist;
 	private String uuid;
 	private String phoneNumber;
+	private String name;
 }

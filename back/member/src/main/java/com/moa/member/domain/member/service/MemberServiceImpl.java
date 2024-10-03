@@ -108,12 +108,21 @@ public class MemberServiceImpl implements MemberService {
 
 	@Override
 	public isMemberResponseDto isMember(String phoneNumber) {
-		Member member = memberRepository.findByPhoneNumber(phoneNumber).orElseThrow(() -> new BusinessException(
-			HttpStatus.BAD_REQUEST, "회원이 존재하지 않습니다."));
+
 		isMemberResponseDto response = isMemberResponseDto.builder()
-			.uuid(member.getUuid().toString())
-			.phoneNumber(phoneNumber)
-			.build();
+				.isExist(false)
+				.build();
+
+		Optional<Member> member=memberRepository.findByPhoneNumber(phoneNumber);
+		if(member.isEmpty()){ //멤버가 존재하지 않으면
+			return response;
+		}
+		response = isMemberResponseDto.builder()
+				.isExist(true)
+				.uuid(member.get().getUuid().toString())
+				.phoneNumber(phoneNumber)
+				.name(member.get().getName().toString())
+				.build();
 		return response;
 	}
 

@@ -91,6 +91,7 @@ public class Member {
 	@Column(name = "credential_id", nullable = true)
 	private String credentialId; //WebAuthn 장치의 Credential ID
 
+	@Lob
 	@NotNull
 	@Column(name = "authenticator_data", nullable = true)
 	private byte[] authenticatorData; //인증 장치 데이터

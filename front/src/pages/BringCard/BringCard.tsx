@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Button, Title, Wrapper } from "./BringCard.styles";
+import { Button, ImageView, Title, Wrapper } from "./BringCard.styles";
 import axios, { AxiosError } from "axios";
 import { useNavigate } from "react-router-dom";
 import { PATH } from "../../constants/path";
@@ -17,23 +17,29 @@ import Modal from "../../components/dutch/Modal/Modal";
 import { MyCardList } from "../../constants/card";
 
 const BringCard = () => {
+  const baseUrl = import.meta.env.VITE_BASE_URL;
+  const baseUrl1 = `http://localhost:18100/`;
   const { cardList, setCardList, removeCard } = useCardStore();
   const navigate = useNavigate();
-  const [isLoding, setIsLoding] = useState(false);
+  const [isLoding, setIsLoding] = useState(true);
   const [before, setBefore] = useState(true);
+  const { name, accessToken, mode, setMode } = useAuthStore();
   const bringCard = async () => {
     setIsLoding(true);
     //카드 데이터 가져오기
     try {
-      // const response = await axios.get(
-      //   `http://localhost:18020/moapay/core/card/mycard`,
-      //   { withCredentials: true }
-      // );
-      //로딩상태 풀고 카드 선택 뷰 보이도록 설정
-      // setCardList(response.data);
+      //   const response = await axios.get(`${baseUrl1}moapay/core/card/mycard`, {
+      //     withCredentials: true,
+      //     headers: {
+      //       Authorization: `Bearer ${accessToken}`,
+      //     },
+      //   });
+      //   // 로딩상태 풀고 카드 선택 뷰 보이도록 설정
+      //   // setCardList(response.data);
+      //   console.log(response);
 
       //Test
-      setCardList(MyCardList);
+      // setCardList(MyCardList);
       //추가
       setIsLoding(false);
       setBefore(false);
@@ -46,6 +52,12 @@ const BringCard = () => {
   const settingCard = () => {
     //카드 등록 요청 보내기
     // await axios.post(``, { cardList });
+    if (mode === "Join") {
+      setMode("");
+    }
+    if (mode === "NewLogin") {
+      setMode("");
+    }
     navigate(PATH.HOME);
   };
 
@@ -160,7 +172,25 @@ const BringCard = () => {
         <>
           {before ? (
             <>
-              <Title>카드를 불러오겠습니까?</Title>
+              <Title>
+                모아페이 사용을 위한
+                <br />
+                <span>카드 연결을 </span>진행하시겠습니까?
+              </Title>
+              <p
+                style={{
+                  color: "#84848",
+                  fontWeight: "400",
+                  marginTop: "5px",
+                }}
+              >
+                {/* 연결 진행 시 <br />
+                카드사에 연결된 <br /> */}
+                사용자님의 모든 카드 정보를 가져옵니다.
+              </p>
+              <ImageView>
+                <img src="/assets/image/card-payment.png" />
+              </ImageView>
               <Button onClick={bringCard}>불러오기</Button>
             </>
           ) : (
