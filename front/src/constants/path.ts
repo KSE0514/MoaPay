@@ -21,6 +21,7 @@ const PATH = {
   BRING_CARD: "/bring-card",
   SELECT_TYPE: "/select-type",
   PAYMENT: "/payment", //nonav
+  DUTCHOPEN: "/dutch-open", //nonav
 } as const;
 
 export { PATH };
