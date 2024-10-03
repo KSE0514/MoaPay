@@ -23,9 +23,10 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import com.moa.member.domain.member.security.JwtAccessDeniedHandler;
 import com.moa.member.domain.member.security.JwtAuthenticationEntryPoint;
 //import com.moa.member.domain.member.security.JwtFilter;
-import com.moa.member.domain.member.security.JwtFilter;
+//import com.moa.member.domain.member.security.JwtFilter;
 import com.moa.member.domain.member.security.JwtTokenProvider;
 import com.moa.member.domain.member.security.MemberDetailsServiceImpl;
+//import com.moa.member.domain.member.security.MemberDetailsServiceImpl;
 
 import lombok.RequiredArgsConstructor;
 
@@ -76,8 +77,8 @@ public class SecurityConfig {
             .and()
             .exceptionHandling((exceptionHandling) -> exceptionHandling
                 .authenticationEntryPoint(jwtAuthenticationEntryPoint)
-                .accessDeniedHandler(jwtAccessDeniedHandler))
-            .addFilterBefore(new JwtFilter(jwtTokenProvider), UsernamePasswordAuthenticationFilter.class);
+                .accessDeniedHandler(jwtAccessDeniedHandler));
+            //.addFilterBefore(new JwtFilter(jwtTokenProvider), UsernamePasswordAuthenticationFilter.class);
         return http.build();
     }
 

@@ -42,7 +42,6 @@ import reactor.core.publisher.Mono;
 @Slf4j
 public class SecurityConfig {
 
-	//private final AuthorizationHeaderFilter authorizationHeaderFilter;
 
 	private final JwtUtil jwtUtil;
 
@@ -58,7 +57,7 @@ public class SecurityConfig {
 	private ServerAuthenticationConverter serverAuthenticationConverter(){
 		return exchange -> {
 			String token = jwtUtil.resolveToken(exchange.getRequest());
-			System.out.println("config gateway 토큰: "+token);
+
 
 			try {
 				if(!Objects.isNull(token) && jwtUtil.validateJwtToken(token)){
