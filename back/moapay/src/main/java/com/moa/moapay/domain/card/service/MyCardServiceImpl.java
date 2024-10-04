@@ -346,6 +346,12 @@ public class MyCardServiceImpl implements MyCardService {
             throw new BusinessException(HttpStatus.NOT_FOUND, "요청하신 카드가 없습니다.");
         }
     }
+
+    @Override
+    public UUID getMemberId(UUID cardId){
+        MyCard myCard=myCardRepository.findByUuid(cardId).orElseThrow(()-> new BusinessException(HttpStatus.NOT_FOUND,"카드가 존재하지 않습니다."));
+        return myCard.getMemberId();
+    }
 }
 
 

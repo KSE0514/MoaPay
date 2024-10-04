@@ -13,6 +13,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.UUID;
 
 @RestController
 @RequiredArgsConstructor
@@ -71,4 +72,12 @@ public class CardController {
         ResultResponse resultResponse = ResultResponse.of(HttpStatus.OK, "카드 비활성화 완료");
         return ResponseEntity.status(resultResponse.getStatus()).body(resultResponse);
     }
+
+    //payment로 보내는 memberId
+    @PostMapping("/getMemberId")
+    public ResponseEntity<UUID> getMemberId(@Valid @RequestBody UUID cardId){
+        UUID memberId= myCardService.getMemberId(cardId);
+        return ResponseEntity.ok(memberId);
+    }
+
 }
