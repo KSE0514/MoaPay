@@ -40,7 +40,7 @@ const DutchOpen = () => {
   const [stompClient, setStompClient] = useState<Client | null>(null); // STOMP 클라이언트
 
   // 방 생성에 필요한 필드
-  const [maxMember, setMemberCnt] = useState<number>(3); // 총원 수
+  const [maxMember, setMemberCnt] = useState<number | string>(''); // 총원 수
   const [orderId, setOrderId] = useState<string>(
     "01923d9f-7b3d-70e9-ad8d-68a3ab09d578"
   ); // 주문 ID
@@ -75,6 +75,10 @@ const DutchOpen = () => {
       const parsedMessage: DutchRoomMessage = response.data;
       setJoinUrl(parsedMessage.data); // 방 생성 후 반환된 URL 저장
       setRoomId(parsedMessage.data); // 생성된 방의 roomId 저장
+
+      nav(PATH.DUTCHPAY) // 인원 설정하여 방 생성 후 다음 페이지로 이동
+      connectWebSocket() // WebSocket연결해서 Stomp 실행
+      joinRoom() // 방 참여
     } catch (error) {
       console.error("Error creating room:", error);
     }
@@ -251,11 +255,13 @@ const DutchOpen = () => {
         </Title>
         <LinkBox>
           {!memberSetComplete&&
-            <input value={memberNum} type="number" placeholder="인원을 설정해주세요." onChange={onChangeMember}/>
+            <input value={maxMember} type="number" placeholder="인원을 설정해주세요." onChange={(e) => {
+              const value = e.target.value;
+              setMemberCnt(value === "" ? undefined : Number(value));}}/>
           }
 
           {/* 사용자가 인원을 입력했을 경우에만 다음 화살표(->누르면 재확인 모달)가 나타나도록 함 */}
-          {memberNum&&!memberSetComplete? 
+          {maxMember&&!memberSetComplete? 
             <svg onClick={onCheckComplete} xmlns="http://www.w3.org/2000/svg" x="0px" y="0px" width="24" height="24" viewBox="0 0 48 48" fill="#ffffff">
               <path d="M 24 4 C 12.972066 4 4 12.972074 4 24 C 4 35.027926 12.972066 44 24 44 C 35.027934 44 44 35.027926 44 24 C 44 12.972074 35.027934 4 24 4 z M 24 7 C 33.406615 7 41 14.593391 41 24 C 41 33.406609 33.406615 41 24 41 C 14.593385 41 7 33.406609 7 24 C 7 14.593391 14.593385 7 24 7 z M 25.484375 16.484375 A 1.50015 1.50015 0 0 0 24.439453 19.060547 L 27.878906 22.5 L 16.5 22.5 A 1.50015 1.50015 0 1 0 16.5 25.5 L 27.878906 25.5 L 24.439453 28.939453 A 1.50015 1.50015 0 1 0 26.560547 31.060547 L 32.560547 25.060547 A 1.50015 1.50015 0 0 0 32.560547 22.939453 L 26.560547 16.939453 A 1.50015 1.50015 0 0 0 25.484375 16.484375 z"></path>
             </svg>
@@ -263,14 +269,14 @@ const DutchOpen = () => {
             null
           }
 
-          {/* {memberNum&&memberSetComplete&&<ShareUrl>{dutchUrl}</ShareUrl>} */}
+          {/* {maxMember&&memberSetComplete&&<ShareUrl>{dutchUrl}</ShareUrl>} */}
         </LinkBox>
       </Top>
 
       <Main>
         {/* 3. 더치페이하는 상품 정보 */}
         {/* 2. 참여자 목록 컴포넌트_2단계인지 판단 기준: memberSetComplete === true */}
-        {/* {memberSetComplete&&<Participant maxNum={Number(memberNum)} isHost={isHost} />} */}
+        {/* {memberSetComplete&&<Participant maxNum={Number(maxMember)} isHost={isHost} />} */}
       </Main>
 
       {/* 배경 도형 */}
@@ -285,9 +291,9 @@ const DutchOpen = () => {
       {/* 더치페이 인원 설정 확인용 모달 */}
       {isCompleteSettingCheck&&(
         <Modal isOpen={isCompleteSettingCheck} onClose={closeSettingModal}>
-          <div>{memberNum}명과 더치페이를 진행하시겠습니까?</div>
+          <div>{maxMember}명과 더치페이를 진행하시겠습니까?</div>
           <div>
-            <button onClick={completeMemberSetting}>확인</button>
+            <button onClick={createRoom}>확인</button>
             <button onClick={closeSettingModal}>취소</button>
           </div>
         </Modal>
