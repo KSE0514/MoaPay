@@ -343,7 +343,7 @@ export const EditMode = styled.div`
   justify-content: space-between;
   margin-top: 30px;
 `;
-export const Card = styled.div`
+export const CardView = styled.div`
   width: 50%;
   display: flex;
   align-items: center;

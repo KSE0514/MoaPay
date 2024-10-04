@@ -56,9 +56,37 @@ export const useCardStore = create<CardState>()(
   persist(
     (set) => ({
       cardList: [],
-      setCardList: (newCardList: Card[]) => set({ cardList: newCardList }),
+      setCardList: (newCardList: Card[]) =>
+        set({
+          cardList: newCardList.map((card) => ({
+            ...card,
+            cardProduct: {
+              ...card.cardProduct,
+              cardProductImgUrl: card.cardProduct.cardProductImgUrl.replace(
+                /\s/g,
+                "_"
+              ), // 공백을 _로 변환
+            },
+          })),
+        }),
+
       addCard: (card: Card) =>
-        set((state) => ({ cardList: [...state.cardList, card] })),
+        set((state) => ({
+          cardList: [
+            ...state.cardList,
+            {
+              ...card,
+              cardProduct: {
+                ...card.cardProduct,
+                cardProductImgUrl: card.cardProduct.cardProductImgUrl.replace(
+                  /\s/g,
+                  "_"
+                ), // 공백을 _로 변환
+              },
+            },
+          ],
+        })),
+
       removeCard: (index) =>
         set((state) => {
           const newCardList = [...state.cardList]; // Create a copy of the current cardList

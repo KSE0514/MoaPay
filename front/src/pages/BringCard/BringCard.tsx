@@ -8,7 +8,7 @@ import {
   RequestEnd,
   CardListWrapper,
   AddBtn,
-  Card,
+  CardView,
   CardBackground,
   EditMode,
   Main,
@@ -19,26 +19,29 @@ import axios, { AxiosError } from "axios";
 import { useNavigate } from "react-router-dom";
 import { PATH } from "../../constants/path";
 import { useAuthStore } from "../../store/AuthStore";
-import { useCardStore } from "../../store/CardStore";
+import { Card, useCardStore } from "../../store/CardStore";
 import Modal from "../../components/dutch/Modal/Modal";
 import { MyCardList } from "../../constants/card";
 
 const BringCard = () => {
-  // const baseUrl = import.meta.env.VITE_BASE_URL;
-  const baseUrl = `http://localhost:18100/`;
-  const { cardList, setCardList, removeCard } = useCardStore();
   const navigate = useNavigate();
   const [isLoading, setIsLoading] = useState(false);
   const [before, setBefore] = useState(true);
   const { name, accessToken, mode, setMode, phoneNumber, id } = useAuthStore();
+  const { cardList, setCardList, removeCard } = useCardStore();
+  const [showCards, setShowCards] = useState<Card[]>([]); //보여지는 카드
+  const [disAbleCards, setDisAbleCards] = useState<Card[]>([]); // 삭제할 카드
+  /**
+   * 카드를 가져올 땐 showCards - 완료
+   * 카드 단일 삭제 시 show에서 삭제하고 disable에 추가 - 완료
+   * 카드 비활성화 요청 후 show의 카드를 setCardList에 넣기 - 완료
+   */
   const bringCard = async () => {
     setIsLoading(true);
     //카드 데이터 가져오기
-    console.log(accessToken);
-    console.log(id);
     try {
       const response = await axios.post(
-        `${baseUrl}cardbank/card/getMyCards`,
+        `http://localhost:18100/cardbank/card/getMyCards`,
         // `api/cardbank/card/getMyCards`,
         {
           memberId: id,
@@ -53,8 +56,20 @@ const BringCard = () => {
         }
       );
       // 로딩상태 풀고 카드 선택 뷰 보이도록 설정
-      setCardList(response.data.data);
-      console.log(response);
+      setShowCards(
+        response.data.data.map((card: Card) => ({
+          ...card,
+          cardProduct: {
+            ...card.cardProduct,
+            cardProductImgUrl: card.cardProduct.cardProductImgUrl.replace(
+              /\s/g,
+              "_"
+            ), // 공백을 _로 변환
+          },
+        }))
+      );
+
+      console.log(response.data.data);
       setTimeout(() => {
         //추가
         setIsLoading(false);
@@ -67,46 +82,85 @@ const BringCard = () => {
       //   setIsLoading(false);
       //   setBefore(false);
       // }, 5000); // 5000ms = 5초
-
-      console.log(cardList);
     } catch (e) {
       const error = e as AxiosError; // AxiosError로 타입 단언
       console.log(error);
     }
   };
 
-  const settingCard = () => {
+  //카드 비활성화 요청 후 show의 카드를 setCardList에 넣기
+  const settingCard = async () => {
     //삭제된 카드들은 비활성화 요청 보내기
     setIsLoading(true);
     setBefore(true);
-    // await axios.post(``, { cardList });
+    // disAbleCards 배열의 각 카드에 대해 비활성화 요청을 보냄
+    for (const card of disAbleCards) {
+      const response = await axios.post(
+        `http://localhost:18020/moapay/core/card/disable`,
+        // `api/moapay/core/card/disable`,
+        {
+          memberUuid: id, // member id
+          cardNumber: card.cardNumber, // 카드 번호
+        },
+        {
+          withCredentials: true,
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+            "Content-Type": "application/json",
+          },
+        }
+      );
+      console.log(`Card ${card.cardNumber} disabled`, response.data);
+    }
+    setCardList(showCards);
+
+    setIsLoading(true);
+    setBefore(false);
+
+    //모드변경
     if (mode === "Join") {
       setMode("");
     }
     if (mode === "NewLogin") {
       setMode("");
     }
+
     //Test
-    setTimeout(() => {
-      setIsLoading(true);
-      setBefore(false);
-    }, 5000); // 5000ms = 5초
-    // setIsLoading(true);
+    // setTimeout(() => {
+    //   setIsLoading(true);
     //   setBefore(false);
+    // }, 5000); // 5000ms = 5초
   };
 
-  //////////////////////////////////////////////////////////////
+  //카드 단일 삭제 시 showCards에서 삭제하고 disAbleCards 추가
   const deleteCard = async () => {
-    removeCard(0);
+    console.log(swipeCard); // showCards의 인덱스
+
+    // 현재 카드 가져오기
+    const cardToDelete = showCards[swipeCard ? swipeCard : 0];
+
+    // showCards에서 해당 인덱스의 카드 제거
+    const updatedShowCards = showCards.filter(
+      (_, index) => index !== swipeCard
+    );
+
+    // disAbleCards에 제거한 카드 추가
+    const updatedDisAbleCards = [...disAbleCards, cardToDelete];
+
+    // 상태 업데이트
+    setShowCards(updatedShowCards);
+    setDisAbleCards(updatedDisAbleCards);
+
+    // 모달 닫기
     closeModal();
   };
 
+  ////////////////////////////////////////////////////////////
   const [isOpen, setIsOpen] = useState(false); // 더치페이 나가기 모달 상태 관리
   const [rotate, setRotate] = useState<{ [key: number]: boolean }>({});
   const [swipeDistance, setSwipeDistance] = useState<{ [key: number]: number }>(
     {}
   ); // {key(index): key번째 카드가 왼쪽으로 밀린 거리}
-
   const [startX, setStartX] = useState(0); // 터치 시작의 X 좌표를 저장
   const [swipeCard, setSwipeCard] = useState<number | null>(null); // 스와이프 된 카드의 index 값을 저장
   const [editMode, setEditMode] = useState(false); // 선택 삭제 모드
@@ -168,7 +222,7 @@ const BringCard = () => {
     }
 
     if (swipeDistance[index] >= 100) {
-      console.log(cardList[index].cardInfo.cardName); // 100px 이상 밀렸을 경우 카드 이름 출력
+      console.log(showCards[index].cardProduct.cardProductName); // 100px 이상 밀렸을 경우 카드 이름 출력
       if (!editMode) {
         setSwipeCard(index);
       }
@@ -278,7 +332,7 @@ const BringCard = () => {
                     <div>삭제</div>
                   </EditMode>
                 ) : null}
-                {cardList.map((card, index) => (
+                {showCards.map((card, index) => (
                   <div
                     onTouchStart={(e) => handleTouchStart(e, index)}
                     onTouchMove={(e) => handleTouchMove(e, index)} // 추가된 handleTouchMove 함수 사용
@@ -290,9 +344,9 @@ const BringCard = () => {
                         : `translateX(-${swipeDistance[index] || 0}px)`,
                     }}
                     className="card-row"
-                    key={card?.cardInfo?.cardName}
+                    key={card?.cardProduct?.cardProductName}
                   >
-                    <Card key={index}>
+                    <CardView key={index}>
                       {editMode ? (
                         <input
                           type="radio"
@@ -307,8 +361,8 @@ const BringCard = () => {
                       >
                         <img
                           src={
-                            card?.cardInfo?.imageUrl
-                              ? `/assets/image/${card.cardInfo.imageUrl}`
+                            card?.cardProduct?.cardProductImgUrl
+                              ? `/assets/image/cards/신용카드이미지/${card.cardProduct.cardProductImgUrl}.png`
                               : "/assets/image/card.png"
                           }
                           onLoad={(event) => handleImageLoad(event, index)} // 이미지가 로드되면 handleImageLoad 호출
@@ -323,7 +377,7 @@ const BringCard = () => {
                           }}
                         />
                         <div className="card-name">
-                          {card?.cardInfo?.cardName}
+                          {card?.cardProduct?.cardProductName}
                         </div>
                       </div>
                       {!editMode && (
@@ -338,7 +392,7 @@ const BringCard = () => {
                           <path d="M 3 7 A 1.0001 1.0001 0 1 0 3 9 L 27 9 A 1.0001 1.0001 0 1 0 27 7 L 3 7 z M 3 14 A 1.0001 1.0001 0 1 0 3 16 L 27 16 A 1.0001 1.0001 0 1 0 27 14 L 3 14 z M 3 21 A 1.0001 1.0001 0 1 0 3 23 L 27 23 A 1.0001 1.0001 0 1 0 27 21 L 3 21 z"></path>
                         </svg>
                       )}
-                    </Card>
+                    </CardView>
                     <CardBackground>삭제</CardBackground>
                   </div>
                 ))}
@@ -360,7 +414,7 @@ const BringCard = () => {
                       paddingTop: "25px",
                     }}
                   >
-                    '{cardList[swipeCard || 0].cardInfo.cardName}'
+                    '{showCards[swipeCard || 0].cardProduct.cardProductName}'
                     <br />
                     <br />
                     해당 카드를 삭제하시겠습니까?
