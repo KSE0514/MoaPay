@@ -1,5 +1,5 @@
 import { useNavigate } from "react-router-dom";
-import { SelectView, Wrapper, Button, Title } from "./selectPaymentType.styles";
+import { SelectView, Wrapper, Button, Title } from "./SelectPaymentType.styles";
 import { PATH } from "../../constants/path";
 
 const SelectPaymentType = () => {

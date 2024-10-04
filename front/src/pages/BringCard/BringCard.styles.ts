@@ -282,3 +282,101 @@ export const LoadingView = styled.div`
     }
   }
 `;
+
+export const RequestEnd = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  div {
+    font-size: 20px;
+    margin-bottom: 30px;
+  }
+  button {
+    font-size: 15px;
+    border: none;
+    background-color: a var(--light-purple);
+  }
+`;
+
+// 카드 불러오기
+export const CardListWrapper = styled.div`
+  @keyframes slideUp {
+    from {
+      transform: translateY(100%); /* 아래에서 시작 */
+      opacity: 0;
+    }
+    to {
+      transform: translateY(0); /* 위로 올라옴 */
+      opacity: 1;
+    }
+  }
+  animation: slideUp 1s ease-in-out;
+  background-color: rgba(255, 255, 255, 0.3);
+  padding: 15% 5%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  svg {
+    fill: black;
+  }
+`;
+export const Top = styled.div`
+  margin-bottom: 10px;
+  font-size: 20px;
+  font-weight: 600;
+`;
+export const Sub = styled.div`
+  margin-bottom: 10px;
+`;
+export const Main = styled.div`
+  overflow-x: hidden;
+  .card-row {
+    width: 200%;
+    position: relative;
+    display: flex;
+  }
+`;
+export const EditMode = styled.div`
+  display: flex;
+  justify-content: space-between;
+  margin-top: 30px;
+`;
+export const CardView = styled.div`
+  width: 50%;
+  display: flex;
+  align-items: center;
+  position: relative;
+  height: 90px;
+  overflow: visible;
+  user-select: none;
+  div {
+    display: flex;
+    flex: 1;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    height: 90px;
+    overflow: visible;
+    user-select: none;
+    .card-name {
+      padding-left: 110px;
+    }
+  }
+`;
+export const CardBackground = styled.div`
+  width: 50%;
+  height: 90px;
+  font-size: 15px;
+  background-color: rgba(255, 255, 255, 0.5);
+  color: black;
+  display: flex;
+  align-items: center;
+  padding-left: 30px;
+  margin-left: 20px;
+`;
+export const AddBtn = styled.div`
+  width: 100%;
+  text-align: right;
+`;

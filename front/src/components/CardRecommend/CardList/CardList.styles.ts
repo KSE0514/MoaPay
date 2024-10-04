@@ -26,14 +26,17 @@ export const CardInfo = styled.div`
     align-items: center;
     transition: transform 0.3s ease; /* 애니메이션을 부드럽게 만듦 */
     div {
-      width: 40%;
+      width: 33%;
       position: relative;
+      margin-right: 10px;
     }
     h3 {
       width: 60%;
     }
     img {
       object-fit: cover; // 이미지가 잘리지 않고 잘 맞도록 조정
+      width: 100%;
+      height: 100%;
     }
   }
 

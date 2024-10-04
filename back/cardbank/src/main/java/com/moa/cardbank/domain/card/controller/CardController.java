@@ -22,6 +22,7 @@ public class CardController {
 
     private final CardService cardService;
 
+    @CrossOrigin(origins = "http://localhost:5173", allowCredentials = "true")
     @PostMapping("/getMyCards")
     public ResponseEntity<?> getMyCards(@Valid @RequestBody GetMyCardsRequestDto getMyCardsRequestDto) {
         List<GetMyCardsResponseDto> responseDto = cardService.getMyCards(getMyCardsRequestDto);
