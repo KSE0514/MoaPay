@@ -257,7 +257,7 @@ const DutchOpen = () => {
           {!memberSetComplete&&
             <input value={maxMember} type="number" placeholder="인원을 설정해주세요." onChange={(e) => {
               const value = e.target.value;
-              setMemberCnt(value === "" ? undefined : Number(value));}}/>
+              setMemberCnt(value === "" ? "" : Number(value));}}/>
           }
 
           {/* 사용자가 인원을 입력했을 경우에만 다음 화살표(->누르면 재확인 모달)가 나타나도록 함 */}
