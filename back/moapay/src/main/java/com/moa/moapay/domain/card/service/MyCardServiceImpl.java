@@ -155,6 +155,7 @@ public class MyCardServiceImpl implements MyCardService {
 
         // 카드 뱅크에서 내 카드 목록을 가져오기 위한 REST API 호출
         ResponseEntity<GetMyCardDtoWrapper> responseEntity = restClient.post()
+                // TODO: 주소 변경
                 .uri("http://localhost:18100/cardbank/card/getMyCards")
                 .contentType(MediaType.APPLICATION_JSON)
                 .body(getMyCardsRequestDto)
@@ -262,14 +263,14 @@ public class MyCardServiceImpl implements MyCardService {
 
         List<MyCard> myCards = myCardRepository.findAllByMemberId(registrationRequestDto.getMemberUuid());
 
-        for (MyCard myCard : myCards) {
-            if (myCard.getCardNumber().equals(registrationRequestDto.getCardNumber())) {
-                throw new BusinessException(HttpStatus.CONFLICT, "카드 데이터가 이미 존재합니다.");
-            }
+        Optional<MyCard> existMycard = myCardRepository.findByCardNumber(String.valueOf(registrationRequestDto.getCardNumber()));
+        if (existMycard.isPresent()) {
+            throw new BusinessException(HttpStatus.CONFLICT,"카드가 이미 존재합니다");
         }
 
         try {
             ResponseEntity<CardRestWrapperDto> responseEntity = restClient.post()
+                    //TODO: 주소 변경
                     .uri("http://localhost:18100/cardbank/card/registration")
                     .contentType(MediaType.APPLICATION_JSON)
                     .body(registrationRequestDto)
@@ -298,6 +299,20 @@ public class MyCardServiceImpl implements MyCardService {
 
                 myCardRepository.save(myCard);
 
+                List<CardBenefit> cardBenefits = cardBenefitRepository.findByCardProductUuid(cardData.getCardProductUuid());
+                List<CardBenefitDto> cardBenefitDtos = cardBenefits.stream().map(
+                        cardBenefit -> {
+                            return CardBenefitDto.builder()
+                                    .benefitPoint(cardBenefit.getBenefitPoint())
+                                    .benefitType(cardBenefit.getBenefitType())
+                                    .benefitValue(cardBenefit.getBenefitValue())
+                                    .benefitUnit(cardBenefit.getBenefitUnit())
+                                    .benefitDesc(cardBenefit.getBenefitDesc())
+                                    .categoryName(cardBenefit.getCardBenefitCategory().getName())
+                                    .build();
+                        }
+                ).toList();
+
                 CardProductDto cardProductDto = CardProductDto.builder()
                         .cardProductUuid(cardData.getCardProductUuid())
                         .cardProductName(cardData.getCardProductName())
@@ -308,6 +323,7 @@ public class MyCardServiceImpl implements MyCardService {
                         .cardProductImgUrl(cardData.getCardProductImgUrl())
                         .cardProductBenefitTotalLimit(cardData.getCardProductBenefitTotalLimit())
                         .cardProductPerformance(cardData.getCardProductPerformance())
+                        .cardBenefits(cardBenefitDtos)
                         .build();
 
                 AccountDto accountDto = AccountDto.builder()
