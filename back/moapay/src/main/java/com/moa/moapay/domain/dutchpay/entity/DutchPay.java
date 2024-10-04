@@ -36,6 +36,10 @@ public class DutchPay {
     @Column(name = "amount")
     private Long amount;
 
+    @NotNull
+    @Column(name = "is_manager")
+    private boolean isManager;
+
     @Enumerated(EnumType.STRING)
     @Column(name = "pay_status")
     private DutchStatus payStatus;
