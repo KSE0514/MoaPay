@@ -16,7 +16,7 @@ const PATH = {
   USER_CARD_LIST: "/card-list", //nonav
   USER_CARD_DETAIL: "/card/:card_id", //nonav
   DUTCHPAY: "/dutchpay", //nonav
-  DUTCHINVITE: "/dutchpay/invite", //nonav
+  DUTCHINVITE: "/dutchpay/invite/:room_id", //nonav
   DUTCHPARTICIPATION: "/dutchpay/participation", //nonav
   BRING_CARD: "/bring-card",
   SELECT_TYPE: "/select-type",
