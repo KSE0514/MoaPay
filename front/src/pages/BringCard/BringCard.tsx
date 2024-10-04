@@ -96,7 +96,8 @@ const BringCard = () => {
     // disAbleCards 배열의 각 카드에 대해 비활성화 요청을 보냄
     for (const card of disAbleCards) {
       const response = await axios.post(
-        `http://localhost:18020/moapay/core/card/disable`,
+        // `http://localhost:18020/moapay/core/card/disable`,
+        `http://localhost:8765/moapay/core/card/disable`,
         // `api/moapay/core/card/disable`,
         {
           memberUuid: id, // member id

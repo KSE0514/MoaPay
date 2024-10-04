@@ -45,6 +45,8 @@ export interface Card {
 
 // 카드 상태 인터페이스 정의
 interface CardState {
+  cardWithNullName: Card;
+  cardWithDividPay: Card;
   cardList: Card[]; // 카드 리스트 배열
   setCardList: (newCardList: Card[]) => void; // 받아온 카드 리스트를 설정하는 함수
   addCard: (card: Card) => void; // 카드 추가 함수
@@ -55,6 +57,58 @@ interface CardState {
 export const useCardStore = create<CardState>()(
   persist(
     (set) => ({
+      cardWithNullName: {
+        id: "add-card",
+        cardNumber: "", // 빈 문자열
+        cvc: "", // 빈 문자열
+        performanceFlag: false, // 실적 달성 여부
+        cardLimit: 0, // 카드 한도 0
+        amount: 0, // 사용 금액 0
+        benefitUsage: 0, // 사용한 혜택량 0
+        cardProduct: {
+          cardProductUuid: "", // 빈 문자열
+          cardProductName: "", // 카드명 null 대신 빈 문자열
+          cardProductCompanyName: "", // 발급사 빈 문자열
+          cardProductBenefitTotalLimit: 0, // 혜택 한도 0
+          cardProductType: "", // 카드 종류 빈 문자열
+          cardProductAnnualFee: 0, // 국내 연회비 0
+          cardProductAnnualFeeForeign: 0, // 해외 연회비 0
+          cardProductPerformance: 0, // 전월 실적 0
+          cardProductImgUrl: "", // 이미지 URL 빈 문자열
+          benefits: [], // 혜택 목록 빈 배열
+        },
+        accounts: {
+          accountUuid: "", // 빈 문자열
+          accountNumber: "", // 빈 문자열
+          balance: 0, // 잔액 0
+        },
+      },
+      cardWithDividPay: {
+        id: "recommended-card",
+        cardNumber: "", // 예시 카드 번호
+        cvc: "", // 예시 CVC 코드
+        performanceFlag: false, // 실적 달성 여부
+        cardLimit: 0, // 카드 한도 1,000,000
+        amount: 0, // 사용 금액 500,000
+        benefitUsage: 0, // 사용한 혜택량 10,000
+        cardProduct: {
+          cardProductUuid: "", // 예시 UUID
+          cardProductName: "", // 카드명 dividPay
+          cardProductCompanyName: "", // 발급사 예시
+          cardProductBenefitTotalLimit: 0, // 혜택 한도 100,000
+          cardProductType: "", // 카드 종류 신용
+          cardProductAnnualFee: 0, // 국내 연회비 5,000
+          cardProductAnnualFeeForeign: 0, // 해외 연회비 10,000
+          cardProductPerformance: 0, // 전월 실적 30
+          cardProductImgUrl: "card.png", // 이미지 URL card.png
+          benefits: [], // 혜택 목록 빈 배열
+        },
+        accounts: {
+          accountUuid: "", // 예시 계좌 UUID
+          accountNumber: "", // 예시 계좌번호
+          balance: 500000, // 잔액 500,000
+        },
+      },
       cardList: [],
       setCardList: (newCardList: Card[]) =>
         set({
