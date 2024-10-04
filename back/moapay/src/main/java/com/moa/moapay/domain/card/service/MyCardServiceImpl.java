@@ -315,10 +315,13 @@ public class MyCardServiceImpl implements MyCardService {
      *
      * @param disableCardRequestDto
      */
+
     @Override
     public void disableCard(MyCardStatusRequestDto disableCardRequestDto) {
 
         List<MyCard> myCards = myCardRepository.findAllByMemberId(disableCardRequestDto.getMemberUuid());
+        System.out.println("member uuid "+disableCardRequestDto.getMemberUuid());
+        System.out.println(myCards);
         boolean cardExists = myCards.stream()
                 .anyMatch(myCard -> myCard.getCardNumber().equals(disableCardRequestDto.getCardNumber()));
 

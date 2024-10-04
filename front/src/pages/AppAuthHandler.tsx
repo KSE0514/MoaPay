@@ -15,7 +15,6 @@ const AppAuthHandler: React.FC = () => {
       if (document.hidden) {
         //lastBackgroundTime 업데이트하기
         localStorage.setItem("lastBackgroundTime", Date.now().toString());
-        localStorage.setItem("lastInURI", window.location.pathname);
       }
       //앱으로 돌아온 경우
       else {
@@ -26,7 +25,7 @@ const AppAuthHandler: React.FC = () => {
           const timeDiff = Date.now() - parseInt(lastBackgroundTime, 10);
 
           //백그라운드에서 머무른 시간이 1분을 초과한 경우
-          if (timeDiff > 600000) {
+          if (timeDiff > 60000) {
             console.log("step1");
             //이전 로그인 기록이 있는 경우
             if (isLoggedIn) {
@@ -76,6 +75,10 @@ const AppAuthHandler: React.FC = () => {
             : "/home") || "/home";
         // lastInURI가 null이 아닌 경우에만 navigate 호출
         if (lastInURI) {
+          if (isLoggedIn && lastInURI == "/create-account") {
+            localStorage.setItem("lastInURI", PATH.HOME);
+            navigate(PATH.HOME);
+          }
           navigate(lastInURI);
         }
       }
@@ -107,7 +110,7 @@ const AppAuthHandler: React.FC = () => {
     return () => {
       document.removeEventListener("visibilitychange", handleVisibilityChange);
     };
-  }, [navigate, setIsLoggedIn]);
+  }, [navigate, setIsLoggedIn, window.location.pathname]);
 
   return <Outlet />; // 자식 경로를 렌더링
 };
