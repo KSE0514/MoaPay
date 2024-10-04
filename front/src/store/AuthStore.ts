@@ -10,6 +10,8 @@ interface AuthState {
   mode: string;
   accessToken: string | null;
   refreshToken: string | null;
+  paymentType: string | null;
+  setPaymentType: (value: string) => void;
   setAccessToken: (value: string) => void;
   setRefreshToken: (value: string) => void;
   setBioLogin: (value: boolean) => void;
@@ -32,6 +34,8 @@ export const useAuthStore = create<AuthState>()(
       accessToken: null,
       refreshToken: null,
       phoneNumber: null,
+      paymentType: null,
+      setPaymentType: (value) => set({ paymentType: value }),
       setPhoneNumber: (value) => set({ phoneNumber: value }),
       setAccessToken: (value) => set({ accessToken: value }),
       setRefreshToken: (value) => set({ refreshToken: value }),

@@ -30,31 +30,45 @@ const BringCard = () => {
   const navigate = useNavigate();
   const [isLoading, setIsLoading] = useState(false);
   const [before, setBefore] = useState(true);
-  const { name, accessToken, mode, setMode } = useAuthStore();
+  const { name, accessToken, mode, setMode, phoneNumber, id } = useAuthStore();
   const bringCard = async () => {
     setIsLoading(true);
     //카드 데이터 가져오기
+    console.log(accessToken);
+    console.log(id);
     try {
-      //   const response = await axios.get(`${baseUrl}moapay/core/card/mycard`, {
-      //     withCredentials: true,
-      //     headers: {
-      //       Authorization: `Bearer ${accessToken}`,
-      //     },
-      //   });
-      //   // 로딩상태 풀고 카드 선택 뷰 보이도록 설정
-      //   // setCardList(response.data);
-      //   console.log(response);
-
-      //Test
-      setCardList(MyCardList);
+      const response = await axios.post(
+        `${baseUrl}cardbank/card/getMyCards`,
+        // `api/cardbank/card/getMyCards`,
+        {
+          memberId: id,
+          phoneNumber: phoneNumber,
+        },
+        {
+          withCredentials: true,
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+            "Content-Type": "application/json",
+          },
+        }
+      );
+      // 로딩상태 풀고 카드 선택 뷰 보이도록 설정
+      setCardList(response.data.data);
+      console.log(response);
       setTimeout(() => {
+        //추가
         setIsLoading(false);
         setBefore(false);
-      }, 5000); // 5000ms = 5초
+      }, 2000);
 
-      //추가
-      // setIsLoading(false);
-      // setBefore(false);
+      //Test
+      // setCardList(MyCardList);
+      // setTimeout(() => {
+      //   setIsLoading(false);
+      //   setBefore(false);
+      // }, 5000); // 5000ms = 5초
+
+      console.log(cardList);
     } catch (e) {
       const error = e as AxiosError; // AxiosError로 타입 단언
       console.log(error);
@@ -62,8 +76,7 @@ const BringCard = () => {
   };
 
   const settingCard = () => {
-    console.log("hello");
-    //카드 등록 요청 보내기
+    //삭제된 카드들은 비활성화 요청 보내기
     setIsLoading(true);
     setBefore(true);
     // await axios.post(``, { cardList });
@@ -243,7 +256,7 @@ const BringCard = () => {
               >
                 {/* 연결 진행 시 <br />
                 카드사에 연결된 <br /> */}
-                사용자님의 모든 카드 정보를 가져옵니다.
+                {name}님의 모든 카드 정보를 가져옵니다.
               </p>
               <ImageView>
                 <img src="/assets/image/card-payment.png" />
@@ -277,7 +290,7 @@ const BringCard = () => {
                         : `translateX(-${swipeDistance[index] || 0}px)`,
                     }}
                     className="card-row"
-                    key={card.cardInfo.cardName}
+                    key={card?.cardInfo?.cardName}
                   >
                     <Card key={index}>
                       {editMode ? (
@@ -293,8 +306,11 @@ const BringCard = () => {
                         }}
                       >
                         <img
-                          src={card.cardInfo.imageUrl}
-                          alt={card.cardInfo.cardName}
+                          src={
+                            card?.cardInfo?.imageUrl
+                              ? `/assets/image/${card.cardInfo.imageUrl}`
+                              : "/assets/image/card.png"
+                          }
                           onLoad={(event) => handleImageLoad(event, index)} // 이미지가 로드되면 handleImageLoad 호출
                           style={{
                             position: "absolute",
@@ -307,7 +323,7 @@ const BringCard = () => {
                           }}
                         />
                         <div className="card-name">
-                          {card.cardInfo.cardName}
+                          {card?.cardInfo?.cardName}
                         </div>
                       </div>
                       {!editMode && (

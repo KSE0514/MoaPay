@@ -16,8 +16,10 @@ import Modal from "../../components/dutch/Modal/Modal";
 import barcode from "../../assets/image/barcode.png";
 import { useEffect, useState, useRef } from "react";
 import { Html5QrcodeScanner } from "html5-qrcode";
+import { useNavigate } from "react-router-dom";
 
 const Home = () => {
+  const navigate = useNavigate();
   const [cardList, setCardList] = useState<string[]>([]);
   const containerRef = useRef<HTMLDivElement | null>(null);
   const [isCameraOn, setIsCameraOn] = useState(false); // 카메라 상태 추가
@@ -258,7 +260,13 @@ const Home = () => {
           >
             {cardList.map((card, index) =>
               card === "null" ? (
-                <div className="card add-card" key={index}>
+                <div
+                  onClick={() => {
+                    navigate("/add-card");
+                  }}
+                  className="card add-card"
+                  key={index}
+                >
                   <div>
                     <PlusIcon icon={faPlus} />
                   </div>

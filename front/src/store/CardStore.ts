@@ -12,27 +12,35 @@ export interface Benefit {
 }
 
 // 카드 객체 타입 정의
-export interface CardInfo {
-  cardName: string; // 카드명
-  companyName: string; // 카드 발급사
-  benefitTotalLimit: number | null; // 혜택 한도 (nullable)
-  cardType: string; // 카드 종류 (신용, 체크 등)
-  annualFee: number; // 국내 연회비
-  annualFeeForeign: number; // 해외 연회비
-  performance: number; // 전월 실적
-  imageUrl: string; // 이미지 url
+export interface CardProduct {
+  cardProductUuid: string;
+  cardProductName: string; // 카드명
+  cardProductCompanyName: string; // 카드 발급사
+  cardProductBenefitTotalLimit: number | null; // 혜택 한도 (nullable)
+  cardProductType: string; // 카드 종류 (신용, 체크 등)
+  cardProductAnnualFee: number; // 국내 연회비
+  cardProductAnnualFeeForeign: number; // 해외 연회비
+  cardProductPerformance: number; // 전월 실적
+  cardProductImgUrl: string; // 이미지 url
   benefits: Benefit[]; // 혜택 목록
 }
 
+export interface Accounts {
+  accountUuid: string;
+  accountNumber: string;
+  balance: number;
+}
 // 카드 객체 타입 정의
 export interface Card {
-  cardNumber: string; // 카드 식별자
+  id: string; //uuid 카드 식별자
+  cardNumber: string; // 카드번호
   cvc: string; // CVC 코드 추가
-  performanceOk: boolean; // 실적 달성 여부
+  performanceFlag: boolean; // 실적 달성 여부
   cardLimit: number; // 카드 한도
-  charges: number; // 사용 금액
+  amount: number; // 사용 금액
   benefitUsage: number; // 사용한 혜택량
-  cardInfo: CardInfo; // 카드 정보 객체
+  cardProduct: CardProduct; // 카드 정보 객체
+  accounts: Accounts;
 }
 
 // 카드 상태 인터페이스 정의
