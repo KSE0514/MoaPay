@@ -26,7 +26,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import axios from "axios";
 
 interface data {
-  cateory: string;
+  category: string;
   money: number;
   per: number;
 }
@@ -94,26 +94,26 @@ const Statistics = () => {
 
   // test data
   const [dataList, setDataList] = useState<data[] | null>([
-    { cateory: "간편결제", money: 50000, per: 2.5 },
-    { cateory: "교육", money: 250000, per: 12.5 },
-    { cateory: "교통", money: 50000, per: 2.5 },
-    { cateory: "마트·편의점", money: 50000, per: 2.5 },
-    { cateory: "미용", money: 100000, per: 5.0 },
-    { cateory: "보험", money: 50000, per: 2.5 },
-    { cateory: "숙박", money: 250000, per: 12.5 },
-    { cateory: "생활", money: 50000, per: 2.5 },
-    { cateory: "쇼핑", money: 50000, per: 2.5 },
-    { cateory: "식비", money: 100000, per: 5.0 },
-    { cateory: "연회비", money: 50000, per: 2.5 },
-    { cateory: "온라인 쇼핑", money: 250000, per: 12.5 },
-    { cateory: "의료", money: 50000, per: 2.5 },
-    { cateory: "주거·통신", money: 50000, per: 2.5 },
-    { cateory: "자동차", money: 100000, per: 5.0 },
-    { cateory: "취미", money: 50000, per: 2.5 },
-    { cateory: "카페", money: 250000, per: 12.5 },
-    { cateory: "해외", money: 50000, per: 2.5 },
-    { cateory: "항공·여행", money: 50000, per: 2.5 },
-    { cateory: "ALL", money: 100000, per: 5.0 },
+    { category: "간편결제", money: 50000, per: 2.5 },
+    { category: "교육", money: 250000, per: 12.5 },
+    { category: "교통", money: 50000, per: 2.5 },
+    { category: "마트·편의점", money: 50000, per: 2.5 },
+    { category: "미용", money: 100000, per: 5.0 },
+    { category: "보험", money: 50000, per: 2.5 },
+    { category: "숙박", money: 250000, per: 12.5 },
+    { category: "생활", money: 50000, per: 2.5 },
+    { category: "쇼핑", money: 50000, per: 2.5 },
+    { category: "식비", money: 100000, per: 5.0 },
+    { category: "연회비", money: 50000, per: 2.5 },
+    { category: "온라인 쇼핑", money: 250000, per: 12.5 },
+    { category: "의료", money: 50000, per: 2.5 },
+    { category: "주거·통신", money: 50000, per: 2.5 },
+    { category: "자동차", money: 100000, per: 5.0 },
+    { category: "취미", money: 50000, per: 2.5 },
+    { category: "카페", money: 250000, per: 12.5 },
+    { category: "해외", money: 50000, per: 2.5 },
+    { category: "항공·여행", money: 50000, per: 2.5 },
+    { category: "ALL", money: 100000, per: 5.0 },
   ]);
 
   const handlePrevMonth = () => {
@@ -124,6 +124,13 @@ const Statistics = () => {
       setSelectedMonth((prevMonth) => prevMonth - 1);
     }
     // 현재페이지에 따라 데이터 새로 가져오기
+    if (window.location.pathname == paths[0]) {
+      console.log("load consumptionData");
+      getConsumptionData();
+    } else if (window.location.pathname == paths[1]) {
+      console.log("load benefitData");
+      getBenefitData();
+    }
   };
 
   const handleNextMonth = () => {
@@ -139,18 +146,20 @@ const Statistics = () => {
       setSelectedMonth((prevMonth) => prevMonth + 1);
     }
     //현재페이지에 따라 데이터 새로 가져오기
-    //소비
     if (window.location.pathname == paths[0]) {
+      console.log("load consumptionData");
       getConsumptionData();
     } else if (window.location.pathname == paths[1]) {
+      console.log("load benefitData");
       getBenefitData();
     }
   };
 
   /**
-   * 특정 달에 대한 소비 데이터 가져오기 - 월을 보내야함(selectedYear selectedMonth)
+   * 특정 달에 대한 소비 데이터 가져오기 - 년도와 월을 보내야함(selectedYear selectedMonth)
    */
   const getConsumptionData = async () => {
+    console.log("getConsumtionData");
     // try {
     //   const response = await axios.get(``);
     //   setDataList();
@@ -160,9 +169,10 @@ const Statistics = () => {
   };
 
   /**
-   * 특정 달에 대한 혜택 데이터 가져오기 - 월을 보내야함
+   * 특정 달에 대한 혜택 데이터 가져오기 - 년도와 월을 보내야함
    */
   const getBenefitData = async () => {
+    console.log("getBenefitData");
     // try {
     //   const response = await axios.get(``);
     //   setDataList();
@@ -181,7 +191,7 @@ const Statistics = () => {
     if (index == 0) {
       setMode("Donut");
       try {
-        // const response = await axios.get(``);
+        getConsumptionData();
         navigator(paths[index], { state: dataList });
       } catch (e) {
         console.log(e);
@@ -191,7 +201,7 @@ const Statistics = () => {
       //받을 때는 locationt사용   const location = useLocation();  const data = location.state;
       setMode("Donut");
       try {
-        // const response = await axios.get(``);
+        getBenefitData();
         navigator(paths[index], { state: dataList });
       } catch (e) {
         console.log(e);
@@ -286,7 +296,8 @@ const Statistics = () => {
                     true
                       ? "/assets/image/good-pig.png"
                       : "/assets/image/sad-pig.png"
-                  }></img>
+                  }
+                ></img>
               </ImageBox>
               <TextBox>
                 {"또래 남성에 비해 50,000원 덜 쓰고,\n34,200원의 혜택을 누렸어요!"

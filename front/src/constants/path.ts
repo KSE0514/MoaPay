@@ -20,6 +20,10 @@ const PATH = {
   DUTCHPARTICIPATION: "/dutchpay/participation", //nonav
   BRING_CARD: "/bring-card",
   SELECT_TYPE: "/select-type",
+  PAYMENT: "/payment", //nonav
+  DUTCHOPEN: "/dutch-open", //nonav
+  SELECT_PAYMENT_TYPE: "/select-payment-type",
+  ADD_CARD: "/add-card",
 } as const;
 
 export { PATH };

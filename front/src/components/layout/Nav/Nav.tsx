@@ -12,8 +12,10 @@ const Nav = () => {
   const navigate = useNavigate();
   const location = useLocation(); // 현재 경로를 가져옴
   const matchBringCard = useMatch(`${PATH.BRING_CARD}/*`);
-
-  const match = matchBringCard;
+  const matchSelectType = useMatch(`${PATH.SELECT_TYPE}/*`);
+  const matchSelectPayMentType = useMatch(`${PATH.SELECT_PAYMENT_TYPE}/*`);
+  const match = matchBringCard || matchSelectType || matchSelectPayMentType;
+  const statisticsmatch = useMatch(`${PATH.STATISTICS}/*`);
   const movePage = (page: string) => {
     navigate(page);
   };
@@ -22,25 +24,29 @@ const Nav = () => {
     <Wrapper style={{ display: match ? "none" : "flex" }}>
       <div
         onClick={() => movePage(PATH.HOME)}
-        className={location.pathname === PATH.HOME ? "active" : ""}>
+        className={location.pathname === PATH.HOME ? "active" : ""}
+      >
         <StyledIcon icon={faHouse} />
         <p>Home</p>
       </div>
       <div
         onClick={() => movePage(PATH.CARD_RECOMMEND)}
-        className={location.pathname === PATH.CARD_RECOMMEND ? "active" : ""}>
+        className={location.pathname === PATH.CARD_RECOMMEND ? "active" : ""}
+      >
         <StyledIcon icon={faCreditCard} />
         <p>카드추천</p>
       </div>
       <div
         onClick={() => movePage(PATH.STATISTICS + PATH.STATISTICS_CONSUMPTION)}
-        className={match ? "active" : ""}>
+        className={statisticsmatch ? "active" : ""}
+      >
         <StyledIcon icon={faChartSimple} />
         <p>통계</p>
       </div>
       <div
         onClick={() => movePage(PATH.SETTING)}
-        className={location.pathname === PATH.SETTING ? "active" : ""}>
+        className={location.pathname === PATH.SETTING ? "active" : ""}
+      >
         <StyledIcon icon={faGear} />
         <p>설정</p>
       </div>

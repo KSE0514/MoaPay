@@ -1,8 +1,9 @@
 package com.moa.moapay.domain.generalpay.service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.moa.moapay.domain.card.entity.CardProduct;
 import com.moa.moapay.domain.card.entity.MyCard;
-import com.moa.moapay.domain.card.model.vo.ExecutePaymentRequestVO;
+import com.moa.moapay.domain.generalpay.model.vo.ExecutePaymentRequestVO;
 import com.moa.moapay.domain.card.repository.MyCardQueryRepository;
 import com.moa.moapay.domain.card.repository.MyCardRepository;
 import com.moa.moapay.domain.code.model.dto.GetBarcodeInfoResponseDto;
@@ -48,20 +49,25 @@ public class GeneralPayServiceImpl implements GeneralPayService{
             // 고정된 값인 경우, cardNumber와 cvc를 기반으로 검증
             // 우선 기본 검증 시행
             // 나중에 유저 본인이 소유한 카드인지 확인하는 매커니즘도 필요하지 않을까...
-            MyCard myCard = myCardRepository.findByCardNumber(dto.getCardNumber())
-                    .orElseThrow(() -> new BusinessException(HttpStatus.BAD_REQUEST, "유효하지 않은 정보입니다."));
-            if(!myCard.getCvc().equals(dto.getCvc())) {
+            MyCard myCard = myCardQueryRepository.findByCardNumberFetchJoin(dto.getCardNumber());
+            if(myCard == null || !myCard.getCvc().equals(dto.getCvc())) {
                 throw new BusinessException(HttpStatus.BAD_REQUEST, "유효하지 않은 정보입니다.");
             }
+            CardProduct cardProduct = myCard.getCardProduct();
             // 카드 ID 정보를 포함해 카드 정보 삽입
+            // 갱신 : 프론트에 결과를 보낼 때 필요할 정보들 맞춰서 보내기
             PaymentCardInfoVO cardInfoVo = PaymentCardInfoVO.builder()
                     .cardId(myCard.getUuid())
+                    .cardName(cardProduct.getName())
+                    .imageUrl(cardProduct.getImageUrl())
                     .cardNumber(dto.getCardNumber())
                     .cvc(dto.getCvc())
                     .amount(dto.getTotalPrice()) // 전부 하나의 카드로 긁으므로 totalPrice와 동일
+                    .usedAmount(myCard.getAmount())
+                    .performance(cardProduct.getPerformance())
+                    .benefitUsage(myCard.getBenefitUsage())
                     .build();
             cardInfoList.add(cardInfoVo);
-
         } else {
             // 카드 추천형인 경우, 추천된 결과를 기반으로 결제를 진행
             // todo : 카드 추천하는 서비스 완성하여 여기에서 사용
@@ -70,6 +76,8 @@ public class GeneralPayServiceImpl implements GeneralPayService{
 
         // [3] 요청 전송
         ExecutePaymentRequestVO requestVo = ExecutePaymentRequestVO.builder()
+                .requestId(dto.getRequestId())
+                .orderId(dto.getOrderId())
                 .merchantId(dto.getMerchantId())
                 .paymentInfoList(cardInfoList)
                 .build();
@@ -111,6 +119,8 @@ public class GeneralPayServiceImpl implements GeneralPayService{
 
         // [3] 요청 전송
         ExecutePaymentRequestVO requestVo = ExecutePaymentRequestVO.builder()
+                .requestId(dto.getRequestId())
+                .orderId(dto.getOrderId())
                 .merchantId(dto.getMerchantId())
                 .paymentInfoList(cardInfoList)
                 .build();

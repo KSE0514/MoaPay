@@ -5,20 +5,22 @@ import com.moa.payment.domain.charge.entity.PaymentLog;
 import com.moa.payment.domain.charge.model.PayStatus;
 import com.moa.payment.domain.charge.model.PaymentResultStatus;
 import com.moa.payment.domain.charge.model.ProcessingStatus;
-import com.moa.payment.domain.charge.model.dto.CancelPayRequestDto;
-import com.moa.payment.domain.charge.model.dto.CancelPayResponseDto;
-import com.moa.payment.domain.charge.model.dto.CardPaymentRequestDto;
-import com.moa.payment.domain.charge.model.dto.CardPaymentResponseDto;
+import com.moa.payment.domain.charge.model.dto.*;
 import com.moa.payment.domain.charge.model.vo.*;
 import com.moa.payment.domain.charge.repository.PaymentLogRepository;
+import com.moa.payment.global.exception.BusinessException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestClient;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
+import java.time.Instant;
+import java.time.LocalDateTime;
 import java.util.*;
 
 @Service
@@ -26,13 +28,18 @@ import java.util.*;
 @RequiredArgsConstructor
 public class ChargeServiceImpl implements ChargeService {
 
+    @Value("${external-url.cardbank}")
+    private String cardbankUrl;
+
+    @Value("${external-url.store}")
+    private String storeUrl;
+
     private final RestClient restClient;
     private final ObjectMapper objectMapper;
     private final PaymentLogRepository paymentLogRepository;
 
     @Override
     public ExecutePaymentResultVO executePayment(ExecutePaymentRequestVO vo) {
-        // todo : 카드사로 요청 보내는 uri를 config 기반으로 변경
         List<PaymentCardInfoVO> paymentInfoList = vo.getPaymentInfoList();
         List<PaymentCardInfoVO> succeedPaymentInfoList = new ArrayList<>();
         List<UUID> succeedPaymentIdList = new ArrayList<>();
@@ -47,7 +54,7 @@ public class ChargeServiceImpl implements ChargeService {
                     .amount(paymentInfo.getAmount())
                     .build();
             ResponseEntity<Map> paymentResponse = restClient.post()
-                    .uri("http://localhost:18100/cardbank/card/pay")
+                    .uri(cardbankUrl+"/card/pay")
                     .contentType(MediaType.APPLICATION_JSON)
                     .body(paymentRequestDto)
                     .retrieve()
@@ -70,7 +77,7 @@ public class ChargeServiceImpl implements ChargeService {
                             .cvc(cardInfo.getCvc())
                             .build();
                     ResponseEntity<Map> cancelResponse = restClient.post()
-                            .uri("http://localhost:18100/cardbank/card/cancel")
+                            .uri(cardbankUrl+"/card/cancel")
                             .contentType(MediaType.APPLICATION_JSON)
                             .body(requestDto)
                             .retrieve()
@@ -110,8 +117,11 @@ public class ChargeServiceImpl implements ChargeService {
             // 저장에도 성공했다면 성공 리스트에 넣는다
             paymentResultInfoList.add(
                     PaymentResultCardInfoVO.builder()
+                            .paymentId(paymentResponseDto.getPaymentId())
                             .cardId(paymentInfo.getCardId())
-                            .amount(paymentResponseDto.getAmount())
+                            .cardNumber(paymentInfo.getCardNumber())
+                            .amount(paymentInfo.getAmount())
+                            .actualAmount(paymentResponseDto.getAmount())
                             .benefitActivated(paymentResponseDto.isBenefitActivated())
                             .benefitBalance(paymentResponseDto.getBenefitBalance())
                             .remainedBenefit(paymentResponseDto.getRemainedBenefit())
@@ -122,13 +132,92 @@ public class ChargeServiceImpl implements ChargeService {
         // 전부 결제에 성공했다면 성공 로그 발송
         // 궁금하니까 로그 찍어보기...
         log.info("pay succeeded : {}", merchantName);
-        for(PaymentResultCardInfoVO v : paymentResultInfoList) {
-            log.info(v.toString());
-        }
+//        for(PaymentResultCardInfoVO v : paymentResultInfoList) {
+//            log.info(v.toString());
+//        }
         return ExecutePaymentResultVO.builder()
                 .merchantName(merchantName)
                 .status(PaymentResultStatus.SUCCEED)
                 .paymentResultInfoList(paymentResultInfoList)
                 .build();
+    }
+
+    @Override
+    public PaymentResultDto makePaymentResultDto(ExecutePaymentResultVO resultVo, ExecutePaymentRequestVO requestVO) {
+        log.info("making PaymentResultDto...");
+        if(resultVo.getStatus() == PaymentResultStatus.FAILED) {
+            // 실패한 경우, 최소한의 데이터만 전송
+            return PaymentResultDto.builder()
+                    .status(PaymentResultStatus.FAILED)
+                    .requestId(requestVO.getRequestId())
+                    .merchantName(resultVo.getMerchantName())
+                    .build();
+        }
+        long totalAmount = 0;
+        int usedCardCount = 0;
+        List<PaymentResultCardInfoDto> paymentResultCardInfoList = new ArrayList<>();
+        for(int i = 0 ; i < resultVo.getPaymentResultInfoList().size() ; ++i) {
+            PaymentCardInfoVO requestCardInfo = requestVO.getPaymentInfoList().get(i);
+            PaymentResultCardInfoVO resultCardInfo = resultVo.getPaymentResultInfoList().get(i);
+            if(!requestCardInfo.getCardId().equals(resultCardInfo.getCardId())) {
+                throw new BusinessException(HttpStatus.INTERNAL_SERVER_ERROR, "카드 정보 불일치!!!");
+            }
+            totalAmount += resultCardInfo.getActualAmount();
+            usedCardCount++;
+            paymentResultCardInfoList.add(
+                    PaymentResultCardInfoDto.builder()
+                            .paymentId(resultCardInfo.getPaymentId())
+                            .cardName(requestCardInfo.getCardName())
+                            .imageUrl(requestCardInfo.getImageUrl())
+                            .cardId(requestCardInfo.getCardId())
+                            .cardNumber(requestCardInfo.getCardNumber())
+                            .amount(requestCardInfo.getAmount())
+                            .actualAmount(resultCardInfo.getActualAmount())
+                            .performance(requestCardInfo.getPerformance())
+                            .usedAmount(requestCardInfo.getUsedAmount()+resultCardInfo.getActualAmount())
+                            .benefitActivated(resultCardInfo.isBenefitActivated())
+                            .benefitUsage(requestCardInfo.getBenefitUsage()+resultCardInfo.getBenefitBalance())
+                            .benefitDetail(resultCardInfo.getBenefitDetail())
+                            .build()
+            );
+        }
+        return PaymentResultDto.builder()
+                .status(PaymentResultStatus.SUCCEED)
+                .requestId(requestVO.getRequestId())
+                .merchantName(resultVo.getMerchantName())
+                .totalAmount(totalAmount)
+                .createTime(LocalDateTime.now())
+                .usedCardCount(usedCardCount)
+                .paymentResultCardInfoList(paymentResultCardInfoList)
+                .build();
+    }
+
+    @Override
+    public void sendResultToStore(UUID orderId, ExecutePaymentResultVO vo) {
+        log.info("send result to store : {}", vo.getMerchantName());
+        List<StoreResultDto> paymentInfo = new ArrayList<>();
+        for(PaymentResultCardInfoVO resultVo : vo.getPaymentResultInfoList()) {
+            paymentInfo.add(
+                    StoreResultDto.builder()
+                            .cardNumber(resultVo.getCardNumber())
+                            .amount(resultVo.getAmount())
+                            .actualAmount(resultVo.getActualAmount())
+                            .build()
+            );
+        }
+        SendResultToStoreRequestDto dto = SendResultToStoreRequestDto.builder()
+                .orderId(orderId)
+                .paymentInfo(paymentInfo)
+                .build();
+
+        ResponseEntity<Map> res = restClient.post()
+                .uri(storeUrl+"/payment/online/result")
+                .contentType(MediaType.APPLICATION_JSON)
+                .body(dto)
+                .retrieve()
+                .toEntity(Map.class);
+        if(!res.getStatusCode().is2xxSuccessful()) {
+            log.error("send result to store error - {}", res.getStatusCode());
+        }
     }
 }

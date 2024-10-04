@@ -95,10 +95,11 @@ public class MemberController {
 
 	}
 
+	// 멤버 존재 여부 확인
 	@PostMapping("/isMember")
 	public ResponseEntity<ResultResponse> isMember(@RequestBody isMemberRequestDto dto) {
 		isMemberResponseDto response = memberService.isMember(dto.getPhoneNumber());
-		ResultResponse resultResponse = ResultResponse.of(HttpStatus.OK, "멤버가 존재합니다.", response);
+		ResultResponse resultResponse = ResultResponse.of(HttpStatus.OK, "멤버 존재 여부 확인", response);
 		return ResponseEntity.status(resultResponse.getStatus()).body(resultResponse);
 	}
 

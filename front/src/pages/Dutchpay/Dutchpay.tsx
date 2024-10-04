@@ -14,6 +14,7 @@ import {
   BackImg,
 } from './Dutchpay.styles'
 import { useEffect, useState } from "react";
+import { PATH } from "../../constants/path";
 
 const Dutchpay = () => {
   const nav = useNavigate()
@@ -23,6 +24,10 @@ const Dutchpay = () => {
   const [memberNum, setMemberNum] = useState('') // 참여자 수 입력 받는 변수
   const [dutchUrl, setDutchUrl] = useState('http://localhost:5173') // [[나중에 ''로 바꾸기 !!!!! ]더치페이 초대 url
   const [memberSetComplete, setMemberSetComplete] = useState(false) // 참여자수 설정 완료 여부 판단용
+  const [stop, setStop] = useState(false) // 더치페이 중단하기 버튼을 눌렀는지의 여부를 판단
+
+  // 테스트용 변수... 나중에 지울 예정(host)
+  const [isHost, setIsHost] = useState(true) // 쓰진 않을 것 같음...
 
   // 참여자 수 바인딩
   const onChangeMember = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -58,7 +63,7 @@ const Dutchpay = () => {
 
 
   const goHome = () => {
-    nav("/home")
+    nav(PATH.HOME)
   }
 
   // 더치페이 나가기 버튼 클릭 시 모달 띄우기
@@ -77,6 +82,10 @@ const Dutchpay = () => {
     setMemberSetComplete(true)
     setIsCompleteSettingCheck(false);
   };
+
+  const onClickStop = () => {
+    setStop(true)
+  }
 
 
   // 더치페이 url을 클립보드에 복사하는 함수
@@ -107,31 +116,36 @@ const Dutchpay = () => {
           </svg>
         </Title>
         <LinkBox>
-          {!memberSetComplete&&
+          {/* {!memberSetComplete&&
             <input value={memberNum} type="number" placeholder="인원을 설정해주세요." onChange={onChangeMember}/>
-          }
+          } */}
 
           {/* 사용자가 인원을 입력했을 경우에만 다음 화살표(->누르면 재확인 모달)가 나타나도록 함 */}
-          {memberNum&&!memberSetComplete? 
+          {/* {memberNum&&!memberSetComplete? 
             <svg onClick={onCheckComplete} xmlns="http://www.w3.org/2000/svg" x="0px" y="0px" width="24" height="24" viewBox="0 0 48 48" fill="#ffffff">
               <path d="M 24 4 C 12.972066 4 4 12.972074 4 24 C 4 35.027926 12.972066 44 24 44 C 35.027934 44 44 35.027926 44 24 C 44 12.972074 35.027934 4 24 4 z M 24 7 C 33.406615 7 41 14.593391 41 24 C 41 33.406609 33.406615 41 24 41 C 14.593385 41 7 33.406609 7 24 C 7 14.593391 14.593385 7 24 7 z M 25.484375 16.484375 A 1.50015 1.50015 0 0 0 24.439453 19.060547 L 27.878906 22.5 L 16.5 22.5 A 1.50015 1.50015 0 1 0 16.5 25.5 L 27.878906 25.5 L 24.439453 28.939453 A 1.50015 1.50015 0 1 0 26.560547 31.060547 L 32.560547 25.060547 A 1.50015 1.50015 0 0 0 32.560547 22.939453 L 26.560547 16.939453 A 1.50015 1.50015 0 0 0 25.484375 16.484375 z"></path>
             </svg>
           :
             null
-          }
-          {memberNum&&memberSetComplete&&
+          } */}
+          {
+          // memberNum&&
+          // memberSetComplete&&
           <CopyIcon>
             <svg onClick={copyToClipboard} xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="#7A7A7A" viewBox="0 0 448 512"><path d="M384 336l-192 0c-8.8 0-16-7.2-16-16l0-256c0-8.8 7.2-16 16-16l140.1 0L400 115.9 400 320c0 8.8-7.2 16-16 16zM192 384l192 0c35.3 0 64-28.7 64-64l0-204.1c0-12.7-5.1-24.9-14.1-33.9L366.1 14.1c-9-9-21.2-14.1-33.9-14.1L192 0c-35.3 0-64 28.7-64 64l0 256c0 35.3 28.7 64 64 64zM64 128c-35.3 0-64 28.7-64 64L0 448c0 35.3 28.7 64 64 64l192 0c35.3 0 64-28.7 64-64l0-32-48 0 0 32c0 8.8-7.2 16-16 16L64 464c-8.8 0-16-7.2-16-16l0-256c0-8.8 7.2-16 16-16l32 0 0-48-32 0z"/></svg>          
           </CopyIcon>}
 
-          {memberNum&&memberSetComplete&&<ShareUrl>{dutchUrl}</ShareUrl>}
+          {
+          // memberNum&&
+          // memberSetComplete&&
+          <ShareUrl>{dutchUrl}</ShareUrl>}
         </LinkBox>
       </Top>
 
       <Main>
         {/* 3. 더치페이하는 상품 정보 */}
         {/* 2. 참여자 목록 컴포넌트_2단계인지 판단 기준: memberSetComplete === true */}
-        {memberSetComplete&&<Participant maxNum={Number(memberNum)} />}
+        {memberSetComplete&&<Participant maxNum={Number(memberNum)} isHost={isHost} />}
       </Main>
 
       {/* 배경 도형 */}
@@ -160,12 +174,24 @@ const Dutchpay = () => {
           <svg onClick={closeModal} xmlns="http://www.w3.org/2000/svg" x="0px" y="0px" width="20" height="20" viewBox="0 0 48 48">
             <path d="M 38.982422 6.9707031 A 2.0002 2.0002 0 0 0 37.585938 7.5859375 L 24 21.171875 L 10.414062 7.5859375 A 2.0002 2.0002 0 0 0 8.9785156 6.9804688 A 2.0002 2.0002 0 0 0 7.5859375 10.414062 L 21.171875 24 L 7.5859375 37.585938 A 2.0002 2.0002 0 1 0 10.414062 40.414062 L 24 26.828125 L 37.585938 40.414062 A 2.0002 2.0002 0 1 0 40.414062 37.585938 L 26.828125 24 L 40.414062 10.414062 A 2.0002 2.0002 0 0 0 38.982422 6.9707031 z"></path>
           </svg>
-          <div>더치페이를 중단 시키시겠습니까?</div>
+          {stop ? 
+            <div>정말 더치페이를 중단시키겠습니까?</div>
+          :
+            <div>더치페이를 중단 시키시겠습니까?</div>
+          }
           <div>
             {/* <button onClick={closeModal}>취소</button> */}
-            <button>중단</button>
             {/* 종료(중단)버튼: 더치페이 주최자는 더치페이가 모두에게 종료되도록하고 참가자는 참가자 본인만 종료되도록 해야함  */}
-            <button onClick={goHome}>홈으로</button>
+            {stop ? 
+              <button>예</button>
+            :
+              <button onClick={onClickStop}>중단</button>
+            }
+            {stop ? 
+              <button onClick={() => {setStop(false)}}>취소</button>
+            :
+              <button onClick={goHome}>홈으로</button>
+            }
           </div>
         </Modal>
       )}

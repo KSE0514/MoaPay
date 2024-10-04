@@ -2,6 +2,7 @@ package com.moa.member.domain.member.controller;
 
 import com.moa.member.domain.member.security.JwtTokenProvider;
 import com.moa.member.global.exception.BusinessException;
+import com.yubico.webauthn.data.AuthenticatorAttachment;
 import com.yubico.webauthn.data.ClientRegistrationExtensionOutputs;
 
 import java.security.SecureRandom;
@@ -56,6 +57,8 @@ import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import java.util.Base64;
 
 @RestController
 @Slf4j
@@ -103,28 +106,28 @@ public class WebAuthnRegisterController {
 		ByteArray challenge = new ByteArray(challengeBytes);
 
 		PublicKeyCredentialCreationOptions options = PublicKeyCredentialCreationOptions.builder()
-			.rp(RelyingPartyIdentity.builder()
-				//////////////////////////////////꼭 !!!!!!!!!!!!!!!! id 값 서버 주소로 변경하기 ////////////////////////////////
-				.id("moapay-7e24e.web.app")  // 포트 번호를 포함하여 설정
-				.name("moapay")
-				.build())
-			.user(userEntity)
-			.challenge(challenge)
-			.pubKeyCredParams(Arrays.asList(
-				PublicKeyCredentialParameters.builder()
-					.alg(COSEAlgorithmIdentifier.ES256)
-					.type(PublicKeyCredentialType.PUBLIC_KEY)
-					.build(),
-				PublicKeyCredentialParameters.builder()
-					.alg(COSEAlgorithmIdentifier.RS256)
-					.type(PublicKeyCredentialType.PUBLIC_KEY)
-					.build()
-			))
-			.authenticatorSelection(AuthenticatorSelectionCriteria.builder()
-				.userVerification(UserVerificationRequirement.PREFERRED)
-				.build())
-			.attestation(AttestationConveyancePreference.NONE)
-			.build();
+				.rp(RelyingPartyIdentity.builder()
+						.id("moapay-7e24e.web.app")
+						.name("moapay")
+						.build())
+				.user(userEntity)
+				.challenge(challenge)
+				.pubKeyCredParams(Arrays.asList(
+						PublicKeyCredentialParameters.builder()
+								.alg(COSEAlgorithmIdentifier.ES256)
+								.type(PublicKeyCredentialType.PUBLIC_KEY)
+								.build(),
+						PublicKeyCredentialParameters.builder()
+								.alg(COSEAlgorithmIdentifier.RS256)
+								.type(PublicKeyCredentialType.PUBLIC_KEY)
+								.build()
+				))
+				.authenticatorSelection(AuthenticatorSelectionCriteria.builder()
+						.userVerification(UserVerificationRequirement.REQUIRED)
+						.build())
+				.attestation(AttestationConveyancePreference.INDIRECT)  // 필요시 증명 요구
+				.build();
+
 
 		// 쿠키 설정
 		ResponseCookie jsessionCookie = ResponseCookie.from("JSESSIONID", request.getSession().getId())
@@ -140,8 +143,6 @@ public class WebAuthnRegisterController {
 		request.getSession().setAttribute("registrationOptions", options);
 		PublicKeyCredentialCreationOptions save = (PublicKeyCredentialCreationOptions)request.getSession()
 			.getAttribute("registrationOptions");
-		System.out.print("save option : ");
-		System.out.println(save);
 
 		return options;
 	}
@@ -156,24 +157,22 @@ public class WebAuthnRegisterController {
 				.orElseThrow(() -> new BusinessException(HttpStatus.BAD_REQUEST, "회원이 존재하지 않습니다."));
 
 			HttpSession session = request.getSession(false);
-			if (session == null) {
-				System.out.println("세션이 없습니다.");
-			} else {
-				System.out.println("세션이 존재합니다: " + session.getId());
-			}
+
 
 			// 세션에서 등록 옵션을 가져옴
 			PublicKeyCredentialCreationOptions options = (PublicKeyCredentialCreationOptions)request.getSession()
 				.getAttribute("registrationOptions");
-			System.out.print("option : ");
-			System.out.println(options);
+
 
 			// 클라이언트로부터 전달받은 데이터에서 자격 증명 ID와 응답 데이터 추출
 			String credentialId = (String)responseData.get("id");
+			System.out.println("credentailId");
+			System.out.println(credentialId);
 			Map<String, Object> response = (Map<String, Object>)responseData.get("response");
 
 			// AuthenticatorResponse는 별도의 형태로 변환해야 함 (AttestationObject와 ClientDataJSON 필요)
 			byte[] attestationObjectBytes = Base64.getUrlDecoder().decode((String)response.get("attestationObject"));
+			System.out.println("Attestation Object Size: " + attestationObjectBytes.length);  // 데이터 크기 출력
 			byte[] clientDataJSONBytes = Base64.getUrlDecoder().decode((String)response.get("clientDataJSON"));
 
 			// ByteArray 객체로 변환
@@ -221,6 +220,7 @@ public class WebAuthnRegisterController {
 				.publicKey(registrationResult.getKeyId().getId().toString())  // 공개키 저장
 				.credentialId(credentialId)  // 자격 증명 ID 저장
 				.authenticatorData(attestationObject.getBytes())  // AttestationObject 저장
+				.password(member.getPassword())
 				.build();
 
 			// Member 정보 저장

@@ -12,6 +12,7 @@ import {
   PartiList,
   PartiInfo,
   Btn,
+  WarningMessage,
 } from './Participant.styles'
 
 // useEffect(() => {
@@ -20,6 +21,7 @@ import {
 
 interface ParticipantProps {
   maxNum?: number | null;
+  isHost: boolean;
 }
 
 interface Participant {
@@ -28,9 +30,10 @@ interface Participant {
   charge: string;
 }
 
-const Participant = ({maxNum=null}: ParticipantProps) => {
+const Participant = ({maxNum=null, isHost}: ParticipantProps) => {
   // const [participants, setParticipants] = useState([])
   const [dutchStart, setDutchStart] = useState(false)
+  const [showWarning, setShowWarning] = useState(false)  // 경고 메시지 상태 추가
 
   // 테스트용 데이터_ 후에 지울 예정
   const [participants, setParticipants] = useState<Participant[]>([
@@ -69,9 +72,23 @@ const Participant = ({maxNum=null}: ParticipantProps) => {
     setDutchStart(true)
   }
 
+  // 결제 요청 버튼을 눌렀을 시
+  const onClickRequest = () => {
+    // 결제 요청 시 모든 참가자의 charge가 입력되었는지 확인
+    const isAnyChargeEmpty = participants.some(participant => participant.charge === '');
+
+    if (isAnyChargeEmpty) {
+      setShowWarning(true);  // 경고 메시지 표시
+      setTimeout(() => setShowWarning(false), 1500);  // 3초 후 경고 메시지 숨김
+    } else {
+      // 모든 charge가 입력된 경우 결제 요청 로직 수행
+      console.log("결제 요청");
+    }
+  }
+
   const changeCharge = (index: number, value: string) => {
-    const updateParticipants = participants
-    updateParticipants[index].charge = value
+    const updateParticipants = [...participants];
+    updateParticipants[index] = {...updateParticipants[index], charge:value};
     setParticipants(updateParticipants)
   }
    
@@ -110,10 +127,12 @@ const Participant = ({maxNum=null}: ParticipantProps) => {
 
               <div>{participant.name}</div>
               {/* <div>삭제 아이콘</div> */}
-              {!dutchStart&&<svg onClick={()=>onDelete(participant.id)} xmlns="http://www.w3.org/2000/svg" x="0px" y="0px" width="20" height="20" viewBox="0 0 48 48">
+              {!dutchStart&&isHost&&<svg onClick={()=>onDelete(participant.id)} xmlns="http://www.w3.org/2000/svg" x="0px" y="0px" width="20" height="20" viewBox="0 0 48 48">
                 <path d="M 38.982422 6.9707031 A 2.0002 2.0002 0 0 0 37.585938 7.5859375 L 24 21.171875 L 10.414062 7.5859375 A 2.0002 2.0002 0 0 0 8.9785156 6.9804688 A 2.0002 2.0002 0 0 0 7.5859375 10.414062 L 21.171875 24 L 7.5859375 37.585938 A 2.0002 2.0002 0 1 0 10.414062 40.414062 L 24 26.828125 L 37.585938 40.414062 A 2.0002 2.0002 0 1 0 40.414062 37.585938 L 26.828125 24 L 40.414062 10.414062 A 2.0002 2.0002 0 0 0 38.982422 6.9707031 z"></path>
               </svg>}
               {/* <div>X</div> */}
+
+              {!isHost&&<div></div>}
 
               {/* 해당 사용자가 지불해야 할 금액 */}
               {/* 자동으로 n등분 해서 분배해줘야 함_안 나눠 떨어질 경우: 주최자를 제외한 모두에게 (전체 값//사람 수)값 적용. 주최자는 (전체 값-(참가자)*(n-1)) */}
@@ -122,13 +141,17 @@ const Participant = ({maxNum=null}: ParticipantProps) => {
           ))
         : true}
       </PartiList>
+
+
       <Btn>
         {dutchStart? 
-          <SquareBtn text={'결제 요청하기'} color={'rgba(255, 255, 255, 0.7)'} onClick={() => {}} />
-        :
+          <SquareBtn text={'결제 요청하기'} color={'rgba(255, 255, 255, 0.7)'} onClick={onClickRequest} />
+          :
           <SquareBtn text={'더치페이 시작'} color='rgba(135, 72, 243, 0.74)' onClick={onClickDutchStart} />
         }
+        {/* 경고 메시지 출력 */}
       </Btn>
+        {showWarning && <WarningMessage>결제 요청 금액을 입력해주세요.</WarningMessage>}
     </Wrapper>
   )
 }
