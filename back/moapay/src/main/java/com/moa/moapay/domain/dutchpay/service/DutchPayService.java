@@ -30,4 +30,8 @@ public interface DutchPayService {
 
     @Transactional
     DutchRoomInfo confirm(DutchPayConfirmRequestDto dutchPayModifyRequestDto);
+
+    void dutchpayPayment(@Valid DutchPayPaymentRequsetDto dutchPayPaymentRequsetDto);
+
+    void dutchpayComplite();
 }
