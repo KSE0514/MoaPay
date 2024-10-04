@@ -2,6 +2,8 @@ import triangle from "./../../assets/image/triangle.png"
 import Modal from "../../components/dutch/Modal/Modal";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
+import { Client } from "@stomp/stompjs";
+
 import {
   Wrapper,
   Top,
@@ -25,6 +27,173 @@ const DutchOpen = () => {
 
   const [memberSetComplete, setMemberSetComplete] = useState(false) // 참여자수 설정 완료 여부 판단용
   const [stop, setStop] = useState(false) // 더치페이 중단하기 버튼을 눌렀는지의 여부를 판단
+
+
+
+  //////////////////////////////////////////////////////////////////////////////////////////
+  const [roomId, setRoomId] = useState<string>(""); // 방 ID
+  const [memberId, setMemberId] = useState<string>(
+    "01923d9f-7b3d-78dd-9f9d-32f85c64fbcd"
+  ); // 멤버 ID
+  const [joinUrl, setJoinUrl] = useState<string>(""); // 방 참여 URL
+  const [roomInfo, setRoomInfo] = useState<any>(null); // 방 정보
+  const [stompClient, setStompClient] = useState<Client | null>(null); // STOMP 클라이언트
+
+  // 방 생성에 필요한 필드
+  const [maxMember, setMemberCnt] = useState<number>(3); // 총원 수
+  const [orderId, setOrderId] = useState<string>(
+    "01923d9f-7b3d-70e9-ad8d-68a3ab09d578"
+  ); // 주문 ID
+  const [merchantId, setMerchantId] = useState<string>(
+    "01923d9f-7b3d-7a9e-a0b3-24d7970f90d4"
+  ); // 상점 ID
+  const [merchantName, setMerchantName] = useState<string>("Example Merchant"); // 상점 이름
+  const [categoryId, setCategoryId] = useState<string>("category"); // 카테고리 ID
+  const [totalPrice, setTotalPrice] = useState<number>(10000); // 총 가격
+  const [memberName, setMemberName] = useState<string>("");
+
+  // 방 생성 함수
+  const createRoom = async () => {
+    const requestBody = {
+      memberId: memberId,
+      maxMember: maxMember,
+      orderId: orderId,
+      merchantId: merchantId,
+      merchantName: merchantName,
+      categoryId: categoryId,
+      totalPrice: totalPrice,
+    };
+
+    try {
+      const response = await axios.post(
+        "http://localhost:18020/moapay/core/dutchpay/createRoom",
+        requestBody
+      );
+      console.log("Room created:", response.data);
+
+      // message.body를 DutchRoomMessage 타입으로 변환
+      const parsedMessage: DutchRoomMessage = response.data;
+      setJoinUrl(parsedMessage.data); // 방 생성 후 반환된 URL 저장
+      setRoomId(parsedMessage.data); // 생성된 방의 roomId 저장
+    } catch (error) {
+      console.error("Error creating room:", error);
+    }
+  };
+
+  // 방 참여 함수 (STOMP로 메시지 보내기)
+  const joinRoom = () => {
+    console.log("join room");
+    if (!stompClient || !stompClient.connected || !roomId) return;
+
+    const requestBody = {
+      memberId: memberId,
+      memberName: memberName,
+    };
+
+    stompClient.publish({
+      destination: `/pub/dutchpay/join/${roomId}`,
+      body: JSON.stringify(requestBody),
+    });
+
+    console.log("Joining room:", roomId);
+  };
+
+  const leaveRoom = () => {
+    console.log("leave Room");
+    if (!stompClient || !stompClient.connected || !roomId) return;
+
+    const requestBody = {
+      roomId: roomId,
+      memberId: memberId,
+    };
+
+    stompClient.publish({
+      destination: `/pub/dutchpay/leave/${roomId}`,
+      body: JSON.stringify(requestBody),
+    });
+
+    console.log("Leave room:", roomId);
+  };
+
+  const check = () => {
+    console.log("check Room");
+    if (!stompClient || !stompClient.connected || !roomId) return;
+
+    const requestBody = {
+      memberId: memberId,
+    };
+
+    stompClient.publish({
+      destination: `/pub/dutchpay/dutchRoom/${roomId}`,
+    });
+
+    console.log("confirm room:", roomId);
+  };
+
+  const confirm = () => {
+    console.log("confirm Room");
+    if (!stompClient || !stompClient.connected || !roomId) return;
+
+    // 요청 바디 구조 정의
+    const requestBody = {
+      roomId: roomId,
+      memberCnt: 2, // 실제 멤버 수를 여기에 설정
+      confirmPriceDtos: [
+        {
+          memberId: "01923d9f-7b3d-78dd-9f9d-32f85c64fbcd", // 실제 멤버 ID 설정
+          price: 5000, // 실제 금액 설정
+        },
+        {
+          memberId: "01923d9f-7b3d-70e9-ad8d-68a3ab09d578", // 두 번째 멤버 ID 설정
+          price: 5000, // 실제 금액 설정
+        },
+      ],
+    };
+
+    stompClient.publish({
+      destination: `/pub/dutchpay/confirm/${roomId}`,
+      body: JSON.stringify(requestBody),
+    });
+
+    console.log("confirm room:", roomId);
+  };
+
+  // 서버로부터 받은 메시지의 타입 정의
+  interface DutchRoomMessage {
+    status: string;
+    message: string;
+    data: string; // UUID나 다른 타입에 맞게 수정 가능
+  }
+
+  // WebSocket 연결 설정
+  const connectWebSocket = () => {
+    const client = new Client({
+      brokerURL: "ws://localhost:18020/moapay/core/ws/dutchpay", // WebSocket URL
+      onConnect: (frame) => {
+        console.log("Connected: " + frame);
+        // 방 참여 시 메시지 구독
+        client.subscribe(`/sub/dutch-room/${roomId}`, (message) => {
+          console.log("Message received:", message.body);
+          setRoomInfo(JSON.parse(message.body)); // 받은 메시지를 상태에 저장
+        });
+      },
+      onStompError: (frame) => {
+        console.error("Broker error: ", frame.headers["message"]);
+      },
+    });
+
+    client.activate(); // 클라이언트 활성화
+    setStompClient(client); // STOMP 클라이언트 저장
+  };
+
+  // 컴포넌트 언마운트 시 클라이언트 비활성화
+  useEffect(() => {
+    return () => {
+      stompClient?.deactivate(); // 클라이언트 비활성화
+    };
+  }, [stompClient]);
+
+/////////////////////////////////////////////
 
   // 참여자 수 바인딩
   const onChangeMember = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -151,6 +320,72 @@ const DutchOpen = () => {
           </div>
         </Modal>
       )}
+
+
+<div>
+      <h1>Dutch Pay Test Client</h1>
+
+      <h2>Create Room</h2>
+
+      <input
+        type="number"
+        placeholder="Member Count"
+        value={maxMember}
+        onChange={(e) => setMemberCnt(Number(e.target.value))}
+      />
+      <p>Order ID: {orderId}</p>
+      <p>Merchant ID: {merchantId}</p>
+      <p>Merchant Name: {merchantName}</p>
+      <p>Category ID: {categoryId}</p>
+      <input
+        type="number"
+        placeholder="Total Price"
+        value={totalPrice}
+        onChange={(e) => setTotalPrice(Number(e.target.value))}
+      />
+      <button onClick={createRoom}>Create Room</button>
+      {joinUrl && (
+        <p>
+          Join URL: <a href={joinUrl}>{joinUrl}</a>
+        </p>
+      )}
+
+      <h2>Join Room</h2>
+      <input
+        type="text"
+        value={memberName}
+        onChange={(e) => setMemberName(e.target.value)} // 멤버 ID 수정 가능하도록 설정
+      />
+      <br></br>
+      <p>Member ID:</p>
+      <input
+        type="text"
+        value={memberId}
+        onChange={(e) => setMemberId(e.target.value)} // 멤버 ID 수정 가능하도록 설정
+      />
+      <br></br>
+      <p>룸 UUID</p>
+      <input
+        type="text"
+        placeholder="Room ID"
+        value={roomId}
+        onChange={(e) => setRoomId(e.target.value)}
+      />
+      <br />
+      <br />
+      <button onClick={connectWebSocket}>Connect WebSocket</button>
+      <button onClick={joinRoom}>Join Room</button>
+      <button onClick={leaveRoom}>Leave Room</button>
+      <button onClick={check}>Check</button>
+      <button onClick={confirm}>Confirm</button>
+
+      {roomInfo && (
+        <div>
+          <h3>Room Info:</h3>
+          <pre>{JSON.stringify(roomInfo, null, 2)}</pre>
+        </div>
+      )}
+    </div>
     </Wrapper>
   )
 }

@@ -3,6 +3,7 @@ import styled from "styled-components";
 export const Wrapper = styled.div`
   position: relative;
   height: 100vh;
+  overflow: auto; // [추후 삭제 예정] 방 생성 확인용으로 추가함
   // width: 100vw;
 `
 

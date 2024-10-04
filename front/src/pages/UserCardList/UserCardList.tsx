@@ -6,6 +6,8 @@ import { useCardStore } from "../../store/CardStore";
 import testcard1 from "./../../assets/image/cards/신용카드이미지/14_JADE_Classic.png";
 import testcard2 from "./../../assets/image/cards/신용카드이미지/12_올바른_FLEX_카드.png";
 import testcard3 from "./../../assets/image/cards/신용카드이미지/11_삼성_iD_SIMPLE_카드.png";
+import { MyCardList as CardList } from "../../constants/card";
+
 import {
   Wrapper,
   Top,
@@ -17,23 +19,23 @@ import {
 } from "./UserCardList.styles";
 
 const UserCardList = () => {
-  const CardList = [
-    {
-      cardNumber: "001",
-      name: "JADE Classic",
-      img: testcard1,
-    },
-    {
-      cardNumber: "002",
-      name: "올바른 FLEX 카드",
-      img: testcard2,
-    },
-    {
-      cardNumber: "003",
-      name: "삼성 iD SIMPLE 카드",
-      img: testcard3,
-    },
-  ];
+  // const CardList = [
+  //   {
+  //     cardNumber: "001",
+  //     name: "JADE Classic",
+  //     img: testcard1,
+  //   },
+  //   {
+  //     cardNumber: "002",
+  //     name: "올바른 FLEX 카드",
+  //     img: testcard2,
+  //   },
+  //   {
+  //     cardNumber: "003",
+  //     name: "삼성 iD SIMPLE 카드",
+  //     img: testcard3,
+  //   },
+  // ];
   // const { CardList, addCard, removeCard } = useCardStore();
   const { addCard, removeCard } = useCardStore(); // 더미데이터 채워질 시 해당 라인과 테스트용 cardList 삭제하고 위에 코드 주석 풀기
 
