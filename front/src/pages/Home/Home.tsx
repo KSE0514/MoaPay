@@ -28,6 +28,9 @@ const Home = () => {
   const [qrResult, setQrResult] = useState<string | null>(null); // QR 코드 결과 추가
   const qrScannerRef = useRef<Html5QrcodeScanner | null>(null);
   const [isOpen, setIsOpen] = useState<boolean>(false); // QR 모달창 열림 닫힘 여부
+  const [rotate, setRotate] = useState<{ [key: number]: boolean }>({}); // 이미지 회전 여부 저장
+
+  // 이미지 로드 후 크기를 비교하여 회전 여부 결정
 
   let startY = 0;
 
@@ -81,11 +84,8 @@ const Home = () => {
 
     // showCards 상태 업데이트
     setShowCards(cardArray); // 상태 불변성을 유지하며 새 배열로 설정
-    console.log(showCards); // 상태 변경된 배열을 로그로 출력
   }, []);
-  useEffect(() => {
-    console.log("Updated showCards: ", showCards);
-  }, [showCards]); // showCards가 변경될 때마다 실행
+  useEffect(() => {}, [showCards]); // showCards가 변경될 때마다 실행
   // 카메라 켜기
   const handleToggleCamera = () => {
     setIsCameraOn((prevState) => !prevState);
@@ -285,12 +285,12 @@ const Home = () => {
                 </div>
               ) : card.id === "recommended-card" ? (
                 <div className="card recommended-card" key={index}>
-                  <img src={`/assets/images/card.png`} alt={`card-${index}`} />
+                  <img src={`/assets/image/card.png`} alt={`card-${index}`} />
                 </div>
               ) : (
                 <div className="card" key={index}>
                   <img
-                    src={`/assets/images/신용카드이미지/${card.cardProduct.cardProductImgUrl}`}
+                    src={`/assets/image/longWidth/신용카드이미지/${card.cardProduct.cardProductImgUrl}.png`}
                     alt={`card-${index}`}
                   />
                 </div>

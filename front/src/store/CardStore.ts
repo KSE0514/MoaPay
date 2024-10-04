@@ -48,6 +48,8 @@ interface CardState {
   cardWithNullName: Card;
   cardWithDividPay: Card;
   cardList: Card[]; // 카드 리스트 배열
+  recommendCardList: CardProduct[];
+  setRecommendCardList: (newRecommendCardList: CardProduct[]) => void;
   setCardList: (newCardList: Card[]) => void; // 받아온 카드 리스트를 설정하는 함수
   addCard: (card: Card) => void; // 카드 추가 함수
   removeCard: (index: number) => void; // 카드 삭제 함수
@@ -109,6 +111,14 @@ export const useCardStore = create<CardState>()(
           balance: 500000, // 잔액 500,000
         },
       },
+      recommendCardList: [],
+      setRecommendCardList: (newRecommendCardList: CardProduct[]) =>
+        set({
+          recommendCardList: newRecommendCardList.map((card) => ({
+            ...card,
+            cardProductImgUrl: card.cardProductImgUrl.replace(/\s/g, "_"),
+          })),
+        }),
       cardList: [],
       setCardList: (newCardList: Card[]) =>
         set({

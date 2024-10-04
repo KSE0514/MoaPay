@@ -57,7 +57,6 @@ export const CardView = styled.div`
     }
     & > img {
       width: 100%;
-      height: 100%;
       position: absolute;
       z-index: 20;
       object-fit: cover;
