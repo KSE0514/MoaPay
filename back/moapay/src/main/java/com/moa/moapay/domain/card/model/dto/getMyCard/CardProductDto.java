@@ -1,7 +1,9 @@
 package com.moa.moapay.domain.card.model.dto.getMyCard;
 
+import com.moa.moapay.domain.card.model.dto.CardBenefitDto;
 import lombok.*;
 
+import java.util.List;
 import java.util.UUID;
 
 @Builder
@@ -20,4 +22,6 @@ public class CardProductDto {
     private long cardProductAnnualFeeForeign;
     private long cardProductPerformance;
     private String cardProductImgUrl;
+
+    private List<CardBenefitDto> cardBenefitDtoList;
 }

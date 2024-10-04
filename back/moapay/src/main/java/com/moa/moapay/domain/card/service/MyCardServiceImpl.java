@@ -1,5 +1,6 @@
 package com.moa.moapay.domain.card.service;
 
+import com.moa.moapay.domain.card.entity.CardBenefit;
 import com.moa.moapay.domain.card.entity.CardProduct;
 import com.moa.moapay.domain.card.entity.MyCard;
 import com.moa.moapay.domain.card.model.CardType;
@@ -7,6 +8,7 @@ import com.moa.moapay.domain.card.model.dto.*;
 import com.moa.moapay.domain.card.model.dto.getMyCard.GetMyCardDto;
 import com.moa.moapay.domain.card.model.dto.getMyCard.GetMyCardDtoWrapper;
 import com.moa.moapay.domain.card.model.vo.PaymentResultCardInfoVO;
+import com.moa.moapay.domain.card.repository.CardBenefitRepository;
 import com.moa.moapay.domain.card.repository.CardProductRepository;
 import com.moa.moapay.domain.card.repository.MyCardQueryRepository;
 import com.moa.moapay.domain.card.repository.MyCardRepository;
@@ -23,6 +25,7 @@ import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestClient;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
@@ -35,6 +38,7 @@ public class MyCardServiceImpl implements MyCardService {
     private final MyCardQueryRepository myCardQueryRepository;
     private final RestClient restClient;
     private final MyCardRepository myCardRepository;
+    private final CardBenefitRepository cardBenefitRepository;
 
     @Override
     public List<MyCardInfoDto> getMyCardInfo(HttpServletRequest request) {
@@ -162,6 +166,22 @@ public class MyCardServiceImpl implements MyCardService {
             List<GetMyCardDto> response = responseEntity.getBody().getData();
             List<GetMyCardsResponseDto> getMyCardsResponseDtos = response.stream().map(
                     card -> {
+
+                        List<CardBenefit> cardBenefit = cardBenefitRepository.findByCardProductUuid(card.getCardProduct().getCardProductUuid());
+
+                        List<CardBenefitDto> cardBenefitDtos = cardBenefit.stream().map(
+                                cardBenefit1 -> {
+                                   return CardBenefitDto.builder()
+                                           .benefitDesc(cardBenefit1.getBenefitDesc())
+                                           .benefitType(cardBenefit1.getBenefitType())
+                                           .benefitValue(cardBenefit1.getBenefitValue())
+                                           .benefitUnit(cardBenefit1.getBenefitUnit())
+                                           .categoryName(cardBenefit1.getCardBenefitCategory().getName())
+                                           .benefitPoint(cardBenefit1.getBenefitPoint())
+                                           .build();
+                                }
+                        ).toList();
+
                         CardProductDto cardProductDto = CardProductDto.builder()
                                 .cardProductUuid(card.getCardProduct().getCardProductUuid())
                                 .cardProductName(card.getCardProduct().getCardProductName())
@@ -172,6 +192,7 @@ public class MyCardServiceImpl implements MyCardService {
                                 .cardProductAnnualFeeForeign(card.getCardProduct().getCardProductAnnualFeeForeign())
                                 .cardProductPerformance(card.getCardProduct().getCardProductPerformance())
                                 .cardProductImgUrl(card.getCardProduct().getCardProductImgUrl())
+                                .cardBenefits(cardBenefitDtos)
                                 .build();
 
                         AccountDto accountDto = AccountDto.builder()
@@ -180,17 +201,7 @@ public class MyCardServiceImpl implements MyCardService {
                                 .balance(card.getAccounts().getBalance())
                                 .build();
 
-                        CardProduct cardProduct = CardProduct.builder()
-                                .uuid(card.getCardProduct().getCardProductUuid())
-                                .annualFee(card.getCardProduct().getCardProductAnnualFee())
-                                .name(card.getCardProduct().getCardProductName())
-                                .type(CardType.valueOf(card.getCardProduct().getCardProductType()))
-                                .imageUrl(card.getCardProduct().getCardProductImgUrl())
-                                .companyName(card.getCardProduct().getCardProductCompanyName())
-                                .benefitTotalLimit(card.getCardProduct().getCardProductBenefitTotalLimit())
-                                .performance(card.getCardProduct().getCardProductPerformance())
-                                .annualFeeForeign(card.getCardProduct().getCardProductAnnualFeeForeign())
-                                .build();
+                        CardProduct cardProduct = cardProductRepository.findByUuid(card.getCardProduct().getCardProductUuid());
 
                         MyCard myCard = MyCard.builder()
                                 .uuid(card.getUuid())
@@ -205,19 +216,34 @@ public class MyCardServiceImpl implements MyCardService {
                                 .cardProduct(cardProduct)
                                 .build();
 
-                        myCardRepository.save(myCard);
-
-                        return GetMyCardsResponseDto.builder()
-                                .uuid(card.getUuid())
-                                .cardNumber(card.getCardNumber())
-                                .cvc(card.getCvc())
-                                .cardLimit(card.getCardLimit())
-                                .performanceFlag(card.isPerformanceFlag())
-                                .amount(card.getAmount())
-                                .benefitUsage(card.getBenefitUsage())
-                                .cardProduct(cardProductDto)
-                                .account(accountDto)
-                                .build();
+                        // 만약 카드사에서 해지하면??
+                        Optional<MyCard> existMycard = myCardRepository.findByCardNumber(String.valueOf(myCard.getCardNumber()));
+                        if (existMycard.isPresent()) {
+                            return GetMyCardsResponseDto.builder()
+                                    .uuid(card.getUuid())
+                                    .cardNumber(card.getCardNumber())
+                                    .cvc(card.getCvc())
+                                    .cardLimit(card.getCardLimit())
+                                    .performanceFlag(card.isPerformanceFlag())
+                                    .amount(card.getAmount())
+                                    .benefitUsage(card.getBenefitUsage())
+                                    .cardProduct(cardProductDto)
+                                    .account(accountDto)
+                                    .build();
+                        } else {
+                            myCardRepository.save(myCard);
+                            return GetMyCardsResponseDto.builder()
+                                    .uuid(card.getUuid())
+                                    .cardNumber(card.getCardNumber())
+                                    .cvc(card.getCvc())
+                                    .cardLimit(card.getCardLimit())
+                                    .performanceFlag(card.isPerformanceFlag())
+                                    .amount(card.getAmount())
+                                    .benefitUsage(card.getBenefitUsage())
+                                    .cardProduct(cardProductDto)
+                                    .account(accountDto)
+                                    .build();
+                        }
                     }
             ).toList();
             return getMyCardsResponseDtos;

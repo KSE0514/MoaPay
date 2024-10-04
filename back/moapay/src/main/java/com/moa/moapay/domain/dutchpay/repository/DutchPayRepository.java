@@ -16,9 +16,6 @@ import java.util.UUID;
 public interface DutchPayRepository extends JpaRepository<DutchPay, Long> {
     public DutchPay findByUuid(UUID uuid);
 
-
-
-
     @Modifying
     @Transactional
     @Query("UPDATE DutchPay p SET p.amount = :amount, p.payStatus = :status WHERE p.memberId = :memberId AND p.roomEntity.uuid = :roomUuid")
