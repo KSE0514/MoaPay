@@ -74,6 +74,7 @@ const DutchOpen = () => {
       // message.body를 DutchRoomMessage 타입으로 변환
       const parsedMessage: DutchRoomMessage = response.data;
       setJoinUrl(parsedMessage.data); // 방 생성 후 반환된 URL 저장
+      // setJoinUrl(`http://localhost:5173/dutchpay/invite/${parsedMessage.data}`) // 더치페이 초대 url 저장.....?
       setRoomId(parsedMessage.data); // 생성된 방의 roomId 저장
 
       nav(PATH.DUTCHPAY) // 인원 설정하여 방 생성 후 다음 페이지로 이동
