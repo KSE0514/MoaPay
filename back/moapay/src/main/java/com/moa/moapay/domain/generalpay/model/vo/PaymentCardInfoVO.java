@@ -1,14 +1,12 @@
 package com.moa.moapay.domain.generalpay.model.vo;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.util.UUID;
 
 @Getter
-@Builder
+@Builder(toBuilder = true)
+@ToString
 @NoArgsConstructor
 @AllArgsConstructor
 public class PaymentCardInfoVO {
