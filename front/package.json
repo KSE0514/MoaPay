@@ -19,6 +19,7 @@
     "@fortawesome/react-fontawesome": "^0.2.2",
     "@passwordless-id/webauthn": "^2.1.2",
     "@simplewebauthn/browser": "^10.0.0",
+    "@stomp/stompjs": "^7.0.0",
     "axios": "^1.7.7",
     "base64url": "^3.0.1",
     "chart.js": "^4.4.4",
