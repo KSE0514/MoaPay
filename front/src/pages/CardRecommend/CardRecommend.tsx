@@ -7,6 +7,10 @@ import {
   ComparisonView,
   ComparisonList,
   Toggle,
+  RecommendResult,
+  RecommeCardListView,
+  Title,
+  RecommendResultCardList,
 } from "./CardRecommend.styles";
 import CardList from "../../components/CardRecommend/CardList/CardList";
 import { MyCardList, RecommendedCardList } from "../../constants/card";
@@ -20,6 +24,8 @@ import {
 import { Card, CardProduct, useCardStore } from "../../store/CardStore";
 import axios from "axios";
 import { useAuthStore } from "../../store/AuthStore";
+import CardLoading from "../../components/CardLoading";
+import ParticleCanvas from "../../components/ParticleCanvas";
 
 /**
  * 전부  CardProduct 데이터 형식을 가진 list로 사용
@@ -28,8 +34,9 @@ import { useAuthStore } from "../../store/AuthStore";
  * 3. 클릭 시 비교 comparisonCard에 넣기
  */
 const CardRecommend = () => {
+  const [compare, setCompare] = useState<boolean>(false);
   const [isLoading, setIsLoading] = useState<boolean>(false);
-  const { id, accessToken } = useAuthStore();
+  const { id, accessToken, name } = useAuthStore();
   const { cardList, recommendCardList, setRecommendCardList } = useCardStore();
   const [userCardProductList, setUserCardProductList] = useState<CardProduct[]>(
     cardList.map((card) => card.cardProduct)
@@ -78,8 +85,8 @@ const CardRecommend = () => {
   const getRecommendCards = async () => {
     try {
       const response = await axios.post(
-        `api/moapay/core/card/recommend`,
-        // `http://localhost:8765/moapay/core/card/recommend`,
+        // `api/moapay/core/card/recommend`,
+        `http://localhost:8765/moapay/core/card/recommend`,
         {},
         {
           withCredentials: true,
@@ -106,7 +113,33 @@ const CardRecommend = () => {
   return (
     <Wrapper>
       {isLoading ? (
-        <Loading>Loading</Loading>
+        <CardLoading />
+      ) : !compare ? (
+        <>
+          <RecommendResult>
+            <ParticleCanvas />
+            {/* <div className="not-layout"> */}
+            <Title>
+              <div>{name}님을 위한 추천 카드</div>
+
+              <p>밀어서 카드 상세 정보를 볼 수 있어요</p>
+            </Title>
+            <RecommeCardListView>
+              <RecommendResultCardList
+                onCardClick={onCardClick}
+                cardList={userCardProductList}
+              />
+            </RecommeCardListView>
+            <button
+              onClick={() => {
+                setCompare(true);
+              }}
+            >
+              카드 비교하러 가기
+            </button>
+            {/* </div> */}
+          </RecommendResult>
+        </>
       ) : (
         <>
           <div className="view">
@@ -219,7 +252,7 @@ const CardRecommend = () => {
                           <p>
                             {comparisonCard[0]
                               ? comparisonCard[0].cardProductPerformance !== 0
-                                ? `${comparisonCard[0].cardProductPerformance}원`
+                                ? `${comparisonCard[0].cardProductPerformance}만원`
                                 : "전월실적 없음"
                               : ""}
                           </p>
@@ -227,7 +260,7 @@ const CardRecommend = () => {
                           <p>
                             {comparisonCard[1]
                               ? comparisonCard[1].cardProductPerformance !== 0
-                                ? `${comparisonCard[1].cardProductPerformance}원`
+                                ? `${comparisonCard[1].cardProductPerformance}만원`
                                 : "전월실적 없음"
                               : ""}
                           </p>

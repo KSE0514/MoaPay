@@ -17,8 +17,8 @@ import { useCardStore } from "../../store/CardStore";
 
 const RegisterCard: React.FC = () => {
   // const baseUrl = import.meta.env.VITE_BASE_URL;
-  const baseUrl = `http://localhost:18020/`;
-  const { id } = useAuthStore();
+  const baseUrl = `http://localhost:8765/`;
+  const { id, accessToken } = useAuthStore();
   const { addCard } = useCardStore();
   const [cardNumber, setCardNumber] = useState(["", "", "", ""]);
   const [expirationMonth, setExpirationMonth] = useState("");
@@ -67,15 +67,23 @@ const RegisterCard: React.FC = () => {
     setError(false); // 에러 초기화
     try {
       const response = await axios.post(
-        // `${baseUrl}moapay/core/card/registration`,
-        `api/moapay/core/card/registration`,
+        `${baseUrl}moapay/core/card/registration`,
+        // `api/moapay/core/card/registration`,
         {
           memberUuid: id,
           cardNumber: cardNumber.join(""), // 카드 번호를 배열이 아닌 문자열로 전송
-          cvc: cvc,
+        },
+        {
+          withCredentials: true,
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+            "Content-Type": "application/json",
+          },
         }
       );
-      // setIsLoading(false);
+      setTimeout(() => {
+        setIsLoading(false);
+      }, 3000);
       if (response.data.status === "CREATED") {
         // 카드 등록 성공 시 처리
         addCard(response.data.data.card);
@@ -94,7 +102,7 @@ const RegisterCard: React.FC = () => {
   };
 
   const closeModal = () => {
-    setShowModal(false);
+    // setShowModal(false);
     if (!error) {
       // 성공적인 등록일 때 홈으로 이동 로직 추가
       window.location.href = "/home"; // 홈으로 리다이렉트 (홈 경로를 원하는 대로 수정)
