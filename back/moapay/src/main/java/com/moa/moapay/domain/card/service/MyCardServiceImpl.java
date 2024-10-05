@@ -16,6 +16,7 @@ import com.moa.moapay.global.exception.BusinessException;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -33,6 +34,9 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 @Slf4j
 public class MyCardServiceImpl implements MyCardService {
+
+    @Value("${external-url.cardbank}")
+    private String cardbankUrl;
 
     private final CardProductRepository cardProductRepository;
     private final MyCardQueryRepository myCardQueryRepository;
@@ -156,7 +160,7 @@ public class MyCardServiceImpl implements MyCardService {
         // 카드 뱅크에서 내 카드 목록을 가져오기 위한 REST API 호출
         ResponseEntity<GetMyCardDtoWrapper> responseEntity = restClient.post()
                 // TODO: 주소 변경
-                .uri("http://localhost:18100/cardbank/card/getMyCards")
+                .uri(cardbankUrl + "/card/getMyCards")
                 .contentType(MediaType.APPLICATION_JSON)
                 .body(getMyCardsRequestDto)
                 .retrieve()
@@ -271,7 +275,7 @@ public class MyCardServiceImpl implements MyCardService {
         try {
             ResponseEntity<CardRestWrapperDto> responseEntity = restClient.post()
                     //TODO: 주소 변경
-                    .uri("http://localhost:18100/cardbank/card/registration")
+                    .uri(cardbankUrl + "/card/registration")
                     .contentType(MediaType.APPLICATION_JSON)
                     .body(registrationRequestDto)
                     .retrieve()
@@ -294,6 +298,7 @@ public class MyCardServiceImpl implements MyCardService {
                         .amount(cardData.getAmount())
                         .benefitUsage(cardData.getBenefitUsage())
                         .cardLimit(cardData.getCardLimit())
+                        .cardStatus(true)
                         .memberId(memberUuid)
                         .build();
 
