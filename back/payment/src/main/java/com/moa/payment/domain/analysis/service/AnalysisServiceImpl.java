@@ -1,12 +1,12 @@
 package com.moa.payment.domain.analysis.service;
 
-import org.springframework.stereotype.Repository;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestClient;
 
 import java.util.List;
 import java.util.UUID;
 
+import com.moa.payment.domain.analysis.entity.dto.getMemberResponseDto;
 import com.moa.payment.domain.charge.entity.PaymentLog;
 import com.moa.payment.domain.charge.repository.PaymentLogRepository;
 
@@ -34,6 +34,8 @@ public class AnalysisServiceImpl implements AnalysisService {
 			//CardId로 myCard불러오고 여기서 memberId 뽑아내고
 			UUID memberId=getMemberId(cardId);
 			//memberId로 member 뽑아내서 나이, 성별, 핸드폰 번호 추출
+			getMemberResponseDto member=getMemberInfo(memberId);
+
 
 		}
 	}
@@ -45,6 +47,14 @@ public class AnalysisServiceImpl implements AnalysisService {
 			.body(cardId)
 			.retrieve()
 			.body(UUID.class);
+	}
+
+	public getMemberResponseDto getMemberInfo(UUID memberId){
+		return restClient.post()
+			.uri("http://localhost:18040/moapay/member/getMember")
+			.body(memberId)
+			.retrieve()
+			.body(getMemberResponseDto.class);
 	}
 
 	//member에서 성별, 연령대 추출하고 amount, count 업데이트

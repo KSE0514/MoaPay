@@ -16,6 +16,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.moa.member.domain.member.model.dto.JoinResponseDto;
 import com.moa.member.domain.member.model.dto.LoginRequestDto;
+import com.moa.member.domain.member.model.dto.getMemberResponseDto;
 import com.moa.member.domain.member.model.dto.isMemberResponseDto;
 import com.moa.member.domain.member.security.JwtTokenProvider;
 import com.moa.member.domain.member.security.MemberPrincipalDetails;
@@ -133,6 +134,18 @@ public class MemberServiceImpl implements MemberService {
 			HttpStatus.BAD_REQUEST, "회원이 존재하지 않습니다."));
 		member.updatePaymentType(type);
 		memberRepository.save(member);
+	}
+
+	@Override
+	public getMemberResponseDto getMember(UUID memberId){
+		Member member=memberRepository.findByUuid(memberId).orElseThrow(()->new BusinessException(HttpStatus.NOT_FOUND,"멤버가 존재하지 않습니다."));
+		getMemberResponseDto dto= getMemberResponseDto.builder()
+			.memberId(memberId)
+			.phoneNumber(member.getPhoneNumber())
+			.birthDate(member.getBirthDate())
+			.gender(member.getGender())
+			.build();
+		return dto;
 	}
 
 }

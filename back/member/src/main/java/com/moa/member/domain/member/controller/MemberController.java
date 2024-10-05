@@ -117,8 +117,8 @@ public class MemberController {
 	// payment로 보내는 memberDto
 	@PostMapping("/getMember")
 	public ResponseEntity<getMemberResponseDto> getMember(@RequestBody UUID memberId){
-		
-
+		getMemberResponseDto dto=memberService.getMember(memberId);
+		return ResponseEntity.ok(dto);
 	}
 
 }
