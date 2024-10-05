@@ -224,18 +224,19 @@ export const Button = styled.button`
 
 export const ModalView = styled.div`
   position: absolute;
+  top: 0;
   display: flex;
   justify-content: center;
   align-items: center;
-  height: 100%;
+  height: 100vh;
   width: 100%;
   z-index: 100;
   background-color: rgba(1, 1, 1, 0.8);
   & > div {
     border-radius: 15px;
     padding: 0px 20px;
-    width: 60%;
-    height: 25%;
+    width: 70%;
+    height: 30%;
     background-color: white;
     display: flex;
     flex-direction: column;
@@ -247,7 +248,7 @@ export const ModalView = styled.div`
       padding: 10px;
       border-radius: 10px;
       width: 80%;
-      margin-top: 20px;
+      margin-top: 30px;
       color: white;
     }
   }

@@ -26,7 +26,7 @@ const RegisterCard: React.FC = () => {
   const [cvc, setCvc] = useState("");
   const [isFlipped, setIsFlipped] = useState(false); // 카드 뒤집기 상태
   const [showModal, setShowModal] = useState(false);
-  const [isLoading, setIsLoading] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(false);
   const [modalMessage, setModalMessage] =
     useState("카드 등록이 완료되었습니다!"); // 모달 메시지 상태
@@ -64,7 +64,8 @@ const RegisterCard: React.FC = () => {
   const RegisterCard = async () => {
     setShowModal(true);
     setIsLoading(true);
-    setError(false); // 에러 초기화
+    setError(false); // 에러 초기화d
+    console.log(cardNumber.join(""));
     try {
       const response = await axios.post(
         `${baseUrl}moapay/core/card/registration`,
@@ -81,28 +82,30 @@ const RegisterCard: React.FC = () => {
           },
         }
       );
+
       setTimeout(() => {
         setIsLoading(false);
       }, 3000);
       if (response.data.status === "CREATED") {
         // 카드 등록 성공 시 처리
-        addCard(response.data.data.card);
-        setModalMessage("카드 등록이 완료되었습니다!");
+        console.log(response.data.data);
+        addCard(response.data.data);
+        setModalMessage("카드 등록이 <br/>완료되었습니다!");
       } else {
         // 등록 실패 시 에러 처리
         setError(true);
-        setModalMessage("카드 등록 중 오류가 발생했습니다.");
+        setModalMessage("카드 등록 중 <br/>오류가 발생했습니다.");
       }
     } catch (e) {
       setIsLoading(false);
       setError(true);
-      setModalMessage("서버 요청 중 오류가 발생했습니다.");
+      setModalMessage("서버 요청 중 <br/>오류가 발생했습니다.");
       console.log(e);
     }
   };
 
   const closeModal = () => {
-    // setShowModal(false);
+    setShowModal(false);
     if (!error) {
       // 성공적인 등록일 때 홈으로 이동 로직 추가
       window.location.href = "/home"; // 홈으로 리다이렉트 (홈 경로를 원하는 대로 수정)
@@ -280,7 +283,14 @@ const RegisterCard: React.FC = () => {
             </div>
           </div>
 
-          <Button onClick={RegisterCard}>등록하기</Button>
+          <Button
+            type="button" // 버튼 타입을 명시적으로 지정
+            onClick={() => {
+              RegisterCard();
+            }}
+          >
+            등록하기
+          </Button>
         </CardForm>
       </CheckoutWrapper>
       {showModal && (
@@ -292,7 +302,11 @@ const RegisterCard: React.FC = () => {
               </>
             ) : (
               <>
-                <p>{modalMessage}</p>
+                <div
+                  style={{ textAlign: "center", lineHeight: "25px" }}
+                  dangerouslySetInnerHTML={{ __html: modalMessage }}
+                />
+
                 <button onClick={closeModal}>확인</button>
               </>
             )}
