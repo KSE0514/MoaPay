@@ -28,9 +28,11 @@ import SelectType from "../pages/SelectType/SelectType.tsx";
 import { elements } from "chart.js";
 import RegisterCard from "../pages/RegisterCard/RegisterCard.tsx";
 import Payment from "../pages/Payment/Payment.tsx";
+import  SelectPaymentType  from "../pages/SelectPaymentType/SelectPaymentType.tsx";
+import DutchOpen from "../pages/DutchOpen/DutchOpen.tsx";
 const router = createBrowserRouter([
   {
-    // element: <AppAuthHandler />, // 최상위 레이아웃으로 AppAuthHandler 설정
+    element: <AppAuthHandler />, // 최상위 레이아웃으로 AppAuthHandler 설정
     children: [
       {
         path: PATH.ROOT,
@@ -94,7 +96,11 @@ const router = createBrowserRouter([
             path: PATH.SELECT_TYPE,
             element: <SelectType />,
           },
-          { path: "add-card", element: <RegisterCard /> },
+          { path: PATH.ADD_CARD, element: <RegisterCard /> },
+          {
+            path: PATH.SELECT_PAYMENT_TYPE,
+            element: <SelectPaymentType></SelectPaymentType>,
+          },
         ],
       },
       {
@@ -126,6 +132,10 @@ const router = createBrowserRouter([
         path: PATH.PAYMENT,
         element: <Payment />,
       },
+      {
+        path: PATH.DUTCHOPEN,
+        element: <DutchOpen />
+      }
     ],
   },
 ]);

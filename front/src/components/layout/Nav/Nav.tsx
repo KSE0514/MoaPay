@@ -13,7 +13,9 @@ const Nav = () => {
   const location = useLocation(); // 현재 경로를 가져옴
   const matchBringCard = useMatch(`${PATH.BRING_CARD}/*`);
   const matchSelectType = useMatch(`${PATH.SELECT_TYPE}/*`);
-  const match = matchBringCard || matchSelectType;
+  const matchSelectPayMentType = useMatch(`${PATH.SELECT_PAYMENT_TYPE}/*`);
+  const match = matchBringCard || matchSelectType || matchSelectPayMentType;
+  const statisticsmatch = useMatch(`${PATH.STATISTICS}/*`);
   const movePage = (page: string) => {
     navigate(page);
   };
@@ -36,7 +38,7 @@ const Nav = () => {
       </div>
       <div
         onClick={() => movePage(PATH.STATISTICS + PATH.STATISTICS_CONSUMPTION)}
-        className={match ? "active" : ""}
+        className={statisticsmatch ? "active" : ""}
       >
         <StyledIcon icon={faChartSimple} />
         <p>통계</p>

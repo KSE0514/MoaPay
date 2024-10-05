@@ -16,14 +16,21 @@ import Modal from "../../components/dutch/Modal/Modal";
 import barcode from "../../assets/image/barcode.png";
 import { useEffect, useState, useRef } from "react";
 import { Html5QrcodeScanner } from "html5-qrcode";
+import { useNavigate } from "react-router-dom";
+import { Card, useCardStore } from "../../store/CardStore";
 
 const Home = () => {
-  const [cardList, setCardList] = useState<string[]>([]);
+  const navigate = useNavigate();
+  const { cardWithDividPay, cardWithNullName, cardList } = useCardStore();
+  const [showCards, setShowCards] = useState<Card[]>([]);
   const containerRef = useRef<HTMLDivElement | null>(null);
   const [isCameraOn, setIsCameraOn] = useState(false); // 카메라 상태 추가
   const [qrResult, setQrResult] = useState<string | null>(null); // QR 코드 결과 추가
   const qrScannerRef = useRef<Html5QrcodeScanner | null>(null);
   const [isOpen, setIsOpen] = useState<boolean>(false); // QR 모달창 열림 닫힘 여부
+  const [rotate, setRotate] = useState<{ [key: number]: boolean }>({}); // 이미지 회전 여부 저장
+
+  // 이미지 로드 후 크기를 비교하여 회전 여부 결정
 
   let startY = 0;
 
@@ -65,14 +72,20 @@ const Home = () => {
   };
 
   useEffect(() => {
-    setCardList([
-      "null",
-      "/assets/image/card.png",
-      "/assets/image/cards/신용카드이미지/100_신한카드_Air_One.png",
-      "/assets/image/cards/신용카드이미지/12_올바른_FLEX_카드.png",
-    ]);
-  }, []);
+    const cardArray: Card[] = [];
 
+    // cardWithNullName과 cardWithDividPay를 배열에 추가
+
+    cardArray.push(cardWithNullName);
+    cardArray.push(cardWithDividPay);
+
+    // cardList의 모든 카드를 배열에 추가
+    cardArray.push(...cardList);
+
+    // showCards 상태 업데이트
+    setShowCards(cardArray); // 상태 불변성을 유지하며 새 배열로 설정
+  }, []);
+  useEffect(() => {}, [showCards]); // showCards가 변경될 때마다 실행
   // 카메라 켜기
   const handleToggleCamera = () => {
     setIsCameraOn((prevState) => !prevState);
@@ -256,17 +269,30 @@ const Home = () => {
             onTouchStart={handleTouchStart}
             onTouchEnd={handleTouchEnd}
           >
-            {cardList.map((card, index) =>
-              card === "null" ? (
-                <div className="card add-card" key={index}>
+            {showCards.map((card, index) =>
+              card.id == "add-card" ? (
+                <div
+                  onClick={() => {
+                    navigate("/add-card");
+                  }}
+                  className="card add-card"
+                  key={index}
+                >
                   <div>
                     <PlusIcon icon={faPlus} />
                   </div>
                   <p>카드 등록하기</p>
                 </div>
+              ) : card.id === "recommended-card" ? (
+                <div className="card recommended-card" key={index}>
+                  <img src={`/assets/image/card.png`} alt={`card-${index}`} />
+                </div>
               ) : (
                 <div className="card" key={index}>
-                  <img src={card} alt={`card-${index}`} />
+                  <img
+                    src={`/assets/image/longWidth/신용카드이미지/${card.cardProduct.cardProductImgUrl}.png`}
+                    alt={`card-${index}`}
+                  />
                 </div>
               )
             )}

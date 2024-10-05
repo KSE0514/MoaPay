@@ -39,8 +39,6 @@ public class NotificationServiceImpl implements NotificationService {
     @Override
     public void sendCompleteMessage(UUID id, PaymentResultDto resultDto) {
         log.info("send charge complete message: {} - {}", id.toString(), resultDto);
-        // 이하는 디버깅용(추후 삭제)
-//        log.info("emitter : "+emitterRepository.getById(id));
         // redis publish를 이용해 emitter를 갖고있을 listener에게 메시지를 보낸다
         Long subscriberCount = redisEmitterTemplate.convertAndSend(id.toString(), resultDto);
         log.info("convert and send done");
