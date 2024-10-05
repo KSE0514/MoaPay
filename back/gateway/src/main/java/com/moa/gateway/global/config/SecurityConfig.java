@@ -74,8 +74,8 @@ public class SecurityConfig {
 			.securityContextRepository(NoOpServerSecurityContextRepository.getInstance()) //session stateless 설정
 			.formLogin(formLogin -> formLogin.disable()) // 폼 로그인 비활성화
 			.logout(logout -> logout.disable()) // 로그아웃 비활성화
-			.authorizeExchange(exchanges -> exchanges.pathMatchers("/moapay/member/login", "/moapay/member/join",
-					"/moapay/member/sendSMS", "/moapay/member/verification", "/moapay/member/isMember")
+			.authorizeExchange(exchanges -> exchanges.pathMatchers("/api/moapay/member/login", "/api/moapay/member/join",
+					"/api/moapay/member/sendSMS", "/api/moapay/member/verification", "/api/moapay/member/isMember")
 				.permitAll()
 				.anyExchange()
 				.authenticated() //나머지 경로는 인증 필요
