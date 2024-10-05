@@ -104,19 +104,6 @@ public class JwtTokenProvider {
 		return Jwts.parser().setSigningKey(secretKey).parseClaimsJws(token).getBody();
 	}
 
-	// public boolean isTokenBlacklisted(String token) {
-	// 	return redisTemplate.opsForValue().get("blacklist:" + token) == null; //blacklist 에 존재하지 않으면  true
-	// }
-
-	// //토큰 유효성 검사
-	// public boolean validateToken(String token) {
-	// 	try {
-	// 		Claims claims = decodeJwt(token);
-	// 		return claims.getExpiration().after(new Date());
-	// 	} catch (JwtException e) {
-	// 		return false;
-	// 	}
-	// }
 
 	//header에서 Access Bearer 토큰 가져오기
 	public String getJwtTokenFromRequestHeader(HttpServletRequest request) {
@@ -136,27 +123,4 @@ public class JwtTokenProvider {
 	public String getUuidFromToken(String token) {
 		return decodeJwt(token).get("uuid", String.class);
 	}
-
-	// public Authentication getAuthentication(String token) {
-	// 	String username = decodeJwt(token).getSubject();
-	// 	MemberPrincipalDetails userDetails = (MemberPrincipalDetails) memberDetailsService.loadUserByUsername(username);
-	// 	return new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
-	// }
-	//
-	// public boolean hasClaim(Claims claims, String claimKey, String claimValue) {
-	// 	return claimValue.equals(claims.get(claimKey, String.class));
-	// }
-	//
-	// public void setHeaderAccessToken(HttpServletResponse response, String accessToken) {
-	// 	response.setHeader("authorization", "bearer "+ accessToken);
-	// }
-	//
-	// public void setHeaderRefreshToken(HttpServletResponse response, String refreshToken) {
-	// 	response.setHeader("refreshToken", "bearer "+ refreshToken);
-	// }
-	//
-	// public long getExpirationTime(String token) {
-	// 	Claims claims = decodeJwt(token);
-	// 	return claims.getExpiration().getTime();
-	// }
 }
