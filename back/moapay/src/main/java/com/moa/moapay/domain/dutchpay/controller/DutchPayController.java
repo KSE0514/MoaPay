@@ -37,6 +37,14 @@ public class DutchPayController {
         return ResponseEntity.status(resultResponse.getStatus()).body(resultResponse);
     }
 
+    @GetMapping("/getDutchRoomInfo/{roomId}")
+    public ResponseEntity<ResultResponse> getDutchRoomInfo(@PathVariable UUID roomId) {
+        log.info("Getting Dutch pay room info");
+        DutchRoomInfo dutchRoomInfo = dutchPayService.getDutchRoomInfo(roomId);
+        ResultResponse resultResponse = ResultResponse.of(HttpStatus.OK, "더치페이 룸 정보 조회", dutchRoomInfo);
+        return ResponseEntity.status(resultResponse.getStatus()).body(resultResponse);
+    }
+
     @PostMapping("/payment")
     public ResponseEntity<?> payment(@Valid @RequestBody DutchPayPaymentRequsetDto dutchPayPaymentRequsetDto) {
         log.info("Payment request: {}", dutchPayPaymentRequsetDto);
