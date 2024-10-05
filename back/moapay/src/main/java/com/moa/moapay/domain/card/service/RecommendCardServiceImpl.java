@@ -97,11 +97,11 @@ public class RecommendCardServiceImpl implements RecommendCardService {
     @Override
     public List<PaymentCardInfoVO> recommendPayCard(UUID memberId, String categoryId, RecommendType recommendType, long totalPrice) {
         // 추천 카드 결제는 1000원 이상인 결제금액만 가능하며, 1원단위의 금액이 있으면 안된다
-        if(totalPrice < 1000 || totalPrice % 10 != 0) {
+        if (totalPrice < 1000 || totalPrice % 10 != 0) {
             throw new BusinessException(HttpStatus.BAD_REQUEST, "추천 결제에 부적절한 결제 금액입니다.");
         }
         List<MyCard> cardList = myCardQueryRepository.findAllByMemberIdWithBenefits(memberId);
-        if(cardList == null || cardList.isEmpty()) {
+        if (cardList == null || cardList.isEmpty()) {
             throw new BusinessException(HttpStatus.BAD_REQUEST, "요청한 회원이 소유한 카드가 없습니다.");
         }
         log.info("recommend pay card");
@@ -116,7 +116,7 @@ public class RecommendCardServiceImpl implements RecommendCardService {
         }
         Arrays.sort(scoreList); // 전부 구했다면 원금 기준 혜택금액이 높은 순으로 정렬
         // 응답에 사용할 리스트 생성
-        List<PaymentCardInfoVO> recommendList = new ArrayList<>();
+        List<PaymentCardInfoVO> recommendList;
         if (recommendType == RecommendType.BENEFIT) {
             log.info("recommend type : BENEFIT");
             // [1] 혜택형
@@ -124,112 +124,18 @@ public class RecommendCardServiceImpl implements RecommendCardService {
             // 가장 높은 할인율을 보이는 카드부터 결제하되, 혜택금액 한도에 도달할 경우 다음 카드로 넘어간다
             // 각 카드별로 혜택을 받을 수 있는 최대 결제 금액을 기록해두는 게 좋을듯함.
             // 그래도 결제금액이 남는다면 실적을 채워주는 느낌으로 분배해준다.
-            // 실적도 다 채웠다면... 그냥 첫번째 카드에 나머지를 몰아준다.
-            // 만일 받을 수 있는 혜택이 전혀 없다면, 실적형으로 전환 필요
-            if (scoreList[0].getBenefitValue() == 0) {
-                // todo : 혜택형에서 실전형으로 전환하는 로직 작성
-
-            }
-            long remainedPrice = totalPrice;
-            // 후보군 3개를 뽑는다
-            for (int i = 0; i < 3; ++i) {
-                // 카드 추천은 최대 3개까지
-                PayCardScore score = scoreList[i];
-                if (score.getBenefitValue() == 0) {
-                    break; // 혜택을 받을 수 없는 카드만 남았다면 break
-                }
-                MyCard myCard = score.getMyCard();
-                CardProduct product = myCard.getCardProduct();
-                // 해당 카드로 얼마를 결제할지 결정
-                long amount = 0;
-                if(remainedPrice < score.getMaxBenefitAmount()) {
-                    // 남은 값만큼 긁어도 혜택 한도를 초과하지 않는다면, 전부 긁는다
-                    amount = remainedPrice;
-                    remainedPrice = 0;
-                } else {
-                    // 초과하는 경우, 혜택한도만큼 긁은 후 remainedPrice 삭감
-                    amount = score.getMaxBenefitAmount();
-                    if(amount % 10 != 0) {
-                        // 1원단위 결제가 있다면 그 값은 반올림
-                        long remained = amount % 10;
-                        amount = amount + (10 - remained);
-                    }
-                    if (amount < 1000) { // 최소 결제 금액은 1000원이다
-                        amount = 1000;
-                    }
-                    remainedPrice -= amount;
-                    if(remainedPrice < 1000) {
-                        // 결제 최소 금액 이하로 남은 금액이 낮아지는 경우, 그냥 나머지도 이 카드로 긁는다
-                        amount += remainedPrice;
-                        remainedPrice = 0;
-                    }
-                }
-                recommendList.add(
-                        PaymentCardInfoVO.builder()
-                                .cardId(myCard.getUuid())
-                                .cardName(product.getName())
-                                .imageUrl(product.getImageUrl())
-                                .cardNumber(myCard.getCardNumber())
-                                .cvc(myCard.getCvc())
-                                .amount(amount)
-                                .usedAmount(myCard.getAmount())
-                                .performance(product.getPerformance())
-                                .benefitUsage(myCard.getBenefitUsage())
-                                .build()
-                );
-                if(remainedPrice <= 0) { // 분배가 끝났다면 반복문 종료
-                    break;
-                }
-            }
-            // 카드 3개 선정 완료
-            // 혜택을 초과하는 결제금액이 남았다면, 남은 실적에 따라 앞 카드에서부터 분배한다
-            if(remainedPrice > 0) {
-                for(int i = 0 ; i < recommendList.size() ; ++i) {
-                    PaymentCardInfoVO vo = recommendList.get(i);
-                    long remainedPerformance = vo.getPerformance() - vo.getUsedAmount(); // 넉넉하게 이번 결제 금액 제외하고 실적을 계산한다
-                    long newAmount = vo.getAmount();
-                    if(remainedPerformance > remainedPrice) {
-                        newAmount += remainedPrice;
-                        remainedPrice = 0;
-                    } else {
-                        newAmount += remainedPerformance;
-                        remainedPrice -= remainedPerformance;
-                    }
-                    vo = vo.toBuilder().amount(newAmount).build();
-                    if(remainedPrice == 0) {
-                        break;
-                    }
-                }
-            }
-            // 이렇게 했는데도 금액이 남았다면 맨 앞 카드에 몰아준다.
-            if(remainedPrice > 0) {
-                PaymentCardInfoVO vo = recommendList.get(0);
-                long newAmount = vo.getAmount()+remainedPrice;
-                vo = vo.toBuilder().amount(newAmount).build();
-            }
-
-            // 계산 종료
-            // 이제 종합이 맞는지 확인해야 한다
-            log.info("recommend completed");
-            long total = 0;
-            for(PaymentCardInfoVO vo : recommendList) {
-                log.info(vo.toString());
-                total += vo.getAmount();
-            }
-            if(total != totalPrice) {
-                throw new BusinessException(HttpStatus.BAD_REQUEST, "추천한 카드 종합과 결과가 맞지 않습니다. "+total+" / "+totalPrice);
-            }
-            return recommendList;
-
+            // 실적도 다 채웠다면... 요청에서 받았던 주 카드로 결제를 진행한다.
+            recommendList = recommendByBenefit(scoreList, totalPrice, false);
         } else {
             log.info("recommend type : PERFORM");
             // [2] 실적형
             // 실적을 다 채우지 못한 카드들을, 결제 원금 기준으로 혜택 많이 받는 순으로 정렬한다.
             // 앞에서부터 3개를 집어 금액을 분배하되, 3개를 이용해 실적을 채울 수 없는 경우, 가장 남은 실적이 적게 남은 녀석부터 제외하고 다음 우선순위인 카드를 채운다.
-            // 만일 모든 카드의 남은 실적 총합이 금액 총합보다 적다면, 가장 실적이 많이 남은 카드부터 결제금액을 나눈다.
-
+            // 만일 모든 카드의 남은 실적 총합이 금액 총합보다 적다면, 혜택이 가장 큰 카드인 맨 앞 카드에 결제금을 몰아준다
+            // todo : 혜택 관계없이 실적형의 경우 주 카드 먼저 긁히게 해야하는건가??
+            recommendList = recommendByPerformance(scoreList, totalPrice, true);
         }
-        return null;
+        return recommendList;
     }
 
     /**
@@ -324,7 +230,8 @@ public class RecommendCardServiceImpl implements RecommendCardService {
         List<CardBenefit> validBenefitList = new ArrayList<>();
         boolean hasBenefit = false;
         for (CardBenefit benefit : benefitList) { // 유효 혜택 계산
-            if (benefit.getCardBenefitCategory().getId().equals(categoryId)) {
+            String cardCategory = benefit.getCardBenefitCategory().getId();
+            if (cardCategory.equals(categoryId) || cardCategory.equals("C0000")) { // 혜택타입 all인 경우에도 적용되어야 함
                 hasBenefit = true;
                 validBenefitList.add(benefit);
             }
@@ -359,11 +266,32 @@ public class RecommendCardServiceImpl implements RecommendCardService {
         }
         // [2] 실적 계산
         // 만일 이미 실적을 채웠다면, 더이상 채울 수 있는 실적은 없다.
-        if(myCard.getAmount() < product.getPerformance()) {
-
+        if (myCard.getAmount() < product.getPerformance()) {
+            long left = -1;
+            long right = totalPrice + 1;
+            long remainedPerformance = product.getPerformance() - myCard.getAmount();
+            long maxPerformance = 0;
+            while (left + 1 < right) {
+                long mid = (left + right) / 2;
+                BenefitInfo benefitInfo = calculateTotalBenefit(myCard, validBenefitList, categoryId, mid);
+                long thisPerformance = Math.max(remainedPerformance, (mid - benefitInfo.getTotalDiscount())); // 실제 실적 적용값은 원금에서 할인값을 뺀 만큼이다
+                if (maxPerformance < thisPerformance) { // 새롭게 채울 수 있는 실적을 갱신했다면
+                    maxPerformance = thisPerformance;
+                    left = mid;
+                } else {
+                    right = mid;
+                }
+            }
+            maxPerformanceAmount = left;
+            benefitValue = maxPerformance;
         }
-
-        return null;
+        return PayCardScore.builder()
+                .myCard(myCard)
+                .maxBenefitAmount(maxBenefitAmount)
+                .benefitValue(benefitValue)
+                .maxPerformanceAmount(maxPerformanceAmount)
+                .performanceValue(performanceValue)
+                .build();
     }
 
     private BenefitInfo calculateTotalBenefit(MyCard myCard, List<CardBenefit> validBenefitList, String categoryId, long totalPrice) {
@@ -432,7 +360,196 @@ public class RecommendCardServiceImpl implements RecommendCardService {
                 .totalDiscount(totalDiscount)
                 .totalPoint(totalPoint)
                 .totalCashback(totalCashback)
-                .totalBenefit(totalDiscount+totalPoint+totalCashback)
+                .totalBenefit(totalDiscount + totalPoint + totalCashback)
                 .build();
+    }
+
+    private List<PaymentCardInfoVO> recommendByBenefit(PayCardScore[] scoreList, long totalPrice, boolean looped) {
+        List<PaymentCardInfoVO> recommendList = new ArrayList<>();
+        if (scoreList[0].getBenefitValue() == 0) {
+            // 가장 혜택이 큰 카드의 benefit value가 0이다 -> 혜택을 받을 수 있는 경우가 전혀 없다는 것
+            // todo : 혜택형에서 실전형으로 전환하는 로직 작성
+            // 만일 이미 실적형에서 메서드가 넘어왔다면 빈 리스트 반환
+            if (looped) {
+                return recommendList;
+            }
+            recommendByPerformance(scoreList, totalPrice, true);
+        }
+        long remainedPrice = totalPrice;
+        // 후보군 3개를 뽑는다
+        for (int i = 0; i < 3; ++i) {
+            // 카드 추천은 최대 3개까지
+            PayCardScore score = scoreList[i];
+            if (score.getBenefitValue() == 0) {
+                break; // 혜택을 받을 수 없는 카드만 남았다면 break
+            }
+            MyCard myCard = score.getMyCard();
+            CardProduct product = myCard.getCardProduct();
+            // 해당 카드로 얼마를 결제할지 결정
+            long amount = 0;
+            if (remainedPrice <= score.getMaxBenefitAmount()) {
+                // 남은 값만큼 긁어도 혜택 한도를 초과하지 않는다면, 전부 긁는다
+                amount = remainedPrice;
+                remainedPrice = 0;
+            } else {
+                // 초과하는 경우, 혜택한도만큼 긁은 후 remainedPrice 삭감
+                amount = score.getMaxBenefitAmount();
+                if (amount % 10 != 0) {
+                    // 1원단위 결제가 있다면 그 값은 반올림
+                    long remained = amount % 10;
+                    amount = amount + (10 - remained);
+                }
+                if (amount < 1000) { // 최소 결제 금액은 1000원이다
+                    amount = 1000;
+                }
+                remainedPrice -= amount;
+                if (remainedPrice < 1000) {
+                    // 결제 최소 금액 이하로 남은 금액이 낮아지는 경우, 그냥 나머지도 이 카드로 긁는다
+                    amount += remainedPrice;
+                    remainedPrice = 0;
+                }
+            }
+            recommendList.add(
+                    PaymentCardInfoVO.builder()
+                            .cardId(myCard.getUuid())
+                            .cardName(product.getName())
+                            .imageUrl(product.getImageUrl())
+                            .cardNumber(myCard.getCardNumber())
+                            .cvc(myCard.getCvc())
+                            .amount(amount)
+                            .usedAmount(myCard.getAmount())
+                            .performance(product.getPerformance())
+                            .benefitUsage(myCard.getBenefitUsage())
+                            .build()
+            );
+            if (remainedPrice <= 0) { // 분배가 끝났다면 반복문 종료
+                break;
+            }
+        }
+        // 카드 3개 선정 완료
+        // 혜택을 초과하는 결제금액이 남았다면, 남은 실적에 따라 앞 카드에서부터 분배한다
+        if (remainedPrice > 0) {
+            for (int i = 0; i < recommendList.size(); ++i) {
+                PaymentCardInfoVO vo = recommendList.get(i);
+                long remainedPerformance = vo.getPerformance() - vo.getUsedAmount(); // 넉넉하게 이번 결제 금액 제외하고 실적을 계산한다
+                long newAmount = vo.getAmount();
+                if (remainedPerformance > remainedPrice) {
+                    newAmount += remainedPrice;
+                    remainedPrice = 0;
+                } else {
+                    newAmount += remainedPerformance;
+                    remainedPrice -= remainedPerformance;
+                }
+                vo = vo.toBuilder().amount(newAmount).build();
+                if (remainedPrice == 0) {
+                    break;
+                }
+            }
+        }
+        // 이렇게 했는데도 금액이 남았다면 맨 앞 카드에 몰아준다.
+        if (remainedPrice > 0) {
+            PaymentCardInfoVO vo = recommendList.get(0);
+            long newAmount = vo.getAmount() + remainedPrice;
+            vo = vo.toBuilder().amount(newAmount).build();
+        }
+
+        // 계산 종료
+        // 이제 종합이 맞는지 확인
+        log.info("recommend completed");
+        long total = 0;
+        for (PaymentCardInfoVO vo : recommendList) {
+            log.info(vo.toString());
+            total += vo.getAmount();
+        }
+        if (total != totalPrice) {
+            throw new BusinessException(HttpStatus.BAD_REQUEST, "추천한 카드 종합과 결과가 맞지 않습니다. " + total + " / " + totalPrice);
+        }
+        return recommendList;
+    }
+
+
+    private List<PaymentCardInfoVO> recommendByPerformance(PayCardScore[] scoreList, long totalPrice, boolean looped) {
+        List<PaymentCardInfoVO> recommendList = new ArrayList<>();
+        long remainedPrice = totalPrice;
+        for (int i = 0; i < scoreList.length; ++i) {
+            // 카드 추천은 최대 3개까지
+            if (recommendList.size() >= 3) {
+                break;
+            }
+            PayCardScore score = scoreList[i];
+            if (score.getPerformanceValue() == 0) { // 실적을 이미 다 채운 카드라면 pass
+                continue;
+            }
+            MyCard myCard = score.getMyCard();
+            CardProduct product = myCard.getCardProduct();
+            // 채울 실적이 있다면 그 값을 우선하여 채운다
+            long amount = 0;
+            if (remainedPrice <= score.getMaxPerformanceAmount()) {
+                // 전부 다 긁어도 모두 실적에 반영된다면, 전부 긁는다
+                amount = remainedPrice;
+                remainedPrice = 0;
+            } else {
+                // 반영되지 않는 값이 있다면, 한도만큼 긁은 후 remainedPrice 삭감
+                amount = score.getMaxPerformanceAmount();
+                if (amount % 10 != 0) {
+                    // 1원단위 결제가 있다면 그 값은 반올림
+                    long remained = amount % 10;
+                    amount = amount + (10 - remained);
+                }
+                if (amount < 1000) { // 최소 결제 금액은 1000원이다
+                    amount = 1000;
+                }
+                remainedPrice -= amount;
+                if (remainedPrice < 1000) {
+                    // 결제 최소 금액 이하로 남은 금액이 낮아지는 경우, 나머지도 이 카드로 결제
+                    amount += remainedPrice;
+                    remainedPrice = 0;
+                }
+            }
+            recommendList.add(
+                    PaymentCardInfoVO.builder()
+                            .cardId(myCard.getUuid())
+                            .cardName(product.getName())
+                            .imageUrl(product.getImageUrl())
+                            .cardNumber(myCard.getCardNumber())
+                            .cvc(myCard.getCvc())
+                            .amount(amount)
+                            .usedAmount(myCard.getAmount())
+                            .performance(product.getPerformance())
+                            .benefitUsage(myCard.getBenefitUsage())
+                            .build()
+            );
+            if (remainedPrice <= 0) {
+                break;
+            }
+        }
+        if (recommendList.isEmpty()) {
+            // todo : 실적이 다 채워진 경우 혜택 위주 매커니즘으로 계산하도록 하기
+            // 이미 혜택으로 인해 계산한 결과가 없어서 실적으로 넘어온 거라면, 빈 배열 반환
+            if (looped) {
+                return recommendList;
+            }
+            // 그게 아니라면 혜택을 기반으로 카드 추천 시도
+            recommendByBenefit(scoreList, totalPrice, true);
+        }
+        // 이렇게 해도 결제 금액이 남았다면, 맨 앞 카드에 나머지 금액을 몰아준다
+        if (remainedPrice > 0) {
+            PaymentCardInfoVO vo = recommendList.get(0);
+            long newAmount = vo.getAmount() + remainedPrice;
+            vo = vo.toBuilder().amount(newAmount).build();
+        }
+
+        // 계산 종료
+        // 이제 종합이 맞는지 확인
+        log.info("recommend completed");
+        long total = 0;
+        for (PaymentCardInfoVO vo : recommendList) {
+            log.info(vo.toString());
+            total += vo.getAmount();
+        }
+        if (total != totalPrice) {
+            throw new BusinessException(HttpStatus.BAD_REQUEST, "추천한 카드 종합과 결과가 맞지 않습니다. " + total + " / " + totalPrice);
+        }
+        return recommendList;
     }
 }

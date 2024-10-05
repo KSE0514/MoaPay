@@ -3,6 +3,8 @@ package com.moa.moapay.domain.generalpay.service;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.moa.moapay.domain.card.entity.CardProduct;
 import com.moa.moapay.domain.card.entity.MyCard;
+import com.moa.moapay.domain.card.service.MyCardService;
+import com.moa.moapay.domain.card.service.RecommendCardService;
 import com.moa.moapay.domain.generalpay.model.vo.ExecutePaymentRequestVO;
 import com.moa.moapay.domain.card.repository.MyCardQueryRepository;
 import com.moa.moapay.domain.card.repository.MyCardRepository;
@@ -33,6 +35,7 @@ public class GeneralPayServiceImpl implements GeneralPayService{
     private final MyCardQueryRepository myCardQueryRepository;
     private final GeneralPayRedisRepository generalPayRedisRepository;
     private final CodeService codeService;
+    private final RecommendCardService recommendCardService;
 
     @Override
     public void executeGeneralPay(ExecuteGeneralPayRequestDto dto) {
@@ -72,6 +75,9 @@ public class GeneralPayServiceImpl implements GeneralPayService{
             // 카드 추천형인 경우, 추천된 결과를 기반으로 결제를 진행
             // todo : 카드 추천하는 서비스 완성하여 여기에서 사용
             log.info("recommend card...");
+            cardInfoList = recommendCardService.recommendPayCard(dto.getMemberId(), dto.getCategoryId(), dto.getRecommendType(), dto.getTotalPrice());
+            log.info("recommend done");
+            return;
         }
 
         // [3] 요청 전송
@@ -114,8 +120,11 @@ public class GeneralPayServiceImpl implements GeneralPayService{
 
         } else {
             // 카드 추천형인 경우, 추천된 결과를 기반으로 결제를 진행
-            // todo : 카드 추천하는 서비스 완성하여 여기에서 사용
+            // todo : 추천형인 경우 바코드에 더 많은 정보를 담도록 변경
             log.info("recommend card...");
+//            cardInfoList = recommendCardService.recommendPayCard(dto.getMemberId(), dto.getCategoryId(), dto.getRecommendType(), dto.getTotalPrice());
+            log.info("recommend done");
+            return;
         }
 
         // [3] 요청 전송
