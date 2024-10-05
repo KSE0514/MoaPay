@@ -94,9 +94,7 @@ public class SecurityConfig {
 		config.setAllowedOrigins(Arrays.asList(
 				"https://localhost:8765", "http://localhost:8765", "https://localhost", "http://localhost",
 				"http://localhost:5173", "https://localhost:5173", "https://moapay-7e24e.web.app",
-				"https://j11c201.p.ssafy.io", "https://j11c201.p.ssafy.io/api", "http://j11c201.p.ssafy.io",
-				"https://j11c201.p.ssafy.io/cardapi", "https://j11c201.p.ssafy.io/storeapi",
-				"http://j11c201.p.ssafy.io/cardapi", "http://j11c201.p.ssafy.io/storeapi"
+				"https://j11c201.p.ssafy.io", "https://j11c201.p.ssafy.io/api", "http://j11c201.p.ssafy.io"
 		));
 		config.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"));
 		config.setAllowedHeaders(Arrays.asList("*"));
