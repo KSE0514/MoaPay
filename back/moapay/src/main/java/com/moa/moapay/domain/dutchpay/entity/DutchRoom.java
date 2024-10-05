@@ -56,6 +56,10 @@ public class DutchRoom {
     private long curPerson;
 
     @NotNull
+    @Column(name = "manager_id")
+    private UUID managerId;
+
+    @NotNull
     @Enumerated(EnumType.STRING)
     private DutchStatus status;
 

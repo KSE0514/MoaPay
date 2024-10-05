@@ -1,31 +1,19 @@
 import { useState } from "react";
 import { CardInfo } from "./CardList.styles";
 import CardDetail from "../CardDetail/CardDetail";
-import { Card } from "../../../store/CardStore";
+import { Card, CardProduct } from "../../../store/CardStore";
 
 interface Props {
-  cardList: Card[];
-  onCardClick: (card: Card) => void;
+  cardList: CardProduct[];
+  onCardClick: (card: CardProduct) => void;
 }
 
 const CardList = ({ cardList, onCardClick }: Props) => {
-  const [rotate, setRotate] = useState<{ [key: number]: boolean }>({});
   const [translateX, setTranslateX] = useState<{ [key: number]: number }>({});
   const [startX, setStartX] = useState<number | null>(null); // 터치 시작 위치 저장
   const [showCardDetail, setShowCardDetail] = useState<boolean>(false); // 새로운 화면 표시 여부
-  const [selectedCard, setSelectedCard] = useState<Card | null>(null);
+  const [selectedCard, setSelectedCard] = useState<CardProduct | null>(null);
   const [animationExecuted, setAnimationExecuted] = useState<boolean>(false); // 애니메이션이 실행된 상태 추적
-
-  // 이미지 로드 시 회전 여부 설정
-  const handleImageLoad = (
-    event: React.SyntheticEvent<HTMLImageElement, Event>,
-    index: number
-  ) => {
-    const imgElement = event.currentTarget;
-    if (imgElement.naturalWidth < imgElement.naturalHeight) {
-      setRotate((prevRotate) => ({ ...prevRotate, [index]: true }));
-    }
-  };
 
   const handleTouchStart = (e: React.TouchEvent, index: number) => {
     setStartX(e.touches[0].clientX); // 터치 시작 X 좌표 기록
@@ -92,18 +80,11 @@ const CardList = ({ cardList, onCardClick }: Props) => {
           >
             <div>
               <img
-                src={card.cardInfo.imageUrl}
-                alt={card.cardInfo.cardName}
-                onLoad={(event) => handleImageLoad(event, index)} // 이미지가 로드되면 handleImageLoad 호출
-                style={{
-                  width: rotate[index] ? "57px" : "90px", // 회전 여부에 따라 width와 height 변경
-                  height: rotate[index] ? "90px" : "57px",
-                  transform: rotate[index] ? "rotate(-90deg)" : "none",
-                  marginLeft: rotate[index] ? "17.5px" : "0",
-                }}
+                src={`/assets/image/longWidth/신용카드이미지/${card?.cardProductImgUrl}.png`}
+                alt={card?.cardProductImgUrl}
               />
             </div>
-            <h3>{card.cardInfo.cardName}</h3> {/* 카드명 */}
+            <h3>{card.cardProductName}</h3> {/* 카드명 */}
           </div>
         </CardInfo>
       ))}
