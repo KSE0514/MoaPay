@@ -116,24 +116,29 @@ const Dutchpay = () => {
           </svg>
         </Title>
         <LinkBox>
-          {!memberSetComplete&&
+          {/* {!memberSetComplete&&
             <input value={memberNum} type="number" placeholder="인원을 설정해주세요." onChange={onChangeMember}/>
-          }
+          } */}
 
           {/* 사용자가 인원을 입력했을 경우에만 다음 화살표(->누르면 재확인 모달)가 나타나도록 함 */}
-          {memberNum&&!memberSetComplete? 
+          {/* {memberNum&&!memberSetComplete? 
             <svg onClick={onCheckComplete} xmlns="http://www.w3.org/2000/svg" x="0px" y="0px" width="24" height="24" viewBox="0 0 48 48" fill="#ffffff">
               <path d="M 24 4 C 12.972066 4 4 12.972074 4 24 C 4 35.027926 12.972066 44 24 44 C 35.027934 44 44 35.027926 44 24 C 44 12.972074 35.027934 4 24 4 z M 24 7 C 33.406615 7 41 14.593391 41 24 C 41 33.406609 33.406615 41 24 41 C 14.593385 41 7 33.406609 7 24 C 7 14.593391 14.593385 7 24 7 z M 25.484375 16.484375 A 1.50015 1.50015 0 0 0 24.439453 19.060547 L 27.878906 22.5 L 16.5 22.5 A 1.50015 1.50015 0 1 0 16.5 25.5 L 27.878906 25.5 L 24.439453 28.939453 A 1.50015 1.50015 0 1 0 26.560547 31.060547 L 32.560547 25.060547 A 1.50015 1.50015 0 0 0 32.560547 22.939453 L 26.560547 16.939453 A 1.50015 1.50015 0 0 0 25.484375 16.484375 z"></path>
             </svg>
           :
             null
-          }
-          {memberNum&&memberSetComplete&&
+          } */}
+          {
+          // memberNum&&
+          // memberSetComplete&&
           <CopyIcon>
             <svg onClick={copyToClipboard} xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="#7A7A7A" viewBox="0 0 448 512"><path d="M384 336l-192 0c-8.8 0-16-7.2-16-16l0-256c0-8.8 7.2-16 16-16l140.1 0L400 115.9 400 320c0 8.8-7.2 16-16 16zM192 384l192 0c35.3 0 64-28.7 64-64l0-204.1c0-12.7-5.1-24.9-14.1-33.9L366.1 14.1c-9-9-21.2-14.1-33.9-14.1L192 0c-35.3 0-64 28.7-64 64l0 256c0 35.3 28.7 64 64 64zM64 128c-35.3 0-64 28.7-64 64L0 448c0 35.3 28.7 64 64 64l192 0c35.3 0 64-28.7 64-64l0-32-48 0 0 32c0 8.8-7.2 16-16 16L64 464c-8.8 0-16-7.2-16-16l0-256c0-8.8 7.2-16 16-16l32 0 0-48-32 0z"/></svg>          
           </CopyIcon>}
 
-          {memberNum&&memberSetComplete&&<ShareUrl>{dutchUrl}</ShareUrl>}
+          {
+          // memberNum&&
+          // memberSetComplete&&
+          <ShareUrl>{dutchUrl}</ShareUrl>}
         </LinkBox>
       </Top>
 

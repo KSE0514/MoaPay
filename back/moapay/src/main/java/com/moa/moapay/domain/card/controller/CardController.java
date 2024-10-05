@@ -59,6 +59,7 @@ public class CardController {
         return ResponseEntity.status(resultResponse.getStatus()).body(resultResponse);
     }
 
+
     @PostMapping("/disable")
     public ResponseEntity<ResultResponse> disableCard(@Valid @RequestBody MyCardStatusRequestDto disableCardRequestDto ) {
         myCardService.disableCard(disableCardRequestDto);

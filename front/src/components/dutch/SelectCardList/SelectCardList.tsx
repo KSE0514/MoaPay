@@ -27,7 +27,7 @@ const SelectCardList: React.FC<SelectCardListProps> = ({ onSelectCard }) => {
 
   return (
     <Wrapper>
-      {MyCardList.map((card, index) => (
+      {/* {MyCardList.map((card, index) => (
         <div key={index}>
           <CardView key={index} onClick={() => onSelectCard(card)}>
             <div>
@@ -50,7 +50,7 @@ const SelectCardList: React.FC<SelectCardListProps> = ({ onSelectCard }) => {
             </div>
           </CardView>
         </div>
-      ))}
+      ))} */}
     </Wrapper>
   );
 };

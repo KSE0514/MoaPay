@@ -6,8 +6,8 @@ import { useState } from "react";
 import { useAuthStore } from "../../store/AuthStore";
 
 const BiometricsLogin = () => {
-  const baseUrl = import.meta.env.VITE_BASE_URL;
-  const baseUrl1 = `http://localhost:18040/`;
+  // const baseUrl = import.meta.env.VITE_BASE_URL;
+  const baseUrl = `http://localhost:18040/`;
   const navigate = useNavigate();
   const { name, accessToken, mode } = useAuthStore();
   const [error, setError] = useState<boolean>(false);

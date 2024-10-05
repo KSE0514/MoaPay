@@ -70,32 +70,32 @@ public class SecurityConfig {
 	@Bean
 	public SecurityWebFilterChain securityWebFilterChain(ServerHttpSecurity http) {
 		return http
-			.httpBasic(ServerHttpSecurity.HttpBasicSpec::disable)
-			.csrf(ServerHttpSecurity.CsrfSpec::disable)
-			.cors(corsSpec -> corsSpec.configurationSource(corsConfigurationSource()))  // 수정된 부분
-			.securityContextRepository(NoOpServerSecurityContextRepository.getInstance())
-			.formLogin(ServerHttpSecurity.FormLoginSpec::disable)
-			.logout(ServerHttpSecurity.LogoutSpec::disable)
-			.authorizeExchange(exchanges -> exchanges
-				.pathMatchers("/moapay/member/login", "/moapay/member/join",
-					"/moapay/member/sendSMS", "/moapay/member/verification", "/moapay/member/isMember")
-				.permitAll()
-				.anyExchange().authenticated()
-			)
-			.addFilterBefore(authenticationWebFilter(), SecurityWebFiltersOrder.AUTHENTICATION)
-			.build();
+				.httpBasic(ServerHttpSecurity.HttpBasicSpec::disable)
+				.csrf(ServerHttpSecurity.CsrfSpec::disable)
+				.cors(corsSpec -> corsSpec.configurationSource(corsConfigurationSource()))  // 수정된 부분
+				.securityContextRepository(NoOpServerSecurityContextRepository.getInstance())
+				.formLogin(ServerHttpSecurity.FormLoginSpec::disable)
+				.logout(ServerHttpSecurity.LogoutSpec::disable)
+				.authorizeExchange(exchanges -> exchanges
+						.pathMatchers("/moapay/member/login", "/moapay/member/join",
+								"/moapay/member/sendSMS", "/moapay/member/verification", "/moapay/member/isMember")
+						.permitAll()
+						.anyExchange().authenticated()
+				)
+				.addFilterBefore(authenticationWebFilter(), SecurityWebFiltersOrder.AUTHENTICATION)
+				.build();
 	}
 
 	// CorsConfigurationSource 메서드 (SecurityConfig 클래스 내부에 추가)
 	@Bean
 	public org.springframework.web.cors.reactive.CorsConfigurationSource corsConfigurationSource() {
 		org.springframework.web.cors.reactive.UrlBasedCorsConfigurationSource source =
-			new org.springframework.web.cors.reactive.UrlBasedCorsConfigurationSource();
+				new org.springframework.web.cors.reactive.UrlBasedCorsConfigurationSource();
 		CorsConfiguration config = new CorsConfiguration();
 		config.setAllowedOrigins(Arrays.asList(
-			"https://localhost:8765", "http://localhost:8765", "https://localhost", "http://localhost",
-			"http://localhost:5173", "https://localhost:5173", "https://moapay-7e24e.web.app",
-			"https://j11c201.p.ssafy.io", "https://j11c201.p.ssafy.io/api", "http://j11c201.p.ssafy.io"
+				"https://localhost:8765", "http://localhost:8765", "https://localhost", "http://localhost",
+				"http://localhost:5173", "https://localhost:5173", "https://moapay-7e24e.web.app",
+				"https://j11c201.p.ssafy.io", "https://j11c201.p.ssafy.io/api", "http://j11c201.p.ssafy.io"
 		));
 		config.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"));
 		config.setAllowedHeaders(Arrays.asList("*"));
