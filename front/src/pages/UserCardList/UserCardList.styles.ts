@@ -5,32 +5,32 @@ export const Wrapper = styled.div`
   width: 100vw;
   overflow: auto;
   position: relative;
-`
+`;
 
 export const Top = styled.div`
   text-align: center;
   font-size: 29px;
   font-weight: 700;
   padding: 40px 0;
-`
+`;
 
 export const Main = styled.div`
   & > div {
     position: relative;
   }
-`
+`;
 
 export const EditMode = styled.div`
   display: flex;
   justify-content: space-between;
   padding: 0px 20px 10px;
 
-  & > div:nth-of-type(2){
-   color: #8748F3;
-  text-decoration-line: underline;
-  text-decoration-color: #8748F3;
+  & > div:nth-of-type(2) {
+    color: #8748f3;
+    text-decoration-line: underline;
+    text-decoration-color: #8748f3;
   }
-`
+`;
 
 export const Card = styled.div`
   display: flex;
@@ -62,7 +62,7 @@ export const Card = styled.div`
     z-index: 1; // svg가 다른 요소에 가려지지 않게 z-index를 추가
   }
 
-  & > input[type='radio'] {
+  & > input[type="radio"] {
     -webkit-appearance: none;
     -moz-appearance: none;
     appearance: none;
@@ -74,16 +74,15 @@ export const Card = styled.div`
     cursor: pointer;
   }
 
-  & > input[type='radio']:checked {
+  & > input[type="radio"]:checked {
     background-color: #547cff;
     border: 2px solid white;
     box-shadow: 0 0 0 2px #c7c7c7;
   }
 `;
 
-
 export const CardBackground = styled.div`
-  background-color: #D6D9FF;
+  background-color: #d6d9ff;
   position: absolute;
   width: 100%;
   height: 100%;
@@ -93,24 +92,25 @@ export const CardBackground = styled.div`
   text-align: right;
   color: white;
   padding: 45px 30px;
-
-`
+`;
 
 export const Btn = styled.button`
   position: absolute;
   bottom: 50px;
   z-index: 1000;
   left: 50%; /* 부모 요소의 너비 기준으로 50% 왼쪽으로 이동 */
-  transform: translateX(-50%); /* 자기 자신의 너비의 절반만큼 왼쪽으로 이동해서 정확히 중앙 배치 */
+  transform: translateX(
+    -50%
+  ); /* 자기 자신의 너비의 절반만큼 왼쪽으로 이동해서 정확히 중앙 배치 */
   align-items: center;
   color: white;
-  background-color: #547CFF;
+  background-color: #547cff;
   width: 70%;
   height: 60px;
   font-size: 22px;
   border: 2px solid black;
   border-radius: 10px;
-`
+`;
 
 // export const Bottom = styled.div`
 //   position: absolute;

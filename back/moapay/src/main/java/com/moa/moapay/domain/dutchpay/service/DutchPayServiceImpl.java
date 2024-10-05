@@ -6,7 +6,10 @@ import com.moa.moapay.domain.dutchpay.entity.DutchStatus;
 import com.moa.moapay.domain.dutchpay.model.dto.*;
 import com.moa.moapay.domain.dutchpay.repository.DutchPayRepository;
 import com.moa.moapay.domain.dutchpay.repository.DutchRoomRepository;
+import com.moa.moapay.domain.generalpay.model.dto.ExecuteGeneralPayRequestDto;
+import com.moa.moapay.domain.generalpay.service.GeneralPayService;
 import com.moa.moapay.global.exception.BusinessException;
+import com.moa.moapay.global.kafkaVo.DutchPayCompliteVo;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -30,6 +33,7 @@ public class DutchPayServiceImpl implements DutchPayService {
     private final DutchRoomRepository dutchRoomRepository;
     private final SimpMessagingTemplate messagingTemplate;
     private final HttpMessageConverters messageConverters;
+    private final GeneralPayService generalPayService;
 
     @Override
     @Transactional
@@ -45,6 +49,7 @@ public class DutchPayServiceImpl implements DutchPayService {
                 .categoryId(dutchPayStartRequestDto.getCategoryId())
                 .orderId(dutchPayStartRequestDto.getOrderId())
                 .maxPerson(dutchPayStartRequestDto.getMaxMember())
+                .managerId(dutchPayStartRequestDto.getMemberId())
                 .status(DutchStatus.READY)
                 .build();
 
@@ -58,9 +63,12 @@ public class DutchPayServiceImpl implements DutchPayService {
     public List<DutchPayDto> joinDutchRoom(UUID roomId, DutchPayRoomJoinDto dutchPayRoomJoinDto) {
         // 방이 있는지 확인
         DutchRoom existingRoom = validateRoomExists(roomId);
-        
+
         long max = existingRoom.getMaxPerson();
         log.info("max = {}", max);
+
+        // 방장 여부 확인
+        boolean isManager = existingRoom.getManagerId().equals(dutchPayRoomJoinDto.getMemberId());
 
         List<DutchPay> dutchPays = dutchPayRepository.findByRoomUuid(roomId);
         
@@ -85,6 +93,7 @@ public class DutchPayServiceImpl implements DutchPayService {
                 .payStatus(DutchStatus.READY)
                 .roomEntity(existingRoom)
                 .uuid(UUID.randomUUID())
+                .isManager(isManager)
                 .build();
 
         // 새로운 더치페이 정보 저장
@@ -204,6 +213,54 @@ public class DutchPayServiceImpl implements DutchPayService {
                 .build();
 
         return dutchRoomInfo;
+    }
+
+    @Override
+    @Transactional
+    public void dutchpayPayment(DutchPayPaymentRequsetDto dutchPayPaymentRequsetDto) {
+
+        DutchPay dutchPay = dutchPayRepository.findByUuid(dutchPayPaymentRequsetDto.getMemberId());
+
+        if(dutchPay.getPayStatus().equals(DutchStatus.READY)) {
+            ExecuteGeneralPayRequestDto executeGeneralPayRequestDto = ExecuteGeneralPayRequestDto.builder()
+                    .requestId(dutchPayPaymentRequsetDto.getRequestId())
+                    .cvc(dutchPayPaymentRequsetDto.getCvc())
+                    .cardNumber(dutchPayPaymentRequsetDto.getCardNumber())
+                    .cardSelectionType(dutchPayPaymentRequsetDto.getCardSelectionType())
+                    .requestId(dutchPayPaymentRequsetDto.getRequestId())
+                    .totalPrice(dutchPayPaymentRequsetDto.getTotalPrice())
+                    .orderId(dutchPayPaymentRequsetDto.getOrderId())
+                    .build();
+
+            generalPayService.executeGeneralPay(executeGeneralPayRequestDto);
+            dutchPayRepository.updateStatus(dutchPayPaymentRequsetDto.getMemberId(),dutchPayPaymentRequsetDto.getDutchRoomId(),DutchStatus.PROGRESS);
+        } else {
+            throw new BusinessException(HttpStatus.ALREADY_REPORTED, "이미 결제요청이 진행중입니다.");
+        }
+
+    }
+
+
+    @Override
+    @Transactional
+    public void dutchpayComplite() {
+
+//        UUID roomUuid = dutchPayCompliteVo.getRoomId();
+//        UUID memberUuid = dutchPayCompliteVo.getMemberId();
+//        DutchStatus dutchStatus = DutchStatus.READY;
+//
+//        if(dutchStatus.equals(DutchStatus.DONE)) {
+//            // 결제 완료 트렌젝션
+//            dutchPayRepository.updateStatus(memberUuid, roomUuid, DutchStatus.DONE); // 여기서 확인 해야 할듯
+//            List<DutchPay> dutchPayList = dutchPayRepository.findByRoomUuid(roomUuid);
+//            for (DutchPay dutchPay : dutchPayList) {
+//
+//            }
+//        } else if(dutchStatus.equals(DutchStatus.CANCEL)) {
+//            // 보상 트랜잭션
+//
+//        }
+
     }
 
     @Override

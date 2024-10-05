@@ -6,6 +6,8 @@ import { useCardStore } from "../../store/CardStore";
 import testcard1 from "./../../assets/image/cards/신용카드이미지/14_JADE_Classic.png";
 import testcard2 from "./../../assets/image/cards/신용카드이미지/12_올바른_FLEX_카드.png";
 import testcard3 from "./../../assets/image/cards/신용카드이미지/11_삼성_iD_SIMPLE_카드.png";
+// import { MyCardList as CardList } from "../../constants/card";
+
 import {
   Wrapper,
   Top,

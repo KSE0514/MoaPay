@@ -1,5 +1,6 @@
 package com.moa.gateway.global.config;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 
@@ -82,20 +83,21 @@ public class SecurityConfig {
 			).addFilterBefore(authenticationWebFilter(), SecurityWebFiltersOrder.AUTHENTICATION).build();
 	}
 
+	// CorsConfigurationSource 메서드 (SecurityConfig 클래스 내부에 추가)
 	@Bean
-	public CorsConfigurationSource corsConfigurationSource() {
+	public org.springframework.web.cors.reactive.CorsConfigurationSource corsConfigurationSource() {
+		org.springframework.web.cors.reactive.UrlBasedCorsConfigurationSource source =
+				new org.springframework.web.cors.reactive.UrlBasedCorsConfigurationSource();
 		CorsConfiguration config = new CorsConfiguration();
-
-		config.setAllowCredentials(true);
-		config.setAllowedOrigins(
-			List.of("https://localhost:8765", "http://localhost:8765", "https://localhost", "http://localhost",
+		config.setAllowedOrigins(Arrays.asList(
+				"https://localhost:8765", "http://localhost:8765", "https://localhost", "http://localhost",
 				"http://localhost:5173", "https://localhost:5173", "https://moapay-7e24e.web.app",
-				"https://j11c201.p.ssafy.io", "https://j11c201.p.ssafy.io/api", "http://j11c201.p.ssafy.io"));
-		config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"));
-		config.setAllowedHeaders(List.of("*"));
-		config.setExposedHeaders(List.of("*"));
-
-		UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+				"https://j11c201.p.ssafy.io", "https://j11c201.p.ssafy.io/api", "http://j11c201.p.ssafy.io"
+		));
+		config.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"));
+		config.setAllowedHeaders(Arrays.asList("*"));
+		config.setAllowCredentials(true);
+		config.setMaxAge(3600L);
 		source.registerCorsConfiguration("/**", config);
 		return source;
 	}
