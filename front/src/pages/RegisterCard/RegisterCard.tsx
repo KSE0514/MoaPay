@@ -16,14 +16,14 @@ import { useAuthStore } from "../../store/AuthStore";
 import { useCardStore } from "../../store/CardStore";
 
 const RegisterCard: React.FC = () => {
-  const baseUrl = import.meta.env.VITE_BASE_URL;
-  const baseUrl1 = `http://localhost:18020/`;
+  // const baseUrl = import.meta.env.VITE_BASE_URL;
+  const baseUrl = `http://localhost:18020/`;
   const { id } = useAuthStore();
   const { addCard } = useCardStore();
   const [cardNumber, setCardNumber] = useState(["", "", "", ""]);
   const [expirationMonth, setExpirationMonth] = useState("");
   const [expirationYear, setExpirationYear] = useState("");
-  const [ccv, setCcv] = useState("");
+  const [cvc, setCvc] = useState("");
   const [isFlipped, setIsFlipped] = useState(false); // 카드 뒤집기 상태
   const [showModal, setShowModal] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
@@ -67,11 +67,12 @@ const RegisterCard: React.FC = () => {
     setError(false); // 에러 초기화
     try {
       const response = await axios.post(
-        `${baseUrl}moapay/core/card/registration`,
+        // `${baseUrl}moapay/core/card/registration`,
+        `api/moapay/core/card/registration`,
         {
           memberUuid: id,
           cardNumber: cardNumber.join(""), // 카드 번호를 배열이 아닌 문자열로 전송
-          cvc: ccv,
+          cvc: cvc,
         }
       );
       // setIsLoading(false);
@@ -189,8 +190,8 @@ const RegisterCard: React.FC = () => {
                 </svg>
               </div>
               <div className="ccv">
-                <label>CCV</label>
-                <div>{ccv}</div>
+                <label>CVC</label>
+                <div>{cvc}</div>
               </div>
             </CardBack>
           </Flip>
@@ -259,14 +260,14 @@ const RegisterCard: React.FC = () => {
             </div>
             <div>
               <label className="label" htmlFor="card-ccv">
-                CCV
+                CVC
               </label>
               <Input
                 type="text"
                 id="card-ccv"
                 maxLength={3}
-                value={ccv}
-                onChange={(e) => setCcv(e.target.value)}
+                value={cvc}
+                onChange={(e) => setCvc(e.target.value)}
               />
             </div>
           </div>

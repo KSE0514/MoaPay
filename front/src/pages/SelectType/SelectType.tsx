@@ -6,11 +6,12 @@ import { PATH } from "../../constants/path";
 import { useAuthStore } from "../../store/AuthStore";
 
 const SelectType = () => {
-  const baseUrl = import.meta.env.VITE_BASE_URL;
-  const baseUrl1 = `http://localhost:18040/`;
+  // const baseUrl = import.meta.env.VITE_BASE_URL;
+  const baseUrl = `http://localhost:18040/`;
   const navigate = useNavigate();
   const [selectType, setSelectType] = useState<string | null>(null);
-  const { id, accessToken, isLoggedIn, Login, mode } = useAuthStore();
+  const { id, accessToken, isLoggedIn, Login, mode, setPaymentType } =
+    useAuthStore();
   // const { isLoggedIn, Login } = useAuthStore((state) => ({
   //   isLoggedIn: state.isLoggedIn,
   //   Login: state.Login,
@@ -23,7 +24,8 @@ const SelectType = () => {
     //요청보내기
     try {
       const response = await axios.post(
-        `${baseUrl}moapay/member/selectType`,
+        // `${baseUrl}moapay/member/selectType`,
+        `api/moapay/member/selectType`,
         { type: selectType, uuid: id },
         {
           withCredentials: true,
@@ -33,6 +35,7 @@ const SelectType = () => {
         }
       );
       if (response?.status == 200) {
+        setPaymentType(selectType !== null ? selectType : "");
         if (mode === "Join") {
           navigate(PATH.BRING_CARD);
         } else {

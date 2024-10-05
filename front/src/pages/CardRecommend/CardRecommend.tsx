@@ -17,22 +17,34 @@ import {
   faX,
   faCreditCard,
 } from "@fortawesome/free-solid-svg-icons";
-import { Card } from "../../store/CardStore";
+import { Card, CardProduct, useCardStore } from "../../store/CardStore";
+import axios from "axios";
+import { useAuthStore } from "../../store/AuthStore";
 
 /**
- * 추천받은 카드를 가져올때 정보를 다 가져와서 프론트쪽에서 가지고 있기
+ * 전부  CardProduct 데이터 형식을 가진 list로 사용
+ * 1. 사용자 정보를 userCardProductList에 넣기 - 완료
+ * 2. 추천 카드를 recommendCardList - 완료
+ * 3. 클릭 시 비교 comparisonCard에 넣기
  */
 const CardRecommend = () => {
   const [isLoading, setIsLoading] = useState<boolean>(false);
-  // const [RecommendedCardList, setRecommendedCardList] = useState<card[]>([]);
-  // const [userCardInfoList, setUserCardInfoList] = useState<card[]>([]);
-  const [comparisonCard, setComparisonCard] = useState<(Card | null)[]>([
+  const { id, accessToken } = useAuthStore();
+  const { cardList, recommendCardList, setRecommendCardList } = useCardStore();
+  const [userCardProductList, setUserCardProductList] = useState<CardProduct[]>(
+    cardList.map((card) => card.cardProduct)
+  );
+
+  //비교공간
+  const [comparisonCard, setComparisonCard] = useState<(CardProduct | null)[]>([
     null,
     null,
   ]);
-  // 각 카드별로 이미지 회전 여부를 저장하는 상태
+  // 비교 모달 열고 닫기
   const [showComparisonView, setShowComparisonView] = useState<boolean>(false);
+  //내카드 파트로 이동여부
   const [showUserCard, setShowUserCard] = useState<boolean>(false);
+  //네브 위치
   const [navPosition, setNavPosition] = useState<string>(
     `calc(calc(100% / 2) * 0)`
   );
@@ -41,7 +53,8 @@ const CardRecommend = () => {
     setShowComparisonView((current) => !current);
   };
 
-  const onCardClick = (card: Card) => {
+  const onCardClick = (card: CardProduct) => {
+    console.log(card);
     setComparisonCard((prev) => {
       if (prev.length >= 2 && prev[0] && prev[1]) return prev; // 이미 2개의 카드가 선택되었으면 더 추가하지 않음
       //0이 비어 있을 때
@@ -55,22 +68,6 @@ const CardRecommend = () => {
     });
   };
 
-  const [rotate, setRotate] = useState<{ [key: number]: boolean }>({}); // 이미지 회전 여부 저장
-
-  // 이미지 로드 후 크기를 비교하여 회전 여부 결정
-  const handleImageLoad = (
-    event: React.SyntheticEvent<HTMLImageElement, Event>,
-    index: number
-  ) => {
-    const imgElement = event.currentTarget;
-    // 이미지의 naturalWidth와 naturalHeight를 비교하여 회전 여부 설정
-    if (imgElement.naturalWidth < imgElement.naturalHeight) {
-      setRotate((prevRotate) => ({ ...prevRotate, [index]: true }));
-    } else {
-      setRotate((prevRotate) => ({ ...prevRotate, [index]: false }));
-    }
-  };
-
   const deleteComparisonCard = (index: number) => {
     setComparisonCard((prev) => {
       if (index == 0) return [null, prev[1]];
@@ -78,12 +75,32 @@ const CardRecommend = () => {
     });
   };
 
+  const getRecommendCards = async () => {
+    try {
+      const response = await axios.post(
+        `api/moapay/core/card/recommend`,
+        // `http://localhost:8765/moapay/core/card/recommend`,
+        {},
+        {
+          withCredentials: true,
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+            "Content-Type": "application/json",
+          },
+        }
+      );
+      if (response.status === 200) {
+        setRecommendCardList(response.data.data);
+      }
+    } catch (e) {
+      console.log(e);
+    }
+  };
   useEffect(() => {
-    // 추천카드 받아오기 10장 - RecommendedCardList
-    // 내 카드에 대한 카드 정보들 가져오기 - userCardInfoList
-    setTimeout(() => {
-      setIsLoading(false);
-    }, 2000);
+    setIsLoading(true);
+    // getRecommendCards();
+    console.log(userCardProductList);
+    setIsLoading(false);
   }, []);
 
   return (
@@ -92,11 +109,6 @@ const CardRecommend = () => {
         <Loading>Loading</Loading>
       ) : (
         <>
-          <Layout>
-            <div></div>
-            <div></div>
-            <div></div>
-          </Layout>
           <div className="view">
             <div className="top">
               <CardView>
@@ -104,27 +116,23 @@ const CardRecommend = () => {
                   {comparisonCard[0] ? (
                     <>
                       <img
-                        src={comparisonCard[0].cardInfo.imageUrl}
-                        alt={comparisonCard[0].cardInfo.cardName}
-                        onLoad={(event) => handleImageLoad(event, 0)} // 이미지 로드 시 회전 여부 판단
-                        style={{
-                          width: rotate[0] ? "84px" : "132px", // 회전 여부에 따라 width와 height 변경
-                          height: rotate[0] ? "132px" : "84px",
-                          transform: rotate[0] ? "rotate(-90deg)" : "none",
-                          top: rotate[0] ? "-23px" : "",
-                          left: rotate[0] ? "22px" : "",
-                        }}
+                        src={`/assets/image/longWidth/신용카드이미지/${comparisonCard[0].cardProductImgUrl}.png`}
+                        alt={comparisonCard[0].cardProductName}
                       />
                       <div
                         className="delete-btn"
                         onClick={() => {
                           deleteComparisonCard(0);
-                        }}>
+                        }}
+                      >
                         <FontAwesomeIcon icon={faX} />
                       </div>
                     </>
                   ) : (
-                    <img src="\assets\image\recommendedcard.png" />
+                    <img
+                      src="\assets\image\recommendedcard.png"
+                      style={{ height: "100%" }}
+                    />
                   )}
                 </div>
                 <div>vs</div>
@@ -132,34 +140,31 @@ const CardRecommend = () => {
                   {comparisonCard[1] ? (
                     <>
                       <img
-                        src={comparisonCard[1].cardInfo.imageUrl}
-                        alt={comparisonCard[1].cardInfo.cardName}
-                        onLoad={(event) => handleImageLoad(event, 1)} // 두 번째 카드도 동일하게 적용
-                        style={{
-                          width: rotate[1] ? "84px" : "132px", // 회전 여부에 따라 width와 height 변경
-                          height: rotate[1] ? "132px" : "84px",
-                          transform: rotate[1] ? "rotate(-90deg)" : "none",
-                          top: rotate[1] ? "-23px" : "",
-                          left: rotate[1] ? "22px" : "",
-                        }}
+                        src={`/assets/image/longWidth/신용카드이미지/${comparisonCard[1].cardProductImgUrl}.png`}
+                        alt={comparisonCard[1].cardProductName}
                       />
                       <div
                         className="delete-btn"
                         onClick={() => {
                           deleteComparisonCard(1);
-                        }}>
+                        }}
+                      >
                         <FontAwesomeIcon icon={faX} />
                       </div>
                     </>
                   ) : (
-                    <img src="\assets\image\recommendedcard.png" />
+                    <img
+                      style={{ height: "100%" }}
+                      src="\assets\image\recommendedcard.png"
+                    />
                   )}
                 </div>
               </CardView>
               <ComparisonView>
                 <div
                   onClick={changeShowComparisonViewState}
-                  className="comparison-view-header">
+                  className="comparison-view-header"
+                >
                   <p>
                     {showComparisonView ? "비교 결과 닫기" : "비교 결과 펼치기"}
                   </p>
@@ -177,7 +182,7 @@ const CardRecommend = () => {
                         <div className="row">
                           <p>
                             {comparisonCard[0]
-                              ? comparisonCard[0].cardInfo.cardType == "cred"
+                              ? comparisonCard[0].cardProductType == "cred"
                                 ? "신용카드"
                                 : "체크카드"
                               : ""}
@@ -185,7 +190,7 @@ const CardRecommend = () => {
                           <div className="line"></div>
                           <p>
                             {comparisonCard[1]
-                              ? comparisonCard[1].cardInfo.cardType == "cred"
+                              ? comparisonCard[1].cardProductType == "cred"
                                 ? "신용카드"
                                 : "체크카드"
                               : ""}
@@ -195,16 +200,16 @@ const CardRecommend = () => {
                         <div className="row">
                           <p>
                             {comparisonCard[0]
-                              ? comparisonCard[0].cardInfo.annualFee !== 0
-                                ? `${comparisonCard[0].cardInfo.annualFee}원`
+                              ? comparisonCard[0].cardProductAnnualFee !== 0
+                                ? `${comparisonCard[0].cardProductAnnualFee}원`
                                 : "연회비 없음"
                               : ""}
                           </p>
                           <div className="line"></div>
                           <p>
                             {comparisonCard[1]
-                              ? comparisonCard[1].cardInfo.annualFee !== 0
-                                ? `${comparisonCard[1].cardInfo.annualFee}원`
+                              ? comparisonCard[1].cardProductAnnualFee !== 0
+                                ? `${comparisonCard[1].cardProductAnnualFee}원`
                                 : "연회비 없음"
                               : ""}
                           </p>
@@ -213,16 +218,16 @@ const CardRecommend = () => {
                         <div className="row">
                           <p>
                             {comparisonCard[0]
-                              ? comparisonCard[0].cardInfo.performance !== 0
-                                ? `${comparisonCard[0].cardInfo.performance}원`
+                              ? comparisonCard[0].cardProductPerformance !== 0
+                                ? `${comparisonCard[0].cardProductPerformance}원`
                                 : "전월실적 없음"
                               : ""}
                           </p>
                           <div className="line"></div>
                           <p>
                             {comparisonCard[1]
-                              ? comparisonCard[1].cardInfo.performance !== 0
-                                ? `${comparisonCard[1].cardInfo.performance}원`
+                              ? comparisonCard[1].cardProductPerformance !== 0
+                                ? `${comparisonCard[1].cardProductPerformance}원`
                                 : "전월실적 없음"
                               : ""}
                           </p>
@@ -231,12 +236,13 @@ const CardRecommend = () => {
                         <div className="row benefit">
                           <p className="benefit-row">
                             {comparisonCard[0]
-                              ? comparisonCard[0].cardInfo.benefits.map(
+                              ? comparisonCard[0].benefits?.map(
                                   (benefit, index) => (
                                     <>
                                       <p
                                         className="benefit-category"
-                                        key={index}>
+                                        key={index}
+                                      >
                                         {benefit.categoryName}
                                       </p>
                                       <p className="benefit-explanation">
@@ -251,15 +257,17 @@ const CardRecommend = () => {
                             style={{
                               width: "1px",
                               backgroundColor: "#a097ff",
-                            }}></div>
+                            }}
+                          ></div>
                           <p className="benefit-row">
                             {comparisonCard[1]
-                              ? comparisonCard[1].cardInfo.benefits.map(
+                              ? comparisonCard[1].benefits?.map(
                                   (benefit, index) => (
                                     <>
                                       <p
                                         className="benefit-category"
-                                        key={index}>
+                                        key={index}
+                                      >
                                         {benefit.categoryName}
                                       </p>
                                       <p className="benefit-explanation">
@@ -285,14 +293,16 @@ const CardRecommend = () => {
                   onClick={() => {
                     setNavPosition(`calc(calc(100% / 2) *0)`);
                     setShowUserCard(false);
-                  }}>
+                  }}
+                >
                   추천카드
                 </p>
                 <p
                   onClick={() => {
                     setNavPosition(`calc(calc(100% / 2) * 1)`);
                     setShowUserCard(true);
-                  }}>
+                  }}
+                >
                   내카드
                 </p>
                 <div style={{ left: `${navPosition}` }}></div>
@@ -302,7 +312,9 @@ const CardRecommend = () => {
               </div>
               <CardList
                 onCardClick={onCardClick}
-                cardList={showUserCard ? MyCardList : RecommendedCardList}
+                cardList={
+                  showUserCard ? userCardProductList : recommendCardList
+                }
               />
             </div>
           </div>
