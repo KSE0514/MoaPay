@@ -16,12 +16,16 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 @EnableRedisRepositories
 public class RedisConfig {
-	private final RedisProperties redisProperties;
+	@Value("${spring.redis.host}")
+	private String host;
+
+	@Value("${spring.redis.port}")
+	private int port;
 
 	// lettuce
 	@Bean
 	public RedisConnectionFactory redisConnectionFactory() {
-		return new LettuceConnectionFactory(redisProperties.getHost(), redisProperties.getPort());
+		return new LettuceConnectionFactory(host, port);
 	}
 
 	@Bean
