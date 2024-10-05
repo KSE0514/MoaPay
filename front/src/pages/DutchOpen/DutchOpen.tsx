@@ -74,6 +74,7 @@ const DutchOpen = () => {
       // message.body를 DutchRoomMessage 타입으로 변환
       const parsedMessage: DutchRoomMessage = response.data;
       setJoinUrl(parsedMessage.data); // 방 생성 후 반환된 URL 저장
+      // setJoinUrl(`http://localhost:5173/dutchpay/invite/${parsedMessage.data}`) // 더치페이 초대 url 저장.....?
       setRoomId(parsedMessage.data); // 생성된 방의 roomId 저장
 
       nav(PATH.DUTCHPAY) // 인원 설정하여 방 생성 후 다음 페이지로 이동
@@ -257,7 +258,7 @@ const DutchOpen = () => {
           {!memberSetComplete&&
             <input value={maxMember} type="number" placeholder="인원을 설정해주세요." onChange={(e) => {
               const value = e.target.value;
-              setMemberCnt(value === "" ? undefined : Number(value));}}/>
+              setMemberCnt(value === "" ? "" : Number(value));}}/>
           }
 
           {/* 사용자가 인원을 입력했을 경우에만 다음 화살표(->누르면 재확인 모달)가 나타나도록 함 */}
