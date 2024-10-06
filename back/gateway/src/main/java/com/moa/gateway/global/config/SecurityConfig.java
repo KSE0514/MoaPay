@@ -71,7 +71,7 @@ public class SecurityConfig {
 	public SecurityWebFilterChain securityWebFilterChain(ServerHttpSecurity http) {
 		return http.httpBasic(httpBasic -> httpBasic.disable()) // HTTP Basic 인증 비활성화
 			.csrf(csrf -> csrf.disable()) // CSRF 비활성화
-			.cors(Customizer.withDefaults()) // CORS 설정
+			.cors(cors -> cors.configurationSource(corsConfigurationSource())) // CORS 설정
 			.securityContextRepository(NoOpServerSecurityContextRepository.getInstance()) //session stateless 설정
 			.formLogin(formLogin -> formLogin.disable()) // 폼 로그인 비활성화
 			.logout(logout -> logout.disable()) // 로그아웃 비활성화
