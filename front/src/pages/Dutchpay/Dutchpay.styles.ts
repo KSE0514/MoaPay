@@ -28,6 +28,12 @@ export const CopyIcon = styled.div`
   right: 22px;
 `
 
+export const RequestUrl = styled.div`
+  color: white;
+  // text-align: center;
+  margin: 0 auto;
+`
+
 export const ShareUrl = styled.div`
   text-align: center;
   margin: 0 auto;

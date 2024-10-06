@@ -46,6 +46,7 @@ const DutchOpen = () => {
   // 참여자 수 입력 후 완료 버튼을 눌렀을 경우=>설정 완료로 변경
   const onCheckComplete = () =>{
     setIsCompleteSettingCheck(true)
+    nav(PATH.DUTCHPAY) // 더치페이 화면으로 이동
   }
 
   const goHome = () => {

@@ -91,6 +91,13 @@ const DutchInvite = () => {
       setMemberId(testUser.memberId)
     }, [])
 
+
+  // const getRoomInfo = async () => {
+  //   try{
+  //     const response = 
+  //   }
+  // }
+
   const onClickAccept = () =>{
     connectWebSocket() // WebSocket 활성화
     joinRoom() // 더치페이 방 입장

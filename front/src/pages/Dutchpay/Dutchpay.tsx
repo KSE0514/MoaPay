@@ -12,12 +12,19 @@ import {
   Title,
   LinkBox,
   CopyIcon,
+  RequestUrl,
   ShareUrl,
   Main,
   BackImg,
 } from './Dutchpay.styles'
 import { useEffect, useState } from "react";
 import { PATH } from "../../constants/path";
+
+interface Participant {
+  uuid: string;
+  memberId: string;
+  memberName: string;
+}
 
 const Dutchpay = () => {
   const nav = useNavigate()
@@ -32,12 +39,14 @@ const Dutchpay = () => {
   // console.log("Received joinUrl:", joinUrl)
 
   const [isOpen, setIsOpen] = useState<boolean>(false); // 더치페이 나가기 모달 상태 관리
-  const [isCompleteSettingCheck, setIsCompleteSettingCheck] = useState<boolean>(false); // 더치페이 인원 설정 완료 확인용 모달 띄우기 판단용
+  const [isCompleteSettingCheck, setIsCompleteSettingCheck] = useState<boolean>(true); // 더치페이 인원 설정 완료 확인용 모달 띄우기 판단용
   const [memberNum, setMemberNum] = useState('') // 참여자 수 입력 받는 변수
   const [dutchUrl, setDutchUrl] = useState<string>('') // [[나중에 ''로 바꾸기 !!!!! ]더치페이 초대 url
   const [memberSetComplete, setMemberSetComplete] = useState<boolean>(false) // 참여자수 설정 완료 여부 판단용
   const [stop, setStop] = useState<boolean>(false) // 더치페이 중단하기 버튼을 눌렀는지의 여부를 판단
 
+  const [webSocketJoinStep, setWebSocketJoinStep] = useState<number>(0); // 수작업 웹소켓 연결 및 방 참여를 위한 변수...
+  const [dutchParticipants, setDutchParticipants] = useState<Participant[]>([]); // join 및 leave 후 남아있는 참여자 정보를 받을 변수
 
   // console.log(joinUrl)
   // useEffect (() => {
@@ -159,6 +168,17 @@ const Dutchpay = () => {
     });
 
     console.log("Joining room:", roomId);
+
+    // 서버의 응답을 받을 구독 설정
+    stompClient.subscribe(`/sub/dutch-room/${roomId}`, (message) => {
+      const response: Participant[] = JSON.parse(message.body); // 서버에서 받은 응답 메시지를 JSON으로 파싱
+      console.log("Participants received:", response);
+
+      // 서버 응답을 dutchParticipants 상태에 저장
+      setDutchParticipants(response);
+      console.log('join 응답 확인용', response[0].memberId)
+    });
+
   };
 
   const leaveRoom = () => {
@@ -277,19 +297,34 @@ useEffect(() => {
     setMemberCnt(Number(storedMemberNum))
   }
 
-  setTimeout(() => {
-    createRoom() // 방 생성
+  setWebSocketJoinStep(0)
+  // createRoom() // 방 생성
+
+  // setTimeout(() => {
+  //   createRoom() // 방 생성
     
-  }, 5000);
+  // }, 5000);
+
+
   // setJoinUrl(`http://localhost:5173/dutchpay/invite/${roomId}`)
   // connectWebSocket()
   // joinRoom()
   // check()
 }, [])
 
+  const onClickRequestUrl = () => {
+    connectWebSocket()
+    setWebSocketJoinStep(2)
+  }
+
 
   const goHome = () => {
     nav(PATH.HOME)
+  }
+
+  // 모달 취소 버튼...인원 설정 페이지로 돌아가기
+  const goBack = () => {
+    nav(PATH.DUTCHOPEN)
   }
 
   // 더치페이 나가기 버튼 클릭 시 모달 띄우기
@@ -298,12 +333,18 @@ useEffect(() => {
     setIsOpen(true);
   };
 
+  const onClickAccept = () => {
+    createRoom()
+    setIsCompleteSettingCheck(false);
+    setWebSocketJoinStep(1)
+  }
+
   const closeModal = () => {
     setIsOpen(false);
   };
-  // const closeSettingModal = () => {
-  //   setIsCompleteSettingCheck(false);
-  // };
+  const closeSettingModal = () => {
+    setIsCompleteSettingCheck(false);
+  };
   // const completeMemberSetting = () => {
   //   setMemberSetComplete(true)
   //   setIsCompleteSettingCheck(false);
@@ -316,7 +357,7 @@ useEffect(() => {
 
   // 더치페이 url을 클립보드에 복사하는 함수
   const copyToClipboard = () => {
-    createRoom()
+    joinRoom()
     navigator.clipboard.writeText(joinUrl).then(() => {
       console.log("url이 클립보드에 복사되었습니다.")
     }).catch(err => {
@@ -337,8 +378,7 @@ useEffect(() => {
       <Top>
         <Title>
           <div onClick={connectWebSocket}>더치 페이</div>
-          <div>/////</div>
-          <div onClick={joinRoom}>테스트용</div>
+          {/* <div onClick={joinRoom}>테스트용</div> */}
           {/* 나가기 아이콘(-> 누르면 모달) */}
           <svg onClick={openModal} xmlns="http://www.w3.org/2000/svg" x="0px" y="0px" width="32" height="32" viewBox="0 0 48 48" fill="#656565">
             <path d="M 11.5 6 C 8.4802259 6 6 8.4802259 6 11.5 L 6 36.5 C 6 39.519774 8.4802259 42 11.5 42 L 29.5 42 C 32.519774 42 35 39.519774 35 36.5 A 1.50015 1.50015 0 1 0 32 36.5 C 32 37.898226 30.898226 39 29.5 39 L 11.5 39 C 10.101774 39 9 37.898226 9 36.5 L 9 11.5 C 9 10.101774 10.101774 9 11.5 9 L 29.5 9 C 30.898226 9 32 10.101774 32 11.5 A 1.50015 1.50015 0 1 0 35 11.5 C 35 8.4802259 32.519774 6 29.5 6 L 11.5 6 z M 33.484375 15.484375 A 1.50015 1.50015 0 0 0 32.439453 18.060547 L 36.878906 22.5 L 15.5 22.5 A 1.50015 1.50015 0 1 0 15.5 25.5 L 36.878906 25.5 L 32.439453 29.939453 A 1.50015 1.50015 0 1 0 34.560547 32.060547 L 41.560547 25.060547 A 1.50015 1.50015 0 0 0 41.560547 22.939453 L 34.560547 15.939453 A 1.50015 1.50015 0 0 0 33.484375 15.484375 z"></path>
@@ -360,14 +400,19 @@ useEffect(() => {
           {
           // memberNum&&
           // memberSetComplete&&
+          (webSocketJoinStep>1)&&
           <CopyIcon>
             <svg onClick={copyToClipboard} xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="#7A7A7A" viewBox="0 0 448 512"><path d="M384 336l-192 0c-8.8 0-16-7.2-16-16l0-256c0-8.8 7.2-16 16-16l140.1 0L400 115.9 400 320c0 8.8-7.2 16-16 16zM192 384l192 0c35.3 0 64-28.7 64-64l0-204.1c0-12.7-5.1-24.9-14.1-33.9L366.1 14.1c-9-9-21.2-14.1-33.9-14.1L192 0c-35.3 0-64 28.7-64 64l0 256c0 35.3 28.7 64 64 64zM64 128c-35.3 0-64 28.7-64 64L0 448c0 35.3 28.7 64 64 64l192 0c35.3 0 64-28.7 64-64l0-32-48 0 0 32c0 8.8-7.2 16-16 16L64 464c-8.8 0-16-7.2-16-16l0-256c0-8.8 7.2-16 16-16l32 0 0-48-32 0z"/></svg>          
           </CopyIcon>}
 
           {
+            (webSocketJoinStep === 1)&&
+            <RequestUrl onClick={onClickRequestUrl}>터치하여 초대 url 발급받기</RequestUrl>}
+          {
           // memberNum&&
           // memberSetComplete&&
-          <ShareUrl>{joinUrl}</ShareUrl>}
+          (webSocketJoinStep > 1)&&
+          <ShareUrl onClick={joinRoom}>{joinUrl}</ShareUrl>}
         </LinkBox>
       </Top>
 
@@ -389,15 +434,15 @@ useEffect(() => {
 
 {/* 모달 */}
       {/* 더치페이 인원 설정 확인용 모달 */}
-      {/* {isCompleteSettingCheck&&(
+      {isCompleteSettingCheck&&(
         <Modal isOpen={isCompleteSettingCheck} onClose={closeSettingModal}>
-          <div>{memberNum}명과 더치페이를 진행하시겠습니까?</div>
+          <div>{maxMember}명과 더치페이를 진행하시겠습니까?</div>
           <div>
-            <button onClick={completeMemberSetting}>확인</button>
-            <button onClick={closeSettingModal}>취소</button>
+            <button onClick={onClickAccept}>확인</button>
+            <button onClick={goBack}>취소</button>
           </div>
         </Modal>
-      )} */}
+      )}
 
       {/* [종료 버튼 미완]더치페이 나가기 모달 */}
       {isOpen && (
@@ -488,6 +533,7 @@ useEffect(() => {
         <div>
           <h3>Room Info:</h3>
           <pre>{JSON.stringify(roomInfo, null, 2)}</pre>
+          {/* <div>{roomInfo}</div> */}
         </div>
       )}
     </div>
