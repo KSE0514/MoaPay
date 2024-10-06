@@ -23,7 +23,10 @@ const app = initializeApp(firebaseConfig);
 export const messaging = getMessaging(app); // Messaging 초기화
 
 // 푸시 알림 권한 요청 및 토큰 발급
-export async function requestPermission(id: string | null) {
+export async function requestPermission(
+  id: string | null,
+  accessToken: string | null
+) {
   console.log(id);
   const permission = await Notification.requestPermission();
 
@@ -40,10 +43,18 @@ export async function requestPermission(id: string | null) {
       // AuthStore에서 사용자 정보 가져오기
 
       // 서버에 토큰 전송
-      const response = await axios.post(`api/moapay/core/dutchpay/fcmTokens`, {
-        token: token, // 푸시 토큰
-        memberId: id, // 사용자 ID
-      });
+      const response = await axios.post(
+        `api/moapay/core/dutchpay/fcmTokens`,
+        {
+          token: token, // 푸시 토큰
+          memberId: id, // 사용자 ID
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${accessToken}`, // accessToken을 헤더에 추가
+          },
+        }
+      );
 
       console.log("서버 응답: ", response.data);
     } catch (err) {
