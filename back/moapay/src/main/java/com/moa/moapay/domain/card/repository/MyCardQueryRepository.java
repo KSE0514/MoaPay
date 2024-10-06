@@ -69,4 +69,18 @@ public class MyCardQueryRepository {
                 .where(myCard.cardNumber.eq(cardNumber))
                 .fetchOne();
     }
+
+    public List<MyCard> findByMemberIdFetchJoin(UUID memberId) {
+        QMyCard myCard = QMyCard.myCard;
+        QCardProduct cardProduct = QCardProduct.cardProduct;
+        QCardBenefit cardBenefit = QCardBenefit.cardBenefit;
+        QCardBenefitCategory benefitCategory = QCardBenefitCategory.cardBenefitCategory;
+
+        return queryFactory
+                .selectFrom(myCard)
+                .join(myCard.cardProduct, cardProduct).fetchJoin()
+                .join(cardProduct.benefits, cardBenefit).fetchJoin()
+                .where(myCard.memberId.eq(memberId))
+                .fetch();
+    }
 }
