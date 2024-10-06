@@ -43,8 +43,8 @@ export const BarcordArea = styled.div`
     padding: 18px 20px 10px 20px;
   }
 `;
-export const Barcord = styled.div`
-  img {
+export const BarcordView = styled.div`
+  svg {
     width: 100%;
     height: 80px;
   }
@@ -65,7 +65,7 @@ export const ButtonArea = styled.div`
   display: flex;
   justify-content: space-between;
   button {
-    width: 47%;
+    width: 100%;
     border-radius: 10px;
     padding: 10px 15px;
   }
@@ -303,11 +303,9 @@ export const PlusIcon = styled(FontAwesomeIcon)`
   padding: 5px 5px;
 `;
 
-
-
 export const QrContainer = styled.div`
   width: 100%;
-  
+
   // border: 2px solid yellow;
   position: relative;
   padding: 0px;
@@ -317,22 +315,22 @@ export const QrContainer = styled.div`
     display: none;
   }
 
-  #qr-reader__scan_region{
+  #qr-reader__scan_region {
     min-height: 90px !important;
   }
 
   #qr-reader__dashboard_section_csr > div > button {
-    padding: 7px 10px; 
+    padding: 7px 10px;
   }
 
-  #qr-reader__dashboard_section > div > span{
+  #qr-reader__dashboard_section > div > span {
     display: inline-block;
     padding-top: 9px !important;
     font-size: 17px;
     font-weight: 200;
     color: gray;
   }
-    
+
   #qr-reader__dashboard_section > div > div:nth-of-type(2) {
     border: none !important;
     margin-bottom: 0 !important;
@@ -343,8 +341,8 @@ export const QrContainer = styled.div`
   }
 
   & button {
-    background-color: #E5AFFB;
+    background-color: #e5affb;
     border-radius: 10px;
-    padding: 7px 10px; 
+    padding: 7px 10px;
   }
-`
+`;
