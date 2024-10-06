@@ -107,6 +107,7 @@ const Dutchpay = () => {
  
   // 방 생성 함수
   const createRoom = async () => {
+    console.log("here... see !!!!!!!!!!!!!!")
     const requestBody = {
       memberId: memberId,
       maxMember: maxMember,
@@ -134,8 +135,9 @@ const Dutchpay = () => {
       setRoomId(parsedMessage.data); // 생성된 방의 roomId 저장
 
       // nav(PATH.DUTCHPAY, { state: { joinUrl: generatedUrl }}) // 인원 설정하여 방 생성 후 다음 페이지로 이동
-      connectWebSocket() // WebSocket연결해서 Stomp 실행
+      // connectWebSocket() // WebSocket연결해서 Stomp 실행
       // joinRoom() // 방 참여
+      console.log("end...plz....")
     } catch (error) {
       console.error("Error creating room:", error);
     }
@@ -229,13 +231,14 @@ const Dutchpay = () => {
 
   // WebSocket 연결 설정
   const connectWebSocket = () => {
+    console.log("connect websocket")
     const client = new Client({
       brokerURL: "ws://localhost:18020/moapay/core/ws/dutchpay", // WebSocket URL
       onConnect: (frame) => {
         console.log("Connected: " + frame);
 
         // 방 참여
-        joinRoom()
+        // joinRoom()
 
         // // 방 정보 확인
         // check();
@@ -254,6 +257,9 @@ const Dutchpay = () => {
 
     client.activate(); // 클라이언트 활성화
     setStompClient(client); // STOMP 클라이언트 저장
+    setTimeout(()=>{
+      console.log(roomInfo);
+    },5000)
   };
 
   // 컴포넌트 언마운트 시 클라이언트 비활성화
@@ -265,12 +271,16 @@ const Dutchpay = () => {
 
 /////////////////////////////////////////////
 useEffect(() => {
+  console.log("hello..?")
   const storedMemberNum = localStorage.getItem('maxMember');
   if (storedMemberNum) {
     setMemberCnt(Number(storedMemberNum))
   }
 
-  createRoom() // 방 생성
+  setTimeout(() => {
+    createRoom() // 방 생성
+    
+  }, 5000);
   // setJoinUrl(`http://localhost:5173/dutchpay/invite/${roomId}`)
   // connectWebSocket()
   // joinRoom()
@@ -306,6 +316,7 @@ useEffect(() => {
 
   // 더치페이 url을 클립보드에 복사하는 함수
   const copyToClipboard = () => {
+    createRoom()
     navigator.clipboard.writeText(joinUrl).then(() => {
       console.log("url이 클립보드에 복사되었습니다.")
     }).catch(err => {
@@ -317,15 +328,17 @@ useEffect(() => {
 // getDutchUrl() // 참가 인원을 입력할 경우 더치페이 링크를 받아오는 api 요청
 // }, [memberSetComplete]) // 참가 인원 세팅완료 여부 변수에 변화가 있을 때 조회가 되도록
 
-  useEffect(() => {
-    setMemberSetComplete(false)
-  }, []) // 맨 처음 랜더링 시(더치페이를 처음으로 실행시킬 시) 값 초기화해야할 것들
+  // useEffect(() => {
+  //   setMemberSetComplete(false)
+  // }, []) // 맨 처음 랜더링 시(더치페이를 처음으로 실행시킬 시) 값 초기화해야할 것들
 
   return (
     <Wrapper>
       <Top>
         <Title>
-          <div>더치 페이</div>
+          <div onClick={connectWebSocket}>더치 페이</div>
+          <div>/////</div>
+          <div onClick={joinRoom}>테스트용</div>
           {/* 나가기 아이콘(-> 누르면 모달) */}
           <svg onClick={openModal} xmlns="http://www.w3.org/2000/svg" x="0px" y="0px" width="32" height="32" viewBox="0 0 48 48" fill="#656565">
             <path d="M 11.5 6 C 8.4802259 6 6 8.4802259 6 11.5 L 6 36.5 C 6 39.519774 8.4802259 42 11.5 42 L 29.5 42 C 32.519774 42 35 39.519774 35 36.5 A 1.50015 1.50015 0 1 0 32 36.5 C 32 37.898226 30.898226 39 29.5 39 L 11.5 39 C 10.101774 39 9 37.898226 9 36.5 L 9 11.5 C 9 10.101774 10.101774 9 11.5 9 L 29.5 9 C 30.898226 9 32 10.101774 32 11.5 A 1.50015 1.50015 0 1 0 35 11.5 C 35 8.4802259 32.519774 6 29.5 6 L 11.5 6 z M 33.484375 15.484375 A 1.50015 1.50015 0 0 0 32.439453 18.060547 L 36.878906 22.5 L 15.5 22.5 A 1.50015 1.50015 0 1 0 15.5 25.5 L 36.878906 25.5 L 32.439453 29.939453 A 1.50015 1.50015 0 1 0 34.560547 32.060547 L 41.560547 25.060547 A 1.50015 1.50015 0 0 0 41.560547 22.939453 L 34.560547 15.939453 A 1.50015 1.50015 0 0 0 33.484375 15.484375 z"></path>
@@ -361,7 +374,9 @@ useEffect(() => {
       <Main>
         {/* 3. 더치페이하는 상품 정보 */}
         {/* 2. 참여자 목록 컴포넌트_2단계인지 판단 기준: memberSetComplete === true */}
-        {memberSetComplete&&<Participant maxNum={Number(maxMember)} isHost={isHost} />}
+        {
+        // memberSetComplete&&
+        <Participant maxNum={Number(maxMember)} isHost={isHost} />}
       </Main>
 
       {/* 배경 도형 */}
