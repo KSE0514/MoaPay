@@ -69,7 +69,7 @@ public class CardController {
     @PostMapping("/able")
     public ResponseEntity<ResultResponse> sableCard(@Valid @RequestBody MyCardStatusRequestDto ableCardRequestDto ) {
         myCardService.ableCard(ableCardRequestDto);
-        ResultResponse resultResponse = ResultResponse.of(HttpStatus.OK, "카드 비활성화 완료");
+        ResultResponse resultResponse = ResultResponse.of(HttpStatus.OK, "카드 활성화 완료");
         return ResponseEntity.status(resultResponse.getStatus()).body(resultResponse);
     }
 }

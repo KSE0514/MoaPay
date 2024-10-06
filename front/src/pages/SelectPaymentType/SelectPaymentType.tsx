@@ -22,5 +22,4 @@ const SelectPaymentType = () => {
     </Wrapper>
   );
 };
-
 export default SelectPaymentType;
