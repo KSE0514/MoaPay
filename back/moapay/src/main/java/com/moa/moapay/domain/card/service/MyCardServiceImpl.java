@@ -16,6 +16,7 @@ import com.moa.moapay.global.exception.BusinessException;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -33,6 +34,9 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 @Slf4j
 public class MyCardServiceImpl implements MyCardService {
+
+    @Value("${external-url.cardbank}")
+    private String cardbankUrl;
 
     private final CardProductRepository cardProductRepository;
     private final MyCardQueryRepository myCardQueryRepository;
@@ -155,7 +159,8 @@ public class MyCardServiceImpl implements MyCardService {
 
         // 카드 뱅크에서 내 카드 목록을 가져오기 위한 REST API 호출
         ResponseEntity<GetMyCardDtoWrapper> responseEntity = restClient.post()
-                .uri("http://localhost:18100/cardbank/card/getMyCards")
+                // TODO: 주소 변경
+                .uri(cardbankUrl + "/card/getMyCards")
                 .contentType(MediaType.APPLICATION_JSON)
                 .body(getMyCardsRequestDto)
                 .retrieve()
@@ -262,15 +267,15 @@ public class MyCardServiceImpl implements MyCardService {
 
         List<MyCard> myCards = myCardRepository.findAllByMemberId(registrationRequestDto.getMemberUuid());
 
-        for (MyCard myCard : myCards) {
-            if (myCard.getCardNumber().equals(registrationRequestDto.getCardNumber())) {
-                throw new BusinessException(HttpStatus.CONFLICT, "카드 데이터가 이미 존재합니다.");
-            }
+        Optional<MyCard> existMycard = myCardRepository.findByCardNumber(String.valueOf(registrationRequestDto.getCardNumber()));
+        if (existMycard.isPresent()) {
+            throw new BusinessException(HttpStatus.CONFLICT,"카드가 이미 존재합니다");
         }
 
         try {
             ResponseEntity<CardRestWrapperDto> responseEntity = restClient.post()
-                    .uri("http://localhost:18100/cardbank/card/registration")
+                    //TODO: 주소 변경
+                    .uri(cardbankUrl + "/card/registration")
                     .contentType(MediaType.APPLICATION_JSON)
                     .body(registrationRequestDto)
                     .retrieve()
@@ -293,10 +298,25 @@ public class MyCardServiceImpl implements MyCardService {
                         .amount(cardData.getAmount())
                         .benefitUsage(cardData.getBenefitUsage())
                         .cardLimit(cardData.getCardLimit())
+                        .cardStatus(true)
                         .memberId(memberUuid)
                         .build();
 
                 myCardRepository.save(myCard);
+
+                List<CardBenefit> cardBenefits = cardBenefitRepository.findByCardProductUuid(cardData.getCardProductUuid());
+                List<CardBenefitDto> cardBenefitDtos = cardBenefits.stream().map(
+                        cardBenefit -> {
+                            return CardBenefitDto.builder()
+                                    .benefitPoint(cardBenefit.getBenefitPoint())
+                                    .benefitType(cardBenefit.getBenefitType())
+                                    .benefitValue(cardBenefit.getBenefitValue())
+                                    .benefitUnit(cardBenefit.getBenefitUnit())
+                                    .benefitDesc(cardBenefit.getBenefitDesc())
+                                    .categoryName(cardBenefit.getCardBenefitCategory().getName())
+                                    .build();
+                        }
+                ).toList();
 
                 CardProductDto cardProductDto = CardProductDto.builder()
                         .cardProductUuid(cardData.getCardProductUuid())
@@ -308,6 +328,7 @@ public class MyCardServiceImpl implements MyCardService {
                         .cardProductImgUrl(cardData.getCardProductImgUrl())
                         .cardProductBenefitTotalLimit(cardData.getCardProductBenefitTotalLimit())
                         .cardProductPerformance(cardData.getCardProductPerformance())
+                        .cardBenefits(cardBenefitDtos)
                         .build();
 
                 AccountDto accountDto = AccountDto.builder()
@@ -374,6 +395,13 @@ public class MyCardServiceImpl implements MyCardService {
         } else {
             throw new BusinessException(HttpStatus.NOT_FOUND, "요청하신 카드가 없습니다.");
         }
+    }
+
+    @Override
+    public UUID getMemberId(UUID cardId){
+        MyCard myCard=myCardRepository.findByUuid(cardId).orElseThrow(()-> new BusinessException(HttpStatus.NOT_FOUND,"카드가 존재하지 않습니다."));
+        System.out.println("내카드"+myCard.getMemberId());
+        return myCard.getMemberId();
     }
 }
 

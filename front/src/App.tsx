@@ -5,6 +5,9 @@ import { RouterProvider } from "react-router-dom";
 import reset from "styled-reset";
 import router from "./router/routes";
 import AppAuthHandler from "./pages/AppAuthHandler";
+import { requestPermission, messaging } from "./FCM.ts";
+import { onMessage } from "firebase/messaging";
+import { useAuthStore } from "./store/AuthStore";
 
 const GlobalStyles = createGlobalStyle`
   ${reset};
@@ -32,6 +35,7 @@ const GlobalStyles = createGlobalStyle`
 
 
 `;
+
 const Wrapper = styled.div`
   font-family: "Pretendard-Regular";
 `;

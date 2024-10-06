@@ -7,8 +7,8 @@ export const Wrapper = styled.div`
   bottom: 0;
   z-index: 100;
   width: 100%;
-  background-color: white;
-  /* background-color: rgba(255, 255, 255, 0.7); */
+  /* background-color: white; */
+  background-color: rgba(255, 255, 255, 0.7);
   div {
     flex: 1;
     padding: 20px 10px;

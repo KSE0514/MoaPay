@@ -22,7 +22,7 @@ public class CardListener {
     private final ObjectMapper objectMapper;
     private final MyCardService myCardService;
 
-    @KafkaListener(topics = "request.renew-card-info", groupId = "payments_consumer_group")
+    @KafkaListener(topics = "request.renew-card-info", groupId = "card_consumer_group")
     public void renewCardInfo(String message) throws JsonProcessingException {
         Map<String, Object> vo = objectMapper.readValue(message, Map.class);
         log.info("received renew card info message");
