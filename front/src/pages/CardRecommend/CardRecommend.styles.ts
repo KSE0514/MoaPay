@@ -1,5 +1,6 @@
 import styled from "styled-components";
 import MediaQuery from "../../constants/styles";
+import CardList from "../../components/CardRecommend/CardList/CardList";
 export const Wrapper = styled.div`
   /* padding: 80px 45px var(--padding-bottom) 45px; */
   height: 100vh;
@@ -8,6 +9,8 @@ export const Wrapper = styled.div`
     display: none;
   }
   scrollbar-width: none;
+  .view {
+  }
   .top {
     padding: 70px 45px 0px 45px;
     margin-bottom: 34px;
@@ -207,4 +210,63 @@ export const Toggle = styled.div`
     position: absolute;
     z-index: 10;
   }
+`;
+
+/////////////////추천 결과
+export const RecommendResult = styled.div`
+  background: linear-gradient(120deg, #f1e5ff 6%, #dcbefc 50%, #ffc6ff);
+  padding: 15% 10% 30% 10%;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  width: 100%;
+  align-items: center;
+  position: relative;
+
+  button {
+    padding: 15px 20px;
+    border: none;
+    margin-top: 20px;
+    width: 100%;
+    background-color: var(--light-purple);
+    border-radius: 10px;
+    color: white;
+    z-index: 10;
+  }
+`;
+export const Title = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  font-size: 20px;
+  margin-bottom: 20px;
+  font-weight: 800;
+  z-index: 10;
+
+  div {
+    display: flex;
+    gap: 5px;
+    span {
+      position: relative;
+      svg {
+        position: absolute;
+        top: -3px;
+      }
+    }
+  }
+  p {
+    font-weight: 500;
+    margin-top: 10px;
+    font-size: 15px;
+  }
+`;
+export const RecommeCardListView = styled.div`
+  background-color: rgba(255, 255, 255, 0.5);
+  padding: 0% 5%;
+  height: 100%;
+  overflow-y: auto;
+  z-index: 10;
+`;
+export const RecommendResultCardList = styled(CardList)`
+  z-index: 10;
 `;
