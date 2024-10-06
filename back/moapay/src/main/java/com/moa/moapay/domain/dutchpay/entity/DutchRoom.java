@@ -65,7 +65,7 @@ public class DutchRoom {
 
     // 'roomEntity'는 DutchPay 엔티티에서 부모 엔티티와의 연관관계를 정의한 필드명
     @OneToMany(mappedBy = "roomEntity", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    private List<DutchPay> dutchPayList = new ArrayList<>();
+    private List<DutchPay> dutchPayList;
 
     public void addDutchPay(DutchPay dutchPay) {
         dutchPay.setRoomEntity(this);  // 부모 엔티티를 자식 엔티티에 설정
