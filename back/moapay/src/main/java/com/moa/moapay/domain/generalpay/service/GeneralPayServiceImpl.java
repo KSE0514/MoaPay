@@ -77,6 +77,27 @@ public class GeneralPayServiceImpl implements GeneralPayService{
             log.info("recommend card...");
             cardInfoList = recommendCardService.recommendPayCard(dto.getMemberId(), dto.getCategoryId(), dto.getRecommendType(), dto.getTotalPrice());
             log.info("recommend done");
+            if(cardInfoList.isEmpty()) { // 추천한 결과가 전혀 없다면, 전송받은 주 카드를 이용해 FIX 형식 결제를 시행
+                log.info("recommend card is empty : use main card...");
+                MyCard myCard = myCardQueryRepository.findByCardNumberFetchJoin(dto.getCardNumber());
+                if(myCard == null || !myCard.getCvc().equals(dto.getCvc())) {
+                    throw new BusinessException(HttpStatus.BAD_REQUEST, "유효하지 않은 정보입니다.");
+                }
+                CardProduct cardProduct = myCard.getCardProduct();
+                cardInfoList.add(
+                        PaymentCardInfoVO.builder()
+                                .cardId(myCard.getUuid())
+                                .cardName(cardProduct.getName())
+                                .imageUrl(cardProduct.getImageUrl())
+                                .cardNumber(dto.getCardNumber())
+                                .cvc(dto.getCvc())
+                                .amount(dto.getTotalPrice()) // 전부 하나의 카드로 긁으므로 totalPrice와 동일
+                                .usedAmount(myCard.getAmount())
+                                .performance(cardProduct.getPerformance())
+                                .benefitUsage(myCard.getBenefitUsage())
+                                .build()
+                );
+            }
             log.info("--- result ---");
             for(PaymentCardInfoVO vo : cardInfoList) {
                 log.info(vo.toString());

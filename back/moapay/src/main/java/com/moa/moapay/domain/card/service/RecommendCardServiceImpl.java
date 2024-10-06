@@ -243,38 +243,61 @@ public class RecommendCardServiceImpl implements RecommendCardService {
         log.info("benefit calculate has ended");
         log.info("valid benefit : {}", validBenefitList.size());
         // [1] 혜택 계산
-        if (myCard.isPerformanceFlag()) {
+        if (myCard.isPerformanceFlag() && hasBenefit) {
             // 전월실적을 충족하지 못해서 혜택을 못 받거나, 혜택 한도에 도달한 경우 받을 수 있는 혜택은 없음
-            if (hasBenefit) {
-                // 헤택을 받을 수 있다면, 0과 totalPrice를 대상으로 이분탐색을 시행
-                long left = -1;
-                long right = totalPrice + 1;
-//                long maxBenefit = 0; // 현재까지의 최대 혜택
-                double maxBenefit = 0;
-                while (left + 1 < right) {
-                    long mid = (left + right) / 2;
-                    BenefitInfo benefitInfo = calculateTotalBenefit(myCard, validBenefitList, categoryId, mid);
-                    double thisBenefit = benefitInfo.getTotalBenefit();
-                    // todo : 혜택 천장 생각해서 실적처럼 이분탐색하도록 만들기
-                    if (thisBenefit > maxBenefit) {
-                        // 더 큰 혜택값을 찾았다면, 탐색구역을 오른쪽으로 이동
-//                        log.info("maxBenefit renewed : {} ->  {}", maxBenefit, thisBenefit);
-                        maxBenefit = thisBenefit;
-//                        log.info("left moved : {} -> {}", left, mid);
-                        left = mid;
-                    } else {
-                        // 찾지 못했다면, 혜택한도에 도달한 것.
-                        // 왼쪽 구역을 살펴본다.
-//                        log.info("right moved : {} -> {}", right, mid);
-                        right = mid;
-                    }
-                }
-                log.info("calculate benefit - left : {}, right : {}, maxBenefit : {}", left, right, maxBenefit);
-                // 이분탐색 종료
-                // 최종값은 left가 들고있게 된다
-                maxBenefitAmount = left;
-                benefitValue = maxBenefit;
+            // 헤택을 받을 수 있다면, 0과 totalPrice를 대상으로 이분탐색을 시행
+            long left = -1;
+            long right = totalPrice + 1;
+            // 혜택이 무한인 경우 고려해!!!
+            boolean isBenefitInfinite = false;
+            if(product.getBenefitTotalLimit() == 0) {
+                isBenefitInfinite = true;
             }
+            double remainedBenefit = product.getBenefitTotalLimit() - myCard.getBenefitUsage();
+            double maxBenefit = 0; // 현재까지의 최대 헤택
+            boolean isReached = false;
+            while (left + 1 < right) {
+                long mid = (left + right) / 2;
+                BenefitInfo benefitInfo = calculateTotalBenefit(myCard, validBenefitList, categoryId, mid);
+                double thisBenefit = benefitInfo.getTotalBenefit();
+                // todo : 혜택 천장 생각해서 실적처럼 이분탐색하도록 만들기
+                // 이번 실적이 remainedBenefit 이상인 경우, 최고점에 도달했다는 뜻
+                // 왼쪽 구역을 살펴봐야 한다
+                if (!isBenefitInfinite && (long) (thisBenefit) >= remainedBenefit) {
+                    log.info("reached remainedBenefit : {} >= {}", thisBenefit, remainedBenefit);
+                    isReached = true;
+                    right = mid;
+                } else if (thisBenefit > maxBenefit) {
+                    // 최고점에 도달하지 않았으며, 기존에 기록된 혜택보다 더 혜택을 받았다면 더 큰 범위를 봐야한다
+                    maxBenefit = thisBenefit;
+                    left = mid;
+                } else {
+                    // 최고점에 도달하지 못했으며, 기존값도 갱신하지 못했다면 더 큰 범위를 봐야 함
+                    left = mid;
+                }
+                if (isReached) {
+                    maxBenefit = remainedBenefit;
+                    maxBenefitAmount = right;
+                } else {
+                    maxBenefitAmount = left;
+                }
+//                    if (thisBenefit > maxBenefit) {
+//                        // 더 큰 혜택값을 찾았다면, 탐색구역을 오른쪽으로 이동
+////                        log.info("maxBenefit renewed : {} ->  {}", maxBenefit, thisBenefit);
+//                        maxBenefit = thisBenefit;
+////                        log.info("left moved : {} -> {}", left, mid);
+//                        left = mid;
+//                    } else {
+//                        // 찾지 못했다면, 혜택한도에 도달한 것.
+//                        // 왼쪽 구역을 살펴본다.
+////                        log.info("right moved : {} -> {}", right, mid);
+//                        right = mid;
+//                    }
+            }
+            log.info("calculate benefit - left : {}, right : {}, maxBenefit : {}", left, right, maxBenefit);
+            // 이분탐색 종료
+            // 최종값은 left가 들고있게 된다
+            benefitValue = maxBenefit;
         }
         // [2] 실적 계산
         // 만일 이미 실적을 채웠다면, 더이상 채울 수 있는 실적은 없다.
@@ -290,11 +313,11 @@ public class RecommendCardServiceImpl implements RecommendCardService {
                 double thisPerformance = mid - benefitInfo.getTotalDiscount(); // 실제 실적 적용값은 원금에서 할인값을 뺀 만큼이다
                 // 이번 실적이 remainedPerformance를 초과했거나 도달한 경우
                 // 최고점에 도달했다는 뜻이므로, 왼쪽으로 살펴야 한다.
-                if((long)(thisPerformance) >= remainedPerformance) {
+                if ((long) (thisPerformance) >= remainedPerformance) {
 //                    log.info("reached remainedPerformance : {} >= {}", thisPerformance, remainedPerformance);
                     isReached = true;
                     right = mid;
-                } else if(thisPerformance > maxPerformance) {
+                } else if (thisPerformance > maxPerformance) {
                     // 최고점에 도달하지 않았으며, 기존에 기록된 값보다 큰 실적을 냈다면 더 큰 범위를 봐야한다
                     maxPerformance = thisPerformance;
                     left = mid;
@@ -303,10 +326,10 @@ public class RecommendCardServiceImpl implements RecommendCardService {
                     left = mid;
                 }
             }
-            if(isReached) { // 최고 금액에 도달한 적이 있다면 maxPerformance에 한계값 대입
+            if (isReached) { // 최고 금액에 도달한 적이 있다면 maxPerformance에 한계값 대입
                 maxPerformance = remainedPerformance;
                 maxPerformanceAmount = right;
-            } else  {
+            } else {
                 maxPerformanceAmount = left;
             }
             log.info("calculate performance - left : {}, right : {}, maxPerformance : {}", left, right, maxPerformance);
@@ -329,7 +352,7 @@ public class RecommendCardServiceImpl implements RecommendCardService {
         double totalCashback = 0;
         long benefitTotalLimit = product.getBenefitTotalLimit();
         boolean isBenefitInfinite = false;
-        if(benefitTotalLimit == 0) { // 혜택한도가 0으로 표기된 경우, 혜택은 무한대로 적용된다
+        if (benefitTotalLimit == 0) { // 혜택한도가 0으로 표기된 경우, 혜택은 무한대로 적용된다
             isBenefitInfinite = true;
         }
         if (myCard.isPerformanceFlag()) { // 전월실적을 충족했어야 혜택 계산이 됨
@@ -569,7 +592,7 @@ public class RecommendCardServiceImpl implements RecommendCardService {
         }
         // 이렇게 해도 결제 금액이 남았다면, 맨 앞 카드에 나머지 금액을 몰아준다
         if (remainedPrice > 0) {
-            log.info("price remained : {}",remainedPrice);
+            log.info("price remained : {}", remainedPrice);
             PaymentCardInfoVO vo = recommendList.get(0);
             long newAmount = vo.getAmount() + remainedPrice;
             vo.setAmount(newAmount);
