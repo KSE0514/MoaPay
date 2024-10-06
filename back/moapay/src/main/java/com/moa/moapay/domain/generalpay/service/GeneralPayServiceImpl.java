@@ -3,6 +3,8 @@ package com.moa.moapay.domain.generalpay.service;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.moa.moapay.domain.card.entity.CardProduct;
 import com.moa.moapay.domain.card.entity.MyCard;
+import com.moa.moapay.domain.card.service.MyCardService;
+import com.moa.moapay.domain.card.service.RecommendCardService;
 import com.moa.moapay.domain.generalpay.model.vo.ExecutePaymentRequestVO;
 import com.moa.moapay.domain.card.repository.MyCardQueryRepository;
 import com.moa.moapay.domain.card.repository.MyCardRepository;
@@ -33,6 +35,7 @@ public class GeneralPayServiceImpl implements GeneralPayService{
     private final MyCardQueryRepository myCardQueryRepository;
     private final GeneralPayRedisRepository generalPayRedisRepository;
     private final CodeService codeService;
+    private final RecommendCardService recommendCardService;
 
     @Override
     public void executeGeneralPay(ExecuteGeneralPayRequestDto dto) {
@@ -72,6 +75,33 @@ public class GeneralPayServiceImpl implements GeneralPayService{
             // 카드 추천형인 경우, 추천된 결과를 기반으로 결제를 진행
             // todo : 카드 추천하는 서비스 완성하여 여기에서 사용
             log.info("recommend card...");
+            cardInfoList = recommendCardService.recommendPayCard(dto.getMemberId(), dto.getCategoryId(), dto.getRecommendType(), dto.getTotalPrice());
+            log.info("recommend done");
+            if(cardInfoList.isEmpty()) { // 추천한 결과가 전혀 없다면, 전송받은 주 카드를 이용해 FIX 형식 결제를 시행
+                log.info("recommend card is empty : use main card...");
+                MyCard myCard = myCardQueryRepository.findByCardNumberFetchJoin(dto.getCardNumber());
+                if(myCard == null || !myCard.getCvc().equals(dto.getCvc())) {
+                    throw new BusinessException(HttpStatus.BAD_REQUEST, "유효하지 않은 정보입니다.");
+                }
+                CardProduct cardProduct = myCard.getCardProduct();
+                cardInfoList.add(
+                        PaymentCardInfoVO.builder()
+                                .cardId(myCard.getUuid())
+                                .cardName(cardProduct.getName())
+                                .imageUrl(cardProduct.getImageUrl())
+                                .cardNumber(dto.getCardNumber())
+                                .cvc(dto.getCvc())
+                                .amount(dto.getTotalPrice()) // 전부 하나의 카드로 긁으므로 totalPrice와 동일
+                                .usedAmount(myCard.getAmount())
+                                .performance(cardProduct.getPerformance())
+                                .benefitUsage(myCard.getBenefitUsage())
+                                .build()
+                );
+            }
+            log.info("--- result ---");
+            for(PaymentCardInfoVO vo : cardInfoList) {
+                log.info(vo.toString());
+            }
         }
 
         // [3] 요청 전송
@@ -103,6 +133,7 @@ public class GeneralPayServiceImpl implements GeneralPayService{
 //            MyCard myCard = myCardRepository.findByCardNumber(barcodeInfo.getCardNumber())
 //                    .orElseThrow(() -> new BusinessException(HttpStatus.BAD_REQUEST, "유효하지 않은 정보입니다."));
             // 카드 ID 정보를 포함해 카드 정보 삽입
+            // todo : 갱신된 카드 정보를 기반으로 cardInfoVo 채우기
             PaymentCardInfoVO cardInfoVo = PaymentCardInfoVO.builder()
                     .cardId(myCardQueryRepository.findUuidByCardNumber(barcodeInfo.getCardNumber()))
                     .cardNumber(barcodeInfo.getCardNumber())
@@ -113,8 +144,11 @@ public class GeneralPayServiceImpl implements GeneralPayService{
 
         } else {
             // 카드 추천형인 경우, 추천된 결과를 기반으로 결제를 진행
-            // todo : 카드 추천하는 서비스 완성하여 여기에서 사용
+            // todo : 추천형인 경우 바코드에 더 많은 정보를 담도록 변경
             log.info("recommend card...");
+//            cardInfoList = recommendCardService.recommendPayCard(dto.getMemberId(), dto.getCategoryId(), dto.getRecommendType(), dto.getTotalPrice());
+            log.info("recommend done");
+            return;
         }
 
         // [3] 요청 전송

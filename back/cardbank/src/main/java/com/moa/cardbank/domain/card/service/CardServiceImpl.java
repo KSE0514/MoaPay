@@ -101,6 +101,11 @@ public class CardServiceImpl implements CardService {
         long totalPoint = 0;
         long totalCashback = 0;
         long benefitTotalLimit = product.getBenefitTotalLimit();
+        boolean isBenefitInfinite = false;
+        if(benefitTotalLimit == 0) { // 혜택한도가 0으로 표기된 경우, 혜택은 무한대로 적용된다
+            log.info("this card has no benefit limit");
+            isBenefitInfinite = true;
+        }
         if (myCard.getPerformanceFlag()) { // 전월실적을 충족했어야 혜택 계산이 됨
             log.info("performance flag : TRUE -> calculate benefit value...");
             List<CardBenefit> benefitList = paymentQueryRepository.findCardBenefits(myCard.getProductId(), merchant.getCategoryId());
@@ -143,7 +148,7 @@ public class CardServiceImpl implements CardService {
             totalPoint += (long) (dto.getAmount() * (pointPerValue / 100));
             totalCashback += (long) (dto.getAmount() * (cashbackPerValue / 100));
             // 사용가능 혜택값과 현재 혜택값을 비교
-            if (usableBenefit < totalDiscount + totalPoint + totalCashback) {
+            if (!isBenefitInfinite && usableBenefit < totalDiscount + totalPoint + totalCashback) {
                 // 차감 우선순위 : 캐시백 -> 포인트 -> 할인
                 long exceeded = totalDiscount + totalPoint + totalCashback - usableBenefit;
                 long newTotalCashback = Math.max(totalCashback - exceeded, 0);
@@ -254,7 +259,7 @@ public class CardServiceImpl implements CardService {
                 .amount(paymentLog.getAmount())
                 .benefitActivated(myCard.getPerformanceFlag())
                 .benefitBalance(totalDiscount + totalPoint + totalCashback)
-                .remainedBenefit(benefitTotalLimit - newBenefitUsage)
+                .remainedBenefit(Math.max(benefitTotalLimit - newBenefitUsage, 0)) // benefitTotalLimit가 0인 경우, 음수가 나올 수 있음
                 .benefitDetail(benefitDetailDto)
                 .build();
     }
