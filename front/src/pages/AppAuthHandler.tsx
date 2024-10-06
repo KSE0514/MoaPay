@@ -44,11 +44,9 @@ const AppAuthHandler: React.FC = () => {
 
     //앱이 시작될 때 실행될 함수
     const handleAppStart = () => {
-      console.log("here...why?");
       // 마지막 활성화 시간을 localStorage에서 가져옵니다.
       const lastActiveTime = localStorage.getItem("lastActiveTime");
 
-      console.log("lastActiveTime: " + lastActiveTime);
       // 사용자가 이전에 로그인한 적이 있는지 확인합니다.
       // "hasLoggedInBefore" 값이 "true"이면 이전에 로그인한 상태를 의미합니다.
 

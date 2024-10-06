@@ -22,7 +22,7 @@ export interface CardProduct {
   cardProductAnnualFeeForeign: number; // 해외 연회비
   cardProductPerformance: number; // 전월 실적
   cardProductImgUrl: string; // 이미지 url
-  benefits: Benefit[]; // 혜택 목록
+  benefits: Benefit[] | null; // 혜택 목록
 }
 
 export interface Accounts {

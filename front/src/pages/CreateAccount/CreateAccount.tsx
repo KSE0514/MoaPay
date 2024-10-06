@@ -248,8 +248,8 @@ const CreateAccount = () => {
       // 인증번호가 일치하면 존재하는 멤버인지 확인해야함
       // 요청 결과에 따라 비밀번호 로그인 또는 회원가입으로 전달
       const existUserCheckResponse = await axios.post(
-        `api/moapay/member/isMember`,
-        // `${baseUrl}moapay/member/isMember`,
+        // `api/moapay/member/isMember`,
+        `${baseUrl}moapay/member/isMember`,
         {
           phoneNumber: joinUserInfo.phone_number,
         },
