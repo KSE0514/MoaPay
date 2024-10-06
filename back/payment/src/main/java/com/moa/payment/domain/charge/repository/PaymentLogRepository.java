@@ -13,7 +13,7 @@ public interface PaymentLogRepository extends JpaRepository<PaymentLog, Long> {
     Optional<PaymentLog> findByUuid(UUID uuid);
 
     @Query("SELECT p FROM PaymentLog p " +
-        "WHERE FUNCTION('YEAR', p.createTime) = FUNCTION('YEAR', CURRENT_DATE) - (CASE WHEN FUNCTION('MONTH', CURRENT_DATE) = 1 THEN 1 ELSE 0 END) " +
-        "AND FUNCTION('MONTH', p.createTime) = (CASE WHEN FUNCTION('MONTH', CURRENT_DATE) = 1 THEN 12 ELSE FUNCTION('MONTH', CURRENT_DATE) - 1 END)")
+        "WHERE YEAR(p.createTime) = YEAR(CURRENT_DATE) " +
+        "AND MONTH(p.createTime) = MONTH(CURRENT_DATE) - 1")
     List<PaymentLog> findAllFromLastMonth();
 }

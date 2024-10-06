@@ -139,6 +139,8 @@ public class MemberServiceImpl implements MemberService {
 	@Override
 	public getMemberResponseDto getMember(UUID memberId){
 		Member member=memberRepository.findByUuid(memberId).orElseThrow(()->new BusinessException(HttpStatus.NOT_FOUND,"멤버가 존재하지 않습니다."));
+		System.out.println("멤버 가져오기 성공");
+		System.out.println(member.getPhoneNumber()+"/"+member.getGender()+"/"+member.getBirthDate());
 		getMemberResponseDto dto= getMemberResponseDto.builder()
 			.memberId(memberId)
 			.phoneNumber(member.getPhoneNumber())
