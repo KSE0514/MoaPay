@@ -15,7 +15,7 @@ export const Wrapper = styled.div`
   ${MediaQuery.small},${MediaQuery.medium} {
     padding-bottom: var(--padding-bottom-small);
   }
-  font-family: "Reem Kufi Ink";
+  /* font-family: "Reem Kufi Ink"; */
 `;
 
 export const Top = styled.div`
@@ -25,6 +25,57 @@ export const Top = styled.div`
     position: relative;
     z-index: 10;
     color: white;
+  }
+  .saving {
+    padding: 45px 0px 0px 0px;
+    .title {
+      font-size: 18px;
+      padding-left: 10px;
+    }
+    .price {
+      display: flex;
+      margin-top: 20px;
+      align-items: center;
+      padding-left: 10px;
+      p {
+      }
+      p:nth-child(1) {
+        font-weight: bold;
+        font-size: 20px;
+      }
+      p:nth-child(2) {
+        margin: 0px 10px;
+      }
+    }
+    .sub {
+      margin-top: 85px;
+      display: flex;
+      justify-content: center;
+      width: 100%;
+      text-align: center;
+      font-size: 17px;
+      line-height: 25px;
+      div {
+        width: 90%;
+        background-color: rgba(255, 255, 255, 0.5);
+        position: relative;
+        padding: 10px 0px;
+        border-radius: 20px;
+        p {
+          color: black;
+        }
+      }
+      img {
+        position: absolute;
+        width: 70px;
+        height: 70px;
+        top: -49%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        /* border-radius: 50%; */
+        /* position: absolute; */
+      }
+    }
   }
 `;
 
@@ -37,7 +88,7 @@ export const Bottom = styled.div`
   flex-direction: column;
 `;
 
-// 소비 + 혜택 디자인
+/////////////////////////////////////// 소비 + 혜택 디자인/////////////////////////////
 export const Month = styled.div`
   z-index: 20;
   padding-top: 20px;
@@ -129,7 +180,7 @@ export const Info = styled.div`
   justify-content: space-around;
 `;
 
-// 통계
+//////////////////////////////////////////////// 통계 ///////////////////////////////////////////////
 export const TopWrapper = styled.div`
   @keyframes fadeIn {
     0% {

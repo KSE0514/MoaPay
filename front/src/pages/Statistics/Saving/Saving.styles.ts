@@ -167,4 +167,96 @@ export const LastStep = styled.div`
 
 //////////////////////////////////////////////////////////////////
 
-export const Wrapper = styled.div``;
+export const Wrapper = styled.div`
+  width: 100%;
+  padding: 0px 20px;
+  .choice-week {
+    margin: 20px 0px;
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    p {
+      font-size: 18px;
+      margin: 0px 15px;
+    }
+  }
+  .total {
+    p:nth-child(1) {
+      font-size: 16px;
+      margin-bottom: 5px;
+    }
+    p:nth-child(2) {
+      font-size: 22px;
+      font-weight: 800;
+    }
+  }
+  .avg {
+    margin-top: 20px;
+    p:nth-child(1) {
+      font-size: 16px;
+      margin-bottom: 5px;
+    }
+    p:nth-child(2) {
+      font-size: 22px;
+      font-weight: 800;
+    }
+  }
+  .graph {
+    margin-top: 30px;
+  }
+`;
+
+export const AlramModal = styled.div`
+  position: absolute;
+  z-index: 1000;
+  /* top: 0; */
+  bottom: -400px;
+  left: 0;
+  width: 100%;
+  height: 45%;
+  background-color: white;
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 30px 0px;
+  p {
+    padding: 0px 20px;
+    width: 100%;
+    font-size: 16px;
+    line-height: 20px;
+  }
+  img {
+    width: 35%;
+    height: 45%;
+    margin-bottom: 20px;
+  }
+  button {
+    width: 90%;
+    margin-bottom: 20px;
+    padding: 15px 0px;
+    border: none;
+    border-radius: 20px;
+  }
+  @keyframes up {
+    0% {
+      bottom: -400px;
+    }
+    100% {
+      bottom: 0;
+    }
+  }
+  animation: up 1s ease-in-out forwards;
+  @keyframes down {
+    0% {
+      bottom: 0;
+    }
+    100% {
+      bottom: -400px;
+    }
+  }
+  .close {
+    animation: down 1s ease-in-out forwards;
+  }
+`;

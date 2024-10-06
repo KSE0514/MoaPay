@@ -246,36 +246,7 @@ const Statistics = () => {
                   <div onClick={handleNextMonth}>
                     <FontAwesomeIcon icon={faChevronRight} />
                   </div>
-                  {/* <div className={iconAnimateClass}>
-                    <DropDownIcon
-                      onClick={OpenDropDown}
-                      icon={openDropDown ? faCaretUp : faCaretDown}
-                    />
-                  </div> */}
                 </div>
-                {/* <ul
-                  className={`dropdown-menu ${openDropDown ? "open" : ""}  ${
-                    closeAnimateClass ? "close" : ""
-                  }`}>
-                  <li
-                    onClick={(e) =>
-                      setSelectedMonth(e.currentTarget.textContent || "")
-                    }>
-                    2024.09
-                  </li>
-                  <li
-                    onClick={(e) =>
-                      setSelectedMonth(e.currentTarget.textContent || "")
-                    }>
-                    2024.08
-                  </li>
-                  <li
-                    onClick={(e) =>
-                      setSelectedMonth(e.currentTarget.textContent || "")
-                    }>
-                    2024.07
-                  </li>
-                </ul> */}
               </Month>
               <Info>
                 <DonutChart dataList={dataList} />
@@ -310,6 +281,29 @@ const Statistics = () => {
                   ))}
               </TextBox>
             </TopWrapper>
+          )}
+          {mode === "Ano" && (
+            <div className="saving">
+              <p className="title">1월 목표 중 남은 금액</p>
+              <div className="price">
+                <p>123,200원</p>
+                <p>/</p>
+                <p>800,000원</p>
+              </div>
+              <div className="sub">
+                <div>
+                  <img src="/assets/image/prinrefacezoom.png" />
+                  <p>
+                    목표 금액의 <span style={{ color: "red " }}>84%</span>
+                    를 썼어요.
+                    <br />
+                    앞으로 하루{" "}
+                    <span style={{ color: "#4258ff " }}>30,800원</span>만 쓰면
+                    돼요.
+                  </p>
+                </div>
+              </div>
+            </div>
           )}
         </Top>
         <Bottom className="Bottom">
