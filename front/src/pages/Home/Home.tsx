@@ -75,7 +75,7 @@ const Home = () => {
   };
 
   const { id } = useAuthStore((state) => ({
-    id: state.id,
+    id: state.id as string | null,
   }));
 
   useEffect(() => {
