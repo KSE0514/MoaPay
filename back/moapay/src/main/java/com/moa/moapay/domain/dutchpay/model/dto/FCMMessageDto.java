@@ -10,9 +10,8 @@ import java.util.UUID;
 @NoArgsConstructor
 @AllArgsConstructor
 @ToString
-public class FCMTokenDto {
+public class FCMMessageDto {
     private UUID memberId;
-    private String token;
     private String title;
     private String message;
 }
