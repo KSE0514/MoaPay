@@ -77,7 +77,10 @@ public class GeneralPayServiceImpl implements GeneralPayService{
             log.info("recommend card...");
             cardInfoList = recommendCardService.recommendPayCard(dto.getMemberId(), dto.getCategoryId(), dto.getRecommendType(), dto.getTotalPrice());
             log.info("recommend done");
-            return;
+            log.info("--- result ---");
+            for(PaymentCardInfoVO vo : cardInfoList) {
+                log.info(vo.toString());
+            }
         }
 
         // [3] 요청 전송

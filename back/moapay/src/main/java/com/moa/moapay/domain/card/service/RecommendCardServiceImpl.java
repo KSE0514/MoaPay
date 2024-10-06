@@ -115,6 +115,8 @@ public class RecommendCardServiceImpl implements RecommendCardService {
             scoreList[i] = score;
         }
         Arrays.sort(scoreList); // 전부 구했다면 원금 기준 혜택금액이 높은 순으로 정렬
+        log.info("benefit score calculated");
+        log.info("benefit score : {}", Arrays.toString(scoreList));
         // 응답에 사용할 리스트 생성
         List<PaymentCardInfoVO> recommendList;
         if (recommendType == RecommendType.BENEFIT) {
@@ -223,41 +225,51 @@ public class RecommendCardServiceImpl implements RecommendCardService {
     private PayCardScore getScore(MyCard myCard, String categoryId, long totalPrice) {
         CardProduct product = myCard.getCardProduct();
         long maxBenefitAmount = 0;
-        long benefitValue = 0;
+        double benefitValue = 0;
         long maxPerformanceAmount = 0;
-        long performanceValue = 0;
+        double performanceValue = 0;
         List<CardBenefit> benefitList = product.getBenefits();
         List<CardBenefit> validBenefitList = new ArrayList<>();
+        log.info("get valid benefit at {}", myCard.getCardProduct().getName());
         boolean hasBenefit = false;
         for (CardBenefit benefit : benefitList) { // 유효 혜택 계산
             String cardCategory = benefit.getCardBenefitCategory().getId();
             if (cardCategory.equals(categoryId) || cardCategory.equals("C0000")) { // 혜택타입 all인 경우에도 적용되어야 함
+//                log.info("valid benefit -> {}", benefit.getBenefitDesc());
                 hasBenefit = true;
                 validBenefitList.add(benefit);
             }
         }
+        log.info("benefit calculate has ended");
+        log.info("valid benefit : {}", validBenefitList.size());
         // [1] 혜택 계산
-        if (myCard.isPerformanceFlag() && !myCard.getBenefitUsage().equals(product.getBenefitTotalLimit())) {
+        if (myCard.isPerformanceFlag()) {
             // 전월실적을 충족하지 못해서 혜택을 못 받거나, 혜택 한도에 도달한 경우 받을 수 있는 혜택은 없음
             if (hasBenefit) {
                 // 헤택을 받을 수 있다면, 0과 totalPrice를 대상으로 이분탐색을 시행
                 long left = -1;
                 long right = totalPrice + 1;
-                long maxBenefit = 0; // 현재까지의 최대 혜택
+//                long maxBenefit = 0; // 현재까지의 최대 혜택
+                double maxBenefit = 0;
                 while (left + 1 < right) {
                     long mid = (left + right) / 2;
                     BenefitInfo benefitInfo = calculateTotalBenefit(myCard, validBenefitList, categoryId, mid);
-                    long thisBenefit = benefitInfo.getTotalBenefit();
+                    double thisBenefit = benefitInfo.getTotalBenefit();
+                    // todo : 혜택 천장 생각해서 실적처럼 이분탐색하도록 만들기
                     if (thisBenefit > maxBenefit) {
                         // 더 큰 혜택값을 찾았다면, 탐색구역을 오른쪽으로 이동
+//                        log.info("maxBenefit renewed : {} ->  {}", maxBenefit, thisBenefit);
                         maxBenefit = thisBenefit;
+//                        log.info("left moved : {} -> {}", left, mid);
                         left = mid;
                     } else {
                         // 찾지 못했다면, 혜택한도에 도달한 것.
                         // 왼쪽 구역을 살펴본다.
+//                        log.info("right moved : {} -> {}", right, mid);
                         right = mid;
                     }
                 }
+                log.info("calculate benefit - left : {}, right : {}, maxBenefit : {}", left, right, maxBenefit);
                 // 이분탐색 종료
                 // 최종값은 left가 들고있게 된다
                 maxBenefitAmount = left;
@@ -269,21 +281,37 @@ public class RecommendCardServiceImpl implements RecommendCardService {
         if (myCard.getAmount() < product.getPerformance()) {
             long left = -1;
             long right = totalPrice + 1;
-            long remainedPerformance = product.getPerformance() - myCard.getAmount();
-            long maxPerformance = 0;
+            double remainedPerformance = product.getPerformance() - myCard.getAmount();
+            double maxPerformance = 0;
+            boolean isReached = false;
             while (left + 1 < right) {
                 long mid = (left + right) / 2;
                 BenefitInfo benefitInfo = calculateTotalBenefit(myCard, validBenefitList, categoryId, mid);
-                long thisPerformance = Math.max(remainedPerformance, (mid - benefitInfo.getTotalDiscount())); // 실제 실적 적용값은 원금에서 할인값을 뺀 만큼이다
-                if (maxPerformance < thisPerformance) { // 새롭게 채울 수 있는 실적을 갱신했다면
+                double thisPerformance = mid - benefitInfo.getTotalDiscount(); // 실제 실적 적용값은 원금에서 할인값을 뺀 만큼이다
+                // 이번 실적이 remainedPerformance를 초과했거나 도달한 경우
+                // 최고점에 도달했다는 뜻이므로, 왼쪽으로 살펴야 한다.
+                if((long)(thisPerformance) >= remainedPerformance) {
+//                    log.info("reached remainedPerformance : {} >= {}", thisPerformance, remainedPerformance);
+                    isReached = true;
+                    right = mid;
+                } else if(thisPerformance > maxPerformance) {
+                    // 최고점에 도달하지 않았으며, 기존에 기록된 값보다 큰 실적을 냈다면 더 큰 범위를 봐야한다
                     maxPerformance = thisPerformance;
                     left = mid;
                 } else {
-                    right = mid;
+                    // 최고점에 도달하지 못했으며, 기존값도 갱신하지 못했다면 더 큰 범위를 봐야 함
+                    left = mid;
                 }
             }
-            maxPerformanceAmount = left;
-            benefitValue = maxPerformance;
+            if(isReached) { // 최고 금액에 도달한 적이 있다면 maxPerformance에 한계값 대입
+                maxPerformance = remainedPerformance;
+                maxPerformanceAmount = right;
+            } else  {
+                maxPerformanceAmount = left;
+            }
+            log.info("calculate performance - left : {}, right : {}, maxPerformance : {}", left, right, maxPerformance);
+//            maxPerformanceAmount = right;
+            performanceValue = maxPerformance;
         }
         return PayCardScore.builder()
                 .myCard(myCard)
@@ -296,10 +324,14 @@ public class RecommendCardServiceImpl implements RecommendCardService {
 
     private BenefitInfo calculateTotalBenefit(MyCard myCard, List<CardBenefit> validBenefitList, String categoryId, long totalPrice) {
         CardProduct product = myCard.getCardProduct();
-        long totalDiscount = 0;
-        long totalPoint = 0;
-        long totalCashback = 0;
+        double totalDiscount = 0;
+        double totalPoint = 0;
+        double totalCashback = 0;
         long benefitTotalLimit = product.getBenefitTotalLimit();
+        boolean isBenefitInfinite = false;
+        if(benefitTotalLimit == 0) { // 혜택한도가 0으로 표기된 경우, 혜택은 무한대로 적용된다
+            isBenefitInfinite = true;
+        }
         if (myCard.isPerformanceFlag()) { // 전월실적을 충족했어야 혜택 계산이 됨
             // 각 혜택별로 적용 정도와 한도 확인
             long usableBenefit = benefitTotalLimit - myCard.getBenefitUsage();
@@ -307,7 +339,7 @@ public class RecommendCardServiceImpl implements RecommendCardService {
             double pointPerValue = 0;
             double cashbackPerValue = 0;
             for (CardBenefit cardBenefit : validBenefitList) { // 거의 대부분 카테고리 하나당 혜택 하나겠지만, 확장성을 고려하여 반복문 작성
-                log.info("{}", cardBenefit.getBenefitDesc());
+//                log.info("{}", cardBenefit.getBenefitDesc());
                 if (cardBenefit.getBenefitType() == BenefitType.DISCOUNT) {
                     if (cardBenefit.getBenefitUnit() == BenefitUnit.PERCENTAGE) {
                         discountPerValue += cardBenefit.getBenefitValue();
@@ -331,18 +363,18 @@ public class RecommendCardServiceImpl implements RecommendCardService {
             }
             // 혜택 계산 종료
             // 퍼센테이지 혜택값을 정산한다
-            totalDiscount += (long) (totalPrice * (discountPerValue / 100));
-            totalPoint += (long) (totalPrice * (pointPerValue / 100));
-            totalCashback += (long) (totalPrice * (cashbackPerValue / 100));
+            totalDiscount += totalPrice * (discountPerValue / 100);
+            totalPoint += totalPrice * (pointPerValue / 100);
+            totalCashback += totalPrice * (cashbackPerValue / 100);
             // 사용가능 혜택값과 현재 혜택값을 비교
-            if (usableBenefit < totalDiscount + totalPoint + totalCashback) {
+            if (!isBenefitInfinite && usableBenefit < totalDiscount + totalPoint + totalCashback) {
                 // 차감 우선순위 : 캐시백 -> 포인트 -> 할인
-                long exceeded = totalDiscount + totalPoint + totalCashback - usableBenefit;
-                long newTotalCashback = Math.max(totalCashback - exceeded, 0);
+                double exceeded = totalDiscount + totalPoint + totalCashback - usableBenefit;
+                double newTotalCashback = Math.max(totalCashback - exceeded, 0);
                 exceeded -= (totalCashback - newTotalCashback);
-                long newTotalPoint = Math.max(totalPoint - exceeded, 0);
+                double newTotalPoint = Math.max(totalPoint - exceeded, 0);
                 exceeded -= (totalPoint - newTotalPoint);
-                long newTotalDiscount = Math.max(totalDiscount - exceeded, 0);
+                double newTotalDiscount = Math.max(totalDiscount - exceeded, 0);
                 exceeded -= (totalDiscount - newTotalDiscount);
                 // 바뀐 혜택을 원래 변수에 적용
                 totalDiscount = newTotalDiscount;
@@ -356,6 +388,7 @@ public class RecommendCardServiceImpl implements RecommendCardService {
                 totalDiscount = totalPrice;
             }
         }
+//        log.info("discount, point, cashback : {}, {}, {}", totalDiscount, totalPoint,totalCashback);
         return BenefitInfo.builder()
                 .totalDiscount(totalDiscount)
                 .totalPoint(totalPoint)
@@ -368,19 +401,21 @@ public class RecommendCardServiceImpl implements RecommendCardService {
         List<PaymentCardInfoVO> recommendList = new ArrayList<>();
         if (scoreList[0].getBenefitValue() == 0) {
             // 가장 혜택이 큰 카드의 benefit value가 0이다 -> 혜택을 받을 수 있는 경우가 전혀 없다는 것
-            // todo : 혜택형에서 실전형으로 전환하는 로직 작성
-            // 만일 이미 실적형에서 메서드가 넘어왔다면 빈 리스트 반환
+            log.info("받을 수 있는 혜택이 전혀 없음... 유감!");
             if (looped) {
                 return recommendList;
             }
-            recommendByPerformance(scoreList, totalPrice, true);
+            return recommendByPerformance(scoreList, totalPrice, true);
+
         }
         long remainedPrice = totalPrice;
         // 후보군 3개를 뽑는다
         for (int i = 0; i < 3; ++i) {
             // 카드 추천은 최대 3개까지
             PayCardScore score = scoreList[i];
+            log.info("this score : {}", score.toString());
             if (score.getBenefitValue() == 0) {
+                log.info("there is no longer benefit");
                 break; // 혜택을 받을 수 없는 카드만 남았다면 break
             }
             MyCard myCard = score.getMyCard();
@@ -440,7 +475,7 @@ public class RecommendCardServiceImpl implements RecommendCardService {
                     newAmount += remainedPerformance;
                     remainedPrice -= remainedPerformance;
                 }
-                vo = vo.toBuilder().amount(newAmount).build();
+                vo.setAmount(newAmount);
                 if (remainedPrice == 0) {
                     break;
                 }
@@ -450,7 +485,7 @@ public class RecommendCardServiceImpl implements RecommendCardService {
         if (remainedPrice > 0) {
             PaymentCardInfoVO vo = recommendList.get(0);
             long newAmount = vo.getAmount() + remainedPrice;
-            vo = vo.toBuilder().amount(newAmount).build();
+            vo.setAmount(newAmount);
         }
 
         // 계산 종료
@@ -530,13 +565,14 @@ public class RecommendCardServiceImpl implements RecommendCardService {
                 return recommendList;
             }
             // 그게 아니라면 혜택을 기반으로 카드 추천 시도
-            recommendByBenefit(scoreList, totalPrice, true);
+            return recommendByBenefit(scoreList, totalPrice, true);
         }
         // 이렇게 해도 결제 금액이 남았다면, 맨 앞 카드에 나머지 금액을 몰아준다
         if (remainedPrice > 0) {
+            log.info("price remained : {}",remainedPrice);
             PaymentCardInfoVO vo = recommendList.get(0);
             long newAmount = vo.getAmount() + remainedPrice;
-            vo = vo.toBuilder().amount(newAmount).build();
+            vo.setAmount(newAmount);
         }
 
         // 계산 종료

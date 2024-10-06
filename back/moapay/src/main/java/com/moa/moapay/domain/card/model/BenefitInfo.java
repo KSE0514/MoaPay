@@ -8,8 +8,8 @@ import lombok.*;
 @AllArgsConstructor
 @NoArgsConstructor
 public class BenefitInfo {
-    private long totalDiscount;
-    private long totalPoint;
-    private long totalCashback;
-    private long totalBenefit;
+    private double totalDiscount;
+    private double totalPoint;
+    private double totalCashback;
+    private double totalBenefit;
 }
