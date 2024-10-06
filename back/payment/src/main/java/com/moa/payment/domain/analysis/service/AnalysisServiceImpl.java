@@ -1,9 +1,8 @@
 package com.moa.payment.domain.analysis.service;
 
-import org.springframework.http.MediaType;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
-import org.springframework.web.client.RestClient;
 import org.springframework.web.client.RestTemplate;
 
 import java.time.LocalDate;
@@ -27,8 +26,12 @@ public class AnalysisServiceImpl implements AnalysisService {
 
 	private final PaymentLogRepository paymentLogRepository;
 	private final AnalysisRepository analysisRepository;
-	private final RestClient restClient;
 	private final RestTemplate restTemplate;
+
+	@Value("${external-url.member}")
+	String memberUrl;
+	@Value("${external-url.core}")
+	String coreUrl;
 
 	//[0][X]은 남자, [1][X]은 여자
 	//[X][0]은 0대, [X][1]은 10대, [X][2]은 20대, ..., [X][12]은 120대
@@ -48,7 +51,7 @@ public class AnalysisServiceImpl implements AnalysisService {
 		}
 	}
 
-	//-----scheduling
+	//-----scheduling 필요
 	@Override
 	public void getLastMonthPaymentLog() {
 		// save 배열 초기화 (null 값을 0L로 초기화)
@@ -69,7 +72,6 @@ public class AnalysisServiceImpl implements AnalysisService {
 			UUID cardId = paylog.getCardId(); //사용한 카드 아이디
 			//CardId로 myCard불러오고 여기서 memberId 뽑아내고
 			UUID memberId = getMemberId(cardId);
-			System.out.println("멤버ID:" + memberId);
 			//memberId로 member 뽑아내서 나이, 성별, 핸드폰 번호 추출
 			getMemberResponseDto member = getMemberInfo(memberId);
 
@@ -114,8 +116,6 @@ public class AnalysisServiceImpl implements AnalysisService {
 					.build();
 
 				analysisRepository.save(analysis);
-
-				System.out.println("성별:" + i + "/연령대:" + j + "/amount:" + save[i][j][0] + "/count" + save[i][j][1]);
 			}
 		}
 
@@ -123,7 +123,7 @@ public class AnalysisServiceImpl implements AnalysisService {
 
 	//paymentlog의 cardId에서 member가져오기
 	public UUID getMemberId(UUID cardId) {
-		String url = "http://localhost:18020/moapay/core/card/getMemberId";
+		String url = coreUrl+"/card/getMemberId";
 
 		// POST 요청으로 cardId를 보내고, UUID로 응답을 받음
 		ResponseEntity<UUID> response = restTemplate.postForEntity(url, cardId, UUID.class);
@@ -133,7 +133,7 @@ public class AnalysisServiceImpl implements AnalysisService {
 
 	public getMemberResponseDto getMemberInfo(UUID memberId) {
 		try {
-			String url = "http://localhost:18040/moapay/member/getMember";
+			String url = memberUrl+"/getMember";
 
 			// POST 요청으로 memberId를 보내고, getMemberResponseDto로 응답 받음
 			ResponseEntity<getMemberResponseDto> response = restTemplate.postForEntity(url, memberId,
