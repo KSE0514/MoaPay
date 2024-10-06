@@ -74,8 +74,9 @@ const Home = () => {
     setIsOpen(false);
   };
 
-  const { id } = useAuthStore((state) => ({
+  const { id, accessToken } = useAuthStore((state) => ({
     id: state.id as string | null,
+    accessToken: state.accessToken as string | null,
   }));
 
   useEffect(() => {
@@ -106,7 +107,7 @@ const Home = () => {
         });
     }
 
-    requestPermission(id); // 컴포넌트가 마운트될 때 requestPermission 호출
+    requestPermission(id, accessToken); // 컴포넌트가 마운트될 때 requestPermission 호출
 
     const unsubscribe = onMessage(messaging, (payload) => {
       console.log("Message received : ", payload);
