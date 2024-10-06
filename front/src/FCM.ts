@@ -41,13 +41,10 @@ export async function requestPermission() {
 
       const id = "019250e9-b495-75e3-85d9-8bf4767d9fa5";
       // 서버에 토큰 전송
-      const response = await axios.post(
-        `http://localhost:18020/moapay/core/dutchpay/fcmTokens`,
-        {
-          token: token, // 푸시 토큰
-          memberId: id, // 사용자 ID
-        }
-      );
+      const response = await axios.post(`api/moapay/core/dutchpay/fcmTokens`, {
+        token: token, // 푸시 토큰
+        memberId: id, // 사용자 ID
+      });
 
       console.log("서버 응답: ", response.data);
     } catch (err) {
