@@ -23,7 +23,7 @@ const app = initializeApp(firebaseConfig);
 export const messaging = getMessaging(app); // Messaging 초기화
 
 // 푸시 알림 권한 요청 및 토큰 발급
-export async function requestPermission(id) {
+export async function requestPermission(id: string | null) {
   console.log(id);
   const permission = await Notification.requestPermission();
 
