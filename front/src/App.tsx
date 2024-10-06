@@ -7,6 +7,7 @@ import router from "./router/routes";
 import AppAuthHandler from "./pages/AppAuthHandler";
 import { requestPermission, messaging } from "./FCM.ts";
 import { onMessage } from "firebase/messaging";
+import { useAuthStore } from "./store/AuthStore";
 
 const GlobalStyles = createGlobalStyle`
   ${reset};
@@ -40,38 +41,6 @@ const Wrapper = styled.div`
 `;
 
 function App() {
-  useEffect(() => {
-    if ("serviceWorker" in navigator) {
-      navigator.serviceWorker
-        .register("/firebase-messaging-sw.js")
-        .then(function (registration) {
-          console.log(
-            "Service Worker registered with scope:",
-            registration.scope
-          );
-        })
-        .catch(function (error) {
-          console.error("Service Worker registration failed:", error);
-        });
-    }
-
-    requestPermission(); // 컴포넌트가 마운트될 때 requestPermission 호출
-
-    const unsubscribe = onMessage(messaging, (payload) => {
-      console.log("Message received : ", payload);
-
-      // 알림 표시
-      new Notification(payload.notification?.title ?? "Title", {
-        body: payload.notification?.body ?? "Body",
-        icon: payload.notification?.icon ?? "/default-icon.png",
-      });
-    });
-
-    return () => {
-      unsubscribe();
-    };
-  }, []); // 빈 배열을 전달하여 한 번만 호출
-
   return (
     <Wrapper>
       <GlobalStyles />
