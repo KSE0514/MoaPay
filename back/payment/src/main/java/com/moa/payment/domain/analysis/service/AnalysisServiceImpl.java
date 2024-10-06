@@ -152,6 +152,30 @@ public class AnalysisServiceImpl implements AnalysisService {
 
 	//-------
 
-	//특정 성별+나이대 소비 평균 계산하기
+	@Override
+	public Long average(UUID memberId){
+		getMemberResponseDto member=getMemberInfo(memberId);
+		int age = calculateAge(member.getBirthDate()); //나이 ex) 26살
+		String ageGeneration = age/10 * 10 +""; //연령대 ex) 20대
+		Long avg=0L; //소비평균
+		String g=member.getGender();
+		Gender gender; //성별
+		if(g.equals("M")) gender=Gender.MALE;
+		else gender=Gender.FEMALE;
+
+		// 현재 날짜 가져오기
+		LocalDate currentDate = LocalDate.now();
+
+		// 전달 날짜 계산
+		LocalDate previousMonthDate = currentDate.minusMonths(1);
+
+		// 전달의 month와 year 출력
+		int previousMonth = previousMonthDate.getMonthValue(); // 월
+		int previousYear = previousMonthDate.getYear(); // 년
+
+		Analysis analysis=analysisRepository.findByPreviousMonthAndGenderAndGeneration(previousYear, previousMonth, gender, ageGeneration);
+		avg=analysis.getTotalAmount()/analysis.getUserCount(); //평균구하기
+		return avg;
+	}
 
 }

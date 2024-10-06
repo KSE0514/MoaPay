@@ -1,5 +1,7 @@
 package com.moa.payment.domain.analysis.controller;
 
+import java.util.UUID;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -21,12 +23,21 @@ public class AnalysisController {
 
 	private final AnalysisService analysisService;
 
-	//성별+나이대 소비 평균 가져오기
-	@GetMapping("/average")
-	public ResponseEntity<ResultResponse> average(){
+	//성별+나이대 총소비량 + 멤버수 저장하기
+	@GetMapping("/saveAverage")
+	public ResponseEntity<ResultResponse> saveAverage(){
 		//uuid 통해 member 찾고 member의 성별, 나이대 구한 후 소비평균 가져오기
 		analysisService.getLastMonthPaymentLog();
 		ResultResponse resultResponse = ResultResponse.of(HttpStatus.OK, "성별/연령대 별 소비총합과 멤버 수 저장 완료");
+		return ResponseEntity.status(resultResponse.getStatus()).body(resultResponse);
+	}
+
+	//현재 멤버의 성별+연령대에 따라
+	@PostMapping("/getAverage")
+	public  ResponseEntity<ResultResponse> getAverage(@RequestBody averageRequestDto dto){
+		UUID memberId=dto.getMemberId();
+		Long average=analysisService.average(memberId);
+		ResultResponse resultResponse = ResultResponse.of(HttpStatus.OK, "소비평균",average);
 		return ResponseEntity.status(resultResponse.getStatus()).body(resultResponse);
 	}
 

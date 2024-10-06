@@ -1,10 +1,12 @@
 package com.moa.payment.domain.analysis.entity.dto;
 
+import java.util.UUID;
+
 import lombok.Getter;
 import lombok.Setter;
 
 @Getter
 @Setter
 public class averageRequestDto {
-	String uuid; //멤버의 uuid
+	UUID memberId; //멤버의 uuid
 }
