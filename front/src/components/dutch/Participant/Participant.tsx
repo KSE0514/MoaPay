@@ -21,7 +21,7 @@ import {
 
 interface ParticipantProps {
   maxNum?: number | null;
-  isHost: boolean;
+  roomId: string;
 }
 
 interface Participant {
@@ -30,7 +30,7 @@ interface Participant {
   charge: string;
 }
 
-const Participant = ({maxNum=null, isHost}: ParticipantProps) => {
+const Participant = ({maxNum=null, roomId}: ParticipantProps) => {
   // const [participants, setParticipants] = useState([])
   const [dutchStart, setDutchStart] = useState(false)
   const [showWarning, setShowWarning] = useState(false)  // 경고 메시지 상태 추가
@@ -44,6 +44,13 @@ const Participant = ({maxNum=null, isHost}: ParticipantProps) => {
     {name: '주수아', id:3, charge: '',
     },
   ])
+
+  // 참가자 정보 가져오기(방 정보 불러오기를 통해 참가자 리스트 조회)
+  // const getDutchRoomData = async () => {
+  //   try{
+  //     const response = await axios.
+  //   }
+  // }
 
   // [미완]특정 참가자 추방(삭제) api 호출 함수_id로 삭제하게 될 것 같아 id를 인자로 넘겨놓음(나중에 다시 체크하기)
   const onDelete = async (id:number) => {
@@ -127,12 +134,16 @@ const Participant = ({maxNum=null, isHost}: ParticipantProps) => {
 
               <div>{participant.name}</div>
               {/* <div>삭제 아이콘</div> */}
-              {!dutchStart&&isHost&&<svg onClick={()=>onDelete(participant.id)} xmlns="http://www.w3.org/2000/svg" x="0px" y="0px" width="20" height="20" viewBox="0 0 48 48">
+              {!dutchStart&&
+              // isHost&&
+              <svg onClick={()=>onDelete(participant.id)} xmlns="http://www.w3.org/2000/svg" x="0px" y="0px" width="20" height="20" viewBox="0 0 48 48">
                 <path d="M 38.982422 6.9707031 A 2.0002 2.0002 0 0 0 37.585938 7.5859375 L 24 21.171875 L 10.414062 7.5859375 A 2.0002 2.0002 0 0 0 8.9785156 6.9804688 A 2.0002 2.0002 0 0 0 7.5859375 10.414062 L 21.171875 24 L 7.5859375 37.585938 A 2.0002 2.0002 0 1 0 10.414062 40.414062 L 24 26.828125 L 37.585938 40.414062 A 2.0002 2.0002 0 1 0 40.414062 37.585938 L 26.828125 24 L 40.414062 10.414062 A 2.0002 2.0002 0 0 0 38.982422 6.9707031 z"></path>
               </svg>}
               {/* <div>X</div> */}
 
-              {!isHost&&<div></div>}
+              {
+              // !isHost&&
+              <div></div>}
 
               {/* 해당 사용자가 지불해야 할 금액 */}
               {/* 자동으로 n등분 해서 분배해줘야 함_안 나눠 떨어질 경우: 주최자를 제외한 모두에게 (전체 값//사람 수)값 적용. 주최자는 (전체 값-(참가자)*(n-1)) */}

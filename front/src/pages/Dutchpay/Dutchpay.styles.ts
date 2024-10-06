@@ -3,6 +3,7 @@ import styled from "styled-components";
 export const Wrapper = styled.div`
   position: relative;
   height: 100vh;
+    overflow: auto; // [추후 삭제 예정] 방 생성 확인용으로 추가함
   // width: 100vw;
 `
 
@@ -28,9 +29,20 @@ export const CopyIcon = styled.div`
 `
 
 export const ShareUrl = styled.div`
-  // text-align: center;
+  text-align: center;
   margin: 0 auto;
   font-weight: 700;
+  overflow: auto;
+  align-items: center;
+  // text-overflow: ellipsis; // 일정 길이 이상 ...처리
+  overflow-y:hidden;
+	white-space: nowrap;
+
+  // 스크롤바 숨기기
+  -ms-overflow-style: none;
+  &::-webkit-scrollbar{
+  display:none;
+}
 `
 
 export const Main = styled.div`
@@ -54,6 +66,7 @@ export const LinkBox = styled.div`
   border-radius: 7px;
   padding: 4px 5px;
   padding-left: 21.704px;
+  padding-right: 21.704px;
   margin: 0 auto;
   height: 36px;
   font-size: 18px;

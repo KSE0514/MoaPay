@@ -1,34 +1,568 @@
+import triangle from "./../../assets/image/triangle.png";
+import Participant from "../../components/dutch/Participant/Participant";
+import Modal from "../../components/dutch/Modal/Modal";
+import Payment from "../../components/dutch/Payment/Payment";
+
 import Product from "../../components/dutch/Product/Product";
 import backImg from "./../../assets/image/dutchheader.png";
 import { useNavigate } from "react-router-dom";
+import { useEffect, useState } from "react";
+import axios from "axios";
+import { Client } from "@stomp/stompjs";
+import { PATH } from "../../constants/path";
+import { useAuthStore } from "../../store/AuthStore";
 
 import {
+  WaitingWrapper,
+  WaitingTop,
+  WaitingMain,
+
   Wrapper,
   Top,
+  Title,
+  Timer,
+  ProcessContainer,
+  ProcessLine,
+  Process,
+  Step,
   Main,
+  DutchWaiting,
+  DutchFin,
+  FinContent,
+  Bottom,
+  Btn,
+  BackImg,
 } from "./DutchInvite.styles"
 
 const DutchInvite = () => {
   const nav = useNavigate()
 
-  const onClickAccept = () =>[
-    nav('/dutchpay/participation')
-  ]
+  // const { name, id } = useAuthStore();
 
-  const goHome = () => {
-    nav('/home')
+  // 테스트용 멤버 데이터
+  const testUser = {
+    name: '김철수',
+    phoneNumber: "01012345678",
+    memberId: '019250e9-b495-75e3-85d9-8bf4767d9fa5'
   }
 
+
+  useEffect(() => {
+    // Url로부터 더치페이 입장 roomId 가져오기
+    const currentUrl = window.location.href; // 현재 URL을 가져옴
+    const parts = currentUrl.split('/'); // '/'를 기준으로 URL을 분할
+    const joinRoomId = parts[parts.length - 1]; // 마지막 요소가 roomId
+    console.log(joinRoomId); // "76735551-df91-4f94-9bc5-cc1895587aaf"
+    setRoomId(joinRoomId)
+  }, [])
+
+  const [isAccept, setIsAccept] = useState<boolean>(false); // 수락 버튼을 눌렀는지 확인용
+  const [isOpen, setIsOpen] = useState<boolean>(false); // 더치페이 나가기 모달 상태 관리
+  const [timeLeft, setTimeLeft] = useState<number>(2400); // 40분(2400초) 카운트다운을 위한 상태 관리
+  const [process, setProcess] = useState<number>(0); // 진행 단계
+  const [isHost, setIsHost] = useState<boolean>(false);
+
+  const [stop, setStop] = useState(false);
+
+
+    // 더치페이 방 입장 관련
+    const [roomId, setRoomId] = useState<string>(""); // 방 ID
+    const [memberId, setMemberId] = useState<string>(
+      "01923d9f-7b3d-78dd-9f9d-32f85c64fbcd"
+    ); // 멤버 ID
+    const [roomInfo, setRoomInfo] = useState<any>(null); // 방 정보
+    const [stompClient, setStompClient] = useState<Client | null>(null); // STOMP 클라이언트
+
+    const [orderId, setOrderId] = useState<string>(
+      "01923d9f-7b3d-70e9-ad8d-68a3ab09d578"
+    ); // 주문 ID
+    const [merchantId, setMerchantId] = useState<string>(
+      "01923d9f-7b3d-7a9e-a0b3-24d7970f90d4"
+    ); // 상점 ID
+    const [merchantName, setMerchantName] = useState<string>("Example Merchant"); // 상점 이름
+    const [categoryId, setCategoryId] = useState<string>("category"); // 카테고리 ID
+    const [totalPrice, setTotalPrice] = useState<number>(10000); // 총 가격
+    const [memberName, setMemberName] = useState<string>("");
+
+
+    // [추후 삭제 예정]테스트용 참여 유저
+    useEffect(() => {
+      setMemberName(testUser.name)
+      setMemberId(testUser.memberId)
+    }, [])
+
+  const onClickAccept = () =>{
+    connectWebSocket() // WebSocket 활성화
+    joinRoom() // 더치페이 방 입장
+
+    setIsAccept(true)
+    // nav(PATH.DUTCHPARTICIPATION) // 다음 화면으로 전환
+  }
+
+  const goHome = () => {
+    nav(PATH.HOME)
+  }
+
+  // [하단]더치페이 참여자 페이지에 있던 것들
+  // 더치페이 나가기 버튼 클릭 시 모달 띄우기
+  const openModal = () => {
+    console.log("더치페이 나가기 버튼 클릭");
+    setIsOpen(true);
+  };
+
+  const closeModal = () => {
+    setIsOpen(false);
+  };
+
+  // 10분 카운트다운 타이머
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setTimeLeft((prevTime) => (prevTime > 0 ? prevTime - 1 : 0));
+    }, 1000);
+
+    // 타이머가 0이 되면 종료
+    if (timeLeft === 0) {
+      clearInterval(timer);
+      alert("카운트다운이 완료되었습니다.");
+      // 원하는 동작을 추가할 수 있습니다.
+    }
+
+    return () => clearInterval(timer); // 컴포넌트가 언마운트될 때 타이머 정리
+  }, [timeLeft]);
+
+  // 남은 시간을 분과 초로 변환하는 함수
+  const formatTime = (time: number) => {
+    const minutes = Math.floor(time / 60);
+    const seconds = time % 60;
+    return `${minutes < 10 ? `0${minutes}` : minutes}:${
+      seconds < 10 ? `0${seconds}` : seconds
+    }`;
+  };
+
+  // 결제 버튼 클릭
+  const onClickPaymentBtn = () => {
+    // 결제하는 api 작성
+
+    setProcess(3); // 다음 화면으로 전환
+  };
+
+  // 모달-더치페이 중단 버튼 클릭
+  const onClickStop = () => {
+    setStop(true);
+  };
+
+  useEffect(() => {
+    console.log(`Process changed to ${process}`);
+  }, [process]);
+
+  // //////////////////////////////////////////////////////////////////
+  const leaveRoom = () => {
+    console.log("leave Room");
+    if (!stompClient || !stompClient.connected || !roomId) return;
+
+    const requestBody = {
+      roomId: roomId,
+      memberId: memberId,
+    };
+
+    stompClient.publish({
+      destination: `/pub/dutchpay/leave/${roomId}`,
+      body: JSON.stringify(requestBody),
+    });
+
+    console.log("Leave room:", roomId);
+  };
+
+  const check = () => {
+    console.log("check Room");
+    if (!stompClient || !stompClient.connected || !roomId){
+      console.log("WebSocket not connected"); return;}
+    const requestBody = {
+      memberId: memberId,
+    };
+    
+    stompClient.publish({
+      destination: `/pub/dutchpay/dutchRoom/${roomId}`,
+    });
+
+    console.log("confirm room:", roomId);
+  };
+
+  const confirm = () => {
+    console.log("confirm Room");
+    if (!stompClient || !stompClient.connected || !roomId){
+      console.log("WebSocket not connected"); return;}
+
+    // 요청 바디 구조 정의
+    const requestBody = {
+      roomId: roomId,
+      memberCnt: 2, // 실제 멤버 수를 여기에 설정
+      confirmPriceDtos: [
+        {
+          memberId: "01923d9f-7b3d-78dd-9f9d-32f85c64fbcd", // 실제 멤버 ID 설정
+          price: 5000, // 실제 금액 설정
+        },
+        {
+          memberId: "01923d9f-7b3d-70e9-ad8d-68a3ab09d578", // 두 번째 멤버 ID 설정
+          price: 5000, // 실제 금액 설정
+        },
+      ],
+    };
+
+    stompClient.publish({
+      destination: `/pub/dutchpay/confirm/${roomId}`,
+      body: JSON.stringify(requestBody),
+    });
+
+    console.log("confirm room:", roomId);
+  };
+
+  // 방 참여 함수 (STOMP로 메시지 보내기)
+  const joinRoom = () => {
+    console.log("join room");
+    if (!stompClient || !stompClient.connected || !roomId) return;
+
+    const requestBody = {
+      memberId: memberId,
+      memberName: memberName,
+    };
+
+    stompClient.publish({
+      destination: `/pub/dutchpay/join/${roomId}`,
+      body: JSON.stringify(requestBody),
+    });
+
+    console.log("Joining room:", roomId);
+  };
+
+  // WebSocket 연결 설정
+  const connectWebSocket = () => {
+    const client = new Client({
+      brokerURL: "ws://localhost:18020/moapay/core/ws/dutchpay", // WebSocket URL
+      onConnect: (frame) => {
+        console.log("Connected: " + frame);
+        // 방 참여 시 메시지 구독
+        client.subscribe(`/sub/dutch-room/${roomId}`, (message) => {
+          console.log("Message received:", message.body);
+          setRoomInfo(JSON.parse(message.body)); // 받은 메시지를 상태에 저장
+        });
+      },
+      onStompError: (frame) => {
+        console.error("Broker error: ", frame.headers["message"]);
+      },
+    });
+
+    client.activate(); // 클라이언트 활성화
+    setStompClient(client); // STOMP 클라이언트 저장
+  };
+
+  // 컴포넌트 언마운트 시 클라이언트 비활성화
+  useEffect(() => {
+    return () => {
+      stompClient?.deactivate(); // 클라이언트 비활성화
+    };
+  }, [stompClient]);
+  // //////////////////////////////////////////////////////////////////
+
   return(
-    <Wrapper>
-      <Top>
+    <>
+    {isAccept?
+      <Wrapper>
+        <Top>
+          <Title>
+            <div>더치 페이</div>
+            {/* 나가기 아이콘(-> 누르면 모달) */}
+            <svg
+              onClick={openModal}
+              xmlns="http://www.w3.org/2000/svg"
+              x="0px"
+              y="0px"
+              width="32"
+              height="32"
+              viewBox="0 0 48 48"
+              fill="#656565"
+            >
+              <path d="M 11.5 6 C 8.4802259 6 6 8.4802259 6 11.5 L 6 36.5 C 6 39.519774 8.4802259 42 11.5 42 L 29.5 42 C 32.519774 42 35 39.519774 35 36.5 A 1.50015 1.50015 0 1 0 32 36.5 C 32 37.898226 30.898226 39 29.5 39 L 11.5 39 C 10.101774 39 9 37.898226 9 36.5 L 9 11.5 C 9 10.101774 10.101774 9 11.5 9 L 29.5 9 C 30.898226 9 32 10.101774 32 11.5 A 1.50015 1.50015 0 1 0 35 11.5 C 35 8.4802259 32.519774 6 29.5 6 L 11.5 6 z M 33.484375 15.484375 A 1.50015 1.50015 0 0 0 32.439453 18.060547 L 36.878906 22.5 L 15.5 22.5 A 1.50015 1.50015 0 1 0 15.5 25.5 L 36.878906 25.5 L 32.439453 29.939453 A 1.50015 1.50015 0 1 0 34.560547 32.060547 L 41.560547 25.060547 A 1.50015 1.50015 0 0 0 41.560547 22.939453 L 34.560547 15.939453 A 1.50015 1.50015 0 0 0 33.484375 15.484375 z"></path>
+            </svg>
+          </Title>
+          <Timer>
+            {/* 10분 카운트다운 표시 */}
+            <div>{formatTime(timeLeft)}</div>
+          </Timer>
+
+          <ProcessContainer>
+            <ProcessLine></ProcessLine>
+            <Process>
+              <Step
+                style={{
+                  fontSize: process === 0 ? "20px" : "17px",
+                  fontWeight: process === 0 ? "700" : "none",
+                  color: 0 < process ? "#868686" : "black",
+                }}
+              >
+                <div
+                  style={{
+                    backgroundColor:
+                      process === 0 ? "#8748F3" : 0 < process ? "black" : "white",
+                  }}
+                ></div>
+                <div>시작 대기</div>
+              </Step>
+              <Step
+                style={{
+                  fontSize: process === 1 ? "20px" : "17px",
+                  fontWeight: process === 1 ? "700" : "none",
+                  color: 1 < process ? "#868686" : "black",
+                }}
+              >
+                <div
+                  style={{
+                    backgroundColor:
+                      process === 1 ? "#8748F3" : 1 < process ? "black" : "white",
+                  }}
+                ></div>
+                <div>금액 산정</div>
+              </Step>
+              <Step
+                style={{
+                  fontSize: process === 2 ? "20px" : "17px",
+                  fontWeight: process === 2 ? "700" : "none",
+                  color: 2 < process ? "#868686" : "black",
+                }}
+              >
+                <div
+                  style={{
+                    backgroundColor:
+                      process === 2 ? "#8748F3" : 2 < process ? "black" : "white",
+                  }}
+                ></div>
+                <div>결제</div>
+              </Step>
+              <Step
+                style={{
+                  fontSize: process === 3 || process === 4 ? "20px" : "17px",
+                  fontWeight: process === 3 || process === 4 ? "700" : "none",
+                  color: 4 < process ? "#868686" : "black",
+                }}
+              >
+                <div
+                  style={{
+                    backgroundColor:
+                      process === 3 || process === 4
+                        ? "#8748F3"
+                        : 4 < process
+                        ? "black"
+                        : "white",
+                  }}
+                ></div>
+                <div>정산 대기</div>
+              </Step>
+              <Step
+                style={{
+                  fontSize: process === 5 ? "20px" : "17px",
+                  fontWeight: process === 5 ? "700" : "none",
+                  color: 5 < process ? "#868686" : "black",
+                }}
+              >
+                <div
+                  style={{
+                    backgroundColor:
+                      process === 5 ? "#8748F3" : 5 < process ? "black" : "white",
+                  }}
+                ></div>
+                <div>완료</div>
+              </Step>
+            </Process>
+          </ProcessContainer>
+        </Top>
+
+        <Main
+          style={{
+            backgroundColor:
+              process === 2 ? "#B6BCFF" : "rgba(255, 255, 255, 0.65)",
+          }}
+        >
+          {/* 3. 더치페이하는 상품 정보 */}
+          {/* 2. 참여자 목록 컴포넌트_2단계인지 판단 기준: memberSetComplete === true */}
+          {process < 2 ? <Participant isHost={isHost} /> : null}
+          {process === 2 ? <Payment onClick={onClickPaymentBtn} /> : null}
+          {process === 3 ? (
+            <DutchWaiting>
+              <div>
+                <span>결</span>
+                <span>제</span>
+                <span> </span>
+                <span>진</span>
+                <span>행</span>
+                <span>중</span>
+                <span>.</span>
+                <span>.</span>
+                <span>.</span>
+              </div>
+              <div>결제 완료 시 웃는 얼굴로 변해요!</div>
+            </DutchWaiting>
+          ) : null}
+          {process === 4 ? (
+            <div>
+              다른 사람 결제 대기 화면
+              <div className="container">
+                <div id="spinner"></div>
+              </div>
+            </div>
+          ) : null}
+          {process === 5 ? (
+            <DutchFin>
+              <FinContent>
+                <div>
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    fill="white"
+                    x="0px"
+                    y="0px"
+                    width="48"
+                    height="48"
+                    viewBox="0 0 24 24"
+                  >
+                    <path d="M 20.738281 5.9941406 A 1.250125 1.250125 0 0 0 19.878906 6.3730469 L 9 17.234375 L 4.1152344 12.361328 A 1.250125 1.250125 0 1 0 2.3496094 14.130859 L 8.1171875 19.884766 A 1.250125 1.250125 0 0 0 9.8828125 19.884766 L 21.644531 8.140625 A 1.250125 1.250125 0 0 0 20.738281 5.9941406 z"></path>
+                  </svg>
+                </div>
+                <div>더치페이 완료!</div>
+              </FinContent>
+              <Bottom>
+                <Btn onClick={goHome}>홈으로 돌아가기</Btn>
+              </Bottom>
+            </DutchFin>
+          ) : null}
+        </Main>
+
+        {/* <Bottom>
+          <SquareBtn text={'더치페이 시작'} />
+        </Bottom> */}
+
+        {/* 배경 도형 */}
+        <BackImg>
+          <img src={triangle} />
+          <img src={triangle} />
+          <img src={triangle} />
+        </BackImg>
+
+        {/* [종료 버튼 미완]더치페이 나가기 모달 */}
+        {isOpen && (
+          <Modal isOpen={isOpen} onClose={closeModal}>
+            <svg
+              onClick={closeModal}
+              xmlns="http://www.w3.org/2000/svg"
+              x="0px"
+              y="0px"
+              width="20"
+              height="20"
+              viewBox="0 0 48 48"
+            >
+              <path d="M 38.982422 6.9707031 A 2.0002 2.0002 0 0 0 37.585938 7.5859375 L 24 21.171875 L 10.414062 7.5859375 A 2.0002 2.0002 0 0 0 8.9785156 6.9804688 A 2.0002 2.0002 0 0 0 7.5859375 10.414062 L 21.171875 24 L 7.5859375 37.585938 A 2.0002 2.0002 0 1 0 10.414062 40.414062 L 24 26.828125 L 37.585938 40.414062 A 2.0002 2.0002 0 1 0 40.414062 37.585938 L 26.828125 24 L 40.414062 10.414062 A 2.0002 2.0002 0 0 0 38.982422 6.9707031 z"></path>
+            </svg>
+            {stop ? (
+              <div>정말 더치페이를 중단하시겠습니까?</div>
+            ) : (
+              <div>더치페이를 중단 시키시겠습니까?</div>
+            )}
+            <div>
+              {/* <button onClick={closeModal}>취소</button> */}
+              {/* 종료(중단)버튼: 더치페이 주최자는 더치페이가 모두에게 종료되도록하고 참가자는 참가자 본인만 종료되도록 해야함  */}
+              {stop ? (
+                <button>예</button>
+              ) : (
+                <button onClick={onClickStop}>중단</button>
+              )}
+              {stop ? (
+                <button
+                  onClick={() => {
+                    setStop(false);
+                  }}
+                >
+                  취소
+                </button>
+              ) : (
+                <button onClick={goHome}>홈으로</button>
+              )}
+            </div>
+          </Modal>
+        )}
+
+<div>
+      <h1>Dutch Pay Test Client</h1>
+
+      <h2>Create Room</h2>
+
+      {/* <input
+        type="number"
+        placeholder="Member Count"
+        value={maxMember}
+        onChange={(e) => setMemberCnt(Number(e.target.value))}
+      /> */}
+      <p>Order ID: {orderId}</p>
+      <p>Merchant ID: {merchantId}</p>
+      <p>Merchant Name: {merchantName}</p>
+      <p>Category ID: {categoryId}</p>
+      <input
+        type="number"
+        placeholder="Total Price"
+        value={totalPrice}
+        onChange={(e) => setTotalPrice(Number(e.target.value))}
+      />
+      {/* <button onClick={createRoom}>Create Room</button>
+      {joinUrl && (
+        <p>
+          Join URL: <a href={joinUrl}>{joinUrl}</a>
+        </p>
+      )} */}
+
+      <h2>Join Room</h2>
+      <input
+        type="text"
+        value={memberName}
+        onChange={(e) => setMemberName(e.target.value)} // 멤버 ID 수정 가능하도록 설정
+      />
+      <br></br>
+      <p>Member ID:</p>
+      <input
+        type="text"
+        value={memberId}
+        onChange={(e) => setMemberId(e.target.value)} // 멤버 ID 수정 가능하도록 설정
+      />
+      <br></br>
+      <p>룸 UUID</p>
+      <input
+        type="text"
+        placeholder="Room ID"
+        value={roomId}
+        onChange={(e) => setRoomId(e.target.value)}
+      />
+      <br />
+      <br />
+      <button onClick={connectWebSocket}>Connect WebSocket</button>
+      <button onClick={joinRoom}>Join Room</button>
+      <button onClick={leaveRoom}>Leave Room</button>
+      <button onClick={check}>Check</button>
+      <button onClick={confirm}>Confirm</button>
+
+      {roomInfo && (
+        <div>
+          <h3>Room Info:</h3>
+          <pre>{JSON.stringify(roomInfo, null, 2)}</pre>
+        </div>
+      )}
+    </div>
+    </Wrapper> 
+    :
+    <WaitingWrapper>
+      <WaitingTop>
         <img src={backImg} />
         <div>
           {/* 상품 정보는 또 어떻게 들고와야하지... */}
           <Product productName={'새콤달콤 티니핑 시즌4 하츄핑 꽃다발 봉제 인형'} productUrl={'https://www.ssg.com/item/itemView.ssg?itemId=1000566517100'} />
         </div>
-      </Top>
-      <Main>
+      </WaitingTop>
+      <WaitingMain>
         {/* 주최자 이름을 어떻게 들고와야 하는가... */}
         <div>'주최자 이름'님이</div>
         <div>더치페이를</div>
@@ -38,8 +572,10 @@ const DutchInvite = () => {
           <button onClick={onClickAccept}>수락</button>
           <button onClick={goHome}>취소</button>
         </div>
-      </Main>
-    </Wrapper>
+      </WaitingMain>
+    </WaitingWrapper>
+  }
+    </>
   )
 }
 

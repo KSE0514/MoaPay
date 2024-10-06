@@ -1,8 +1,11 @@
 import triangle from "./../../assets/image/triangle.png"
 import Participant from "../../components/dutch/Participant/Participant";
 import Modal from "../../components/dutch/Modal/Modal";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import axios from "axios";
+import { Client } from "@stomp/stompjs";
+import { useAuthStore } from "../../store/AuthStore";
+
 import {
   Wrapper,
   Top,
@@ -18,48 +21,261 @@ import { PATH } from "../../constants/path";
 
 const Dutchpay = () => {
   const nav = useNavigate()
+  // const location = useLocation();
+
+  // const { name, id } = useAuthStore()
+
+  // console.log("Url 넘어오는지 확인용", location.state)
   
-  const [isOpen, setIsOpen] = useState(false); // 더치페이 나가기 모달 상태 관리
-  const [isCompleteSettingCheck, setIsCompleteSettingCheck] = useState(false); // 더치페이 인원 설정 완료 확인용 모달 띄우기 판단용
+  // location.state가 없을 경우 localStorage에서 값을 가져옴
+  // const joinUrl = location.state?.joinUrl || localStorage.getItem('joinUrl') || '';
+  // console.log("Received joinUrl:", joinUrl)
+
+  const [isOpen, setIsOpen] = useState<boolean>(false); // 더치페이 나가기 모달 상태 관리
+  const [isCompleteSettingCheck, setIsCompleteSettingCheck] = useState<boolean>(false); // 더치페이 인원 설정 완료 확인용 모달 띄우기 판단용
   const [memberNum, setMemberNum] = useState('') // 참여자 수 입력 받는 변수
-  const [dutchUrl, setDutchUrl] = useState('http://localhost:5173') // [[나중에 ''로 바꾸기 !!!!! ]더치페이 초대 url
-  const [memberSetComplete, setMemberSetComplete] = useState(false) // 참여자수 설정 완료 여부 판단용
-  const [stop, setStop] = useState(false) // 더치페이 중단하기 버튼을 눌렀는지의 여부를 판단
+  const [dutchUrl, setDutchUrl] = useState<string>('') // [[나중에 ''로 바꾸기 !!!!! ]더치페이 초대 url
+  const [memberSetComplete, setMemberSetComplete] = useState<boolean>(false) // 참여자수 설정 완료 여부 판단용
+  const [stop, setStop] = useState<boolean>(false) // 더치페이 중단하기 버튼을 눌렀는지의 여부를 판단
+
+
+  // console.log(joinUrl)
+  // useEffect (() => {
+  //   if (joinUrl) {
+  //     setDutchUrl(joinUrl)
+  //     console.log("Dutch URL set to:", joinUrl)
+  //   }
+  // }, [joinUrl])
 
   // 테스트용 변수... 나중에 지울 예정(host)
-  const [isHost, setIsHost] = useState(true) // 쓰진 않을 것 같음...
+  const [isHost, setIsHost] = useState<boolean>(true) // 쓰진 않을 것 같음...
 
-  // 참여자 수 바인딩
-  const onChangeMember = (e: React.ChangeEvent<HTMLInputElement>) => {
-    console.log("확인용",e.target.value)
-    setMemberNum(e.target.value)
-  }
+  // // 참여자 수 바인딩
+  // const onChangeMember = (e: React.ChangeEvent<HTMLInputElement>) => {
+  //   console.log("확인용",e.target.value)
+  //   setMemberNum(e.target.value)
+  // }
 
-  // 참여자 수 입력 후 완료 버튼을 눌렀을 경우=>설정 완료로 변경
-  const onCheckComplete = () =>{
-    setIsCompleteSettingCheck(true)
-  }
+  // // 참여자 수 입력 후 완료 버튼을 눌렀을 경우=>설정 완료로 변경
+  // const onCheckComplete = () =>{
+  //   setIsCompleteSettingCheck(true)
+  // }
 
-  // [미완]더치페이 링크를 받아오는 api 요청(요청 방식 나중에 다시 확인하기)
-  const getDutchUrl = async () => {
+  // // [미완]더치페이 링크를 받아오는 api 요청(요청 방식 나중에 다시 확인하기)
+  // const getDutchUrl = async () => {
+  //   try {
+  //     const response = await axios.get(
+  //       `요청 api 주소 입력`,
+  //       {
+  //         headers: {
+  //           "Content-Type": "application/json",
+  //         }
+  //         // withCredentials: true, // 쿠키를 포함하여 요청 <----- 필요한가?
+  //       },
+  //     );
+  //     if (response.status === 200) {
+  //       console.log("더치페이 url 생성완료")
+  //       // setDutchUrl(응답 데이터 중 더치페이 url 넣기)
+  //     }
+  //   } catch (err) {
+  //     console.error("에러 발생", err);
+  //   }
+  // };
+
+  //////////////////////////////////////////////////////////////////////////////////////////
+  const [roomId, setRoomId] = useState<string>(""); // 방 ID
+  const [memberId, setMemberId] = useState<string>(
+    "01923d9f-7b3d-78dd-9f9d-32f85c64fbcd"
+  ); // 멤버 ID
+  const [joinUrl, setJoinUrl] = useState<string>(""); // 방 참여 URL
+  const [roomInfo, setRoomInfo] = useState<any>(null); // 방 정보
+  const [stompClient, setStompClient] = useState<Client | null>(null); // STOMP 클라이언트
+
+  // 방 생성에 필요한 필드
+  const [maxMember, setMemberCnt] = useState<number | string>(''); // 총원 수
+  const [orderId, setOrderId] = useState<string>(
+    "01923d9f-7b3d-70e9-ad8d-68a3ab09d578"
+  ); // 주문 ID
+  const [merchantId, setMerchantId] = useState<string>(
+    "01923d9f-7b3d-7a9e-a0b3-24d7970f90d4"
+  ); // 상점 ID
+  const [merchantName, setMerchantName] = useState<string>("Example Merchant"); // 상점 이름
+  const [categoryId, setCategoryId] = useState<string>("category"); // 카테고리 ID
+  const [totalPrice, setTotalPrice] = useState<number>(10000); // 총 가격
+  const [memberName, setMemberName] = useState<string>("");
+
+ 
+  // 방 생성 함수
+  const createRoom = async () => {
+    const requestBody = {
+      memberId: memberId,
+      maxMember: maxMember,
+      orderId: orderId,
+      merchantId: merchantId,
+      merchantName: merchantName,
+      categoryId: categoryId,
+      totalPrice: totalPrice,
+    };
+
     try {
-      const response = await axios.get(
-        `요청 api 주소 입력`,
-        {
-          headers: {
-            "Content-Type": "application/json",
-          }
-          // withCredentials: true, // 쿠키를 포함하여 요청 <----- 필요한가?
-        },
+      const response = await axios.post(
+        "http://localhost:18020/moapay/core/dutchpay/createRoom",
+        requestBody
       );
-      if (response.status === 200) {
-        console.log("더치페이 url 생성완료")
-        // setDutchUrl(응답 데이터 중 더치페이 url 넣기)
-      }
-    } catch (err) {
-      console.error("에러 발생", err);
+      console.log("Room created:", response.data);
+
+      // message.body를 DutchRoomMessage 타입으로 변환
+      const parsedMessage: DutchRoomMessage = response.data;
+      const generatedUrl = `http://localhost:5173/dutchpay/invite/${parsedMessage.data}`
+      console.log("Generated joinUrl:", generatedUrl)
+      // localStorage.setItem('joinUrl', generatedUrl);  // localStorage에 joinUrl 저장
+      // setJoinUrl(parsedMessage.data); // 방 생성 후 반환된 URL 저장
+      setJoinUrl(generatedUrl) // 더치페이 초대 url 저장.....?
+      setRoomId(parsedMessage.data); // 생성된 방의 roomId 저장
+
+      // nav(PATH.DUTCHPAY, { state: { joinUrl: generatedUrl }}) // 인원 설정하여 방 생성 후 다음 페이지로 이동
+      connectWebSocket() // WebSocket연결해서 Stomp 실행
+      // joinRoom() // 방 참여
+    } catch (error) {
+      console.error("Error creating room:", error);
     }
   };
+
+  // 방 참여 함수 (STOMP로 메시지 보내기)
+  const joinRoom = () => {
+    console.log("join room");
+    if (!stompClient || !stompClient.connected || !roomId) return;
+
+    const requestBody = {
+      memberId: memberId,
+      memberName: memberName,
+    };
+
+    stompClient.publish({
+      destination: `/pub/dutchpay/join/${roomId}`,
+      body: JSON.stringify(requestBody),
+    });
+
+    console.log("Joining room:", roomId);
+  };
+
+  const leaveRoom = () => {
+    console.log("leave Room");
+    if (!stompClient || !stompClient.connected || !roomId) return;
+
+    const requestBody = {
+      roomId: roomId,
+      memberId: memberId,
+    };
+
+    stompClient.publish({
+      destination: `/pub/dutchpay/leave/${roomId}`,
+      body: JSON.stringify(requestBody),
+    });
+
+    console.log("Leave room:", roomId);
+  };
+
+  const check = () => {
+    console.log("check Room");
+    if (!stompClient || !stompClient.connected || !roomId){
+      console.log("WebSocket not connected"); return;}
+    const requestBody = {
+      memberId: memberId,
+    };
+    
+    stompClient.publish({
+      destination: `/pub/dutchpay/dutchRoom/${roomId}`,
+    });
+
+    console.log("confirm room:", roomId);
+  };
+
+  const confirm = () => {
+    console.log("confirm Room");
+    if (!stompClient || !stompClient.connected || !roomId){
+      console.log("WebSocket not connected"); return;}
+
+    // 요청 바디 구조 정의
+    const requestBody = {
+      roomId: roomId,
+      memberCnt: 2, // 실제 멤버 수를 여기에 설정
+      confirmPriceDtos: [
+        {
+          memberId: "01923d9f-7b3d-78dd-9f9d-32f85c64fbcd", // 실제 멤버 ID 설정
+          price: 5000, // 실제 금액 설정
+        },
+        {
+          memberId: "01923d9f-7b3d-70e9-ad8d-68a3ab09d578", // 두 번째 멤버 ID 설정
+          price: 5000, // 실제 금액 설정
+        },
+      ],
+    };
+
+    stompClient.publish({
+      destination: `/pub/dutchpay/confirm/${roomId}`,
+      body: JSON.stringify(requestBody),
+    });
+
+    console.log("confirm room:", roomId);
+  };
+
+  // 서버로부터 받은 메시지의 타입 정의
+  interface DutchRoomMessage {
+    status: string;
+    message: string;
+    data: string; // UUID나 다른 타입에 맞게 수정 가능
+  }
+
+  // WebSocket 연결 설정
+  const connectWebSocket = () => {
+    const client = new Client({
+      brokerURL: "ws://localhost:18020/moapay/core/ws/dutchpay", // WebSocket URL
+      onConnect: (frame) => {
+        console.log("Connected: " + frame);
+
+        // 방 참여
+        joinRoom()
+
+        // // 방 정보 확인
+        // check();
+
+
+        // 방 참여 시 메시지 구독
+        client.subscribe(`/sub/dutch-room/${roomId}`, (message) => {
+          console.log("Message received:", message.body);
+          setRoomInfo(JSON.parse(message.body)); // 받은 메시지를 상태에 저장
+        });
+      },
+      onStompError: (frame) => {
+        console.error("Broker error: ", frame.headers["message"]);
+      },
+    });
+
+    client.activate(); // 클라이언트 활성화
+    setStompClient(client); // STOMP 클라이언트 저장
+  };
+
+  // 컴포넌트 언마운트 시 클라이언트 비활성화
+  useEffect(() => {
+    return () => {
+      stompClient?.deactivate(); // 클라이언트 비활성화
+    };
+  }, [stompClient]);
+
+/////////////////////////////////////////////
+useEffect(() => {
+  const storedMemberNum = localStorage.getItem('maxMember');
+  if (storedMemberNum) {
+    setMemberCnt(Number(storedMemberNum))
+  }
+
+  createRoom() // 방 생성
+  // setJoinUrl(`http://localhost:5173/dutchpay/invite/${roomId}`)
+  // connectWebSocket()
+  // joinRoom()
+  // check()
+}, [])
 
 
   const goHome = () => {
@@ -75,13 +291,13 @@ const Dutchpay = () => {
   const closeModal = () => {
     setIsOpen(false);
   };
-  const closeSettingModal = () => {
-    setIsCompleteSettingCheck(false);
-  };
-  const completeMemberSetting = () => {
-    setMemberSetComplete(true)
-    setIsCompleteSettingCheck(false);
-  };
+  // const closeSettingModal = () => {
+  //   setIsCompleteSettingCheck(false);
+  // };
+  // const completeMemberSetting = () => {
+  //   setMemberSetComplete(true)
+  //   setIsCompleteSettingCheck(false);
+  // };
 
   const onClickStop = () => {
     setStop(true)
@@ -90,8 +306,8 @@ const Dutchpay = () => {
 
   // 더치페이 url을 클립보드에 복사하는 함수
   const copyToClipboard = () => {
-    navigator.clipboard.writeText(dutchUrl).then(() => {
-      console.log("url이 클립보드에 복사외었습니다.")
+    navigator.clipboard.writeText(joinUrl).then(() => {
+      console.log("url이 클립보드에 복사되었습니다.")
     }).catch(err => {
       console.error("복사 실패:", err)
     })
@@ -138,14 +354,14 @@ const Dutchpay = () => {
           {
           // memberNum&&
           // memberSetComplete&&
-          <ShareUrl>{dutchUrl}</ShareUrl>}
+          <ShareUrl>{joinUrl}</ShareUrl>}
         </LinkBox>
       </Top>
 
       <Main>
         {/* 3. 더치페이하는 상품 정보 */}
         {/* 2. 참여자 목록 컴포넌트_2단계인지 판단 기준: memberSetComplete === true */}
-        {memberSetComplete&&<Participant maxNum={Number(memberNum)} isHost={isHost} />}
+        {memberSetComplete&&<Participant maxNum={Number(maxMember)} isHost={isHost} />}
       </Main>
 
       {/* 배경 도형 */}
@@ -158,7 +374,7 @@ const Dutchpay = () => {
 
 {/* 모달 */}
       {/* 더치페이 인원 설정 확인용 모달 */}
-      {isCompleteSettingCheck&&(
+      {/* {isCompleteSettingCheck&&(
         <Modal isOpen={isCompleteSettingCheck} onClose={closeSettingModal}>
           <div>{memberNum}명과 더치페이를 진행하시겠습니까?</div>
           <div>
@@ -166,7 +382,7 @@ const Dutchpay = () => {
             <button onClick={closeSettingModal}>취소</button>
           </div>
         </Modal>
-      )}
+      )} */}
 
       {/* [종료 버튼 미완]더치페이 나가기 모달 */}
       {isOpen && (
@@ -195,6 +411,71 @@ const Dutchpay = () => {
           </div>
         </Modal>
       )}
+
+<div>
+      <h1>Dutch Pay Test Client</h1>
+
+      <h2>Create Room</h2>
+
+      <input
+        type="number"
+        placeholder="Member Count"
+        value={maxMember}
+        onChange={(e) => setMemberCnt(Number(e.target.value))}
+      />
+      <p>Order ID: {orderId}</p>
+      <p>Merchant ID: {merchantId}</p>
+      <p>Merchant Name: {merchantName}</p>
+      <p>Category ID: {categoryId}</p>
+      <input
+        type="number"
+        placeholder="Total Price"
+        value={totalPrice}
+        onChange={(e) => setTotalPrice(Number(e.target.value))}
+      />
+      <button onClick={createRoom}>Create Room</button>
+      {joinUrl && (
+        <p>
+          Join URL: <a href={joinUrl}>{joinUrl}</a>
+        </p>
+      )}
+
+      <h2>Join Room</h2>
+      <input
+        type="text"
+        value={memberName}
+        onChange={(e) => setMemberName(e.target.value)} // 멤버 ID 수정 가능하도록 설정
+      />
+      <br></br>
+      <p>Member ID:</p>
+      <input
+        type="text"
+        value={memberId}
+        onChange={(e) => setMemberId(e.target.value)} // 멤버 ID 수정 가능하도록 설정
+      />
+      <br></br>
+      <p>룸 UUID</p>
+      <input
+        type="text"
+        placeholder="Room ID"
+        value={roomId}
+        onChange={(e) => setRoomId(e.target.value)}
+      />
+      <br />
+      <br />
+      <button onClick={connectWebSocket}>Connect WebSocket</button>
+      <button onClick={joinRoom}>Join Room</button>
+      <button onClick={leaveRoom}>Leave Room</button>
+      <button onClick={check}>Check</button>
+      <button onClick={confirm}>Confirm</button>
+
+      {roomInfo && (
+        <div>
+          <h3>Room Info:</h3>
+          <pre>{JSON.stringify(roomInfo, null, 2)}</pre>
+        </div>
+      )}
+    </div>
     </Wrapper>
   )
 };
