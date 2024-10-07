@@ -1,5 +1,6 @@
 package com.moa.moapay.domain.card.service;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.moa.moapay.domain.card.entity.CardBenefit;
 import com.moa.moapay.domain.card.entity.CardProduct;
 import com.moa.moapay.domain.card.entity.MyCard;
@@ -25,7 +26,9 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestClient;
 
+import java.time.YearMonth;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -38,11 +41,15 @@ public class MyCardServiceImpl implements MyCardService {
     @Value("${external-url.cardbank}")
     private String cardbankUrl;
 
+    @Value("${external-url.payment}")
+    private String paymentUrl;
+
     private final CardProductRepository cardProductRepository;
     private final MyCardQueryRepository myCardQueryRepository;
     private final RestClient restClient;
     private final MyCardRepository myCardRepository;
     private final CardBenefitRepository cardBenefitRepository;
+    private final ObjectMapper objectMapper;
 
     @Override
     public List<MyCardInfoDto> getMyCardInfo(HttpServletRequest request) {
@@ -176,14 +183,14 @@ public class MyCardServiceImpl implements MyCardService {
 
                         List<CardBenefitDto> cardBenefitDtos = cardBenefit.stream().map(
                                 cardBenefit1 -> {
-                                   return CardBenefitDto.builder()
-                                           .benefitDesc(cardBenefit1.getBenefitDesc())
-                                           .benefitType(cardBenefit1.getBenefitType())
-                                           .benefitValue(cardBenefit1.getBenefitValue())
-                                           .benefitUnit(cardBenefit1.getBenefitUnit())
-                                           .categoryName(cardBenefit1.getCardBenefitCategory().getName())
-                                           .benefitPoint(cardBenefit1.getBenefitPoint())
-                                           .build();
+                                    return CardBenefitDto.builder()
+                                            .benefitDesc(cardBenefit1.getBenefitDesc())
+                                            .benefitType(cardBenefit1.getBenefitType())
+                                            .benefitValue(cardBenefit1.getBenefitValue())
+                                            .benefitUnit(cardBenefit1.getBenefitUnit())
+                                            .categoryName(cardBenefit1.getCardBenefitCategory().getName())
+                                            .benefitPoint(cardBenefit1.getBenefitPoint())
+                                            .build();
                                 }
                         ).toList();
 
@@ -258,6 +265,7 @@ public class MyCardServiceImpl implements MyCardService {
 
     /**
      * 카드 추가
+     *
      * @param registrationRequestDto
      * @return
      */
@@ -269,7 +277,7 @@ public class MyCardServiceImpl implements MyCardService {
 
         Optional<MyCard> existMycard = myCardRepository.findByCardNumber(String.valueOf(registrationRequestDto.getCardNumber()));
         if (existMycard.isPresent()) {
-            throw new BusinessException(HttpStatus.CONFLICT,"카드가 이미 존재합니다");
+            throw new BusinessException(HttpStatus.CONFLICT, "카드가 이미 존재합니다");
         }
 
         try {
@@ -367,7 +375,7 @@ public class MyCardServiceImpl implements MyCardService {
     public void disableCard(MyCardStatusRequestDto disableCardRequestDto) {
 
         List<MyCard> myCards = myCardRepository.findAllByMemberId(disableCardRequestDto.getMemberUuid());
-        System.out.println("member uuid "+disableCardRequestDto.getMemberUuid());
+        System.out.println("member uuid " + disableCardRequestDto.getMemberUuid());
         System.out.println(myCards);
         boolean cardExists = myCards.stream()
                 .anyMatch(myCard -> myCard.getCardNumber().equals(disableCardRequestDto.getCardNumber()));
@@ -398,10 +406,28 @@ public class MyCardServiceImpl implements MyCardService {
     }
 
     @Override
-    public UUID getMemberId(UUID cardId){
-        MyCard myCard=myCardRepository.findByUuid(cardId).orElseThrow(()-> new BusinessException(HttpStatus.NOT_FOUND,"카드가 존재하지 않습니다."));
-        System.out.println("내카드"+myCard.getMemberId());
+    public UUID getMemberId(UUID cardId) {
+        MyCard myCard = myCardRepository.findByUuid(cardId).orElseThrow(() -> new BusinessException(HttpStatus.NOT_FOUND, "카드가 존재하지 않습니다."));
+        System.out.println("내카드" + myCard.getMemberId());
         return myCard.getMemberId();
+    }
+
+    @Override
+    public CardHistoryResponseDto getCardHistory(CardHistoryRequestDto cardHistoryRequestDto) {
+        log.info("get card history : {}", cardHistoryRequestDto.getCardId());
+        // 유효한 날짜인지 객체 변환 시도를 통해 알아낸다
+        YearMonth.of(cardHistoryRequestDto.getYear(), cardHistoryRequestDto.getMonth());
+        // 유효 확인 후, restClient로 응답 변환
+        ResponseEntity<Map> response = restClient.post()
+                .uri(paymentUrl + "/analysis/history")
+                .contentType(MediaType.APPLICATION_JSON)
+                .body(cardHistoryRequestDto)
+                .retrieve()
+                .toEntity(Map.class);
+        if (!response.getStatusCode().is2xxSuccessful()) {
+            throw new BusinessException(HttpStatus.BAD_REQUEST, "결과를 가져올 수 없었습니다 : " + response.getBody().get("message"));
+        }
+        return objectMapper.convertValue(response.getBody().get("data"), CardHistoryResponseDto.class);
     }
 }
 
