@@ -30,4 +30,6 @@ public class Statistics {
 	private int year;
 
 	private UUID memberId;
+
+	private
 }
