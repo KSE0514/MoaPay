@@ -88,4 +88,12 @@ public class CardController {
         return ResponseEntity.status(resultResponse.getStatus()).body(resultResponse);
     }
 
+    //paymnet로 보낼 myCard
+    @PostMapping("/getMemberCard")
+    public ResponseEntity<List<GetMemberCardsDto>> getMemberCard(@Valid @RequestBody UUID memberId){
+        List<GetMemberCardsDto> cards= myCardService.getMemberCard(memberId);
+        return ResponseEntity.ok(cards);
+    }
+
+
 }

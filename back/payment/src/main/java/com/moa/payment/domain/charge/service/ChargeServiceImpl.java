@@ -8,6 +8,7 @@ import com.moa.payment.domain.charge.model.ProcessingStatus;
 import com.moa.payment.domain.charge.model.dto.*;
 import com.moa.payment.domain.charge.model.vo.*;
 import com.moa.payment.domain.charge.repository.PaymentLogRepository;
+import com.moa.payment.domain.saving.service.SavingService;
 import com.moa.payment.global.exception.BusinessException;
 import com.moa.payment.global.exception.ErrorResponse;
 import lombok.RequiredArgsConstructor;
@@ -17,6 +18,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.event.TransactionalEventListener;
 import org.springframework.web.client.RestClient;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
@@ -38,6 +40,7 @@ public class ChargeServiceImpl implements ChargeService {
     private final RestClient restClient;
     private final ObjectMapper objectMapper;
     private final PaymentLogRepository paymentLogRepository;
+    private final SavingService savingService;
 
     @Override
     public ExecutePaymentResultVO executePayment(ExecutePaymentRequestVO vo) {
@@ -101,7 +104,11 @@ public class ChargeServiceImpl implements ChargeService {
                     .categoryId(paymentResponseDto.getCategoryId())
                     .benefitBalance(paymentResponseDto.getBenefitBalance())
                     .build();
-            paymentLogRepository.save(paymentLog);
+            System.out.println("paymentLog 저장 성공");
+                
+            PaymentLog savedPaymentLog = paymentLogRepository.save(paymentLog);
+            // paymentLog 저장 후 updateTodayAmount 호출
+            savingService.updateTodayAmount(savedPaymentLog);
             // 저장에도 성공했다면 성공 리스트에 넣는다
             paymentResultInfoList.add(
                     PaymentResultCardInfoVO.builder()
@@ -123,6 +130,7 @@ public class ChargeServiceImpl implements ChargeService {
 //        for(PaymentResultCardInfoVO v : paymentResultInfoList) {
 //            log.info(v.toString());
 //        }
+
         return ExecutePaymentResultVO.builder()
                 .merchantName(merchantName)
                 .status(PaymentResultStatus.SUCCEED)
