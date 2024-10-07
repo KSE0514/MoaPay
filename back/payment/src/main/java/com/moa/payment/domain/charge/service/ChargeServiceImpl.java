@@ -76,20 +76,7 @@ public class ChargeServiceImpl implements ChargeService {
                             .cardNumber(cardInfo.getCardNumber())
                             .cvc(cardInfo.getCvc())
                             .build();
-                    ResponseEntity<Map> cancelResponse = restClient.post()
-                            .uri(cardbankUrl+"/card/cancel")
-                            .contentType(MediaType.APPLICATION_JSON)
-                            .body(requestDto)
-                            .retrieve()
-                            .toEntity(Map.class);
-                    CancelPayResponseDto responseDto = objectMapper.convertValue(cancelResponse.getBody().get("data"), CancelPayResponseDto.class);
-                    log.info("canceled - amount : {}, benefitBalance : {}, remainedBenefit : {}", responseDto.getAmount(), responseDto.getBenefitBalance(), responseDto.getRemainedBenefit());
-                    // 취소 처리가 되었다면, 로컬의 payment log status도 바꿔야 함
-                    PaymentLog paymentLog = paymentLogRepository.findByUuid(paymentId).get();
-                    PaymentLog newLog = paymentLog.toBuilder()
-                            .status(ProcessingStatus.CANCELED)
-                            .build();
-                    paymentLogRepository.save(newLog);
+                    CancelPayment(requestDto);
                 }
                 // 결제 실패 관련 처리가 끝났다면 더이상 결제를 진행하지 않음
                 return ExecutePaymentResultVO.builder()
@@ -140,6 +127,24 @@ public class ChargeServiceImpl implements ChargeService {
                 .status(PaymentResultStatus.SUCCEED)
                 .paymentResultInfoList(paymentResultInfoList)
                 .build();
+    }
+
+    @Override
+    public void CancelPayment(CancelPayRequestDto dto) {
+        ResponseEntity<Map> cancelResponse = restClient.post()
+                .uri(cardbankUrl+"/card/cancel")
+                .contentType(MediaType.APPLICATION_JSON)
+                .body(dto)
+                .retrieve()
+                .toEntity(Map.class);
+        CancelPayResponseDto responseDto = objectMapper.convertValue(cancelResponse.getBody().get("data"), CancelPayResponseDto.class);
+        log.info("canceled - amount : {}, benefitBalance : {}, remainedBenefit : {}", responseDto.getAmount(), responseDto.getBenefitBalance(), responseDto.getRemainedBenefit());
+        // 취소 처리가 되었다면, 로컬의 payment log status도 바꿔야 함
+        PaymentLog paymentLog = paymentLogRepository.findByUuid(dto.getPaymentId()).get();
+        PaymentLog newLog = paymentLog.toBuilder()
+                .status(ProcessingStatus.CANCELED)
+                .build();
+        paymentLogRepository.save(newLog);
     }
 
     @Override
