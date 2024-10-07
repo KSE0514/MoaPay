@@ -28,4 +28,21 @@ public class PaymentLogQueryRepository {
                 .orderBy(paymentLog.createTime.desc())
                 .fetch();
     }
+
+    // 해당되는 카드 전체 찾기
+    public List<CardHistoryPaymentLogDto> findPaymentLogs(List<UUID> cardIds, LocalDateTime start, LocalDateTime end) {
+        QPaymentLog paymentLog = QPaymentLog.paymentLog;
+        return queryFactory.select(Projections.fields(CardHistoryPaymentLogDto.class,
+                        paymentLog.cardId,
+                        paymentLog.merchantName,
+                        paymentLog.benefitBalance,
+                        paymentLog.amount,
+                        paymentLog.categoryId,
+                        paymentLog.createTime))
+                .from(paymentLog)
+                .where(paymentLog.cardId.in(cardIds)
+                        .and(paymentLog.createTime.between(start, end)))
+                .orderBy(paymentLog.createTime.desc())
+                .fetch();
+    }
 }
