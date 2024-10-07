@@ -1,4 +1,4 @@
-package com.moa.payment.domain.analysis.entity.dto;
+package com.moa.payment.domain.analysis.model.dto;
 
 import java.util.UUID;
 

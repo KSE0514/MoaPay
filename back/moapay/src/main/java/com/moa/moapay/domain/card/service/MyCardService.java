@@ -20,4 +20,6 @@ public interface MyCardService {
     void ableCard(MyCardStatusRequestDto ableCardRequestDto);
 
     UUID getMemberId(UUID cardId);
+
+    CardHistoryResponseDto getCardHistory(CardHistoryRequestDto cardHistoryRequestDto);
 }
