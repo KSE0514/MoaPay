@@ -1,5 +1,7 @@
 package com.moa.payment.domain.statistics.entity;
 
+import java.util.UUID;
+
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -23,5 +25,9 @@ public class Statistics {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 
+	private int month;
 
+	private int year;
+
+	private UUID memberId;
 }
