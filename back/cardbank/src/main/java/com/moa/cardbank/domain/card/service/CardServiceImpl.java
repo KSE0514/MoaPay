@@ -421,9 +421,11 @@ public class CardServiceImpl implements CardService {
                             .cardNumber(myCard.getCardNumber())
                             .cvc(myCard.getCvc())
                             .benefitUsage(myCard.getBenefitUsage())
+                            .performanceFlag(myCard.getPerformanceFlag())
                             .cardLimit(myCard.getCardLimit())
                             .accounts(accountDto)
                             .cardProduct(cardProductDto)
+                            .amount(myCard.getAmount())
                             .build();
                 }
         ).collect(Collectors.toList());

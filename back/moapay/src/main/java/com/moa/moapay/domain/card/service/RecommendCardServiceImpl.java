@@ -275,12 +275,6 @@ public class RecommendCardServiceImpl implements RecommendCardService {
                     // 최고점에 도달하지 못했으며, 기존값도 갱신하지 못했다면 더 큰 범위를 봐야 함
                     left = mid;
                 }
-                if (isReached) {
-                    maxBenefit = remainedBenefit;
-                    maxBenefitAmount = right;
-                } else {
-                    maxBenefitAmount = left;
-                }
 //                    if (thisBenefit > maxBenefit) {
 //                        // 더 큰 혜택값을 찾았다면, 탐색구역을 오른쪽으로 이동
 ////                        log.info("maxBenefit renewed : {} ->  {}", maxBenefit, thisBenefit);
@@ -293,6 +287,12 @@ public class RecommendCardServiceImpl implements RecommendCardService {
 ////                        log.info("right moved : {} -> {}", right, mid);
 //                        right = mid;
 //                    }
+            }
+            if (isReached) {
+                maxBenefit = remainedBenefit;
+                maxBenefitAmount = right;
+            } else {
+                maxBenefitAmount = left;
             }
             log.info("calculate benefit - left : {}, right : {}, maxBenefit : {}", left, right, maxBenefit);
             // 이분탐색 종료

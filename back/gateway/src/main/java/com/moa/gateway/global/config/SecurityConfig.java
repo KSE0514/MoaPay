@@ -78,7 +78,9 @@ public class SecurityConfig {
 			.authorizeExchange(exchanges -> exchanges.pathMatchers("/api/moapay/member/login", "/api/moapay/member/join",
 					"/api/moapay/member/sendSMS", "/api/moapay/member/verification", "/api/moapay/member/isMember",
 					"/moapay/member/login", "/moapay/member/join",
-					"/moapay/member/sendSMS", "/moapay/member/verification", "/moapay/member/isMember", "/moapay/core/code/QRcode", "/moapay/core/generalpay/offline","/moapay/pay/notification/subscribe/**")
+					"/moapay/member/sendSMS", "/moapay/member/verification", "/moapay/member/isMember",
+					"/moapay/pay/analysis/history", "/api/moapay/pay/analysis/history","/moapay/core/code/QRcode", "/moapay/core/generalpay/offline","/moapay/pay/notification/subscribe/**"
+							)
 				.permitAll()
 				.anyExchange()
 				.authenticated() //나머지 경로는 인증 필요
