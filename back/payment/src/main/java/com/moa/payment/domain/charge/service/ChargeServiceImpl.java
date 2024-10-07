@@ -9,6 +9,7 @@ import com.moa.payment.domain.charge.model.dto.*;
 import com.moa.payment.domain.charge.model.vo.*;
 import com.moa.payment.domain.charge.repository.PaymentLogRepository;
 import com.moa.payment.global.exception.BusinessException;
+import com.moa.payment.global.exception.ErrorResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -137,6 +138,11 @@ public class ChargeServiceImpl implements ChargeService {
                 .body(dto)
                 .retrieve()
                 .toEntity(Map.class);
+        if(!cancelResponse.getStatusCode().is2xxSuccessful()) {
+            // 결제 취소가 잘 되지 않았다면, 그 내용을 기반으로 exception을 발생시킨다.
+            ErrorResponse errorResponse = objectMapper.convertValue(cancelResponse.getBody().get("data"), ErrorResponse.class);
+            throw new BusinessException(HttpStatus.BAD_REQUEST, "결제 취소 실패 : " + errorResponse.getMessage());
+        }
         CancelPayResponseDto responseDto = objectMapper.convertValue(cancelResponse.getBody().get("data"), CancelPayResponseDto.class);
         log.info("canceled - amount : {}, benefitBalance : {}, remainedBenefit : {}", responseDto.getAmount(), responseDto.getBenefitBalance(), responseDto.getRemainedBenefit());
         // 취소 처리가 되었다면, 로컬의 payment log status도 바꿔야 함
