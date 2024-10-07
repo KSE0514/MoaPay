@@ -1,6 +1,5 @@
 package com.moa.payment.domain.charge.entity;
 
-import com.moa.payment.domain.charge.listener.PaymentLogListener;
 import com.moa.payment.domain.charge.model.ProcessingStatus;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
