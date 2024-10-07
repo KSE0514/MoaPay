@@ -1,17 +1,13 @@
 import { Doughnut } from "react-chartjs-2";
 import { Chart as ChartJS, ArcElement, Tooltip, Legend, Title } from "chart.js";
 import { Chart } from "./DonutChart.styles";
+import { categoryData } from "../../../../store/CardStore";
 
 // Chart.js에서 사용할 요소를 등록
 ChartJS.register(ArcElement, Tooltip, Legend, Title);
-interface data {
-  category: string;
-  money: number;
-  per: number;
-}
 
 interface Props {
-  dataList: data[] | null; // props로 받을 데이터 타입 지정
+  dataList: categoryData[] | null; // props로 받을 데이터 타입 지정
 }
 const DonutChart = ({ dataList }: Props) => {
   const sortedDataList = [...(dataList || [])].sort((a, b) => b.per - a.per);
@@ -27,7 +23,7 @@ const DonutChart = ({ dataList }: Props) => {
   const otherPer = 100 - top5Data.reduce((sum, data) => sum + data.per, 0);
 
   // 새로운 dataList를 생성
-  const newDataList: data[] = [
+  const newDataList: categoryData[] = [
     ...top5Data,
     {
       category: "기타",
