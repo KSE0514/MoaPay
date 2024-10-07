@@ -9,11 +9,11 @@ import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
 import java.util.UUID;
 
+@CrossOrigin("http://localhost:5173")
 @RestController
 @RequiredArgsConstructor
 @Slf4j
-@RequestMapping("/store/notification")
-@CrossOrigin("*")
+@RequestMapping("/notification")
 public class NotificationController {
 
     private final NotificationService notificationService;

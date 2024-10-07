@@ -40,7 +40,6 @@ dependencies {
 
 	implementation 'javax.xml.bind:jaxb-api:2.4.0-b180830.0359'
 	implementation 'net.nurigo:sdk:4.3.0'
-	implementation 'org.springframework.boot:spring-boot-starter-data-redis'
 	implementation 'jakarta.servlet:jakarta.servlet-api:6.0.0'
 	implementation 'org.springframework.boot:spring-boot-starter-webflux' // 추가
 

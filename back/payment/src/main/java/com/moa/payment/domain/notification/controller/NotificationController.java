@@ -14,7 +14,7 @@ import java.util.UUID;
 @RequestMapping("/notification")
 @RequiredArgsConstructor
 @Slf4j
-@CrossOrigin(origins = "http://localhost:3000")
+@CrossOrigin(origins = "http://localhost:5173")
 public class NotificationController {
 
     private final NotificationService notificationService;
