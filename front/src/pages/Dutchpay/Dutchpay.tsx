@@ -20,13 +20,19 @@ import {
 import { useEffect, useState } from "react";
 import { PATH } from "../../constants/path";
 
-interface Participant {
+interface ParticipantInfo {
   index: number;
   uuid: string;
   memberId: string;
   memberName: string;
   charge: number | null;
+  // status: string;
 }
+
+// interface confirmPriceInfo {
+//   memberId: string;
+//   price: number
+// }
 
 const Dutchpay = () => {
   const nav = useNavigate()
@@ -39,6 +45,7 @@ const Dutchpay = () => {
   // location.state가 없을 경우 localStorage에서 값을 가져옴
   // const joinUrl = location.state?.joinUrl || localStorage.getItem('joinUrl') || '';
   // console.log("Received joinUrl:", joinUrl)
+  const [process, setProcess] = useState<number>(0); // 진행 단계
 
   const [isOpen, setIsOpen] = useState<boolean>(false); // 더치페이 나가기 모달 상태 관리
   const [isCompleteSettingCheck, setIsCompleteSettingCheck] = useState<boolean>(true); // 더치페이 인원 설정 완료 확인용 모달 띄우기 판단용
@@ -48,7 +55,7 @@ const Dutchpay = () => {
   const [stop, setStop] = useState<boolean>(false) // 더치페이 중단하기 버튼을 눌렀는지의 여부를 판단
 
   const [webSocketJoinStep, setWebSocketJoinStep] = useState<number>(0); // 수작업 웹소켓 연결 및 방 참여를 위한 변수...
-  const [dutchParticipants, setDutchParticipants] = useState<Participant[]>([]); // join 및 leave 후 남아있는 참여자 정보를 받을 변수
+  const [dutchParticipants, setDutchParticipants] = useState<ParticipantInfo[]>([]); // join 및 leave 후 남아있는 참여자 정보를 받을 변수
 
   // console.log(joinUrl)
   // useEffect (() => {
@@ -230,20 +237,26 @@ const Dutchpay = () => {
     if (!stompClient || !stompClient.connected || !roomId){
       console.log("WebSocket not connected"); return;}
 
+    const confirmPriceList = dutchParticipants.map((participant) => ({
+        memberId: participant.memberId,
+        price: participant.charge || 0, // charge 값이 null일 경우 0으로 대체
+    }));
+
     // 요청 바디 구조 정의
     const requestBody = {
       roomId: roomId,
-      memberCnt: 2, // 실제 멤버 수를 여기에 설정
-      confirmPriceDtos: [
-        {
-          memberId: "01923d9f-7b3d-78dd-9f9d-32f85c64fbcd", // 실제 멤버 ID 설정
-          price: 5000, // 실제 금액 설정
-        },
-        {
-          memberId: "01923d9f-7b3d-70e9-ad8d-68a3ab09d578", // 두 번째 멤버 ID 설정
-          price: 5000, // 실제 금액 설정
-        },
-      ],
+      memberCnt: dutchParticipants.length, // 실제 멤버 수를 여기에 설정
+      confirmPriceDtos: confirmPriceList,
+      // [
+      //   {
+      //     memberId: "01923d9f-7b3d-78dd-9f9d-32f85c64fbcd", // 실제 멤버 ID 설정
+      //     price: 5000, // 실제 금액 설정
+      //   },
+      //   {
+      //     memberId: "01923d9f-7b3d-70e9-ad8d-68a3ab09d578", // 두 번째 멤버 ID 설정
+      //     price: 5000, // 실제 금액 설정
+      //   },
+      // ],
     };
 
     stompClient.publish({
@@ -442,7 +455,7 @@ useEffect(() => {
         {/* 2. 참여자 목록 컴포넌트_2단계인지 판단 기준: memberSetComplete === true */}
         {
         // memberSetComplete&&
-        <Participant maxNum={Number(maxMember)} roomId={roomId} participants={dutchParticipants} />}
+        <Participant maxNum={Number(maxMember)} setDutchParticipants={setDutchParticipants} roomId={roomId} participants={dutchParticipants} leaveRoom={leaveRoom} confirm={confirm} setProcess={setProcess} />}
       </Main>
 
       {/* 배경 도형 */}
