@@ -44,6 +44,7 @@ public class DutchPayController {
     @PostMapping("/payment")
     public ResponseEntity<?> payment(@Valid @RequestBody DutchPayPaymentRequsetDto dutchPayPaymentRequsetDto) {
         log.info("Payment request: {}", dutchPayPaymentRequsetDto);
+        dutchPayService.dutchpayPayment(dutchPayPaymentRequsetDto);
         ResultResponse resultResponse = ResultResponse.of(HttpStatus.OK, "더치페이 결제 요청이 성공 했습니다.");
         return ResponseEntity.status(resultResponse.getStatus()).body(resultResponse);
     }
@@ -61,6 +62,14 @@ public class DutchPayController {
         log.info("FCM token: {}", fcmMessageDto.toString());
         fcmService.pushNotification(fcmMessageDto);
         ResultResponse resultResponse = ResultResponse.of(HttpStatus.OK, "FCM 전송");
+        return ResponseEntity.status(resultResponse.getStatus()).body(resultResponse);
+    }
+
+    @GetMapping("/getDutchByMember/{memberId}")
+    public ResponseEntity<ResultResponse> getDutchByMember(@PathVariable UUID memberId) {
+        log.info("getDutchByMember: {}", memberId);
+        DutchRoomInfo dutchRoomByMember = dutchPayService.getDutchRoomByMember(memberId);
+        ResultResponse resultResponse = ResultResponse.of(HttpStatus.OK, "맴버아이디로 더치페이 방 정보 조회", dutchRoomByMember);
         return ResponseEntity.status(resultResponse.getStatus()).body(resultResponse);
     }
 

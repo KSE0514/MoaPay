@@ -17,8 +17,8 @@ public interface DutchRoomRepository extends JpaRepository<DutchRoom, Long> {
 
     @Modifying
     @Transactional
-    @Query("UPDATE DutchRoom r SET r.curPerson = :memberCnt")
-    void updateDutchRoom(long memberCnt);
+    @Query("UPDATE DutchRoom r SET r.curPerson = :memberCnt, r.status = :status WHERE r.uuid = :roomId")
+    void updateDutchRoomConfirm(long memberCnt, DutchStatus status, UUID roomId);
 
     @Modifying
     @Transactional
@@ -39,5 +39,7 @@ public interface DutchRoomRepository extends JpaRepository<DutchRoom, Long> {
     @Query("UPDATE DutchRoom r SET r.curPerson = r.curPerson - 1 WHERE r.uuid = :roomId AND r.curPerson > 0")
     void decrementParticipantCount(UUID roomId);
 
+    @Query("SELECT r FROM DutchRoom r JOIN FETCH r.dutchPayList dp WHERE dp.uuid = :uuid")
+    DutchRoom findByDutchUuid(UUID uuid);
 
 }

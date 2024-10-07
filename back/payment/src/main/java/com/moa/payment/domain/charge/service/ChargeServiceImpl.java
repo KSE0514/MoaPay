@@ -7,6 +7,7 @@ import com.moa.payment.domain.charge.model.PaymentResultStatus;
 import com.moa.payment.domain.charge.model.ProcessingStatus;
 import com.moa.payment.domain.charge.model.dto.*;
 import com.moa.payment.domain.charge.model.vo.*;
+import com.moa.payment.domain.charge.producer.KafkaProducer;
 import com.moa.payment.domain.charge.repository.PaymentLogRepository;
 import com.moa.payment.global.exception.BusinessException;
 import com.moa.payment.global.exception.ErrorResponse;
@@ -16,6 +17,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestClient;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
@@ -29,18 +31,21 @@ import java.util.*;
 @RequiredArgsConstructor
 public class ChargeServiceImpl implements ChargeService {
 
-    @Value("${external-url.cardbank}")
-    private String cardbankUrl;
-
-    @Value("${external-url.store}")
-    private String storeUrl;
-
     private final RestClient restClient;
     private final ObjectMapper objectMapper;
     private final PaymentLogRepository paymentLogRepository;
+//    private final KafkaTemplate<String, DutchPayCompliteVo> kafkaTemplate;
+    private final KafkaProducer kafkaProducer;
+
+    @Value("${external-url.cardbank}")
+    private String cardbankUrl;
+    @Value("${external-url.store}")
+    private String storeUrl;
+
 
     @Override
     public ExecutePaymentResultVO executePayment(ExecutePaymentRequestVO vo) {
+        log.info("ExcutePaymentRequestVO : {}", vo.toString());
         List<PaymentCardInfoVO> paymentInfoList = vo.getPaymentInfoList();
         List<PaymentCardInfoVO> succeedPaymentInfoList = new ArrayList<>();
         List<UUID> succeedPaymentIdList = new ArrayList<>();
@@ -55,7 +60,7 @@ public class ChargeServiceImpl implements ChargeService {
                     .amount(paymentInfo.getAmount())
                     .build();
             ResponseEntity<Map> paymentResponse = restClient.post()
-                    .uri(cardbankUrl+"/card/pay")
+                    .uri(cardbankUrl + "/card/pay")
                     .contentType(MediaType.APPLICATION_JSON)
                     .body(paymentRequestDto)
                     .retrieve()
@@ -79,6 +84,23 @@ public class ChargeServiceImpl implements ChargeService {
                             .build();
                     CancelPayment(requestDto);
                 }
+
+                if (vo.getPaymentType().equals("DUTCHPAY")) {
+                    log.info("더치페이 요청 캔슬");
+                    DutchPayCompliteVo dutchPayCompliteVo = DutchPayCompliteVo.builder()
+                            .paymentType(vo.getPaymentType())
+                            .paymentInfoList(vo.getPaymentInfoList())
+                            .orderId(vo.getOrderId())
+                            .merchantId(vo.getMerchantId())
+                            .dutchUuid(vo.getRequestId())
+                            .status("PROGRESS")
+                            .build();
+
+                    Map<String, Object> map = new HashMap<>();
+                    map.put("dutchpayList", dutchPayCompliteVo);
+
+                    kafkaProducer.send("tracking.dutchpay","2", map);
+                }
                 // 결제 실패 관련 처리가 끝났다면 더이상 결제를 진행하지 않음
                 return ExecutePaymentResultVO.builder()
                         .merchantName(paymentResponseDto.getMerchantName())
@@ -96,6 +118,8 @@ public class ChargeServiceImpl implements ChargeService {
                     .cardId(paymentInfo.getCardId())
                     .amount(paymentResponseDto.getAmount())
                     .status(ProcessingStatus.APPROVED)
+                    .cardNumber(paymentInfo.getCardNumber())
+                    .cvc(paymentInfo.getCvc())
                     .merchantId(vo.getMerchantId())
                     .merchantName(paymentResponseDto.getMerchantName())
                     .categoryId(paymentResponseDto.getCategoryId())
@@ -123,6 +147,22 @@ public class ChargeServiceImpl implements ChargeService {
 //        for(PaymentResultCardInfoVO v : paymentResultInfoList) {
 //            log.info(v.toString());
 //        }
+        if (vo.getPaymentType().equals("DUTCHPAY")) {
+            log.info("더치페이 요청");
+            DutchPayCompliteVo dutchPayCompliteVo = DutchPayCompliteVo.builder()
+                    .paymentType(vo.getPaymentType())
+                    .paymentInfoList(vo.getPaymentInfoList())
+                    .orderId(vo.getOrderId())
+                    .merchantId(vo.getMerchantId())
+                    .dutchUuid(vo.getRequestId())
+                    .status("DONE")
+                    .build();
+
+            Map<String, Object> map = new HashMap<>();
+            map.put("dutchpayList", dutchPayCompliteVo);
+
+            kafkaProducer.send("tracking.dutchpay","2", map);
+        }
         return ExecutePaymentResultVO.builder()
                 .merchantName(merchantName)
                 .status(PaymentResultStatus.SUCCEED)
@@ -156,7 +196,7 @@ public class ChargeServiceImpl implements ChargeService {
     @Override
     public PaymentResultDto makePaymentResultDto(ExecutePaymentResultVO resultVo, ExecutePaymentRequestVO requestVO) {
         log.info("making PaymentResultDto...");
-        if(resultVo.getStatus() == PaymentResultStatus.FAILED) {
+        if (resultVo.getStatus() == PaymentResultStatus.FAILED) {
             // 실패한 경우, 최소한의 데이터만 전송
             return PaymentResultDto.builder()
                     .status(PaymentResultStatus.FAILED)
@@ -167,10 +207,10 @@ public class ChargeServiceImpl implements ChargeService {
         long totalAmount = 0;
         int usedCardCount = 0;
         List<PaymentResultCardInfoDto> paymentResultCardInfoList = new ArrayList<>();
-        for(int i = 0 ; i < resultVo.getPaymentResultInfoList().size() ; ++i) {
+        for (int i = 0; i < resultVo.getPaymentResultInfoList().size(); ++i) {
             PaymentCardInfoVO requestCardInfo = requestVO.getPaymentInfoList().get(i);
             PaymentResultCardInfoVO resultCardInfo = resultVo.getPaymentResultInfoList().get(i);
-            if(!requestCardInfo.getCardId().equals(resultCardInfo.getCardId())) {
+            if (!requestCardInfo.getCardId().equals(resultCardInfo.getCardId())) {
                 throw new BusinessException(HttpStatus.INTERNAL_SERVER_ERROR, "카드 정보 불일치!!!");
             }
             totalAmount += resultCardInfo.getActualAmount();
@@ -185,9 +225,9 @@ public class ChargeServiceImpl implements ChargeService {
                             .amount(requestCardInfo.getAmount())
                             .actualAmount(resultCardInfo.getActualAmount())
                             .performance(requestCardInfo.getPerformance())
-                            .usedAmount(requestCardInfo.getUsedAmount()+resultCardInfo.getActualAmount())
+                            .usedAmount(requestCardInfo.getUsedAmount() + resultCardInfo.getActualAmount())
                             .benefitActivated(resultCardInfo.isBenefitActivated())
-                            .benefitUsage(requestCardInfo.getBenefitUsage()+resultCardInfo.getBenefitBalance())
+                            .benefitUsage(requestCardInfo.getBenefitUsage() + resultCardInfo.getBenefitBalance())
                             .benefitDetail(resultCardInfo.getBenefitDetail())
                             .build()
             );
@@ -207,7 +247,7 @@ public class ChargeServiceImpl implements ChargeService {
     public void sendResultToStore(UUID orderId, ExecutePaymentResultVO vo) {
         log.info("send result to store : {}", vo.getMerchantName());
         List<StoreResultDto> paymentInfo = new ArrayList<>();
-        for(PaymentResultCardInfoVO resultVo : vo.getPaymentResultInfoList()) {
+        for (PaymentResultCardInfoVO resultVo : vo.getPaymentResultInfoList()) {
             paymentInfo.add(
                     StoreResultDto.builder()
                             .cardNumber(resultVo.getCardNumber())
@@ -222,13 +262,41 @@ public class ChargeServiceImpl implements ChargeService {
                 .build();
 
         ResponseEntity<Map> res = restClient.post()
-                .uri(storeUrl+"/payment/online/result")
+                .uri(storeUrl + "/payment/online/result")
                 .contentType(MediaType.APPLICATION_JSON)
                 .body(dto)
                 .retrieve()
                 .toEntity(Map.class);
-        if(!res.getStatusCode().is2xxSuccessful()) {
+        if (!res.getStatusCode().is2xxSuccessful()) {
             log.error("send result to store error - {}", res.getStatusCode());
         }
     }
+
+    @Override
+    public void dutchCancel(UUID paymentId){
+        log.info("dutchCancel");
+        Optional<PaymentLog> paymentLogOptional = paymentLogRepository.findByUuid(paymentId);
+
+        if (paymentLogOptional.isPresent()) {
+
+            log.info(paymentLogOptional.get().getCardId().toString());
+
+            CancelPayRequestDto requestDto = CancelPayRequestDto.builder()
+                    .paymentId(paymentId)
+                    .cardId(paymentLogOptional.get().getCardId())
+                    .cardNumber(paymentLogOptional.get().getCardNumber())
+                    .cvc(paymentLogOptional.get().getCvc())
+                    .build();
+            ResponseEntity<Map> cancelResponse = restClient.post()
+                    .uri(cardbankUrl + "/card/cancel")
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .body(requestDto)
+                    .retrieve()
+                    .toEntity(Map.class);
+
+        } else {
+            throw new BusinessException(HttpStatus.NOT_FOUND, "PaymentLog not found for paymentId: " + paymentId);
+        }
+    }
+
 }
