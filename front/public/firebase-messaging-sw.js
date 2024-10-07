@@ -17,6 +17,30 @@ firebase.initializeApp({
 // 메시징 인스턴스 생성
 const messaging = firebase.messaging();
 
+self.addEventListener("push", function (e) {
+  const data = e.data.json(); // JSON 데이터 파싱
+
+  const notificationTitle = data.notification.title || "Default Title";
+  const notificationOptions = {
+    body: data.notification.body || "Default Body",
+    icon: data.notification.icon || "/default-icon.png",
+  };
+
+  console.log(data.notification.title, {
+    body: data.notification.body,
+  });
+
+  self.registration.showNotification(notificationTitle, notificationOptions);
+});
+
+self.addEventListener("install", function (e) {
+  self.skipWaiting();
+});
+
+self.addEventListener("activate", function (e) {
+  console.log("fcm sw activate..");
+});
+
 // 백그라운드 메시지 수신 처리
 // messaging.onBackgroundMessage((payload) => {
 //   console.log("Received background message ", payload);

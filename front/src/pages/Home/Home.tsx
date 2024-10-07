@@ -22,6 +22,8 @@ import Barcode from "react-barcode";
 import axios from "axios";
 import { useAuthStore } from "../../store/AuthStore";
 import { PATH } from "../../constants/path";
+import { requestPermission, messaging } from "../../FCM.ts";
+import { onMessage } from "firebase/messaging";
 
 const Home = () => {
   const navigate = useNavigate();
@@ -226,7 +228,38 @@ const Home = () => {
 
     // showCards 상태 업데이트
     setShowCards(cardArray); // 상태 불변성을 유지하며 새 배열로 설정
+
+    if ("serviceWorker" in navigator) {
+      navigator.serviceWorker
+        .register("/firebase-messaging-sw.js")
+        .then(function (registration) {
+          console.log(
+            "Service Worker registered with scope:",
+            registration.scope
+          );
+        })
+        .catch(function (error) {
+          console.error("Service Worker registration failed:", error);
+        });
+    }
+
+    requestPermission(id, accessToken); // 컴포넌트가 마운트될 때 requestPermission 호출
+
+    const unsubscribe = onMessage(messaging, (payload) => {
+      console.log("Message received : ", payload);
+
+      // 알림 표시
+      new Notification(payload.notification?.title ?? "Title", {
+        body: payload.notification?.body ?? "Body",
+        icon: payload.notification?.icon ?? "/default-icon.png",
+      });
+    });
+
+    return () => {
+      unsubscribe();
+    };
   }, []);
+
   useEffect(() => {}, [showCards]); // showCards가 변경될 때마다 실행
   // 카메라 켜기
   const handleToggleCamera = () => {
@@ -406,6 +439,7 @@ const Home = () => {
         </BarcordArea>
         <ButtonArea>
           <button onClick={handleToggleCamera}>QR 인식하기</button>
+          {/* <button>결제코드 입력하기</button> */}
         </ButtonArea>
       </Top>
       <Bottom>

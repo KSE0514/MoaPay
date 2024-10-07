@@ -34,6 +34,7 @@ public class DutchPayServiceImpl implements DutchPayService {
     private final SimpMessagingTemplate messagingTemplate;
     private final HttpMessageConverters messageConverters;
     private final GeneralPayService generalPayService;
+    private final FCMService fcmService;
 
     @Override
     @Transactional
@@ -245,21 +246,42 @@ public class DutchPayServiceImpl implements DutchPayService {
     @Transactional
     public void dutchpayComplite() {
 
-//        UUID roomUuid = dutchPayCompliteVo.getRoomId();
-//        UUID memberUuid = dutchPayCompliteVo.getMemberId();
-//        DutchStatus dutchStatus = DutchStatus.READY;
-//
-//        if(dutchStatus.equals(DutchStatus.DONE)) {
-//            // 결제 완료 트렌젝션
-//            dutchPayRepository.updateStatus(memberUuid, roomUuid, DutchStatus.DONE); // 여기서 확인 해야 할듯
-//            List<DutchPay> dutchPayList = dutchPayRepository.findByRoomUuid(roomUuid);
-//            for (DutchPay dutchPay : dutchPayList) {
-//
-//            }
-//        } else if(dutchStatus.equals(DutchStatus.CANCEL)) {
-//            // 보상 트랜잭션
-//
-//        }
+        UUID roomUuid = UUID.randomUUID();
+        UUID memberUuid = UUID.randomUUID();
+        DutchStatus status = DutchStatus.READY;
+
+        if(status.equals(DutchStatus.DONE)) {
+            // 결제 완료 트렌젝션
+            dutchPayRepository.updateStatus(memberUuid, roomUuid, DutchStatus.DONE); // 여기서 확인 해야 할듯
+            List<DutchPay> dutchPayList = dutchPayRepository.findByRoomUuid(roomUuid);
+
+            boolean flag = true;
+
+            for (DutchPay dutchPay : dutchPayList) { // 해당 더치 내역 다돌면서
+                DutchStatus dutchStatus = dutchPay.getPayStatus();
+                if(!dutchStatus.equals(DutchStatus.DONE)) {
+                    flag = false;
+                    break;
+                }
+            }
+
+            if(flag) {
+                    for(DutchPay dutchPay : dutchPayList) {
+
+                        FCMMessageDto fcmMessageDto = FCMMessageDto.builder()
+                                .memberId(dutchPay.getMemberId())
+                                .title("MoaPay")
+                                .message("더치페이가 완료되었습니다.")
+                                .build();
+
+                        fcmService.pushNotification(fcmMessageDto);
+                    }
+            }
+
+        } else if(status.equals(DutchStatus.CANCEL)) {
+            // 보상 트랜잭션
+
+        }
 
     }
 
