@@ -131,6 +131,18 @@ export const Step = styled.div`
   }
 `
 
+export const JoinBtnDiv = styled.div`
+  position: absolute;
+  width: 85%;
+  bottom: 20px;
+  text-align: center;
+
+  // absolute 요소 중앙 정렬
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 1000;
+`
+
 export const Main = styled.div`
   position: relative;
   width: 85%;

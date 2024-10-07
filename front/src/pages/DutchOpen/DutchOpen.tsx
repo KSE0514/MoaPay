@@ -23,17 +23,18 @@ import { PATH } from "../../constants/path";
 
 const DutchOpen = () => {
   const nav = useNavigate()
-
+  
   // const { name, id } = useAuthStore()
   
   const [isOpen, setIsOpen] = useState<boolean>(false); // 더치페이 나가기 모달 상태 관리
   const [isCompleteSettingCheck, setIsCompleteSettingCheck] = useState<boolean>(false); // 더치페이 인원 설정 완료 확인용 모달 띄우기 판단용
   const [memberNum, setMemberNum] = useState<number | string>(''); // 참여자 수 입력 받는 변수
-
+  
   // const [memberSetComplete, setMemberSetComplete] = useState<boolean>(false) // 참여자수 설정 완료 여부 판단용
   const [stop, setStop] = useState<boolean>(false) // 더치페이 중단하기 버튼을 눌렀는지의 여부를 판단
-
-
+  
+  
+  console.log("멤버 수 변화 테스트용", memberNum)
 
   
 
@@ -45,6 +46,8 @@ const DutchOpen = () => {
 
   // 참여자 수 입력 후 완료 버튼을 눌렀을 경우=>설정 완료로 변경
   const onCheckComplete = () =>{
+    localStorage.setItem('maxMember', String(memberNum)); // memberNum 값을 문자열로 저장
+    console.log('로컬 스토리지 저장 확인', localStorage.getItem('maxMember'));
     setIsCompleteSettingCheck(true)
     nav(PATH.DUTCHPAY) // 더치페이 화면으로 이동
   }
@@ -68,8 +71,9 @@ const DutchOpen = () => {
   const completeMemberSetting = () => {
     // setMemberSetComplete(true) // 나중에 지울 수도 있음
     localStorage.setItem('maxMember', String(memberNum)); // memberNum 값을 문자열로 저장
-    setIsCompleteSettingCheck(false); // 나중에 지울 수도 있음
-    nav(PATH.DUTCHPAY) // 더치페이 화면으로 이동
+    console.log('로컬 스토리지 저장 확인', localStorage.getItem('maxMember'));
+    setIsCompleteSettingCheck(false);
+    nav(PATH.DUTCHPAY); // 더치페이 화면으로 이동
 
 
     // stomp 열기...? 더치페이 방 여는 axios 요청
@@ -81,6 +85,7 @@ const DutchOpen = () => {
   }
 
   useEffect(() => {
+    // localStorage.removeItem('maxMember');
     // setMemberSetComplete(false)
   }, []) // 맨 처음 랜더링 시(더치페이를 처음으로 실행시킬 시) 값 초기화해야할 것들
 
@@ -99,7 +104,8 @@ const DutchOpen = () => {
           // !memberSetComplete&&
             <input value={memberNum} type="number" placeholder="인원을 설정해주세요." onChange={(e) => {
               const value = e.target.value;
-              setMemberNum(value === "" ? "" : Number(value));}}/>
+              setMemberNum(value === "" ? "" : Number(value));
+            }}/>
           }
 
           {/* 사용자가 인원을 입력했을 경우에만 다음 화살표(->누르면 재확인 모달)가 나타나도록 함 */}

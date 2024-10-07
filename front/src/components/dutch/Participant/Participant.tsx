@@ -22,28 +22,37 @@ import {
 interface ParticipantProps {
   maxNum?: number | null;
   roomId: string;
+  participants: {
+    index: number;
+    uuid: string;
+    memberId: string;
+    memberName: string;
+    charge: number | null; // 초기값은 null일 수 있도록 설정
+  }[];
 }
 
-interface Participant {
-  name: string;
-  id: number;
-  charge: string;
-}
+// interface Participant {
+//   name: string;
+//   id: number;
+//   charge: string;
+// }
 
-const Participant = ({maxNum=null, roomId}: ParticipantProps) => {
+const Participant = ({maxNum=null, roomId, participants}: ParticipantProps) => {
   // const [participants, setParticipants] = useState([])
-  const [dutchStart, setDutchStart] = useState(false)
-  const [showWarning, setShowWarning] = useState(false)  // 경고 메시지 상태 추가
-
+  const [isHost, setIsHost] = useState<boolean>(false)
+  const [dutchStart, setDutchStart] = useState<boolean>(false)
+  const [showWarning, setShowWarning] = useState<boolean>(false)  // 경고 메시지 상태 추가
+  const [price, setPrice] = useState<number>(1001) // 더치페이 상품 가격
+  // const [participantPrice, setParticipantsPrice] = useState<number>(0) // 참가자 자동 배분 결제금
   // 테스트용 데이터_ 후에 지울 예정
-  const [participants, setParticipants] = useState<Participant[]>([
-    {name: '정유진', id:1, charge: '',
-    },
-    {name: '이대현', id:2, charge: '',
-    },
-    {name: '주수아', id:3, charge: '',
-    },
-  ])
+  // const [participants, setParticipants] = useState<Participant[]>([
+  //   {name: '정유진', id:1, charge: '',
+  //   },
+  //   {name: '이대현', id:2, charge: '',
+  //   },
+  //   {name: '주수아', id:3, charge: '',
+  //   },
+  // ])
 
   // 참가자 정보 가져오기(방 정보 불러오기를 통해 참가자 리스트 조회)
   // const getDutchRoomData = async () => {
@@ -75,8 +84,22 @@ const Participant = ({maxNum=null, roomId}: ParticipantProps) => {
 
   // 더치페이 시작 버튼을 눌렀을 시
   const onClickDutchStart = () =>{
-    console.log("더치페이 시작 버튼 클릭")
-    setDutchStart(true)
+    // if (주최자일 경우에만) {
+      console.log("더치페이 시작 버튼 클릭")
+      // setParticipantsPrice(Math.floor(price / participants.length)) // 전체금을 참여 인원수로 나눈값(나머지 버림)을 자동 배분 결제금으로 저장
+      const participantPrice = Math.floor(price / participants.length)
+      console.log('자동분배금 확인용', Math.floor(price / participants.length))
+      setDutchStart(true)
+    // }
+
+    // 금액 자동 분배하기
+    participants.map((participant, index) => {
+      if (index === 0) {
+        participant.charge = price - (participantPrice * ( participants.length -1 )) 
+      } else {
+        participant.charge = participantPrice
+      }
+    })
   }
 
   // 결제 요청 버튼을 눌렀을 시
@@ -101,6 +124,7 @@ const Participant = ({maxNum=null, roomId}: ParticipantProps) => {
    
   useEffect(() => {
     setDutchStart(false)
+    setIsHost(JSON.parse(localStorage.getItem('isHost') || 'false')); // localStorage에서 가져오는 코드
   }, [])
 
   return (
@@ -113,7 +137,7 @@ const Participant = ({maxNum=null, roomId}: ParticipantProps) => {
         <Product productName={'새콤달콤 티니핑 시즌4 하츄핑 꽃다발 봉제 인형'} productUrl={'https://www.ssg.com/item/itemView.ssg?itemId=1000566517100'} />
 
         {/* <div>총 금액: {prduct_price}원</div> */}
-        <Price>총 금액: 22,990 원</Price>
+        <Price>총 금액: {price.toLocaleString()} 원</Price>
 
         {/* 구분 점선 */}
         <img src={line}/> 
@@ -132,18 +156,20 @@ const Participant = ({maxNum=null, roomId}: ParticipantProps) => {
               {/* 랜덤 프로필_랜덤 사진 */}
               <div style={{border: '2px solid black', width: '50px', height: '50px', borderRadius: '100%'}}></div>
 
-              <div>{participant.name}</div>
+              <div>{participant.memberName}</div>
               {/* <div>삭제 아이콘</div> */}
-              {!dutchStart&&
-              // isHost&&
-              <svg onClick={()=>onDelete(participant.id)} xmlns="http://www.w3.org/2000/svg" x="0px" y="0px" width="20" height="20" viewBox="0 0 48 48">
+              {!dutchStart&&(participant.index>0)&&
+              isHost&&
+              <svg onClick={()=>onDelete(participant.index)} xmlns="http://www.w3.org/2000/svg" x="0px" y="0px" width="20" height="20" viewBox="0 0 48 48">
                 <path d="M 38.982422 6.9707031 A 2.0002 2.0002 0 0 0 37.585938 7.5859375 L 24 21.171875 L 10.414062 7.5859375 A 2.0002 2.0002 0 0 0 8.9785156 6.9804688 A 2.0002 2.0002 0 0 0 7.5859375 10.414062 L 21.171875 24 L 7.5859375 37.585938 A 2.0002 2.0002 0 1 0 10.414062 40.414062 L 24 26.828125 L 37.585938 40.414062 A 2.0002 2.0002 0 1 0 40.414062 37.585938 L 26.828125 24 L 40.414062 10.414062 A 2.0002 2.0002 0 0 0 38.982422 6.9707031 z"></path>
               </svg>}
               {/* <div>X</div> */}
 
               {
               // !isHost&&
-              <div></div>}
+              ((participant.index === 0)||(!isHost))&&
+              <div></div>
+              }
 
               {/* 해당 사용자가 지불해야 할 금액 */}
               {/* 자동으로 n등분 해서 분배해줘야 함_안 나눠 떨어질 경우: 주최자를 제외한 모두에게 (전체 값//사람 수)값 적용. 주최자는 (전체 값-(참가자)*(n-1)) */}
@@ -158,7 +184,17 @@ const Participant = ({maxNum=null, roomId}: ParticipantProps) => {
         {dutchStart? 
           <SquareBtn text={'결제 요청하기'} color={'rgba(255, 255, 255, 0.7)'} onClick={onClickRequest} />
           :
-          <SquareBtn text={'더치페이 시작'} color='rgba(135, 72, 243, 0.74)' onClick={onClickDutchStart} />
+          ((participants.length > 0)&&isHost?
+            <SquareBtn text={'더치페이 시작'} color='rgba(135, 72, 243, 0.74)' onClick={onClickDutchStart} />
+            :
+            null
+            // (isHost?
+            //   null
+            //   :
+            //   <SquareBtn text={'더치페이 시작'} color='rgba(135, 72, 243, 0.74)' onClick={onClickDutchStart} />
+
+            // )
+          )
         }
         {/* 경고 메시지 출력 */}
       </Btn>

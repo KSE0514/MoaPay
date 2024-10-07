@@ -2,6 +2,7 @@ import triangle from "./../../assets/image/triangle.png";
 import Participant from "../../components/dutch/Participant/Participant";
 import Modal from "../../components/dutch/Modal/Modal";
 import Payment from "../../components/dutch/Payment/Payment";
+import SquareBtn from "../../components/dutch/SquareBtn/SquareBtn";
 
 import Product from "../../components/dutch/Product/Product";
 import backImg from "./../../assets/image/dutchheader.png";
@@ -25,6 +26,7 @@ import {
   ProcessLine,
   Process,
   Step,
+  JoinBtnDiv,
   Main,
   DutchWaiting,
   DutchFin,
@@ -33,6 +35,15 @@ import {
   Btn,
   BackImg,
 } from "./DutchInvite.styles"
+
+interface DutchPayItem {
+  uuid: string;
+  memberId: string;
+  memberName: string;
+  amount: bigint;
+  status: string;
+}
+
 
 const DutchInvite = () => {
   const nav = useNavigate()
@@ -48,25 +59,39 @@ const DutchInvite = () => {
 
 
   useEffect(() => {
+
+    console.log(testUser)
+    setMemberName(testUser.name)
+    setMemberId(testUser.memberId)
+
     // Url로부터 더치페이 입장 roomId 가져오기
     const currentUrl = window.location.href; // 현재 URL을 가져옴
     const parts = currentUrl.split('/'); // '/'를 기준으로 URL을 분할
     const joinRoomId = parts[parts.length - 1]; // 마지막 요소가 roomId
-    console.log(joinRoomId); // "76735551-df91-4f94-9bc5-cc1895587aaf"
+    const maxMemNum = parts[parts.length - 2]; // 마지막에서 두 번째 요소가 MaxMember 수
+    console.log("joinRoomId : ", joinRoomId); // "76735551-df91-4f94-9bc5-cc1895587aaf"
     setRoomId(joinRoomId)
+    setMexMember(Number(maxMemNum))
+
+    getRoomInfo() // 방 정보 가지고 오기
   }, [])
+
+  const [dutchParticipants, setDutchParticipants] = useState<Participant[]>([]); // join 및 leave 후 남아있는 참여자 정보를 받을 변수
+  const [dutchPayListInfo, setDutchPayListInfo] = useState<DutchPayItem[]>([]); // dutch 초대 첫 화면(대기화면)에서 더치페이 방 정보를 불러와 담을 변수
 
   const [isAccept, setIsAccept] = useState<boolean>(false); // 수락 버튼을 눌렀는지 확인용
   const [isOpen, setIsOpen] = useState<boolean>(false); // 더치페이 나가기 모달 상태 관리
   const [timeLeft, setTimeLeft] = useState<number>(2400); // 40분(2400초) 카운트다운을 위한 상태 관리
   const [process, setProcess] = useState<number>(0); // 진행 단계
   const [isHost, setIsHost] = useState<boolean>(false);
+  const [dutchStart, setDutchStart] = useState<boolean>(false);
+  const [maxMember, setMexMember] = useState<number | string>('');
 
   const [stop, setStop] = useState(false);
 
 
     // 더치페이 방 입장 관련
-    const [roomId, setRoomId] = useState<string>(""); // 방 ID
+    const [roomId, setRoomId] = useState<string>("ba8deac8-2bb5-40a2-b21f-8cb7d7f13468"); // 방 ID
     const [memberId, setMemberId] = useState<string>(
       "01923d9f-7b3d-78dd-9f9d-32f85c64fbcd"
     ); // 멤버 ID
@@ -85,22 +110,39 @@ const DutchInvite = () => {
     const [memberName, setMemberName] = useState<string>("");
 
 
-    // [추후 삭제 예정]테스트용 참여 유저
-    useEffect(() => {
-      setMemberName(testUser.name)
-      setMemberId(testUser.memberId)
-    }, [])
 
+  const getRoomInfo = async () => {
+    try{
+      const response = await axios.get(
+        `http://localhost:18020/moapay/core/dutchpay/getDutchRoomInfo/${roomId}`,
+        {
+          withCredentials: true
+        }
+      );
+      // dutchPayList만 추출하여 상태 업데이트
+      const dutchPayList = response.data.data.dutchPayList;
+      setDutchPayListInfo(dutchPayList);
+      // console.log('참여중인 사람', response.data)
+      console.log('참여중인 사람', response.data.data.dutchPayList)
+    } catch(err) {
+      console.log('에러 발생:', err)
+      console.log("getRoomInfo-방 정보 조회 함수 에러")
+    }
+  }
 
-  // const getRoomInfo = async () => {
-  //   try{
-  //     const response = 
-  //   }
-  // }
+  const onClickDutchStart = () => {
+    setDutchStart(true)
+    joinRoom()
+  }
 
   const onClickAccept = () =>{
     connectWebSocket() // WebSocket 활성화
     joinRoom() // 더치페이 방 입장
+
+    localStorage.setItem('isHost', JSON.stringify(false)); // localStorage에 isHost 값 저장--> 언제 삭제할 건지 생각해보기
+    // 삭제해야하는 상황: 모달을 통해 중단할 경우, stomp 중단할 경우......?그런데 host가 invite 페이지로 넘어갔을 때 process값이 2로 설정되어 있어야함....
+    // const isHost = JSON.parse(localStorage.getItem('isHost') || 'false'); // localStorage에서 가져오는 코드
+    // localStorage.removeItem('isHost'); // 삭제하는 코드
 
     setIsAccept(true)
     // nav(PATH.DUTCHPARTICIPATION) // 다음 화면으로 전환
@@ -178,6 +220,7 @@ const DutchInvite = () => {
     });
 
     console.log("Leave room:", roomId);
+    nav(PATH.HOME)
   };
 
   const check = () => {
@@ -226,7 +269,7 @@ const DutchInvite = () => {
 
   // 방 참여 함수 (STOMP로 메시지 보내기)
   const joinRoom = () => {
-    console.log("join room");
+    console.log("join room : ", memberId);
     if (!stompClient || !stompClient.connected || !roomId) return;
 
     const requestBody = {
@@ -240,6 +283,25 @@ const DutchInvite = () => {
     });
 
     console.log("Joining room:", roomId);
+
+    // 서버의 응답을 받을 구독 설정
+    stompClient.subscribe(`/sub/dutch-room/${roomId}`, (message) => {
+      const response: Participant[] = JSON.parse(message.body); // 서버에서 받은 응답 메시지를 JSON으로 파싱
+      // console.log("Participants received:", response);
+      
+      // 필터링하여 필요한 정보만 포함하도록 가공
+      const filteredParticipants = response.map((participant, index) => ({
+        index,
+        uuid: participant.uuid,
+        memberId: participant.memberId,
+        memberName: participant.memberName,
+        charge: null, // 초기값은 null로 설정 (이후 설정 가능)
+      }));
+
+      // 서버 응답을 dutchParticipants 상태에 저장
+      setDutchParticipants(filteredParticipants);
+      console.log('join 응답 확인용', filteredParticipants)
+    });
   };
 
   // WebSocket 연결 설정
@@ -279,7 +341,8 @@ const DutchInvite = () => {
           <Title>
             <div>더치 페이</div>
             {/* 나가기 아이콘(-> 누르면 모달) */}
-            <svg
+            {(process < 2)&&
+              <svg
               onClick={openModal}
               xmlns="http://www.w3.org/2000/svg"
               x="0px"
@@ -290,7 +353,7 @@ const DutchInvite = () => {
               fill="#656565"
             >
               <path d="M 11.5 6 C 8.4802259 6 6 8.4802259 6 11.5 L 6 36.5 C 6 39.519774 8.4802259 42 11.5 42 L 29.5 42 C 32.519774 42 35 39.519774 35 36.5 A 1.50015 1.50015 0 1 0 32 36.5 C 32 37.898226 30.898226 39 29.5 39 L 11.5 39 C 10.101774 39 9 37.898226 9 36.5 L 9 11.5 C 9 10.101774 10.101774 9 11.5 9 L 29.5 9 C 30.898226 9 32 10.101774 32 11.5 A 1.50015 1.50015 0 1 0 35 11.5 C 35 8.4802259 32.519774 6 29.5 6 L 11.5 6 z M 33.484375 15.484375 A 1.50015 1.50015 0 0 0 32.439453 18.060547 L 36.878906 22.5 L 15.5 22.5 A 1.50015 1.50015 0 1 0 15.5 25.5 L 36.878906 25.5 L 32.439453 29.939453 A 1.50015 1.50015 0 1 0 34.560547 32.060547 L 41.560547 25.060547 A 1.50015 1.50015 0 0 0 41.560547 22.939453 L 34.560547 15.939453 A 1.50015 1.50015 0 0 0 33.484375 15.484375 z"></path>
-            </svg>
+            </svg>}
           </Title>
           <Timer>
             {/* 10분 카운트다운 표시 */}
@@ -389,9 +452,16 @@ const DutchInvite = () => {
               process === 2 ? "#B6BCFF" : "rgba(255, 255, 255, 0.65)",
           }}
         >
+          <JoinBtnDiv>
+            {(process === 0)&&!dutchStart? 
+            // <JoinBtnDiv><SquareBtn text="더치페이 참여하기" color='rgba(135, 72, 243, 0.74)' onClick={onClickDutchStart} /></JoinBtnDiv> 
+            <SquareBtn text="더치페이 참여하기" color='rgba(135, 72, 243, 0.74)' onClick={onClickDutchStart} /> 
+            : null}
+
+          </JoinBtnDiv>
           {/* 3. 더치페이하는 상품 정보 */}
           {/* 2. 참여자 목록 컴포넌트_2단계인지 판단 기준: memberSetComplete === true */}
-          {process < 2 ? <Participant isHost={isHost} /> : null}
+          {process < 2 ? <Participant maxNum={Number(maxMember)} roomId={roomId} participants={dutchParticipants} /> : null}
           {process === 2 ? <Payment onClick={onClickPaymentBtn} /> : null}
           {process === 3 ? (
             <DutchWaiting>
@@ -476,7 +546,7 @@ const DutchInvite = () => {
               {/* <button onClick={closeModal}>취소</button> */}
               {/* 종료(중단)버튼: 더치페이 주최자는 더치페이가 모두에게 종료되도록하고 참가자는 참가자 본인만 종료되도록 해야함  */}
               {stop ? (
-                <button>예</button>
+                <button onClick={leaveRoom}>예</button>
               ) : (
                 <button onClick={onClickStop}>중단</button>
               )}
@@ -571,7 +641,8 @@ const DutchInvite = () => {
       </WaitingTop>
       <WaitingMain>
         {/* 주최자 이름을 어떻게 들고와야 하는가... */}
-        <div>'주최자 이름'님이</div>
+        {/* <div>'{dutchPayListInfo[0].memberName}'님이</div> */}
+        <div>'' 님이</div>
         <div>더치페이를</div>
         <div>신청했습니다.</div>
         <div>

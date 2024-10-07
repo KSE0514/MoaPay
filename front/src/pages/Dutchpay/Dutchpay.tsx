@@ -21,9 +21,11 @@ import { useEffect, useState } from "react";
 import { PATH } from "../../constants/path";
 
 interface Participant {
+  index: number;
   uuid: string;
   memberId: string;
   memberName: string;
+  charge: number | null;
 }
 
 const Dutchpay = () => {
@@ -111,7 +113,7 @@ const Dutchpay = () => {
   const [merchantName, setMerchantName] = useState<string>("Example Merchant"); // 상점 이름
   const [categoryId, setCategoryId] = useState<string>("category"); // 카테고리 ID
   const [totalPrice, setTotalPrice] = useState<number>(10000); // 총 가격
-  const [memberName, setMemberName] = useState<string>("");
+  const [memberName, setMemberName] = useState<string>("유저이름");
 
  
   // 방 생성 함수
@@ -136,11 +138,12 @@ const Dutchpay = () => {
 
       // message.body를 DutchRoomMessage 타입으로 변환
       const parsedMessage: DutchRoomMessage = response.data;
-      const generatedUrl = `http://localhost:5173/dutchpay/invite/${parsedMessage.data}`
+      const generatedUrl = `http://localhost:5173/dutchpay/invite/${maxMember}/${parsedMessage.data}`
       console.log("Generated joinUrl:", generatedUrl)
       // localStorage.setItem('joinUrl', generatedUrl);  // localStorage에 joinUrl 저장
       // setJoinUrl(parsedMessage.data); // 방 생성 후 반환된 URL 저장
       setJoinUrl(generatedUrl) // 더치페이 초대 url 저장.....?
+      console.log("setRoomId : ", parsedMessage.data);
       setRoomId(parsedMessage.data); // 생성된 방의 roomId 저장
 
       // nav(PATH.DUTCHPAY, { state: { joinUrl: generatedUrl }}) // 인원 설정하여 방 생성 후 다음 페이지로 이동
@@ -172,11 +175,20 @@ const Dutchpay = () => {
     // 서버의 응답을 받을 구독 설정
     stompClient.subscribe(`/sub/dutch-room/${roomId}`, (message) => {
       const response: Participant[] = JSON.parse(message.body); // 서버에서 받은 응답 메시지를 JSON으로 파싱
-      console.log("Participants received:", response);
+      // console.log("Participants received:", response);
+      
+      // 필터링하여 필요한 정보만 포함하도록 가공
+      const filteredParticipants = response.map((participant, index) => ({
+        index,
+        uuid: participant.uuid,
+        memberId: participant.memberId,
+        memberName: participant.memberName,
+        charge: null, // 초기값은 null로 설정 (이후 설정 가능)
+      }));
 
       // 서버 응답을 dutchParticipants 상태에 저장
-      setDutchParticipants(response);
-      console.log('join 응답 확인용', response[0].memberId)
+      setDutchParticipants(filteredParticipants);
+      console.log('join 응답 확인용', filteredParticipants)
     });
 
   };
@@ -292,9 +304,13 @@ const Dutchpay = () => {
 /////////////////////////////////////////////
 useEffect(() => {
   console.log("hello..?")
+  console.log("Dutchpay 페이지 로드");
   const storedMemberNum = localStorage.getItem('maxMember');
   if (storedMemberNum) {
-    setMemberCnt(Number(storedMemberNum))
+    setMemberCnt(Number(storedMemberNum));
+    console.log("로컬 스토리지에서 maxMember 불러오기:", storedMemberNum);
+  } else {
+    console.log("로컬 스토리지에 maxMember 값이 없음");
   }
 
   setWebSocketJoinStep(0)
@@ -337,6 +353,11 @@ useEffect(() => {
     createRoom()
     setIsCompleteSettingCheck(false);
     setWebSocketJoinStep(1)
+
+    localStorage.setItem('isHost', JSON.stringify(true)); // localStorage에 isHost 값 저장--> 언제 삭제할 건지 생각해보기
+    // 삭제해야하는 상황: 모달을 통해 중단할 경우, stomp 중단할 경우......?그런데 host가 invite 페이지로 넘어갔을 때 process값이 2로 설정되어 있어야함....
+    // const isHost = JSON.parse(localStorage.getItem('isHost') || 'false'); // localStorage에서 가져오는 코드
+    // localStorage.removeItem('isHost'); // 삭제하는 코드
   }
 
   const closeModal = () => {
@@ -421,7 +442,7 @@ useEffect(() => {
         {/* 2. 참여자 목록 컴포넌트_2단계인지 판단 기준: memberSetComplete === true */}
         {
         // memberSetComplete&&
-        <Participant maxNum={Number(maxMember)} isHost={isHost} />}
+        <Participant maxNum={Number(maxMember)} roomId={roomId} participants={dutchParticipants} />}
       </Main>
 
       {/* 배경 도형 */}
