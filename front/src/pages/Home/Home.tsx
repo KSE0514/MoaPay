@@ -21,6 +21,7 @@ import { Card, useCardStore } from "../../store/CardStore";
 import Barcode from "react-barcode";
 import axios from "axios";
 import { useAuthStore } from "../../store/AuthStore";
+import { PATH } from "../../constants/path";
 
 const Home = () => {
   const navigate = useNavigate();
@@ -34,6 +35,7 @@ const Home = () => {
   const [isOpen, setIsOpen] = useState<boolean>(false); // QR 모달창 열림 닫힘 여부
   const [cardBarcodeValue, setCardBarcodeValue] = useState<string>("");
   const [barcodeLimitTime, setBarcodeLimitTime] = useState<number>(180);
+  const [remainder, setRemainder] = useState<number | null>(null);
   const timerRef = useRef<NodeJS.Timeout | null>(null); //타이머
 
   useEffect(() => {
@@ -56,7 +58,9 @@ const Home = () => {
         .querySelector("img")
         ?.getAttribute("alt"); // img의 alt 속성 (카드 alt 텍스트)
 
-      getCardBarcodeValue(barcodeCardNumber, barcodeCvc, barcodeCardImageAlt);
+      if (barcodeCardNumber && barcodeCvc && barcodeCardImageAlt) {
+        getCardBarcodeValue(barcodeCardNumber, barcodeCvc, barcodeCardImageAlt);
+      }
     }
   };
 
@@ -66,28 +70,26 @@ const Home = () => {
     barcodeCardImageAlt: string
   ) => {
     if (barcodeCardNumber === undefined) return;
-    console.log("====================================================");
-    console.log(barcodeCardNumber, barcodeCvc, barcodeCardImageAlt);
     try {
-      // const response = await axios.post(
-      //   `api/moapay/core/code/barcode`,
-      //   {
-      //     memberId: id,
-      //     type: barcodeCardImageAlt === "recommend" ? "RECOMMEND" : "FIX", // FIX, RECOMMEND
-      //     cardNumber: barcodeCardNumber,
-      //     cvc: barcodeCvc,
-      //   },
-      //   {
-      //     withCredentials: true,
-      //     headers: {
-      //       Authorization: `Bearer ${accessToken}`,
-      //       "Content-Type": "application/json",
-      //     },
-      //   }
-      // );
+      const response = await axios.post(
+        `api/moapay/core/code/barcode`,
+        {
+          memberId: id,
+          type: barcodeCardImageAlt === "recommend" ? "RECOMMEND" : "FIX", // FIX, RECOMMEND
+          cardNumber: barcodeCardNumber,
+          cvc: barcodeCvc,
+        },
+        {
+          withCredentials: true,
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+            "Content-Type": "application/json",
+          },
+        }
+      );
       setBarcodeLimitTime(180);
       startLimitTime();
-      // setCardBarcodeValue(response.data.barcode);
+      setCardBarcodeValue(response.data.barcode);
     } catch (e) {
       console.log(e);
     }
@@ -153,7 +155,23 @@ const Home = () => {
       const barcodeCardImageAlt = cards[2]
         .querySelector("img")
         ?.getAttribute("alt"); // img의 alt 속성 (카드 alt 텍스트)
-      getCardBarcodeValue(barcodeCardNumber, barcodeCvc, barcodeCardImageAlt);
+      const barCodeCardPerform =
+        cards[2].querySelector("div:nth-child(3)")?.textContent; // 두 번째 div의 텍스트 (CVC)
+      const barCodeCardAmount =
+        cards[2].querySelector("div:nth-child(4)")?.textContent; // 두 번째 div의 텍스트 (CVC)
+      if (barcodeCardImageAlt === "recommend") setRemainder(null);
+      if (barcodeCardNumber && barcodeCvc && barcodeCardImageAlt) {
+        if (barcodeCardImageAlt === "recommend") {
+          setRemainder(null);
+        } else {
+          setRemainder(Number(barCodeCardPerform) - Number(barCodeCardAmount));
+        }
+        getCardBarcodeValue(barcodeCardNumber, barcodeCvc, barcodeCardImageAlt);
+      } else {
+        setRemainder(null);
+        clearInterval(timerRef.current!); // 타이머 중단
+        setBarcodeLimitTime(0);
+      }
     }
   };
 
@@ -171,8 +189,23 @@ const Home = () => {
       const barcodeCardImageAlt = cards[0]
         .querySelector("img")
         ?.getAttribute("alt"); // img의 alt 속성 (카드 alt 텍스트)
+      const barCodeCardPerform =
+        cards[0].querySelector("div:nth-child(3)")?.textContent; // 두 번째 div의 텍스트 (CVC)
+      const barCodeCardAmount =
+        cards[0].querySelector("div:nth-child(4)")?.textContent; // 두 번째 div의 텍스트 (CVC)
 
-      getCardBarcodeValue(barcodeCardNumber, barcodeCvc, barcodeCardImageAlt);
+      if (barcodeCardNumber && barcodeCvc && barcodeCardImageAlt) {
+        if (barcodeCardImageAlt === "recommend") {
+          setRemainder(null);
+        } else {
+          setRemainder(Number(barCodeCardPerform) - Number(barCodeCardAmount));
+        }
+        getCardBarcodeValue(barcodeCardNumber, barcodeCvc, barcodeCardImageAlt);
+      } else {
+        setRemainder(null);
+        clearInterval(timerRef.current!); // 타이머 중단
+        setBarcodeLimitTime(0);
+      }
     }
   };
 
@@ -376,7 +409,12 @@ const Home = () => {
         </ButtonArea>
       </Top>
       <Bottom>
-        <div className="edit-card">
+        <div
+          onClick={() => {
+            navigate(PATH.USER_CARD_LIST);
+          }}
+          className="edit-card"
+        >
           <FontAwesomeIcon icon={faBars} />
           <p>편집</p>
         </div>
@@ -407,15 +445,31 @@ const Home = () => {
                     {showCards[2].cardNumber}
                   </div>
                   <div style={{ display: "none" }}>{showCards[2].cvc}</div>
+                  <div style={{ display: "none" }}>
+                    {showCards[2].cardProduct.cardProductPerformance}
+                  </div>
+                  <div style={{ display: "none" }}>{showCards[2].amount}</div>
                   <img src={`/assets/image/card.png`} alt={`recommend`} />
                 </div>
               ) : (
-                <div className="card" key={index}>
+                <div
+                  onClick={() => {
+                    navigate(
+                      `${PATH.USER_CARD_DETAIL.replace(
+                        ":card_id",
+                        card.cardNumber
+                      )}`
+                    );
+                  }}
+                  className="card"
+                  key={index}
+                >
                   <div style={{ display: "none" }}>{card.cardNumber}</div>
                   <div style={{ display: "none" }}>{card.cvc}</div>
                   <div style={{ display: "none" }}>
-                    {card.cardProduct.cardProductName}
-                  </div>
+                    {card.cardProduct.cardProductPerformance}
+                  </div>{" "}
+                  <div style={{ display: "none" }}>{card.amount}</div>
                   <img
                     src={`/assets/image/longWidth/신용카드이미지/${card.cardProduct.cardProductImgUrl}.png`}
                     alt={`card-${index}`}
@@ -425,7 +479,15 @@ const Home = () => {
             )}
           </div>
         </CardList>
-        <div className="remaining-performance">다음 실적까지 100,000원</div>
+
+        <div className="remaining-performance">
+          {remainder !== null
+            ? remainder <= 0
+              ? `실적달성🎉`
+              : `다음 실적까지 ${remainder}원`
+            : "모아"}
+        </div>
+
         <div className="tri tri-left"></div>
         <div className="tri tri-right"></div>
       </Bottom>

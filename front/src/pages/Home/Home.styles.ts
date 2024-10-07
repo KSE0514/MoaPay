@@ -116,7 +116,7 @@ export const Bottom = styled.div`
   }
   .tri {
     position: absolute;
-    bottom: 80.5px;
+    bottom: 85.5px;
     width: 0;
     height: 0;
     border-bottom: 100px solid rgba(84, 98, 255, 0.24);
@@ -229,6 +229,7 @@ export const CardList = styled.div`
     width: 85%;
   }
   .card:nth-of-type(2) {
+    width: 100%;
     z-index: 10;
   }
   .card:nth-of-type(3) {

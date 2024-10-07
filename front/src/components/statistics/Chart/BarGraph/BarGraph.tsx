@@ -30,8 +30,8 @@ ChartJS.register(
 );
 
 type Props = {
-  userDataList: number[];
-  avgDataList: number[];
+  userDataList: number[] | null;
+  avgDataList: number[] | null;
   consumptionMode: boolean;
 };
 
@@ -70,7 +70,7 @@ const MixedChart: React.FC<Props> = ({
   }, []);
 
   /**문제된 곳 */
-  const data: ChartData<"line" | "bar", number[], string> = {
+  const data: ChartData<"line" | "bar", number[] | null, string> = {
     labels: months,
     datasets: [
       {

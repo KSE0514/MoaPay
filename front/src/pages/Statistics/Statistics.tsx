@@ -24,18 +24,8 @@ import {
 import { PATH } from "../../constants/path";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import axios from "axios";
-
-interface data {
-  category: string;
-  money: number;
-  per: number;
-}
-
+import { categoryData } from "../../store/CardStore";
 const Statistics = () => {
-  // const [openDropDown, setOpenDropDown] = useState<boolean>(false); //드롭다운 펼치기 여부
-  // const [closeAnimateClass, setCloseAnimateClass] = useState(false); //드롭다운 접기
-  // const [iconAnimateClass, setIconAnimateClass] = useState<string>(""); //아이콘 애니메이션 여부
-  // const [isFirstRender, setIsFirstRender] = useState<boolean>(true); // 첫 렌더링 체크 플래그
   /**
    * 드롭다운 컨트롤 함수
    */
@@ -92,29 +82,8 @@ const Statistics = () => {
   );
   const [calculatedPrice, setCalculated] = useState<number | null>(null);
 
-  // test data
-  const [dataList, setDataList] = useState<data[] | null>([
-    { category: "간편결제", money: 50000, per: 2.5 },
-    { category: "교육", money: 250000, per: 12.5 },
-    { category: "교통", money: 50000, per: 2.5 },
-    { category: "마트·편의점", money: 50000, per: 2.5 },
-    { category: "미용", money: 100000, per: 5.0 },
-    { category: "보험", money: 50000, per: 2.5 },
-    { category: "숙박", money: 250000, per: 12.5 },
-    { category: "생활", money: 50000, per: 2.5 },
-    { category: "쇼핑", money: 50000, per: 2.5 },
-    { category: "식비", money: 100000, per: 5.0 },
-    { category: "연회비", money: 50000, per: 2.5 },
-    { category: "온라인 쇼핑", money: 250000, per: 12.5 },
-    { category: "의료", money: 50000, per: 2.5 },
-    { category: "주거·통신", money: 50000, per: 2.5 },
-    { category: "자동차", money: 100000, per: 5.0 },
-    { category: "취미", money: 50000, per: 2.5 },
-    { category: "카페", money: 250000, per: 12.5 },
-    { category: "해외", money: 50000, per: 2.5 },
-    { category: "항공·여행", money: 50000, per: 2.5 },
-    { category: "ALL", money: 100000, per: 5.0 },
-  ]);
+  // 카테고리 데이터
+  const [dataList, setDataList] = useState<categoryData[] | null>([]);
 
   const handlePrevMonth = () => {
     if (selectedMonth === 1) {
