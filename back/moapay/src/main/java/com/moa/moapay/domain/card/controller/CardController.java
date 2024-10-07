@@ -81,6 +81,13 @@ public class CardController {
         return ResponseEntity.ok(memberId);
     }
 
+    @PostMapping("/history")
+    public ResponseEntity<ResultResponse> getCardHistory(@RequestBody CardHistoryRequestDto cardHistoryRequestDto){
+        CardHistoryResponseDto resultDto = myCardService.getCardHistory(cardHistoryRequestDto);
+        ResultResponse resultResponse = ResultResponse.of(HttpStatus.OK, "달 별 결제내역을 가져왔습니다.", resultDto);
+        return ResponseEntity.status(resultResponse.getStatus()).body(resultResponse);
+    }
+
     //paymnet로 보낼 myCard
     @PostMapping("/getMemberCard")
     public ResponseEntity<List<GetMemberCardsDto>> getMemberCard(@Valid @RequestBody UUID memberId){

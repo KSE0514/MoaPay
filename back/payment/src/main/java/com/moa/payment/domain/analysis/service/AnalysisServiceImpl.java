@@ -1,19 +1,23 @@
 package com.moa.payment.domain.analysis.service;
 
+import com.moa.payment.domain.analysis.model.dto.CardHistoryPaymentLogDto;
+import com.moa.payment.domain.analysis.model.dto.CardHistoryRequestDto;
+import com.moa.payment.domain.analysis.model.dto.CardHistoryResponseDto;
+import com.moa.payment.domain.analysis.repository.PaymentLogQueryRepository;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
-import java.time.LocalDate;
-import java.time.Period;
+import java.time.*;
 import java.util.HashSet;
 import java.util.List;
 import java.util.UUID;
 
 import com.moa.payment.domain.analysis.entity.Analysis;
 import com.moa.payment.domain.analysis.entity.Gender;
-import com.moa.payment.domain.analysis.entity.dto.getMemberResponseDto;
+import com.moa.payment.domain.analysis.model.dto.getMemberResponseDto;
 import com.moa.payment.domain.analysis.repository.AnalysisRepository;
 import com.moa.payment.domain.charge.entity.PaymentLog;
 import com.moa.payment.domain.charge.repository.PaymentLogRepository;
@@ -21,11 +25,13 @@ import com.moa.payment.domain.charge.repository.PaymentLogRepository;
 import lombok.RequiredArgsConstructor;
 
 @Service
+@Slf4j
 @RequiredArgsConstructor
 public class AnalysisServiceImpl implements AnalysisService {
 
 	private final PaymentLogRepository paymentLogRepository;
 	private final AnalysisRepository analysisRepository;
+	private final PaymentLogQueryRepository paymentLogQueryRepository;
 	private final RestTemplate restTemplate;
 
 	@Value("${external-url.member}")
@@ -183,4 +189,28 @@ public class AnalysisServiceImpl implements AnalysisService {
 		return avg;
 	}
 
+	@Override
+	public CardHistoryResponseDto getCardHistory(CardHistoryRequestDto dto) {
+		log.info("get card history - year : {}, month : {}", dto.getYear(), dto.getMonth());
+		Month month = Month.of(dto.getMonth());
+		YearMonth dateInfo = YearMonth.of(dto.getYear(), dto.getMonth());
+		int lastDay = dateInfo.atEndOfMonth().lengthOfMonth();
+		LocalDateTime startTime = LocalDateTime.of(dto.getYear(), dto.getMonth(), 1, 0, 0);
+		LocalDateTime endTime = LocalDateTime.of(dto.getYear(), dto.getMonth(), lastDay, 23, 59);
+		List<CardHistoryPaymentLogDto> paymentLogs = paymentLogQueryRepository.findPaymentLog(dto.getCardId(), startTime, endTime);
+		long totalAmount = 0;
+		long totalBenefit = 0;
+		for(CardHistoryPaymentLogDto log : paymentLogs){
+			totalAmount += log.getAmount();
+			totalBenefit += log.getBenefitBalance();
+		}
+		return CardHistoryResponseDto.builder()
+				.cardId(dto.getCardId())
+				.year(dto.getYear())
+				.month(dto.getMonth())
+				.totalAmount(totalAmount)
+				.totalBenefit(totalBenefit)
+				.paymentLogs(paymentLogs)
+				.build();
+	}
 }

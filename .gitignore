@@ -28,5 +28,8 @@
 /front/.firebase
 /front/.firebaserc
 /front/src/firebase.tsx
+/front/public/index.html
 
 .idea
+
+.ideaback/moapay/src/main/resources/MoaPayFCM.json

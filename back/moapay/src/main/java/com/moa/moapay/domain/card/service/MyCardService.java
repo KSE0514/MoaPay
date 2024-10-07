@@ -21,4 +21,6 @@ public interface MyCardService {
 
     UUID getMemberId(UUID cardId);
     List<GetMemberCardsDto> getMemberCard(UUID memberId);
+
+    CardHistoryResponseDto getCardHistory(CardHistoryRequestDto cardHistoryRequestDto);
 }

@@ -21,13 +21,18 @@ const Nav = () => {
   };
 
   return (
-    <Wrapper style={{ display: match ? "none" : "flex" }}>
+    <Wrapper
+      style={{
+        display: match ? "none" : "flex",
+        backgroundColor: statisticsmatch ? "white" : "",
+      }}
+    >
       <div
         onClick={() => movePage(PATH.HOME)}
         className={location.pathname === PATH.HOME ? "active" : ""}
       >
         <StyledIcon icon={faHouse} />
-        <p>Home</p>
+        <p>홈</p>
       </div>
       <div
         onClick={() => movePage(PATH.CARD_RECOMMEND)}

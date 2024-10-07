@@ -4,13 +4,13 @@ import {
   Top,
   Bottom,
   BarcordArea,
-  Barcord,
   Time,
   ButtonArea,
   Wrapper,
   CardList,
   PlusIcon,
   QrContainer,
+  BarcordView,
 } from "./Home.styles";
 import Modal from "../../components/dutch/Modal/Modal";
 import barcode from "../../assets/image/barcode.png";
@@ -18,9 +18,16 @@ import { useEffect, useState, useRef } from "react";
 import { Html5QrcodeScanner } from "html5-qrcode";
 import { useNavigate } from "react-router-dom";
 import { Card, useCardStore } from "../../store/CardStore";
+import Barcode from "react-barcode";
+import axios from "axios";
+import { useAuthStore } from "../../store/AuthStore";
+import { PATH } from "../../constants/path";
+import { requestPermission, messaging } from "../../FCM.ts";
+import { onMessage } from "firebase/messaging";
 
 const Home = () => {
   const navigate = useNavigate();
+  const { id, accessToken } = useAuthStore();
   const { cardWithDividPay, cardWithNullName, cardList } = useCardStore();
   const [showCards, setShowCards] = useState<Card[]>([]);
   const containerRef = useRef<HTMLDivElement | null>(null);
@@ -28,9 +35,95 @@ const Home = () => {
   const [qrResult, setQrResult] = useState<string | null>(null); // QR 코드 결과 추가
   const qrScannerRef = useRef<Html5QrcodeScanner | null>(null);
   const [isOpen, setIsOpen] = useState<boolean>(false); // QR 모달창 열림 닫힘 여부
-  const [rotate, setRotate] = useState<{ [key: number]: boolean }>({}); // 이미지 회전 여부 저장
+  const [cardBarcodeValue, setCardBarcodeValue] = useState<string>("");
+  const [barcodeLimitTime, setBarcodeLimitTime] = useState<number>(180);
+  const [remainder, setRemainder] = useState<number | null>(null);
+  const timerRef = useRef<NodeJS.Timeout | null>(null); //타이머
 
-  // 이미지 로드 후 크기를 비교하여 회전 여부 결정
+  useEffect(() => {
+    getCardBarcodeValue(
+      showCards[2]?.cardNumber,
+      showCards[2]?.cvc,
+      "recommend"
+    );
+  }, [showCards]);
+
+  const faRefreshBarCord = () => {
+    const cards = containerRef?.current?.querySelectorAll(".card");
+    if (cards) {
+      console.log("refresh", cards);
+      const barcodeCardNumber =
+        cards[1].querySelector("div:nth-child(1)")?.textContent; // 첫 번째 div의 텍스트 (카드 번호)
+      const barcodeCvc =
+        cards[1].querySelector("div:nth-child(2)")?.textContent; // 두 번째 div의 텍스트 (CVC)
+      const barcodeCardImageAlt = cards[1]
+        .querySelector("img")
+        ?.getAttribute("alt"); // img의 alt 속성 (카드 alt 텍스트)
+
+      if (barcodeCardNumber && barcodeCvc && barcodeCardImageAlt) {
+        getCardBarcodeValue(barcodeCardNumber, barcodeCvc, barcodeCardImageAlt);
+      }
+    }
+  };
+
+  const getCardBarcodeValue = async (
+    barcodeCardNumber: string,
+    barcodeCvc: string,
+    barcodeCardImageAlt: string
+  ) => {
+    if (barcodeCardNumber === undefined) return;
+    try {
+      const response = await axios.post(
+        `api/moapay/core/code/barcode`,
+        {
+          memberId: id,
+          type: barcodeCardImageAlt === "recommend" ? "RECOMMEND" : "FIX", // FIX, RECOMMEND
+          cardNumber: barcodeCardNumber,
+          cvc: barcodeCvc,
+        },
+        {
+          withCredentials: true,
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+            "Content-Type": "application/json",
+          },
+        }
+      );
+      setBarcodeLimitTime(180);
+      startLimitTime();
+      setCardBarcodeValue(response.data.barcode);
+    } catch (e) {
+      console.log(e);
+    }
+  };
+
+  // 타이머 시작
+  const startLimitTime = () => {
+    // 타이머가 이미 실행 중이면 기존 타이머 해제
+    if (timerRef.current) {
+      clearInterval(timerRef.current);
+    }
+
+    let timeRemaining = 180; // 3분 설정
+    setBarcodeLimitTime(timeRemaining); // 초기 시간 설정
+
+    // 1초마다 시간 감소
+    timerRef.current = setInterval(() => {
+      timeRemaining -= 1;
+      setBarcodeLimitTime(timeRemaining); // 상태 업데이트
+
+      // 시간이 0이 되면 타이머 중단
+      if (timeRemaining <= 0) {
+        clearInterval(timerRef.current!); // 타이머 중단
+      }
+    }, 1000); // 1초마다 실행
+  };
+
+  const formatTime = (time: number) => {
+    const minutes = Math.floor(time / 60); // 분 계산
+    const seconds = time % 60; // 초 계산
+    return `${minutes}:${seconds < 10 ? `0${seconds}` : seconds}`; // 1:30 형식으로 반환
+  };
 
   let startY = 0;
 
@@ -52,8 +145,34 @@ const Home = () => {
   const handleSlideUp = () => {
     if (containerRef.current) {
       const cards = containerRef.current.querySelectorAll(".card");
+
       if (cards.length > 0) {
         containerRef.current.append(cards[0]);
+      }
+      console.log("컨테이너 안에 있는 카드들:", cards);
+      const barcodeCardNumber =
+        cards[2].querySelector("div:nth-child(1)")?.textContent; // 첫 번째 div의 텍스트 (카드 번호)
+      const barcodeCvc =
+        cards[2].querySelector("div:nth-child(2)")?.textContent; // 두 번째 div의 텍스트 (CVC)
+      const barcodeCardImageAlt = cards[2]
+        .querySelector("img")
+        ?.getAttribute("alt"); // img의 alt 속성 (카드 alt 텍스트)
+      const barCodeCardPerform =
+        cards[2].querySelector("div:nth-child(3)")?.textContent; // 두 번째 div의 텍스트 (CVC)
+      const barCodeCardAmount =
+        cards[2].querySelector("div:nth-child(4)")?.textContent; // 두 번째 div의 텍스트 (CVC)
+      if (barcodeCardImageAlt === "recommend") setRemainder(null);
+      if (barcodeCardNumber && barcodeCvc && barcodeCardImageAlt) {
+        if (barcodeCardImageAlt === "recommend") {
+          setRemainder(null);
+        } else {
+          setRemainder(Number(barCodeCardPerform) - Number(barCodeCardAmount));
+        }
+        getCardBarcodeValue(barcodeCardNumber, barcodeCvc, barcodeCardImageAlt);
+      } else {
+        setRemainder(null);
+        clearInterval(timerRef.current!); // 타이머 중단
+        setBarcodeLimitTime(0);
       }
     }
   };
@@ -63,6 +182,31 @@ const Home = () => {
       const cards = containerRef.current.querySelectorAll(".card");
       if (cards.length > 0) {
         containerRef.current.prepend(cards[cards.length - 1]);
+      }
+      console.log("컨테이너 안에 있는 카드들:", cards);
+      const barcodeCardNumber =
+        cards[0].querySelector("div:nth-child(1)")?.textContent; // 첫 번째 div의 텍스트 (카드 번호)
+      const barcodeCvc =
+        cards[0].querySelector("div:nth-child(2)")?.textContent; // 두 번째 div의 텍스트 (CVC)
+      const barcodeCardImageAlt = cards[0]
+        .querySelector("img")
+        ?.getAttribute("alt"); // img의 alt 속성 (카드 alt 텍스트)
+      const barCodeCardPerform =
+        cards[0].querySelector("div:nth-child(3)")?.textContent; // 두 번째 div의 텍스트 (CVC)
+      const barCodeCardAmount =
+        cards[0].querySelector("div:nth-child(4)")?.textContent; // 두 번째 div의 텍스트 (CVC)
+
+      if (barcodeCardNumber && barcodeCvc && barcodeCardImageAlt) {
+        if (barcodeCardImageAlt === "recommend") {
+          setRemainder(null);
+        } else {
+          setRemainder(Number(barCodeCardPerform) - Number(barCodeCardAmount));
+        }
+        getCardBarcodeValue(barcodeCardNumber, barcodeCvc, barcodeCardImageAlt);
+      } else {
+        setRemainder(null);
+        clearInterval(timerRef.current!); // 타이머 중단
+        setBarcodeLimitTime(0);
       }
     }
   };
@@ -84,7 +228,38 @@ const Home = () => {
 
     // showCards 상태 업데이트
     setShowCards(cardArray); // 상태 불변성을 유지하며 새 배열로 설정
+
+    if ("serviceWorker" in navigator) {
+      navigator.serviceWorker
+        .register("/firebase-messaging-sw.js")
+        .then(function (registration) {
+          console.log(
+            "Service Worker registered with scope:",
+            registration.scope
+          );
+        })
+        .catch(function (error) {
+          console.error("Service Worker registration failed:", error);
+        });
+    }
+
+    requestPermission(id, accessToken); // 컴포넌트가 마운트될 때 requestPermission 호출
+
+    const unsubscribe = onMessage(messaging, (payload) => {
+      console.log("Message received : ", payload);
+
+      // 알림 표시
+      new Notification(payload.notification?.title ?? "Title", {
+        body: payload.notification?.body ?? "Body",
+        icon: payload.notification?.icon ?? "/default-icon.png",
+      });
+    });
+
+    return () => {
+      unsubscribe();
+    };
   }, []);
+
   useEffect(() => {}, [showCards]); // showCards가 변경될 때마다 실행
   // 카메라 켜기
   const handleToggleCamera = () => {
@@ -242,23 +417,38 @@ const Home = () => {
     <Wrapper>
       <Top className="top">
         <BarcordArea>
-          <Barcord>
-            <img src={barcode} alt="barcode" />
-          </Barcord>
+          <BarcordView>
+            <Barcode
+              width={300}
+              height={10000}
+              displayValue={false} // 바코드 아래 텍스트 표시 여부
+              value={cardBarcodeValue} // 바코드 값 설정
+            />
+          </BarcordView>
+
           <Time>
-            <div>2:04</div>
-            <button>
+            <div> {formatTime(barcodeLimitTime)}</div>
+            <button
+              onClick={() => {
+                faRefreshBarCord();
+              }}
+            >
               <FontAwesomeIcon icon={faRepeat} />
             </button>
           </Time>
         </BarcordArea>
         <ButtonArea>
           <button onClick={handleToggleCamera}>QR 인식하기</button>
-          <button>결제코드 입력하기</button>
+          {/* <button>결제코드 입력하기</button> */}
         </ButtonArea>
       </Top>
       <Bottom>
-        <div className="edit-card">
+        <div
+          onClick={() => {
+            navigate(PATH.USER_CARD_LIST);
+          }}
+          className="edit-card"
+        >
           <FontAwesomeIcon icon={faBars} />
           <p>편집</p>
         </div>
@@ -285,10 +475,35 @@ const Home = () => {
                 </div>
               ) : card.id === "recommended-card" ? (
                 <div className="card recommended-card" key={index}>
-                  <img src={`/assets/image/card.png`} alt={`card-${index}`} />
+                  <div style={{ display: "none" }}>
+                    {showCards[2].cardNumber}
+                  </div>
+                  <div style={{ display: "none" }}>{showCards[2].cvc}</div>
+                  <div style={{ display: "none" }}>
+                    {showCards[2].cardProduct.cardProductPerformance}
+                  </div>
+                  <div style={{ display: "none" }}>{showCards[2].amount}</div>
+                  <img src={`/assets/image/card.png`} alt={`recommend`} />
                 </div>
               ) : (
-                <div className="card" key={index}>
+                <div
+                  onClick={() => {
+                    navigate(
+                      `${PATH.USER_CARD_DETAIL.replace(
+                        ":card_id",
+                        card.cardNumber
+                      )}`
+                    );
+                  }}
+                  className="card"
+                  key={index}
+                >
+                  <div style={{ display: "none" }}>{card.cardNumber}</div>
+                  <div style={{ display: "none" }}>{card.cvc}</div>
+                  <div style={{ display: "none" }}>
+                    {card.cardProduct.cardProductPerformance}
+                  </div>{" "}
+                  <div style={{ display: "none" }}>{card.amount}</div>
                   <img
                     src={`/assets/image/longWidth/신용카드이미지/${card.cardProduct.cardProductImgUrl}.png`}
                     alt={`card-${index}`}
@@ -298,7 +513,15 @@ const Home = () => {
             )}
           </div>
         </CardList>
-        <div className="remaining-performance">다음 실적까지 100,000원</div>
+
+        <div className="remaining-performance">
+          {remainder !== null
+            ? remainder <= 0
+              ? `실적달성🎉`
+              : `다음 실적까지 ${remainder}원`
+            : "모아"}
+        </div>
+
         <div className="tri tri-left"></div>
         <div className="tri tri-right"></div>
       </Bottom>

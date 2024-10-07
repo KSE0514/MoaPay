@@ -1,6 +1,12 @@
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
 
+export interface categoryData {
+  category: string;
+  money: number;
+  per: number;
+}
+
 // 혜택 인터페이스 정의
 export interface Benefit {
   categoryName: string;
@@ -54,11 +60,12 @@ interface CardState {
   addCard: (card: Card) => void; // 카드 추가 함수
   removeCard: (index: number) => void; // 카드 삭제 함수
   clearCards: () => void; // 카드 리스트 초기화 함수
+  getCardByNumber: (cardNumber: string) => Card | undefined;
 }
 
 export const useCardStore = create<CardState>()(
   persist(
-    (set) => ({
+    (set, get) => ({
       cardWithNullName: {
         id: "add-card",
         cardNumber: "", // 빈 문자열
@@ -157,7 +164,14 @@ export const useCardStore = create<CardState>()(
           newCardList.splice(index, 1); // Remove the card at the specified index
           return { cardList: newCardList }; // Return the updated state
         }),
+
       clearCards: () => set(() => ({ cardList: [] })),
+
+      // 추가된 메서드: cardNumber로 특정 카드를 찾는 함수
+      getCardByNumber: (cardNumber: string) => {
+        const { cardList } = get(); // 상태에서 cardList 가져오기
+        return cardList.find((card) => card.cardNumber === cardNumber); // cardNumber로 찾기
+      },
     }),
     {
       name: "card-storage", // localStorage에 저장될 키 이름
