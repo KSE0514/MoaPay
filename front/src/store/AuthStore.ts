@@ -11,6 +11,8 @@ interface AuthState {
   accessToken: string | null;
   refreshToken: string | null;
   paymentType: string | null;
+  savingMode: boolean;
+  setSavingMode: (value: boolean) => void;
   setPaymentType: (value: string) => void;
   setAccessToken: (value: string) => void;
   setRefreshToken: (value: string) => void;
@@ -35,6 +37,8 @@ export const useAuthStore = create<AuthState>()(
       refreshToken: null,
       phoneNumber: null,
       paymentType: null,
+      savingMode: false,
+      setSavingMode: (value) => set({ savingMode: value }),
       setPaymentType: (value) => set({ paymentType: value }),
       setPhoneNumber: (value) => set({ phoneNumber: value }),
       setAccessToken: (value) => set({ accessToken: value }),
