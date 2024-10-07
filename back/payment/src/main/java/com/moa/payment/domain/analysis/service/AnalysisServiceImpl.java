@@ -53,7 +53,7 @@ public class AnalysisServiceImpl implements AnalysisService {
 
 	//-----scheduling 필요
 	@Override
-	public void getLastMonthPaymentLog() {
+	public void setAverage() {
 		// save 배열 초기화 (null 값을 0L로 초기화)
 		for (int i = 0; i < 2; i++) {
 			for (int j = 0; j < 13; j++) {

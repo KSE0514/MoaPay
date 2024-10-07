@@ -28,7 +28,7 @@ public class AnalysisController {
 	@GetMapping("/saveAverage")
 	public ResponseEntity<ResultResponse> saveAverage(){
 		//uuid 통해 member 찾고 member의 성별, 나이대 구한 후 소비평균 가져오기
-		analysisService.getLastMonthPaymentLog();
+		analysisService.setAverage();
 		ResultResponse resultResponse = ResultResponse.of(HttpStatus.OK, "성별/연령대 별 소비총합과 멤버 수 저장 완료");
 		return ResponseEntity.status(resultResponse.getStatus()).body(resultResponse);
 	}
