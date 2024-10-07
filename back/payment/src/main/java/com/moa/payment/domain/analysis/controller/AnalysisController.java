@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.moa.payment.domain.analysis.entity.dto.averageRequestDto;
+import com.moa.payment.domain.analysis.entity.dto.averageResponseDto;
 import com.moa.payment.domain.analysis.service.AnalysisService;
 import com.moa.payment.global.response.ResultResponse;
 
@@ -37,7 +38,9 @@ public class AnalysisController {
 	public  ResponseEntity<ResultResponse> getAverage(@RequestBody averageRequestDto dto){
 		UUID memberId=dto.getMemberId();
 		Long average=analysisService.average(memberId);
-		ResultResponse resultResponse = ResultResponse.of(HttpStatus.OK, "소비평균",average);
+		averageResponseDto averageDto=new averageResponseDto();
+		averageDto.setAverage(average);
+		ResultResponse resultResponse = ResultResponse.of(HttpStatus.OK, "소비평균",averageDto);
 		return ResponseEntity.status(resultResponse.getStatus()).body(resultResponse);
 	}
 
