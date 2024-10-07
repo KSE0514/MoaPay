@@ -38,7 +38,7 @@ export interface Accounts {
 }
 // 카드 객체 타입 정의
 export interface Card {
-  id: string; //uuid 카드 식별자
+  uuid: string; //uuid 카드 식별자
   cardNumber: string; // 카드번호
   cvc: string; // CVC 코드 추가
   performanceFlag: boolean; // 실적 달성 여부
@@ -67,7 +67,7 @@ export const useCardStore = create<CardState>()(
   persist(
     (set, get) => ({
       cardWithNullName: {
-        id: "add-card",
+        uuid: "add-card",
         cardNumber: "", // 빈 문자열
         cvc: "", // 빈 문자열
         performanceFlag: false, // 실적 달성 여부
@@ -93,7 +93,7 @@ export const useCardStore = create<CardState>()(
         },
       },
       cardWithDividPay: {
-        id: "recommended-card",
+        uuid: "recommended-card",
         cardNumber: "", // 예시 카드 번호
         cvc: "", // 예시 CVC 코드
         performanceFlag: false, // 실적 달성 여부

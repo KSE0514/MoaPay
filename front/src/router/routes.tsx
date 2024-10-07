@@ -32,7 +32,7 @@ import SelectPaymentType from "../pages/SelectPaymentType/SelectPaymentType.tsx"
 import DutchOpen from "../pages/DutchOpen/DutchOpen.tsx";
 const router = createBrowserRouter([
   {
-    // element: <AppAuthHandler />, // 최상위 레이아웃으로 AppAuthHandler 설정
+    element: <AppAuthHandler />, // 최상위 레이아웃으로 AppAuthHandler 설정
     children: [
       {
         path: PATH.ROOT,

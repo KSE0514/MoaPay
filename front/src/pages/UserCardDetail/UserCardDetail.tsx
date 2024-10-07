@@ -17,17 +17,17 @@ import {
   Bottom,
   DateInput,
 } from "./UserCardDetail.styles";
+import { useAuthStore } from "../../store/AuthStore";
+import { useParams } from "react-router-dom";
+import { Card, useCardStore } from "../../store/CardStore";
 
 const UserCardDetail = () => {
-  // 테스트용 카드 데이터--- 나중에 지울 예정
-  const card = {
-    img: testCard12,
-    name: "올바른 FLEX 카드",
-    cur_record: 253200,
-    tar_record: 3000000,
-    benefit: 5600,
-  };
-  const currentYear = new Date().getFullYear();  // 현재 년도 가져오기
+  const { id } = useParams();
+
+  const { accessToken } = useAuthStore();
+  const [selectedCard, setSelectedCard] = useState<Card | undefined>(undefined);
+
+  const currentYear = new Date().getFullYear(); // 현재 년도 가져오기
   const currentMonth = new Date().getMonth() + 1; // 월은 0부터 시작하기 때문에 +1
 
   // 년도와 월을 state로 관리
@@ -40,28 +40,37 @@ const UserCardDetail = () => {
   const [tempMonth, setTempMonth] = useState<number>(month);
   const [errorMessage, setErrorMessage] = useState<string>(""); // 오류 메시지 상태
 
+  useEffect(() => {}, []);
 
   // 카드별 결제 내역 조회(년, 월)
   const getCardHistory = async () => {
-    try{
-      const response = await axios.get(
-        `요청 api 주소 입력`, {
+    console.log(year, month, id);
+    try {
+      const response = await axios.post(
+        // `api/moapay/core/card/history`,
+        `http://localhost:8765/moapay/core/card/history`,
+        { cardId: id, year: year, month: month },
+        {
+          withCredentials: true,
           headers: {
+            Authorization: `Bearer ${accessToken}`,
             "Content-Type": "application/json",
           },
-        });
-        if (response.status === 200) {
-          console.log("카드 결제내역 조회 완료");
         }
-    }catch (err) {
+      );
+      if (response.status === 200) {
+        console.log(response);
+        console.log("카드 결제내역 조회 완료");
+      }
+    } catch (err) {
       console.error("에러 발생", err);
     }
-  }
+  };
 
   // 년, 월이 바뀔 때마다 결제내역 조회 요청하기
   useEffect(() => {
-    getCardHistory()
-  }, [year, month])
+    getCardHistory();
+  }, [year, month]);
 
   // 월 선택 핸들러 (이전 달)
   const handlePrevMonth = () => {
@@ -79,7 +88,7 @@ const UserCardDetail = () => {
   const handleNextMonth = () => {
     if (year === currentYear && month === currentMonth) {
       // 현재 연도와 월일 경우, 더 이상 다음 달로 이동하지 않도록
-      return
+      return;
     }
 
     if (month === 12) {
@@ -101,16 +110,21 @@ const UserCardDetail = () => {
 
   // 년도 변경
   const onChangeYear = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setTempYear(Number(e.target.value))
-  }
+    setTempYear(Number(e.target.value));
+  };
 
   // 월 변경
   const onChangeMonth = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setTempMonth(Number(e.target.value))
-  }
+    setTempMonth(Number(e.target.value));
+  };
 
   const ChangeYearMonth = () => {
-    if (tempYear > currentYear || (tempYear === currentYear && tempMonth > currentMonth) || (tempMonth <= 1 || tempMonth >= 12)) {
+    if (
+      tempYear > currentYear ||
+      (tempYear === currentYear && tempMonth > currentMonth) ||
+      tempMonth <= 1 ||
+      tempMonth >= 12
+    ) {
       setErrorMessage("날짜를 확인 후 다시 입력해주세요.");
     } else {
       // 입력이 유효한 경우 year과 month 업데이트
@@ -119,12 +133,12 @@ const UserCardDetail = () => {
       setIsOpen(false);
       setErrorMessage(""); // 오류 메시지 초기화
     }
-  }
+  };
 
   const onClose = () => {
-    setIsOpen(false)
+    setIsOpen(false);
     setErrorMessage(""); // 오류 메시지 초기화
-  }
+  };
 
   // 카드 가로, 세로 길이에 따른 회전 여부 판단 핸들러
   const handleImageLoad = (
@@ -159,12 +173,8 @@ const UserCardDetail = () => {
             </svg>
           </button>
           <DateTag onClick={handleMonthSelect}>
-            {year !== currentYear && (
-              <span>{year}년 </span>
-            )}
-            <span>
-              {month < 10?  `0${month}`: month}월
-            </span>
+            {year !== currentYear && <span>{year}년 </span>}
+            <span>{month < 10 ? `0${month}` : month}월</span>
           </DateTag>
           <button onClick={handleNextMonth}>
             <svg
@@ -184,7 +194,7 @@ const UserCardDetail = () => {
         </Month>
         <CardInfo>
           <img
-            src={card.img}
+            src={selectedCard?.cardProduct.cardProductImgUrl}
             onLoad={(event) => handleImageLoad(event)}
             style={{
               width: rotate ? "66.5px" : "105px",
@@ -194,12 +204,14 @@ const UserCardDetail = () => {
             }}
           />
           <div>
-            <div>{card.name}</div>
+            <div>{selectedCard?.cardProduct.cardProductName}</div>
             <div>
-              실적: {card.cur_record.toLocaleString()} /{" "}
-              {card.tar_record.toLocaleString()}
+              실적: {selectedCard?.amount.toLocaleString()} /{" "}
+              {selectedCard?.cardProduct.cardProductPerformance.toLocaleString()}
             </div>
-            <div>혜택: {card.benefit.toLocaleString()}원</div>
+            <div>
+              혜택: {selectedCard?.cardProduct.benefits?.toLocaleString()}원
+            </div>
           </div>
         </CardInfo>
       </Top>
@@ -210,35 +222,32 @@ const UserCardDetail = () => {
         <img src={bottomGD} />
       </Bottom> */}
 
-
       {/* 날짜 변경 모달 */}
       <Modal isOpen={isOpen} onClose={onClose}>
         <div
-        style={{
-          fontSize: "15px",
-          paddingTop: '20px',
-        }}
+          style={{
+            fontSize: "15px",
+            paddingTop: "20px",
+          }}
         >
           <div
             style={{
-              color: 'gray'
+              color: "gray",
             }}
           >
             조회하고자 하는 기간을 입력해주세요.
           </div>
           <DateInput>
             <input type="number" value={tempYear} onChange={onChangeYear} />년
-            <input type="number" value={tempMonth} onChange={onChangeMonth}/>월
+            <input type="number" value={tempMonth} onChange={onChangeMonth} />월
           </DateInput>
-          {errorMessage && <div style={{ color: "red",
-            paddingBottom: '15px'
-           }}>{errorMessage}</div>}
-          <button onClick={ChangeYearMonth}>
-            확인
-          </button>
+          {errorMessage && (
+            <div style={{ color: "red", paddingBottom: "15px" }}>
+              {errorMessage}
+            </div>
+          )}
+          <button onClick={ChangeYearMonth}>확인</button>
         </div>
-        
-        
       </Modal>
     </Wrapper>
   );

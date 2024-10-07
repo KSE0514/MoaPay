@@ -163,8 +163,8 @@ const CreateAccount = () => {
     // 인증번호 발급하기
     try {
       await axios.post(
-        // `${baseUrl}moapay/member/sendSMS`,
-        `api/moapay/member/sendSMS`,
+        `${baseUrl}moapay/member/sendSMS`,
+        // `api/moapay/member/sendSMS`,
         {
           phoneNumber: joinUserInfo.phone_number,
         },
@@ -204,8 +204,8 @@ const CreateAccount = () => {
     try {
       // 인증번호 확인하기
       const response = await axios.post(
-        // `${baseUrl}moapay/member/verification`,
-        `api/moapay/member/verification`,
+        `${baseUrl}moapay/member/verification`,
+        // `api/moapay/member/verification`,
         {
           phoneNumber: joinUserInfo.phone_number,
           code: joinUserInfo.verification_code,
@@ -248,8 +248,8 @@ const CreateAccount = () => {
       // 인증번호가 일치하면 존재하는 멤버인지 확인해야함
       // 요청 결과에 따라 비밀번호 로그인 또는 회원가입으로 전달
       const existUserCheckResponse = await axios.post(
-        `api/moapay/member/isMember`,
-        // `${baseUrl}moapay/member/isMember`,
+        // `api/moapay/member/isMember`,
+        `${baseUrl}moapay/member/isMember`,
         {
           phoneNumber: joinUserInfo.phone_number,
         },
@@ -299,8 +299,8 @@ const CreateAccount = () => {
     if (!endSMSAuth) return;
     try {
       const response = await axios.post(
-        // `${baseUrl}moapay/member/join`,
-        `api/moapay/member/join`,
+        `${baseUrl}moapay/member/join`,
+        // `api/moapay/member/join`,
         {
           name: joinUserInfo.name,
           birthDate: formatBirthDate(joinUserInfo.birth_date),
@@ -314,8 +314,8 @@ const CreateAccount = () => {
         setUserInfo(response.data.data.id, response.data.data.name);
         //로그인 보내기
         const loginResponse = await axios.post(
-          // `${baseUrl}moapay/member/login`,
-          `api/moapay/member/login`,
+          `${b67738aseUrl}moapay/member/login`,
+          // `api/moapay/member/login`,
           {
             uuid: response.data.data.id,
             phoneNumber: joinUserInfo.phone_number,
