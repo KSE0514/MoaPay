@@ -5,11 +5,14 @@ import java.util.UUID;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.moa.payment.domain.analysis.entity.dto.GetMonthlyRequestDto;
+import com.moa.payment.domain.analysis.entity.dto.GetYearlyStatisticsDto;
 import com.moa.payment.domain.analysis.entity.dto.averageRequestDto;
 import com.moa.payment.domain.analysis.service.AnalysisService;
 import com.moa.payment.global.response.ResultResponse;
@@ -34,12 +37,11 @@ public class AnalysisController {
 
 	//현재 멤버의 성별+연령대에 따라
 	@PostMapping("/getAverage")
-	public  ResponseEntity<ResultResponse> getAverage(@RequestBody averageRequestDto dto){
-		UUID memberId=dto.getMemberId();
-		Long average=analysisService.average(memberId);
+	public ResponseEntity<ResultResponse> getAverage(@RequestBody averageRequestDto dto){
+		UUID memberId = dto.getMemberId();
+		Long average = analysisService.average(memberId);
 		ResultResponse resultResponse = ResultResponse.of(HttpStatus.OK, "소비평균",average);
 		return ResponseEntity.status(resultResponse.getStatus()).body(resultResponse);
 	}
-
 
 }
