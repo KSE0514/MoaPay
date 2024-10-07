@@ -1,14 +1,9 @@
 import { useEffect, useRef } from "react";
 import { Wrapper, ListItem } from "./List.styles";
-
-interface Data {
-  cateory: string;
-  money: number;
-  per: number;
-}
+import { categoryData } from "../../../store/CardStore";
 
 interface Props {
-  consumptionList: Data[]; // props로 받을 데이터 타입 지정
+  consumptionList: categoryData[]; // props로 받을 데이터 타입 지정
 }
 
 const List = ({ consumptionList }: Props) => {
@@ -34,23 +29,23 @@ const List = ({ consumptionList }: Props) => {
 
   return (
     <Wrapper className="list-wrapper">
-      {sortedList.map((consumption: Data, index: number) => (
+      {sortedList.map((consumption: categoryData, index: number) => (
         <ListItem key={index}>
           <div className="Col">
             <div>
-              {consumption.cateory === "ALL" ? (
+              {consumption.category === "ALL" ? (
                 <p style={{ color: "white", fontWeight: "600" }}>ALL</p>
               ) : (
                 <img
                   ref={(el) => (imgRefs.current[index] = el)} // 각 이미지를 참조 배열에 저장
-                  src={`/assets/image/category/${consumption.cateory}.png`}
-                  alt={consumption.cateory}
+                  src={`/assets/image/category/${consumption.category}.png`}
+                  alt={consumption.category}
                 />
               )}
             </div>
           </div>
           <div className="Col">
-            <p>{`${consumption.cateory}`}</p>
+            <p>{`${consumption.category}`}</p>
             <p>
               {`${consumption.per}%`} | {consumption.money.toLocaleString()}{" "}
             </p>

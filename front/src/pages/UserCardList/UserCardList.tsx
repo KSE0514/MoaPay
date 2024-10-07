@@ -1,91 +1,117 @@
 import { useEffect, useState } from "react";
-import Modal from "../../components/dutch/Modal/Modal";
-import axios from "axios";
-import { useCardStore } from "../../store/CardStore";
-
-import testcard1 from "./../../assets/image/cards/신용카드이미지/14_JADE_Classic.png";
-import testcard2 from "./../../assets/image/cards/신용카드이미지/12_올바른_FLEX_카드.png";
-import testcard3 from "./../../assets/image/cards/신용카드이미지/11_삼성_iD_SIMPLE_카드.png";
-// import { MyCardList as CardList } from "../../constants/card";
-
 import {
+  Button,
+  ImageView,
+  Title,
   Wrapper,
-  Top,
+  LoadingView,
+  RequestEnd,
+  CardListWrapper,
+  AddBtn,
+  CardView,
+  CardBackground,
   EditMode,
   Main,
-  Card,
-  CardBackground,
-  Btn,
+  Top,
+  Sub,
 } from "./UserCardList.styles";
+import axios, { AxiosError } from "axios";
+import { useNavigate } from "react-router-dom";
+import { PATH } from "../../constants/path";
+import { useAuthStore } from "../../store/AuthStore";
+import { Card, useCardStore } from "../../store/CardStore";
+import Modal from "../../components/dutch/Modal/Modal";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faChevronLeft } from "@fortawesome/free-solid-svg-icons";
 
 const UserCardList = () => {
-  const CardList = [
-    {
-      cardNumber: "001",
-      name: "JADE Classic",
-      img: testcard1,
-    },
-    {
-      cardNumber: "002",
-      name: "올바른 FLEX 카드",
-      img: testcard2,
-    },
-    {
-      cardNumber: "003",
-      name: "삼성 iD SIMPLE 카드",
-      img: testcard3,
-    },
-  ];
-  // const { CardList, addCard, removeCard } = useCardStore();
-  const { addCard, removeCard } = useCardStore(); // 더미데이터 채워질 시 해당 라인과 테스트용 cardList 삭제하고 위에 코드 주석 풀기
+  const navigate = useNavigate();
+  const [isLoading, setIsLoading] = useState(false);
+  const [before, setBefore] = useState(true);
+  const { name, accessToken, mode, setMode, phoneNumber, id } = useAuthStore();
+  const { cardList, setCardList, removeCard } = useCardStore();
+  const [showCards, setShowCards] = useState<Card[]>([]); //보여지는 카드
+  const [disAbleCards, setDisAbleCards] = useState<Card[]>([]); // 삭제할 카드
 
-  // 카드 삭제 api 요청(백엔드에 요청시엔 cardNumber로 요청)
-  const deleteCard = async (index: number, cardNumber: string) => {
-    removeCard(index); // store의 CardList에서 카드 제거
-    console.log(index, "삭제할 카드 인덱스 확인용 콘솔");
-
-    // 백엔드에 카드 제거 요청
-    try {
-      const response = await axios.delete(`요청 api 주소 입력`, {
-        headers: {
-          "Content-Type": "application/json",
+  useEffect(() => {
+    setShowCards(cardList);
+  }, []);
+  //카드 비활성화 요청 후 show의 카드를 setCardList에 넣기
+  const settingCard = async () => {
+    //삭제된 카드들은 비활성화 요청 보내기
+    setIsLoading(true);
+    setBefore(true);
+    // disAbleCards 배열의 각 카드에 대해 비활성화 요청을 보냄
+    for (const card of disAbleCards) {
+      const response = await axios.post(
+        // `http://localhost:18020/moapay/core/card/disable`,
+        // `http://localhost:8765/moapay/core/card/disable`,
+        `api/moapay/core/card/disable`,
+        {
+          memberUuid: id, // member id
+          cardNumber: card.cardNumber, // 카드 번호
         },
-      });
-      if (response.status === 200) {
-        console.log("단일 카드 삭제 완료");
-      }
-    } catch (err) {
-      console.error("에러 발생", err);
+        {
+          withCredentials: true,
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+            "Content-Type": "application/json",
+          },
+        }
+      );
+      console.log(`Card ${card.cardNumber} disabled`, response.data);
     }
+    setCardList(showCards);
+
+    setIsLoading(true);
+    setBefore(false);
+
+    //모드변경
+    if (mode === "Join") {
+      setMode("");
+    }
+    if (mode === "NewLogin") {
+      setMode("");
+    }
+
+    //Test
+    // setTimeout(() => {
+    //   setIsLoading(true);
+    //   setBefore(false);
+    // }, 5000); // 5000ms = 5초
   };
 
-  //   try {
-  //     // const response = await axios.get(
-  //     //   `http://localhost:18020/moapay/core/card/mycard`,
-  //     //   { withCredentials: true }
-  //     // );
-  //     //로딩상태 풀고 카드 선택 뷰 보이도록 설정
-  //     // setCardList(response.data);
+  //카드 단일 삭제 시 showCards에서 삭제하고 disAbleCards 추가
+  const deleteCard = async () => {
+    console.log(swipeCard); // showCards의 인덱스
 
-  //     //Test
-  //     setCardList(MyCardList);
-  //     //추가
-  //     setIsLoding(false);
-  //     setBefore(false);
-  //   } catch (e) {
-  //     const error = e as AxiosError; // AxiosError로 타입 단언
-  //     console.log(error);
-  //   }
-  // };
+    // 현재 카드 가져오기
+    const cardToDelete = showCards[swipeCard ? swipeCard : 0];
 
+    // showCards에서 해당 인덱스의 카드 제거
+    const updatedShowCards = showCards.filter(
+      (_, index) => index !== swipeCard
+    );
+
+    // disAbleCards에 제거한 카드 추가
+    const updatedDisAbleCards = [...disAbleCards, cardToDelete];
+
+    // 상태 업데이트
+    setShowCards(updatedShowCards);
+    setDisAbleCards(updatedDisAbleCards);
+
+    // 모달 닫기
+    closeModal();
+  };
+
+  ////////////////////////////////////////////////////////////
   const [isOpen, setIsOpen] = useState(false); // 더치페이 나가기 모달 상태 관리
   const [rotate, setRotate] = useState<{ [key: number]: boolean }>({});
   const [swipeDistance, setSwipeDistance] = useState<{ [key: number]: number }>(
     {}
   ); // {key(index): key번째 카드가 왼쪽으로 밀린 거리}
-
   const [startX, setStartX] = useState(0); // 터치 시작의 X 좌표를 저장
-  const [swipeCard, setSwipeCard] = useState<number | null>(null); // 스와이프 된(삭제할) 카드의 index 값을 저장
+  const [swipeCard, setSwipeCard] = useState<number | null>(null); // 스와이프 된 카드의 index 값을 저장
   const [editMode, setEditMode] = useState(false); // 선택 삭제 모드
   const [selectedCards, setSelectedCards] = useState<number[]>([]); // 선택된 카드 목록
   const [longPressTimeout, setLongPressTimeout] =
@@ -145,7 +171,7 @@ const UserCardList = () => {
     }
 
     if (swipeDistance[index] >= 100) {
-      console.log(CardList[index].name); // 100px 이상 밀렸을 경우 카드 이름 출력
+      console.log(showCards[index].cardProduct.cardProductName); // 100px 이상 밀렸을 경우 카드 이름 출력
       if (!editMode) {
         setSwipeCard(index);
       }
@@ -176,122 +202,196 @@ const UserCardList = () => {
   };
 
   return (
-    <Wrapper>
-      <Top>전체 카드 목록</Top>
-      <Main>
-        {editMode ? (
-          <EditMode>
-            <div>전체 선택</div>
-            <div>삭제</div>
-          </EditMode>
-        ) : null}
-        {CardList.map((card, index) => (
-          <div key={card.name}>
-            <Card
-              key={index}
-              onTouchStart={(e) => handleTouchStart(e, index)}
-              onTouchMove={(e) => handleTouchMove(e, index)} // 추가된 handleTouchMove 함수 사용
-              onTouchEnd={() => handleTouchEnd(index)}
-              onClick={() => editMode && toggleCardSelection(index)} // 수정 모드일 때 카드 선택/해제
-              style={{
-                transform: editMode
-                  ? "none"
-                  : `translateX(-${swipeDistance[index] || 0}px)`,
-                backgroundColor: "white",
-              }}
-            >
-              {editMode ? (
-                <input
-                  type="radio"
-                  checked={selectedCards.includes(index)}
-                  onChange={() => toggleCardSelection(index)}
-                />
-              ) : null}
-              <div
-                style={{
-                  paddingLeft: editMode ? "15px" : "none",
+    <Wrapper style={{ padding: !isLoading && !before ? "0% 0%" : undefined }}>
+      {isLoading ? (
+        <>
+          {before ? (
+            <>
+              <LoadingView>
+                <div className="loading-text">
+                  <span className="l">L</span>
+                  <span className="o">o</span>
+                  <span className="a">a</span>
+                  <span className="d">d</span>
+                  <span className="i">i</span>
+                  <span className="n">n</span>
+                  <span className="g">g</span>
+                  <span className="d1">.</span>
+                  <span className="d2">.</span>
+                </div>
+                <div className="loader-3">
+                  <div className="circle"></div>
+                  <div className="circle"></div>
+                  <div className="circle"></div>
+                  <div className="circle"></div>
+                  <div className="circle"></div>
+                </div>
+              </LoadingView>
+            </>
+          ) : (
+            <RequestEnd>
+              <div>등록완료되었습니다.</div>
+              <button
+                onClick={() => {
+                  navigate(PATH.HOME);
                 }}
               >
-                <img
-                  src={card.img}
-                  alt={card.name}
-                  onLoad={(event) => handleImageLoad(event, index)} // 이미지가 로드되면 handleImageLoad 호출
-                  style={{
-                    position: "absolute",
-                    width: rotate[index] ? "57px" : "90px", // 회전 여부에 따라 width와 height 변경
-                    height: rotate[index] ? "90px" : "57px",
-                    transform: rotate[index] ? "rotate(-90deg)" : "none", // 회전시키기
-                    marginLeft: rotate[index] ? "17.5px" : "0",
-                    userSelect: "none", // 드래그 방지
-                  }}
-                  draggable="false" // 이미지 드래그 방지
-                />
-                <div>{card.name}</div>
+                홈으로 이동
+              </button>
+            </RequestEnd>
+          )}
+        </>
+      ) : (
+        <CardListWrapper>
+          <div
+            style={{
+              padding: "35px 0% 30px 0%",
+              display: "flex",
+              width: "100%",
+              justifyContent: "space-between",
+            }}
+          >
+            <FontAwesomeIcon
+              onClick={() => {
+                navigate(-1);
+              }}
+              icon={faChevronLeft}
+            />
+            <div
+              onClick={() => {
+                settingCard();
+              }}
+            >
+              자산 연결하기
+            </div>
+          </div>
+          <Top>내 카드 목록</Top>
+          <Sub>
+            카드를 왼쪽으로 밀어 삭제할 수 있습니다.
+            <br />
+            카드를 상하로 움직여 순서를 바꿀 수 있습니다.
+          </Sub>
+          <Main>
+            {editMode ? (
+              <EditMode>
+                <div>전체 선택</div>
+                <div>삭제</div>
+              </EditMode>
+            ) : null}
+            {showCards.map((card, index) => (
+              <div
+                onTouchStart={(e) => handleTouchStart(e, index)}
+                onTouchMove={(e) => handleTouchMove(e, index)} // 추가된 handleTouchMove 함수 사용
+                onTouchEnd={() => handleTouchEnd(index)}
+                onClick={() => editMode && toggleCardSelection(index)} // 수정 모드일 때 카드 선택/해제
+                style={{
+                  transform: editMode
+                    ? "none"
+                    : `translateX(-${swipeDistance[index] || 0}px)`,
+                }}
+                className="card-row"
+                key={card?.cardProduct?.cardProductName}
+              >
+                <CardView key={index}>
+                  {editMode ? (
+                    <input
+                      type="radio"
+                      checked={selectedCards.includes(index)}
+                      onChange={() => toggleCardSelection(index)}
+                    />
+                  ) : null}
+                  <div
+                    style={{
+                      paddingLeft: editMode ? "15px" : "none",
+                    }}
+                  >
+                    <img
+                      src={
+                        card?.cardProduct?.cardProductImgUrl
+                          ? `/assets/image/cards/신용카드이미지/${card.cardProduct.cardProductImgUrl}.png`
+                          : "/assets/image/card.png"
+                      }
+                      onLoad={(event) => handleImageLoad(event, index)} // 이미지가 로드되면 handleImageLoad 호출
+                      style={{
+                        position: "absolute",
+                        width: rotate[index] ? "57px" : "90px", // 회전 여부에 따라 width와 height 변경
+                        height: rotate[index] ? "90px" : "57px",
+                        transform: rotate[index] ? "rotate(-90deg)" : "none", // 회전시키기
+                        marginLeft: rotate[index] ? "17.5px" : "0",
+                      }}
+                    />
+                    <div className="card-name">
+                      {card?.cardProduct?.cardProductName}
+                    </div>
+                  </div>
+                  {!editMode && (
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      x="0px"
+                      y="0px"
+                      width="30"
+                      height="30"
+                      viewBox="0 0 30 30"
+                    >
+                      <path d="M 3 7 A 1.0001 1.0001 0 1 0 3 9 L 27 9 A 1.0001 1.0001 0 1 0 27 7 L 3 7 z M 3 14 A 1.0001 1.0001 0 1 0 3 16 L 27 16 A 1.0001 1.0001 0 1 0 27 14 L 3 14 z M 3 21 A 1.0001 1.0001 0 1 0 3 23 L 27 23 A 1.0001 1.0001 0 1 0 27 21 L 3 21 z"></path>
+                    </svg>
+                  )}
+                </CardView>
+                <CardBackground>삭제</CardBackground>
               </div>
-              {!editMode && (
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  x="0px"
-                  y="0px"
-                  fill="#A1A1A1"
-                  width="30"
-                  height="30"
-                  viewBox="0 0 30 30"
+            ))}
+          </Main>
+          <div>
+            <AddBtn
+              onClick={() => {
+                settingCard();
+              }}
+            >
+              수정하기
+            </AddBtn>
+          </div>
+
+          {/* 모달 */}
+          {isOpen && (
+            <Modal isOpen={isOpen} onClose={closeModal}>
+              <div
+                style={{
+                  fontSize: "18px",
+                  paddingTop: "25px",
+                }}
+              >
+                '{showCards[swipeCard || 0].cardProduct.cardProductName}'
+                <br />
+                <br />
+                해당 카드를 삭제하시겠습니까?
+              </div>
+              <div
+                style={{
+                  gap: "50px",
+                }}
+              >
+                <button
+                  onClick={deleteCard}
                   style={{
-                    cursor: "move",
+                    fontSize: "18px",
+                    width: "95px",
                   }}
                 >
-                  <path d="M 3 7 A 1.0001 1.0001 0 1 0 3 9 L 27 9 A 1.0001 1.0001 0 1 0 27 7 L 3 7 z M 3 14 A 1.0001 1.0001 0 1 0 3 16 L 27 16 A 1.0001 1.0001 0 1 0 27 14 L 3 14 z M 3 21 A 1.0001 1.0001 0 1 0 3 23 L 27 23 A 1.0001 1.0001 0 1 0 27 21 L 3 21 z"></path>
-                </svg>
-              )}
-            </Card>
-            <CardBackground>삭제</CardBackground>
-          </div>
-        ))}
-      </Main>
-      <Btn>카드 추가하기</Btn>
-
-      {/* 모달 */}
-      {isOpen && (
-        <Modal isOpen={isOpen} onClose={closeModal}>
-          <div
-            style={{
-              fontSize: "18px",
-              paddingTop: "25px",
-            }}
-          >
-            '{CardList[swipeCard || 0].name}'
-            <br />
-            <br />
-            해당 카드를 삭제하시겠습니까?
-          </div>
-          <div
-            style={{
-              gap: "50px",
-            }}
-          >
-            <button
-              onClick={() =>
-                deleteCard(swipeCard || 0, CardList[swipeCard || 0].cardNumber)
-              }
-              style={{
-                fontSize: "18px",
-                width: "95px",
-              }}
-            >
-              삭제
-            </button>
-            <button
-              onClick={closeModal}
-              style={{
-                fontSize: "18px",
-                width: "95px",
-              }}
-            >
-              취소
-            </button>
-          </div>
-        </Modal>
+                  삭제
+                </button>
+                <button
+                  onClick={closeModal}
+                  style={{
+                    fontSize: "18px",
+                    width: "95px",
+                  }}
+                >
+                  취소
+                </button>
+              </div>
+            </Modal>
+          )}
+        </CardListWrapper>
       )}
     </Wrapper>
   );
