@@ -27,6 +27,7 @@ import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestClient;
 
 import java.time.YearMonth;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -428,6 +429,18 @@ public class MyCardServiceImpl implements MyCardService {
             throw new BusinessException(HttpStatus.BAD_REQUEST, "결과를 가져올 수 없었습니다 : " + response.getBody().get("message"));
         }
         return objectMapper.convertValue(response.getBody().get("data"), CardHistoryResponseDto.class);
+    }
+
+    @Override
+    public GetMyCardIdsResponseDto getMyCardIds(UUID memberId) {
+        List<UUID> cardsIds = myCardQueryRepository.findAllCardIdsByMemberId(memberId);
+        if (cardsIds.isEmpty()) {
+            throw new BusinessException(HttpStatus.NOT_FOUND, "마이 카드에 등록된 카드가 없습니다.");
+        }
+        return GetMyCardIdsResponseDto.builder()
+            .myCardIds(cardsIds)
+            .memberId(memberId)
+            .build();
     }
 }
 

@@ -29,8 +29,7 @@ public class PaymentLogQueryRepository {
                 .fetch();
     }
 
-    // 해당되는 카드 전체 찾기
-    public List<CardHistoryPaymentLogDto> findPaymentLogs(List<UUID> cardIds, LocalDateTime start, LocalDateTime end) {
+    public List<CardHistoryPaymentLogDto> findAllCardsPaymentLogs(List<UUID> cardIds, LocalDateTime start, LocalDateTime end) {
         QPaymentLog paymentLog = QPaymentLog.paymentLog;
         return queryFactory.select(Projections.fields(CardHistoryPaymentLogDto.class,
                         paymentLog.cardId,

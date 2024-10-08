@@ -1,15 +1,17 @@
 package com.moa.payment.domain.statistics.service;
 
 import org.springframework.cloud.openfeign.FeignClient;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 
-import java.util.List;
-import java.util.UUID;
+
+import com.moa.payment.domain.statistics.model.dto.GetMyCardIdsRequestDto;
+import com.moa.payment.global.response.ResultResponse;
 
 @FeignClient(name = "moapay")
 public interface MoaPayClient {
 
-    @GetMapping("/core/card/mycard")
-    List<UUID> getCardIdsByMemberId(@RequestParam("memberId") UUID memberId);
+    @PostMapping("moapay/core/card/getMyCardIds")
+    ResponseEntity<ResultResponse> getCardIdsByMemberId(@RequestBody GetMyCardIdsRequestDto getMyCardIdsRequestDto);
 }

@@ -7,6 +7,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import java.util.List;
 import java.util.UUID;
 
+
 public interface MyCardService {
     List<MyCardInfoDto> getMyCardInfo(HttpServletRequest request);
     List<CardInfoResponseDto> getAllCard();
@@ -22,4 +23,5 @@ public interface MyCardService {
     UUID getMemberId(UUID cardId);
 
     CardHistoryResponseDto getCardHistory(CardHistoryRequestDto cardHistoryRequestDto);
+    GetMyCardIdsResponseDto getMyCardIds(UUID memberId);
 }

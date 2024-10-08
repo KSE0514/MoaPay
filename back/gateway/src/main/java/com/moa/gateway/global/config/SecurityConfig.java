@@ -79,7 +79,8 @@ public class SecurityConfig {
 					"/api/moapay/member/sendSMS", "/api/moapay/member/verification", "/api/moapay/member/isMember",
 					"/moapay/member/login", "/moapay/member/join",
 					"/moapay/member/sendSMS", "/moapay/member/verification", "/moapay/member/isMember",
-					"/moapay/pay/analysis/history", "/api/moapay/pay/analysis/history"
+					"/moapay/pay/analysis/history", "/api/moapay/pay/analysis/history", "/moapay/core/card/getMyCardIds",
+					"/api/moapay/core/card/getMyCardIds"
 							)
 				.permitAll()
 				.anyExchange()

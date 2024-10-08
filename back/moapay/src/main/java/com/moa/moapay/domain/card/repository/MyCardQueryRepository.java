@@ -83,4 +83,14 @@ public class MyCardQueryRepository {
                 .where(myCard.memberId.eq(memberId))
                 .fetch();
     }
+
+    public List<UUID> findAllCardIdsByMemberId(UUID memberId) {
+        QMyCard myCard = QMyCard.myCard;
+
+        return queryFactory
+            .select(myCard.cardProduct.uuid)
+            .from(myCard)
+            .where(myCard.memberId.eq(memberId))
+            .fetch();
+    }
 }
