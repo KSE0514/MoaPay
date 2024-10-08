@@ -4,12 +4,11 @@ import com.moa.moapay.domain.dutchpay.entity.DutchPay;
 import com.moa.moapay.domain.dutchpay.entity.DutchRoom;
 import com.moa.moapay.domain.dutchpay.entity.DutchStatus;
 import com.moa.moapay.domain.dutchpay.model.dto.*;
-import com.moa.moapay.domain.dutchpay.model.vo.DutchPayCompliteVo;
+import com.moa.moapay.domain.dutchpay.model.vo.DutchPayCompleteVo;
 import com.moa.moapay.domain.dutchpay.repository.DutchPayRedisRepository;
 import com.moa.moapay.domain.dutchpay.repository.DutchPayRepository;
 import com.moa.moapay.domain.dutchpay.repository.DutchRoomRepository;
 import com.moa.moapay.domain.generalpay.model.dto.ExecuteDutchPayRequestDto;
-import com.moa.moapay.domain.generalpay.model.dto.ExecuteGeneralPayRequestDto;
 import com.moa.moapay.domain.generalpay.model.vo.PaymentCardInfoVO;
 import com.moa.moapay.domain.generalpay.service.GeneralPayService;
 import com.moa.moapay.global.exception.BusinessException;
@@ -59,7 +58,6 @@ public class DutchPayServiceImpl implements DutchPayService {
                 .managerId(dutchPayStartRequestDto.getMemberId())
                 .status(DutchStatus.READY)
                 .build();
-
         dutchRoomRepository.save(dutchRoom);
         return dutchRoom.getUuid();
     }
@@ -252,10 +250,10 @@ public class DutchPayServiceImpl implements DutchPayService {
 
     @Override
     @Transactional
-    public void dutchpayComplite(DutchPayCompliteVo dutchPayCompliteVo) {
+    public void dutchpayComplite(DutchPayCompleteVo dutchPayCompleteVo) {
 
-        UUID dutchUuid = dutchPayCompliteVo.getDutchUuid();
-        String status = dutchPayCompliteVo.getStatus();
+        UUID dutchUuid = dutchPayCompleteVo.getDutchUuid();
+        String status = dutchPayCompleteVo.getStatus();
 
         DutchPay byUuid = dutchPayRepository.findByUuid(dutchUuid);
         DutchRoom byDutchUuid = dutchRoomRepository.findByDutchUuid(dutchUuid);
@@ -270,10 +268,10 @@ public class DutchPayServiceImpl implements DutchPayService {
                     String requestId = dutchPayRedisRepository.getToken(dutchUuid.toString());
                     UUID.fromString(requestId);
 
-                    List<PaymentCardInfoVO> paymentInfoList = dutchPayCompliteVo.getPaymentInfoList();
+                    List<PaymentCardInfoVO> paymentInfoList = dutchPayCompleteVo.getPaymentInfoList();
                     // 취소 요청
                     DutchCancelDto dutchCancelDto = DutchCancelDto.builder()
-                            .paymentId(dutchPayCompliteVo.getRequestId())
+                            .paymentId(dutchPayCompleteVo.getRequestId())
                             .cardId(paymentInfoList.get(0).getCardId())
                             .cardNumber(paymentInfoList.get(0).getCardNumber())
                             .cvc(paymentInfoList.get(0).getCvc())
@@ -314,13 +312,13 @@ public class DutchPayServiceImpl implements DutchPayService {
             List<DutchPay> dutchPayList = byDutchUuid.getDutchPayList();
             DutchPay dutchPayMember = dutchPayRepository.findByUuid(dutchUuid);
 
-            dutchPayRedisRepository.save(dutchUuid.toString(), dutchPayCompliteVo.getRequestId().toString());
+            dutchPayRedisRepository.save(dutchUuid.toString(), dutchPayCompleteVo.getRequestId().toString());
 
             boolean flag = true;
             for (DutchPay dutchPay : dutchPayList) { // 해당 더치 내역 다돌면서
                 DutchStatus dutchStatus = dutchPay.getPayStatus();
                 if(!dutchStatus.equals(DutchStatus.DONE)) {
-                    if(dutchPay.getUuid().equals(dutchPayCompliteVo.getDutchUuid())){
+                    if(dutchPay.getUuid().equals(dutchPayCompleteVo.getDutchUuid())){
                         continue;
                     }
                     flag = false;

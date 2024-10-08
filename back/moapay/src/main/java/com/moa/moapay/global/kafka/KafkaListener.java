@@ -1,8 +1,7 @@
 package com.moa.moapay.global.kafka;
 
-import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.moa.moapay.domain.dutchpay.model.vo.DutchPayCompliteVo;
+import com.moa.moapay.domain.dutchpay.model.vo.DutchPayCompleteVo;
 import com.moa.moapay.domain.dutchpay.service.DutchPayService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -26,11 +25,11 @@ public class KafkaListener {
             String dutchpayListJson = objectMapper.writeValueAsString(map.get("dutchpayList"));
 
             // JSON 메시지를 DutchPayCompliteVo 객체로 변환
-            DutchPayCompliteVo dutchPayCompliteVo = objectMapper.readValue(dutchpayListJson, DutchPayCompliteVo.class);
+            DutchPayCompleteVo dutchPayCompleteVo = objectMapper.readValue(dutchpayListJson, DutchPayCompleteVo.class);
 
             // 변환된 객체를 서비스로 넘겨 처리
-            dutchPayService.dutchpayComplite(dutchPayCompliteVo);
-            log.info("Received message: {}", dutchPayCompliteVo);
+            dutchPayService.dutchpayComplite(dutchPayCompleteVo);
+            log.info("Received message: {}", dutchPayCompleteVo);
         } catch (Exception e) {
             log.error("Error while processing message: {}", message, e);
         }
