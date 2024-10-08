@@ -12,4 +12,6 @@ public interface ChargeService {
     PaymentResultDto makePaymentResultDto(ExecutePaymentResultVO resultVo, ExecutePaymentRequestVO requestVO);
     void sendResultToStore(UUID orderId, ExecutePaymentResultVO vo);
     void CancelPayment(CancelPayRequestDto dto);
+
+    void dutchCancel(UUID paymentId);
 }
