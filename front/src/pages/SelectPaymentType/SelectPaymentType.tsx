@@ -168,36 +168,39 @@ const SelectPaymentType = () => {
           ) : (
             <>
               <SelectView>
-                <Title>MoA Pay</Title>
+                <Title>MoA PaY</Title>
                 <div
+                  className="type-btn"
                   onClick={() => {
                     setSelectedPayType("single");
                   }}
                 >
-                  단일결제
+                  <p>단일결제</p>
                 </div>
                 <div
+                  className="type-btn"
                   onClick={() => {
                     setSelectedPayType("multi");
                   }}
                 >
-                  추천결제
+                  <p>추천결제</p>
                 </div>
                 <div
+                  className="type-btn"
                   onClick={() => {
                     setSelectedPayType("dutch");
                   }}
                 >
-                  더치페이
+                  <p>더치페이</p>
                 </div>
+                <button
+                  onClick={() => {
+                    startPay();
+                  }}
+                >
+                  결제하기
+                </button>
               </SelectView>
-              <button
-                onClick={() => {
-                  startPay();
-                }}
-              >
-                결제하기
-              </button>
             </>
           )}
         </>
