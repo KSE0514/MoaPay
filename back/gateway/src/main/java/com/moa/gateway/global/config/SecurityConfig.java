@@ -79,8 +79,8 @@ public class SecurityConfig {
 					"/api/moapay/member/sendSMS", "/api/moapay/member/verification", "/api/moapay/member/isMember",
 					"/moapay/member/login", "/moapay/member/join",
 					"/moapay/member/sendSMS", "/moapay/member/verification", "/moapay/member/isMember",
-					"/moapay/pay/analysis/history", "/api/moapay/pay/analysis/history"
-							)
+					"/moapay/core/code/QRcode", "/api/moapay/core/code/QRcode",
+					"/moapay/pay/analysis/history", "/api/moapay/pay/analysis/history")
 				.permitAll()
 				.anyExchange()
 				.authenticated() //나머지 경로는 인증 필요

@@ -39,11 +39,8 @@ public class DutchPayServiceImpl implements DutchPayService {
     @Override
     @Transactional
     public UUID createDutchRoom(DutchPayStartRequestDto dutchPayStartRequestDto) {
-        UUID uuid = UUID.randomUUID();
-
         log.info(dutchPayStartRequestDto.toString());
         DutchRoom dutchRoom = DutchRoom.builder()
-                .uuid(uuid)
                 .totalPrice(dutchPayStartRequestDto.getTotalPrice())
                 .merchantName(dutchPayStartRequestDto.getMerchantName())
                 .merchantId(dutchPayStartRequestDto.getMerchantId())
@@ -55,7 +52,7 @@ public class DutchPayServiceImpl implements DutchPayService {
                 .build();
 
         dutchRoomRepository.save(dutchRoom);
-        return uuid;
+        return dutchRoom.getUuid();
     }
 
     // 더치페이 방에 참여

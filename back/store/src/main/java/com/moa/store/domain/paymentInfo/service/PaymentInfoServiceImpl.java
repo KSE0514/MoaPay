@@ -47,7 +47,7 @@ public class PaymentInfoServiceImpl implements PaymentInfoService {
 	@Override
 	@Transactional
 	public GetQRCodeResponseDto getQRCode(CreateOrderRequestDto createOrderRequestDto) {
-		try {
+//		try {
 			CreateOrderResponseDto createOrderResponseDto = orderService.createOrder(createOrderRequestDto);
 			ResponseEntity<ResultResponse> getQRcode = moaPayClient.getQRCode(createOrderResponseDto);
 			if(getQRcode.getStatusCode() != HttpStatus.OK){
@@ -62,11 +62,11 @@ public class PaymentInfoServiceImpl implements PaymentInfoService {
 					.build();
 
 			// client에서는 QR 생성과 동시에 Id에 맞는 SSE 구독을 시행 (orderId를 기준으로 해도 될듯)
-		} catch (FeignException e) {
-			throw new BusinessException(HttpStatus.INTERNAL_SERVER_ERROR, "QR 코드 생성 중 오류가 발생했습니다(Feign 문제)");
-		} catch (Exception e) {
-			throw new BusinessException(HttpStatus.INTERNAL_SERVER_ERROR, "주문 처리 중 오류가 발생했습니다: " + e.getMessage());
-		}
+//		} catch (FeignException e) {
+//			throw new BusinessException(HttpStatus.INTERNAL_SERVER_ERROR, "QR 코드 생성 중 오류가 발생했습니다(Feign 문제)");
+//		} catch (Exception e) {
+//			throw new BusinessException(HttpStatus.INTERNAL_SERVER_ERROR, "주문 처리 중 오류가 발생했습니다: " + e.getMessage());
+//		}
 	}
 
 	@Override
@@ -97,7 +97,7 @@ public class PaymentInfoServiceImpl implements PaymentInfoService {
 		}
 		// 저장 종료
 		// 만일 결제가 완료되었다면 그에 따른 프로세스 진행
-		if(totalAmount == order.getTotalPrice()) {
+		if(totalAmount >= order.getTotalPrice()) {
 			log.info("all payments are completed");
 			order.updateState("PayComplete");
 			NotifyDto notifyDto = NotifyDto.builder()
