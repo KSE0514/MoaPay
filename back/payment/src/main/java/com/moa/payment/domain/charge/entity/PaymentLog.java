@@ -28,6 +28,14 @@ public class PaymentLog {
     private UUID cardId;
 
     @NotNull
+    @Column(name = "card_number", nullable = false)
+    private String cardNumber;
+
+    @NotNull
+    @Column(name = "cvc", nullable = false)
+    private String cvc;
+
+    @NotNull
     @Column(name = "amount")
     private long amount;
 

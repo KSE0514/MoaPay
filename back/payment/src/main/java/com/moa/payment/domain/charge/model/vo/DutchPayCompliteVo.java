@@ -5,16 +5,17 @@ import lombok.*;
 import java.util.List;
 import java.util.UUID;
 
-@Getter
 @Builder
+@Getter
+@Setter
 @NoArgsConstructor
 @AllArgsConstructor
-@ToString
-public class ExecutePaymentRequestVO {
-    private UUID requestId;
+public class DutchPayCompliteVo {
     private UUID orderId;
     private UUID merchantId;
     private List<PaymentCardInfoVO> paymentInfoList;
     private String paymentType;
-    private String operation;
+
+    private String status;
+    private UUID dutchUuid;
 }

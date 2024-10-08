@@ -82,16 +82,17 @@ public class CardServiceImpl implements CardService {
     @Transactional
     public ExecutePayResponseDto executePay(ExecutePayRequestDto dto) {
         // [1] 요청 카드 정보가 유효한지 검사
+        log.info("요청 정보 : {}", dto.toString());
         UUID cardId = dto.getCardId();
         MyCard myCard = myCardRepository.findByUuid(cardId)
-                .orElseThrow(() -> new BusinessException(HttpStatus.BAD_REQUEST, "유효하지 않은 카드 정보입니다."));
+                .orElseThrow(() -> new BusinessException(HttpStatus.BAD_REQUEST, "유효하지 않은 카드 정보입니다.1"));
         // UUID로 찾은 카드가 주어진 number, cvc와 일치하지 않으면 예외 출력
         if (!myCard.getCardNumber().equals(dto.getCardNumber()) || !myCard.getCvc().equals(dto.getCvc())) {
-            throw new BusinessException(HttpStatus.BAD_REQUEST, "유효하지 않은 카드 정보입니다.");
+            throw new BusinessException(HttpStatus.BAD_REQUEST, "유효하지 않은 카드 정보입니다.2");
         }
         CardProduct product = myCard.getProduct();
         Merchant merchant = merchantRepository.findByUuid(dto.getMerchantId())
-                .orElseThrow(() -> new BusinessException(HttpStatus.BAD_REQUEST, "유효하지 않은 카드 정보입니다."));
+                .orElseThrow(() -> new BusinessException(HttpStatus.BAD_REQUEST, "유효하지 않은 카드 정보입니다.3"));
         // [2] 결제 가능한 상태인지 확인
         // 카드 한도와 이번달 결제금액을 기반으로 남은 한도를 계산하고, 요청한 결제가 가능할지 확인
 
@@ -280,7 +281,7 @@ public class CardServiceImpl implements CardService {
         }
         if (!myCard.getCardNumber().equals(dto.getCardNumber()) || !myCard.getCvc().equals(dto.getCvc())) {
             // 카드 정보가 틀린 경우, 결제 취소 불가
-            throw new BusinessException(HttpStatus.BAD_REQUEST, "유효하지 않은 카드 정보입니다.");
+            throw new BusinessException(HttpStatus.BAD_REQUEST, "유효하지 않은 카드 정보입니다.4");
         }
 
         // 정보가 유효함을 확인했다면 결제 취소 진행
@@ -348,11 +349,11 @@ public class CardServiceImpl implements CardService {
     @Override
     public CreateMyCardResponseDto createMyCard(CreateMyCardRequestDto dto) {
         Member member = memberRepository.findByUuid(dto.getMemberId())
-                .orElseThrow(() -> new BusinessException(HttpStatus.BAD_REQUEST, "유효하지 않은 입력입니다."));
+                .orElseThrow(() -> new BusinessException(HttpStatus.BAD_REQUEST, "유효하지 않은 입력입니다.1"));
         Account account = accountRepository.findByUuid(dto.getAccountId())
-                .orElseThrow(() -> new BusinessException(HttpStatus.BAD_REQUEST, "유효하지 않은 입력입니다."));
+                .orElseThrow(() -> new BusinessException(HttpStatus.BAD_REQUEST, "유효하지 않은 입력입니다.2"));
         CardProduct cardProduct = cardProductRepository.findByUuid(dto.getCardProductId())
-                .orElseThrow(() -> new BusinessException(HttpStatus.BAD_REQUEST, "유효하지 않은 입력입니다."));
+                .orElseThrow(() -> new BusinessException(HttpStatus.BAD_REQUEST, "유효하지 않은 입력입니다.3"));
         // 카드 한도는 최소 1만원부터 시작하도록 함
         if (dto.getCardLimit() < 10000) {
             throw new BusinessException(HttpStatus.BAD_REQUEST, "한도가 너무 작습니다.");
