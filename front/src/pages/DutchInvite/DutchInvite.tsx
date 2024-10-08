@@ -123,17 +123,18 @@ const DutchInvite = () => {
   //     setProcess(1)
   //   }
   // }, [roomInfo])
-  useEffect(() => {
-    if (dutchParticipants.length > 0 && dutchParticipants[0].status === "PROGRESS") {
-        setProcess(1);
-    }
-}, [dutchParticipants]);
+//   useEffect(() => {
+//     if (dutchParticipants.length > 0 && dutchParticipants[0].status === "READY") {
+//         setProcess(1);
+//     }
+// }, [roomInfo]);
 
 
   const getRoomInfo = async () => {
     try{
       const response = await axios.get(
         `http://localhost:18020/moapay/core/dutchpay/getDutchRoomInfo/${roomId}`,
+        // `api/moapay/core/dutchpay/getDutchRoomInfo/${roomId}`,
         {
           withCredentials: true
         }
@@ -142,6 +143,15 @@ const DutchInvite = () => {
       const dutchPayList = response.data.data.dutchPayList;
       setDutchPayListInfo(dutchPayList);
       // console.log('참여중인 사람', response.data)
+    //   const PropsParticipants = dutchPayList.map((dutchParticipant, index) => ({
+    //     index,
+    //     uuid: dutchParticipant.uuid,
+    //     memberId: dutchParticipant.memberId,
+    //     memberName: dutchParticipant.memberName,
+    //     amount: null, // 초기값은 null로 설정 (이후 설정 가능)
+    //     status: dutchParticipant.status, // 서버 응답에서 status 필드를 추가
+    // }))
+    //   setDutchParticipants(PropsParticipants)
       console.log('참여중인 사람', response.data.data.dutchPayList)
     } catch(err) {
       console.log('에러 발생:', err)
@@ -331,6 +341,7 @@ const DutchInvite = () => {
   };
 
   // WebSocket 연결 설정
+  // todo - 최현석
   const connectWebSocket = () => {
     const client = new Client({
       brokerURL: "ws://localhost:18020/moapay/core/ws/dutchpay", // WebSocket URL
@@ -339,7 +350,15 @@ const DutchInvite = () => {
         // 방 참여 시 메시지 구독
         client.subscribe(`/sub/dutch-room/${roomId}`, (message) => {
           console.log("Message received:", message.body);
-          setRoomInfo(JSON.parse(message.body)); // 받은 메시지를 상태에 저장
+          const roomData = JSON.parse(message.body);
+
+          // 여기서 주최자가 보낸 메시지를 확인하여 참가자 process 값 업데이트
+          if (roomData.status === 'PROGRESS') {
+            setProcess(1);
+            getRoomInfo()
+          }
+
+          setRoomInfo(roomData); // 받은 메시지를 상태에 저장
         });
       },
       onStompError: (frame) => {
@@ -487,7 +506,7 @@ const DutchInvite = () => {
           </JoinBtnDiv>
           {/* 3. 더치페이하는 상품 정보 */}
           {/* 2. 참여자 목록 컴포넌트_2단계인지 판단 기준: memberSetComplete === true */}
-          {process < 2 ? <Participant maxNum={Number(maxMember)} setDutchParticipants={setDutchParticipants} roomId={roomId} participants={dutchParticipants} leaveRoom={leaveRoom} confirm={confirm} setProcess={setProcess}  /> : null}
+          {process < 2 ? <Participant maxNum={Number(maxMember)} setDutchParticipants={setDutchParticipants} roomId={roomId} participants={dutchParticipants} leaveRoom={leaveRoom} confirm={confirm} setProcess={setProcess} process={process}  /> : null}
           {process === 2 ? <Payment onClick={onClickPaymentBtn} /> : null}
           {process === 3 ? (
             <DutchWaiting>

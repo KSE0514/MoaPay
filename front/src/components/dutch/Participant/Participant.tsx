@@ -28,7 +28,7 @@ interface ParticipantProps {
     memberId: string;
     memberName: string;
     amount: number | null;
-    // status: string;
+    status: string;
   }[])=>void
   participants: {
     index: number;
@@ -36,11 +36,12 @@ interface ParticipantProps {
     memberId: string;
     memberName: string;
     amount: number | null; // 초기값은 null일 수 있도록 설정
-    // status: string;
+    status: string;
   }[];
   leaveRoom: () => void;
   confirm: () => void;
   setProcess?: (step: number) => void;
+  process: number;
 }
 
 // interface Participant {
@@ -49,7 +50,7 @@ interface ParticipantProps {
 //   amount: string;
 // }
 
-const Participant = ({maxNum=null, roomId, setDutchParticipants, participants, leaveRoom, confirm, setProcess}: ParticipantProps) => {
+const Participant = ({maxNum=null, roomId, setDutchParticipants, participants, leaveRoom, confirm, setProcess, process}: ParticipantProps) => {
   // const [participants, setParticipants] = useState([])
   const [isHost, setIsHost] = useState<boolean>(false)
   const [dutchStart, setDutchStart] = useState<boolean>(false)
@@ -150,6 +151,14 @@ const Participant = ({maxNum=null, roomId, setDutchParticipants, participants, l
     //   console.log("결제 요청");
     // }
   }
+  
+
+  const onPaymentStart = () => {
+    if (setProcess) {
+      setProcess(2) // 참가자 결제 페이지로 이동
+    }
+    // leaveRoom() // stomp 종료
+  }
 
   const changeAmount = (index: number, value: number) => {
     const updateParticipants = [...participants];
@@ -208,7 +217,9 @@ const Participant = ({maxNum=null, roomId, setDutchParticipants, participants, l
 
               {/* 해당 사용자가 지불해야 할 금액 */}
               {/* 자동으로 n등분 해서 분배해줘야 함_안 나눠 떨어질 경우: 주최자를 제외한 모두에게 (전체 값//사람 수)값 적용. 주최자는 (전체 값-(참가자)*(n-1)) */}
-              {dutchStart&&<input value={Number(participant.amount)} onChange={(e)=>{changeAmount(index, Number(e.target.value))}} type="number" min="0"/> }
+              {dutchStart&&isHost&&<input value={Number(participant.amount)} onChange={(e)=>{changeAmount(index, Number(e.target.value))}} type="number" min="0"/> }
+              {/* <div>뭐징..</div> */}
+              {(process === 1)&&!isHost&&<input disabled value={Number(participant.amount)} onChange={(e)=>{changeAmount(index, Number(e.target.value))}} type="number" min="0"/> }
             </PartiInfo>
           ))
         : true}
@@ -222,13 +233,13 @@ const Participant = ({maxNum=null, roomId, setDutchParticipants, participants, l
           ((participants.length > 0)&&isHost?
             <SquareBtn text={'더치페이 시작'} color='rgba(135, 72, 243, 0.74)' onClick={onClickDutchStart} />
             :
-            null
-            // (isHost?
-            //   null
-            //   :
-            //   <SquareBtn text={'더치페이 시작'} color='rgba(135, 72, 243, 0.74)' onClick={onClickDutchStart} />
+            // null
+            ((process === 1)&&!isHost?
+              <SquareBtn text={`---원 결제하기`} color='rgba(135, 72, 243, 0.74)' onClick={onPaymentStart} />
+              :
+              null
 
-            // )
+            )
           )
         }
         {/* 경고 메시지 출력 */}

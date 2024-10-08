@@ -260,11 +260,20 @@ const Dutchpay = () => {
       // ],
     };
 
+    
     stompClient.publish({
       destination: `/pub/dutchpay/confirm/${roomId}`,
       body: JSON.stringify(requestBody),
     });
+    
+    // 주최자가 결제 요청을 했음을 알리는 메시지 발행 (status: 'CONFIRM')
+    stompClient.publish({
+      destination: `/sub/dutch-room/${roomId}`, // 참가자가 구독 중인 경로
+      body: JSON.stringify({ status: 'PROGRESS' }),
+  });
 
+
+    console.log('컨펌 후 참가자 정보 확인', dutchParticipants)
     console.log("confirm room:", roomId);
   };
 
@@ -282,13 +291,6 @@ const Dutchpay = () => {
       brokerURL: "ws://localhost:18020/moapay/core/ws/dutchpay", // WebSocket URL
       onConnect: (frame) => {
         console.log("Connected: " + frame);
-
-        // 방 참여
-        // joinRoom()
-
-        // // 방 정보 확인
-        // check();
-
 
         // 방 참여 시 메시지 구독
         client.subscribe(`/sub/dutch-room/${roomId}`, (message) => {
@@ -456,7 +458,7 @@ useEffect(() => {
         {/* 2. 참여자 목록 컴포넌트_2단계인지 판단 기준: memberSetComplete === true */}
         {
         // memberSetComplete&&
-        <Participant maxNum={Number(maxMember)} setDutchParticipants={setDutchParticipants} roomId={roomId} participants={dutchParticipants} leaveRoom={leaveRoom} confirm={confirm} setProcess={setProcess} />}
+        <Participant maxNum={Number(maxMember)} setDutchParticipants={setDutchParticipants} roomId={roomId} participants={dutchParticipants} leaveRoom={leaveRoom} confirm={confirm} setProcess={setProcess} process={process}/>}
       </Main>
 
       {/* 배경 도형 */}
