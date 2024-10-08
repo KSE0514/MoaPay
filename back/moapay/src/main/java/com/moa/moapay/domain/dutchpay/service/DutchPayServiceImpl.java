@@ -1,5 +1,6 @@
 package com.moa.moapay.domain.dutchpay.service;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.moa.moapay.domain.dutchpay.entity.DutchPay;
 import com.moa.moapay.domain.dutchpay.entity.DutchRoom;
 import com.moa.moapay.domain.dutchpay.entity.DutchStatus;
@@ -15,6 +16,7 @@ import com.moa.moapay.global.exception.BusinessException;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.http.HttpMessageConverters;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -43,6 +45,13 @@ public class DutchPayServiceImpl implements DutchPayService {
     private final FCMService fcmService;
     private final DutchPayRedisRepository dutchPayRedisRepository;
     private final RestClient restClient;
+    private final ObjectMapper objectMapper;
+
+    @Value("${external-url.payment}")
+    private String paymentUrl;
+
+    @Value("${external-url.store}")
+    private String storeUrl;
 
     @Override
     @Transactional
@@ -59,6 +68,9 @@ public class DutchPayServiceImpl implements DutchPayService {
                 .status(DutchStatus.READY)
                 .build();
         dutchRoomRepository.save(dutchRoom);
+        // 이후 상품정보도 redis에 등록
+        SimpleOrderInfoDto orderInfo = getSimpleOrderInfoFromStore(dutchPayStartRequestDto.getOrderId());
+        dutchPayRedisRepository.RegisterSimpleOrderInfo(dutchPayStartRequestDto.getOrderId(), orderInfo);
         return dutchRoom.getUuid();
     }
 
@@ -277,7 +289,7 @@ public class DutchPayServiceImpl implements DutchPayService {
                             .cvc(paymentInfoList.get(0).getCvc())
                             .build();
                     ResponseEntity<Map> paymentResponse = restClient.post()
-                            .uri("localhost:18010/moapay/pay/charge/cancel")
+                            .uri(paymentUrl+"/charge/cancel")
                             .contentType(MediaType.APPLICATION_JSON)
                             .body(dutchCancelDto)
                             .retrieve()
@@ -390,6 +402,25 @@ public class DutchPayServiceImpl implements DutchPayService {
         DutchRoom byDutchUuid = dutchRoomRepository.findByUuid(dutchUuid);
 
 
+    }
+
+    @Override
+    public SimpleOrderInfoDto getSimpleOrderInfoFromStore(UUID orderId) {
+        try {
+            ResponseEntity<Map> res = restClient.get()
+                    .uri(storeUrl + "/order/simple/"+orderId.toString())
+                    .retrieve()
+                    .toEntity(Map.class);
+            return objectMapper.convertValue(res.getBody().get("data"), SimpleOrderInfoDto.class);
+        } catch (Exception e) {
+            log.error("failed to register order info");
+            return null;
+        }
+    }
+
+    @Override
+    public SimpleOrderInfoDto getSimpleOrderInfoFromRedis(UUID orderId) {
+        return dutchPayRedisRepository.GetSimpleOrderInfo(orderId);
     }
 
     @Override

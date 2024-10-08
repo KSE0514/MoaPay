@@ -38,4 +38,7 @@ public interface DutchPayService {
     DutchRoomInfo getDutchRoomByMember(UUID memberId);
 
     void cancelDutchRoom(DutchPayRoomLeaveDto roomLeaveDto);
+
+    SimpleOrderInfoDto getSimpleOrderInfoFromStore(UUID orderId);
+    SimpleOrderInfoDto getSimpleOrderInfoFromRedis(UUID orderId);
 }

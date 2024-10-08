@@ -51,6 +51,7 @@ public class MyCardServiceImpl implements MyCardService {
 
     @Value("${external-url.payment}")
     private String paymentUrl;
+
     private final ObjectMapper objectMapper;
 
 	@Override

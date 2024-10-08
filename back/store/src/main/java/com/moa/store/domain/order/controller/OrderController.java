@@ -13,7 +13,7 @@ import java.util.List;
 import java.util.UUID;
 @CrossOrigin(origins = "http://localhost:5173") // 프론트엔드 도메인
 @RestController
-@RequestMapping("/order")
+@RequestMapping("/store/order")
 @RequiredArgsConstructor
 public class OrderController {
 

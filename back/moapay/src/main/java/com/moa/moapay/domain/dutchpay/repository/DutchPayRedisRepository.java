@@ -33,7 +33,10 @@ public class DutchPayRedisRepository {
 
     public void RegisterSimpleOrderInfo(UUID orderId, SimpleOrderInfoDto dto) {
         log.info("saving simple order information");
-
+        if(dto == null) {
+            log.info("SimpleOrderInfoDto is null");
+            return;
+        }
         ListOperations<String, String> listOps = redisTemplate.opsForList();
         ValueOperations<String, String> valueOps = redisTemplate.opsForValue();
         String key = keyPrefix + orderId.toString();
