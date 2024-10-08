@@ -17,7 +17,7 @@ export const ModalContent = styled.div`
   background: white;
   padding: 20px;
   border-radius: 17px;
-  border: 2px solid #404040;
+  border: none;
   max-width: 500px;
   width: 80%;
   min-height: 190px;
@@ -36,31 +36,32 @@ export const ModalContent = styled.div`
     right: 13px;
     top: 10px;
   }
-  
-  & > div:nth-of-type(1){
+
+  & > div:nth-of-type(1) {
     padding-top: 20%;
     text-align: center;
   }
-  
-  & > div:nth-of-type(2){
+
+  & > div:nth-of-type(2) {
     display: flex;
     gap: 40px;
-  } 
-  
+  }
+
   & > div > button {
-    border: 2px solid black;
-    border-radius:50px;
+    border-radius: 50px;
+    border: none;
     padding: 5px 10px;
     width: 80px;
     font-size: 15px;
     font-weight: 700;
   }
-  & > div> button:nth-of-type(1){
-    background-color: #868686;
-    color: white;
-  }
-  & > div> button:nth-of-type(2){
+  & > div > button:nth-of-type(1) {
+    /* background-color: #868686; */
+    /* color: white; */
     background-color: white;
-    color: #625F68;
+  }
+  & > div > button:nth-of-type(2) {
+    background-color: white;
+    color: #625f68;
   }
 `;

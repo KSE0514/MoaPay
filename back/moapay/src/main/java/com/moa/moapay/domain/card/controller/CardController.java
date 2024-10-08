@@ -13,6 +13,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.UUID;
 
 @RestController
 @RequiredArgsConstructor
@@ -72,4 +73,27 @@ public class CardController {
         ResultResponse resultResponse = ResultResponse.of(HttpStatus.OK, "카드 활성화 완료");
         return ResponseEntity.status(resultResponse.getStatus()).body(resultResponse);
     }
+
+    //payment로 보내는 memberId
+    @PostMapping("/getMemberId")
+    public ResponseEntity<UUID> getMemberId(@Valid @RequestBody UUID cardId){
+        UUID memberId= myCardService.getMemberId(cardId);
+        return ResponseEntity.ok(memberId);
+    }
+
+    @PostMapping("/history")
+    public ResponseEntity<ResultResponse> getCardHistory(@RequestBody CardHistoryRequestDto cardHistoryRequestDto){
+        CardHistoryResponseDto resultDto = myCardService.getCardHistory(cardHistoryRequestDto);
+        ResultResponse resultResponse = ResultResponse.of(HttpStatus.OK, "달 별 결제내역을 가져왔습니다.", resultDto);
+        return ResponseEntity.status(resultResponse.getStatus()).body(resultResponse);
+    }
+
+    //paymnet로 보낼 myCard
+    @PostMapping("/getMemberCard")
+    public ResponseEntity<List<GetMemberCardsDto>> getMemberCard(@Valid @RequestBody UUID memberId){
+        List<GetMemberCardsDto> cards= myCardService.getMemberCard(memberId);
+        return ResponseEntity.ok(cards);
+    }
+
+
 }

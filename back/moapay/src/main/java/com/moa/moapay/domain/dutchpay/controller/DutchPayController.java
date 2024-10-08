@@ -1,11 +1,8 @@
 package com.moa.moapay.domain.dutchpay.controller;
 
-import com.moa.moapay.domain.dutchpay.model.dto.DutchPayPaymentRequsetDto;
-import com.moa.moapay.domain.dutchpay.model.dto.DutchPayRoomJoinDto;
-import com.moa.moapay.domain.dutchpay.model.dto.DutchPayStartRequestDto;
-import com.moa.moapay.domain.dutchpay.model.dto.DutchRoomInfo;
+import com.moa.moapay.domain.dutchpay.model.dto.*;
 import com.moa.moapay.domain.dutchpay.service.DutchPayService;
-import com.moa.moapay.domain.generalpay.service.GeneralPayService;
+import com.moa.moapay.domain.dutchpay.service.FCMServiceImpl;
 import com.moa.moapay.global.response.ResultResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -13,9 +10,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.messaging.handler.annotation.DestinationVariable;
-import org.springframework.messaging.handler.annotation.MessageMapping;
-import org.springframework.messaging.handler.annotation.SendTo;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
@@ -27,7 +21,9 @@ import java.util.UUID;
 @RequestMapping("/dutchpay")
 @CrossOrigin(origins = "*")
 public class DutchPayController {
+
     private final DutchPayService dutchPayService;
+    private final FCMServiceImpl fcmService;
     // 방 생성 엔드포인트
     @PostMapping("/createRoom")
     public ResponseEntity<ResultResponse> createRoom(@Valid @RequestBody DutchPayStartRequestDto dutchPayStartRequestDto) {
@@ -48,8 +44,41 @@ public class DutchPayController {
     @PostMapping("/payment")
     public ResponseEntity<?> payment(@Valid @RequestBody DutchPayPaymentRequsetDto dutchPayPaymentRequsetDto) {
         log.info("Payment request: {}", dutchPayPaymentRequsetDto);
+        dutchPayService.dutchpayPayment(dutchPayPaymentRequsetDto);
         ResultResponse resultResponse = ResultResponse.of(HttpStatus.OK, "더치페이 결제 요청이 성공 했습니다.");
         return ResponseEntity.status(resultResponse.getStatus()).body(resultResponse);
+    }
+
+    @PostMapping("/fcmTokens")
+    public ResponseEntity<?> fcmToken(@Valid @RequestBody FCMTokenDto fcmTokenDto) {
+        log.info("FCM token: {}", fcmTokenDto.getToken());
+        fcmService.saveToken(fcmTokenDto);
+        ResultResponse resultResponse = ResultResponse.of(HttpStatus.OK, "FCM 토큰 저장 완료");
+        return ResponseEntity.status(resultResponse.getStatus()).body(resultResponse);
+    }
+
+    @PostMapping("/fcmSend")
+    public ResponseEntity<?> fcmSend(@Valid @RequestBody FCMMessageDto fcmMessageDto) {
+        log.info("FCM token: {}", fcmMessageDto.toString());
+        fcmService.pushNotification(fcmMessageDto);
+        ResultResponse resultResponse = ResultResponse.of(HttpStatus.OK, "FCM 전송");
+        return ResponseEntity.status(resultResponse.getStatus()).body(resultResponse);
+    }
+
+    @GetMapping("/getDutchByMember/{memberId}")
+    public ResponseEntity<ResultResponse> getDutchByMember(@PathVariable UUID memberId) {
+        log.info("getDutchByMember: {}", memberId);
+        DutchRoomInfo dutchRoomByMember = dutchPayService.getDutchRoomByMember(memberId);
+        ResultResponse resultResponse = ResultResponse.of(HttpStatus.OK, "맴버아이디로 더치페이 방 정보 조회", dutchRoomByMember);
+        return ResponseEntity.status(resultResponse.getStatus()).body(resultResponse);
+    }
+
+    @PostMapping("/cancel")
+    public ResponseEntity<?> cancelDutchPay(@RequestParam DutchPayRoomLeaveDto roomLeaveDto) {
+
+        dutchPayService.cancelDutchRoom(roomLeaveDto);
+
+        return null;
     }
 
     /**

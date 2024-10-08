@@ -1,5 +1,7 @@
 package com.moa.member.domain.member.controller;
 
+import java.util.UUID;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -16,6 +18,7 @@ import com.moa.member.domain.member.model.dto.LoginRequestDto;
 import com.moa.member.domain.member.model.dto.LoginResponseDto;
 import com.moa.member.domain.member.model.dto.MessageRequestDto;
 import com.moa.member.domain.member.model.dto.VerificationRequestDto;
+import com.moa.member.domain.member.model.dto.getMemberResponseDto;
 import com.moa.member.domain.member.model.dto.isMemberRequestDto;
 import com.moa.member.domain.member.model.dto.isMemberResponseDto;
 import com.moa.member.domain.member.model.dto.selectTypeRequestDto;
@@ -29,6 +32,7 @@ import com.moa.member.global.response.ResultResponse;
 
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import lombok.Value;
 import lombok.extern.slf4j.Slf4j;
 
 @RestController
@@ -108,6 +112,13 @@ public class MemberController {
 		memberService.selectType(dto.getUuid(), dto.getType());
 		ResultResponse resultResponse = ResultResponse.of(HttpStatus.OK, "결제타입 설정 완료");
 		return ResponseEntity.status(resultResponse.getStatus()).body(resultResponse);
+	}
+
+	// payment로 보내는 memberDto
+	@PostMapping("/getMember")
+	public ResponseEntity<getMemberResponseDto> getMember(@RequestBody UUID memberId){
+		getMemberResponseDto dto=memberService.getMember(memberId);
+		return ResponseEntity.ok(dto);
 	}
 
 }

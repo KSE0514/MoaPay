@@ -5,6 +5,7 @@ import com.moa.moapay.domain.card.model.vo.PaymentResultCardInfoVO;
 import jakarta.servlet.http.HttpServletRequest;
 
 import java.util.List;
+import java.util.UUID;
 
 public interface MyCardService {
     List<MyCardInfoDto> getMyCardInfo(HttpServletRequest request);
@@ -17,4 +18,9 @@ public interface MyCardService {
 
     void disableCard(MyCardStatusRequestDto disableCardRequestDto);
     void ableCard(MyCardStatusRequestDto ableCardRequestDto);
+
+    UUID getMemberId(UUID cardId);
+    List<GetMemberCardsDto> getMemberCard(UUID memberId);
+
+    CardHistoryResponseDto getCardHistory(CardHistoryRequestDto cardHistoryRequestDto);
 }

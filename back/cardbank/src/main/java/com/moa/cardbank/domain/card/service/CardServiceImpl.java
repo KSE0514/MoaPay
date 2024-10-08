@@ -82,16 +82,17 @@ public class CardServiceImpl implements CardService {
     @Transactional
     public ExecutePayResponseDto executePay(ExecutePayRequestDto dto) {
         // [1] 요청 카드 정보가 유효한지 검사
+        log.info("요청 정보 : {}", dto.toString());
         UUID cardId = dto.getCardId();
         MyCard myCard = myCardRepository.findByUuid(cardId)
-                .orElseThrow(() -> new BusinessException(HttpStatus.BAD_REQUEST, "유효하지 않은 카드 정보입니다."));
+                .orElseThrow(() -> new BusinessException(HttpStatus.BAD_REQUEST, "유효하지 않은 카드 정보입니다.1"));
         // UUID로 찾은 카드가 주어진 number, cvc와 일치하지 않으면 예외 출력
         if (!myCard.getCardNumber().equals(dto.getCardNumber()) || !myCard.getCvc().equals(dto.getCvc())) {
-            throw new BusinessException(HttpStatus.BAD_REQUEST, "유효하지 않은 카드 정보입니다.");
+            throw new BusinessException(HttpStatus.BAD_REQUEST, "유효하지 않은 카드 정보입니다.2");
         }
         CardProduct product = myCard.getProduct();
         Merchant merchant = merchantRepository.findByUuid(dto.getMerchantId())
-                .orElseThrow(() -> new BusinessException(HttpStatus.BAD_REQUEST, "유효하지 않은 카드 정보입니다."));
+                .orElseThrow(() -> new BusinessException(HttpStatus.BAD_REQUEST, "유효하지 않은 카드 정보입니다.3"));
         // [2] 결제 가능한 상태인지 확인
         // 카드 한도와 이번달 결제금액을 기반으로 남은 한도를 계산하고, 요청한 결제가 가능할지 확인
 
@@ -101,6 +102,11 @@ public class CardServiceImpl implements CardService {
         long totalPoint = 0;
         long totalCashback = 0;
         long benefitTotalLimit = product.getBenefitTotalLimit();
+        boolean isBenefitInfinite = false;
+        if(benefitTotalLimit == 0) { // 혜택한도가 0으로 표기된 경우, 혜택은 무한대로 적용된다
+            log.info("this card has no benefit limit");
+            isBenefitInfinite = true;
+        }
         if (myCard.getPerformanceFlag()) { // 전월실적을 충족했어야 혜택 계산이 됨
             log.info("performance flag : TRUE -> calculate benefit value...");
             List<CardBenefit> benefitList = paymentQueryRepository.findCardBenefits(myCard.getProductId(), merchant.getCategoryId());
@@ -143,7 +149,7 @@ public class CardServiceImpl implements CardService {
             totalPoint += (long) (dto.getAmount() * (pointPerValue / 100));
             totalCashback += (long) (dto.getAmount() * (cashbackPerValue / 100));
             // 사용가능 혜택값과 현재 혜택값을 비교
-            if (usableBenefit < totalDiscount + totalPoint + totalCashback) {
+            if (!isBenefitInfinite && usableBenefit < totalDiscount + totalPoint + totalCashback) {
                 // 차감 우선순위 : 캐시백 -> 포인트 -> 할인
                 long exceeded = totalDiscount + totalPoint + totalCashback - usableBenefit;
                 long newTotalCashback = Math.max(totalCashback - exceeded, 0);
@@ -254,7 +260,7 @@ public class CardServiceImpl implements CardService {
                 .amount(paymentLog.getAmount())
                 .benefitActivated(myCard.getPerformanceFlag())
                 .benefitBalance(totalDiscount + totalPoint + totalCashback)
-                .remainedBenefit(benefitTotalLimit - newBenefitUsage)
+                .remainedBenefit(Math.max(benefitTotalLimit - newBenefitUsage, 0)) // benefitTotalLimit가 0인 경우, 음수가 나올 수 있음
                 .benefitDetail(benefitDetailDto)
                 .build();
     }
@@ -275,7 +281,7 @@ public class CardServiceImpl implements CardService {
         }
         if (!myCard.getCardNumber().equals(dto.getCardNumber()) || !myCard.getCvc().equals(dto.getCvc())) {
             // 카드 정보가 틀린 경우, 결제 취소 불가
-            throw new BusinessException(HttpStatus.BAD_REQUEST, "유효하지 않은 카드 정보입니다.");
+            throw new BusinessException(HttpStatus.BAD_REQUEST, "유효하지 않은 카드 정보입니다.4");
         }
 
         // 정보가 유효함을 확인했다면 결제 취소 진행
@@ -343,11 +349,11 @@ public class CardServiceImpl implements CardService {
     @Override
     public CreateMyCardResponseDto createMyCard(CreateMyCardRequestDto dto) {
         Member member = memberRepository.findByUuid(dto.getMemberId())
-                .orElseThrow(() -> new BusinessException(HttpStatus.BAD_REQUEST, "유효하지 않은 입력입니다."));
+                .orElseThrow(() -> new BusinessException(HttpStatus.BAD_REQUEST, "유효하지 않은 입력입니다.1"));
         Account account = accountRepository.findByUuid(dto.getAccountId())
-                .orElseThrow(() -> new BusinessException(HttpStatus.BAD_REQUEST, "유효하지 않은 입력입니다."));
+                .orElseThrow(() -> new BusinessException(HttpStatus.BAD_REQUEST, "유효하지 않은 입력입니다.2"));
         CardProduct cardProduct = cardProductRepository.findByUuid(dto.getCardProductId())
-                .orElseThrow(() -> new BusinessException(HttpStatus.BAD_REQUEST, "유효하지 않은 입력입니다."));
+                .orElseThrow(() -> new BusinessException(HttpStatus.BAD_REQUEST, "유효하지 않은 입력입니다.3"));
         // 카드 한도는 최소 1만원부터 시작하도록 함
         if (dto.getCardLimit() < 10000) {
             throw new BusinessException(HttpStatus.BAD_REQUEST, "한도가 너무 작습니다.");
@@ -416,9 +422,11 @@ public class CardServiceImpl implements CardService {
                             .cardNumber(myCard.getCardNumber())
                             .cvc(myCard.getCvc())
                             .benefitUsage(myCard.getBenefitUsage())
+                            .performanceFlag(myCard.getPerformanceFlag())
                             .cardLimit(myCard.getCardLimit())
                             .accounts(accountDto)
                             .cardProduct(cardProductDto)
+                            .amount(myCard.getAmount())
                             .build();
                 }
         ).collect(Collectors.toList());

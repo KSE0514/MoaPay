@@ -5,7 +5,9 @@ import { RouterProvider } from "react-router-dom";
 import reset from "styled-reset";
 import router from "./router/routes";
 import AppAuthHandler from "./pages/AppAuthHandler";
-import { requestPermission } from "./FCM.ts";
+import { requestPermission, messaging } from "./FCM.ts";
+import { onMessage } from "firebase/messaging";
+import { useAuthStore } from "./store/AuthStore";
 
 const GlobalStyles = createGlobalStyle`
   ${reset};
@@ -39,9 +41,46 @@ const Wrapper = styled.div`
 `;
 
 function App() {
+  const { id, accessToken } = useAuthStore((state) => ({
+    id: "019250e9-b495-75e3-85d9-8bf4767d9fa5",
+    accessToken: state.accessToken as string | null,
+  }));
+
   useEffect(() => {
-    requestPermission(); // 컴포넌트가 마운트될 때 requestPermission 호출
-  }, []); // 빈 배열을 전달하여 한 번만 호출
+    requestPermission(id, accessToken); // 컴포넌트가 마운트될 때 requestPermission 호출
+
+    const unsubscribe = onMessage(messaging, (payload) => {
+      console.log("Message received: ", payload);
+
+      // 알림 표시 함수 (내용을 고정)
+      const showNotification = () => {
+        const notification = new Notification(
+          payload.notification?.title ?? "Title", // 알림 제목 고정
+          {
+            body: payload.notification?.body ?? "Body", // 알림 본문 고정
+            icon: payload.notification?.icon ?? "/default-icon.png", // 알림 아이콘 고정
+          }
+        );
+
+        notification.onclick = (event) => {
+          //todo: 더치페이url 넣어주기
+          window.open(payload.data?.click_action ?? "https://naver.com");
+
+          // 클릭할 때마다 같은 내용의 알림을 1초 뒤에 다시 보냄
+          setTimeout(() => {
+            showNotification();
+          }, 1000); // 1초 후에 같은 알림 생성
+        };
+      };
+
+      // 첫 번째 알림 표시
+      showNotification();
+    });
+
+    return () => {
+      unsubscribe();
+    };
+  }, [id, accessToken]);
 
   return (
     <Wrapper>
