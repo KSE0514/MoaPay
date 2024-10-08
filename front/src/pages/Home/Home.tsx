@@ -249,10 +249,21 @@ const Home = () => {
       console.log("Message received : ", payload);
 
       // 알림 표시
-      new Notification(payload.notification?.title ?? "Title", {
-        body: payload.notification?.body ?? "Body",
-        icon: payload.notification?.icon ?? "/default-icon.png",
-      });
+      const notification = new Notification(
+        payload.notification?.title ?? "Title",
+        {
+          body: payload.notification?.body ?? "Body",
+          icon: payload.notification?.icon ?? "/default-icon.png",
+        }
+      );
+
+      notification.onclick = (event) => {
+        event.preventDefault(); // 기본 클릭 동작 방지 (알림 닫기 방지)
+        window.open(
+          payload.data?.click_action ?? "https://default-url.com",
+          "_blank"
+        );
+      };
     });
 
     return () => {

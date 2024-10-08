@@ -17,5 +17,6 @@ public class ExecutePaymentRequestVO {
     private UUID orderId;
     private UUID merchantId;
     private List<PaymentCardInfoVO> paymentInfoList;
-
+    private String paymentType;
+    private String operation;
 }

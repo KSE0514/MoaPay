@@ -16,10 +16,12 @@ import com.moa.moapay.domain.generalpay.model.dto.ExecuteOfflinePayRequestDto;
 import com.moa.moapay.domain.generalpay.model.vo.PaymentCardInfoVO;
 import com.moa.moapay.domain.generalpay.repository.GeneralPayRedisRepository;
 import com.moa.moapay.global.exception.BusinessException;
+import com.moa.moapay.global.kafka.DutchKafkaProducer;
 import com.moa.moapay.global.kafka.KafkaProducer;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
+import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
@@ -35,6 +37,7 @@ public class GeneralPayServiceImpl implements GeneralPayService{
     private final MyCardQueryRepository myCardQueryRepository;
     private final GeneralPayRedisRepository generalPayRedisRepository;
     private final CodeService codeService;
+    private final DutchKafkaProducer dutchKafkaProducer;
     private final RecommendCardService recommendCardService;
 
     @Override
@@ -53,6 +56,9 @@ public class GeneralPayServiceImpl implements GeneralPayService{
             // 우선 기본 검증 시행
             // 나중에 유저 본인이 소유한 카드인지 확인하는 매커니즘도 필요하지 않을까...
             MyCard myCard = myCardQueryRepository.findByCardNumberFetchJoin(dto.getCardNumber());
+
+            log.info("moapay 결제요청중 카드 정보 : {}", dto.toString());
+
             if(myCard == null || !myCard.getCvc().equals(dto.getCvc())) {
                 throw new BusinessException(HttpStatus.BAD_REQUEST, "유효하지 않은 정보입니다.");
             }
@@ -109,6 +115,8 @@ public class GeneralPayServiceImpl implements GeneralPayService{
                 .orderId(dto.getOrderId())
                 .merchantId(dto.getMerchantId())
                 .paymentInfoList(cardInfoList)
+                .paymentType(String.valueOf(dto.getCardSelectionType()))
+                .operation("PROGRESS")
                 .build();
         Map<String, Object> map = objectMapper.convertValue(requestVo, Map.class);
         kafkaProducer.send(map, "1");
@@ -155,8 +163,18 @@ public class GeneralPayServiceImpl implements GeneralPayService{
                 .orderId(dto.getOrderId())
                 .merchantId(dto.getMerchantId())
                 .paymentInfoList(cardInfoList)
+                .operation("PROGRESS")
                 .build();
         Map<String, Object> map = objectMapper.convertValue(requestVo, Map.class);
         kafkaProducer.send(map, "1");
     }
+
+    @Override
+    public void dutchCancel(UUID paymentId){
+        Map<String, Object> map = new HashMap<>();
+        map.put("paymentId", paymentId);
+        dutchKafkaProducer.send(map, "2");
+    }
+
+
 }

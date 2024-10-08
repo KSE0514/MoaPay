@@ -4,12 +4,12 @@ import com.moa.moapay.domain.dutchpay.entity.DutchPay;
 import com.moa.moapay.domain.dutchpay.entity.DutchRoom;
 import com.moa.moapay.domain.dutchpay.entity.DutchStatus;
 import com.moa.moapay.domain.dutchpay.model.dto.*;
+import com.moa.moapay.domain.dutchpay.model.vo.DutchPayCompliteVo;
 import com.moa.moapay.domain.dutchpay.repository.DutchPayRepository;
 import com.moa.moapay.domain.dutchpay.repository.DutchRoomRepository;
 import com.moa.moapay.domain.generalpay.model.dto.ExecuteGeneralPayRequestDto;
 import com.moa.moapay.domain.generalpay.service.GeneralPayService;
 import com.moa.moapay.global.exception.BusinessException;
-import com.moa.moapay.global.kafkaVo.DutchPayCompliteVo;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -185,7 +185,7 @@ public class DutchPayServiceImpl implements DutchPayService {
         log.info(dutchPayConfirmRequestDto.getConfirmPriceDtos().get(0).getMemberId().toString());
         List<ConfirmPriceDto> dutchPayDtoList = dutchPayConfirmRequestDto.getConfirmPriceDtos();
         // 방의 참가자 수 설정
-        dutchRoomRepository.updateDutchRoom(dutchPayConfirmRequestDto.getMemberCnt());
+        dutchRoomRepository.updateDutchRoomConfirm(dutchPayConfirmRequestDto.getMemberCnt(), DutchStatus.PROGRESS, dutchPayConfirmRequestDto.getRoomId());
         extracted(dutchPayConfirmRequestDto.getRoomId(), dutchPayDtoList);
 
         DutchRoom dutchRoom = dutchRoomRepository.findByRoomId(dutchPayConfirmRequestDto.getRoomId());
@@ -220,7 +220,7 @@ public class DutchPayServiceImpl implements DutchPayService {
     @Transactional
     public void dutchpayPayment(DutchPayPaymentRequsetDto dutchPayPaymentRequsetDto) {
 
-        DutchPay dutchPay = dutchPayRepository.findByUuid(dutchPayPaymentRequsetDto.getMemberId());
+        DutchPay dutchPay = dutchPayRepository.findByUuid(dutchPayPaymentRequsetDto.getRequestId());
 
         if(dutchPay.getPayStatus().equals(DutchStatus.READY)) {
             ExecuteGeneralPayRequestDto executeGeneralPayRequestDto = ExecuteGeneralPayRequestDto.builder()
@@ -230,6 +230,7 @@ public class DutchPayServiceImpl implements DutchPayService {
                     .cardSelectionType(dutchPayPaymentRequsetDto.getCardSelectionType())
                     .requestId(dutchPayPaymentRequsetDto.getRequestId())
                     .totalPrice(dutchPayPaymentRequsetDto.getTotalPrice())
+                    .merchantId(dutchPayPaymentRequsetDto.getMerchantId())
                     .orderId(dutchPayPaymentRequsetDto.getOrderId())
                     .build();
 
@@ -244,45 +245,118 @@ public class DutchPayServiceImpl implements DutchPayService {
 
     @Override
     @Transactional
-    public void dutchpayComplite() {
+    public void dutchpayComplite(DutchPayCompliteVo dutchPayCompliteVo) {
 
-        UUID roomUuid = UUID.randomUUID();
-        UUID memberUuid = UUID.randomUUID();
-        DutchStatus status = DutchStatus.READY;
+        UUID dutchUuid = dutchPayCompliteVo.getDutchUuid();
+        String status = dutchPayCompliteVo.getStatus();
 
-        if(status.equals(DutchStatus.DONE)) {
-            // 결제 완료 트렌젝션
-            dutchPayRepository.updateStatus(memberUuid, roomUuid, DutchStatus.DONE); // 여기서 확인 해야 할듯
-            List<DutchPay> dutchPayList = dutchPayRepository.findByRoomUuid(roomUuid);
+        DutchPay byUuid = dutchPayRepository.findByUuid(dutchUuid);
+        DutchRoom byDutchUuid = dutchRoomRepository.findByDutchUuid(dutchUuid);
+
+        if(status.equals("CANCEL")){
+            List<DutchPay> dutchPayList = byDutchUuid.getDutchPayList();
+
+            for(DutchPay dutchPay : dutchPayList){
+                if(dutchPay.getPayStatus().equals(DutchStatus.DONE)){
+                    // 취소 요청
+                    // 여기서는 UUID로 취소 요청 하면 될듯
+                    generalPayService.dutchCancel(dutchPay.getUuid());
+                }
+                //TODO : 이거 바꿔야해
+                dutchPayRepository.updateByDutchUuid(dutchPay.getUuid(), DutchStatus.CANCEL);
+                FCMMessageDto fcm = FCMMessageDto.builder()
+                        .memberId(dutchPay.getMemberId())
+                        .title("MoaPay")
+                        .message("더치페이가 중단 되었습니다.")
+                        .build();
+                fcmService.pushNotification(fcm);
+            }
+            return;
+        }
+        else if(status.equals("PROGRESS")){
+            // 결제 요청 다시
+            FCMMessageDto fcm = FCMMessageDto.builder()
+                    .memberId(byUuid.getMemberId())
+                    .title("MoaPay")
+                    .message("결제 실패")
+                    .build();
+            fcmService.pushNotification(fcm);
+
+        }
+        else if(status.equals("DONE")){
+            // 결제 상태 변경
+            dutchPayRepository.updateByDutchUuid(dutchUuid, DutchStatus.DONE);
+
+            List<DutchPay> dutchPayList = byDutchUuid.getDutchPayList();
+            DutchPay dutchPayMember = dutchPayRepository.findByUuid(dutchUuid);
 
             boolean flag = true;
-
             for (DutchPay dutchPay : dutchPayList) { // 해당 더치 내역 다돌면서
                 DutchStatus dutchStatus = dutchPay.getPayStatus();
                 if(!dutchStatus.equals(DutchStatus.DONE)) {
+                    if(dutchPay.getUuid().equals(dutchPayCompliteVo.getDutchUuid())){
+                        continue;
+                    }
                     flag = false;
-                    break;
                 }
+//                FCMMessageDto fcmMessageDto = FCMMessageDto.builder()
+//                        .memberId(dutchPay.getMemberId())
+//                        .title("MoaPay")
+//                        .message(dutchPayMember.getMemberName() + " 님의 더치페이 결제가 완료되었습니다.")
+//                        .build();
+//                fcmService.pushNotification(fcmMessageDto);
             }
 
             if(flag) {
-                    for(DutchPay dutchPay : dutchPayList) {
-
-                        FCMMessageDto fcmMessageDto = FCMMessageDto.builder()
-                                .memberId(dutchPay.getMemberId())
-                                .title("MoaPay")
-                                .message("더치페이가 완료되었습니다.")
-                                .build();
-
-                        fcmService.pushNotification(fcmMessageDto);
-                    }
+                log.info("더치페이 완료");
+                // 일단 오류 때문에 넣어둠
+//                for(DutchPay dutchPay : dutchPayList) {
+//                    FCMMessageDto fcmMessageDto = FCMMessageDto.builder()
+//                            .memberId(dutchPay.getMemberId())
+//                            .title("MoaPay")
+//                            .message("더치페이가 완료되었습니다.")
+//                            .build();
+//                    fcmService.pushNotification(fcmMessageDto);
+//                }
+                dutchRoomRepository.updateDutchRoomConfirm(byDutchUuid.getCurPerson(), DutchStatus.DONE, byDutchUuid.getUuid());
             }
-
-        } else if(status.equals(DutchStatus.CANCEL)) {
-            // 보상 트랜잭션
 
         }
 
+
+    }
+
+    @Override
+    public DutchRoomInfo getDutchRoomByMember(UUID memberId) {
+
+        DutchRoom dutchRoom = dutchRoomRepository.findByDutchUuid(memberId);
+
+        List<DutchPay> dutchPayList = dutchRoom.getDutchPayList();
+
+        List<DutchPayDto> dutchPayDtoList = dutchPayList.stream().map(
+                dutchPay -> {
+                    return DutchPayDto.builder()
+                            .memberId(dutchPay.getMemberId())
+                            .status(dutchPay.getPayStatus())
+                            .amount(dutchPay.getAmount())
+                            .uuid(dutchPay.getUuid())
+                            .memberName(dutchPay.getMemberName())
+                            .build();
+                }
+        ).toList();
+
+        DutchRoomInfo dutchRoomInfoByMemberId = DutchRoomInfo.builder()
+                .dutchUuid(dutchRoom.getUuid())
+                .categoryId(dutchRoom.getCategoryId())
+                .memberCnt(dutchRoom.getCurPerson())
+                .merchantName(dutchRoom.getMerchantName())
+                .merchantId(dutchRoom.getMerchantId())
+                .orderId(dutchRoom.getOrderId())
+                .totalPrice(dutchRoom.getTotalPrice())
+                .dutchPayList(dutchPayDtoList)
+                .build();
+
+        return dutchRoomInfoByMemberId;
     }
 
     @Override
