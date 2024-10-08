@@ -13,7 +13,7 @@ import java.util.UUID;
 @RestController
 @RequiredArgsConstructor
 @Slf4j
-@RequestMapping("/notification")
+@RequestMapping("/store/notification")
 public class NotificationController {
 
     private final NotificationService notificationService;

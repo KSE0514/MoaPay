@@ -1,5 +1,10 @@
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faRepeat, faBars, faPlus } from "@fortawesome/free-solid-svg-icons";
+import {
+  faRepeat,
+  faBars,
+  faPlus,
+  faRotateLeft,
+} from "@fortawesome/free-solid-svg-icons";
 import {
   Top,
   Bottom,
@@ -74,8 +79,8 @@ const Home = () => {
     if (barcodeCardNumber === undefined) return;
     try {
       const response = await axios.post(
-        `api/moapay/core/code/barcode`,
-        // `http://localhost:8765/moapay/core/code/barcode`,
+        // `api/moapay/core/code/barcode`,
+        `http://localhost:8765/moapay/core/code/barcode`,
         {
           memberId: id,
           type: barcodeCardImageAlt === "recommend" ? "RECOMMEND" : "FIX", // FIX, RECOMMEND
@@ -445,7 +450,7 @@ const Home = () => {
                 faRefreshBarCord();
               }}
             >
-              <FontAwesomeIcon icon={faRepeat} />
+              <FontAwesomeIcon icon={faRotateLeft} />
             </button>
           </Time>
         </BarcordArea>

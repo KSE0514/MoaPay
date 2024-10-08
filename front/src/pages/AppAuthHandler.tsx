@@ -26,15 +26,15 @@ const AppAuthHandler: React.FC = () => {
 
           //백그라운드에서 머무른 시간이 1분을 초과한 경우
           if (timeDiff > 60000) {
-            console.log("step1");
+            // console.log("step1");
             //이전 로그인 기록이 있는 경우
             if (isLoggedIn) {
-              console.log("step2-1");
+              // console.log("step2-1");
               requestLogin();
             }
             //이전 로그인 기록이 없는 경우
             else {
-              console.log("step2-2");
+              // console.log("step2-2");
               requestCreateAccount();
             }
           }
@@ -52,21 +52,21 @@ const AppAuthHandler: React.FC = () => {
 
       // 만약 lastActiveTime이 없으면 앱이 처음 시작되었거나 완전히 종료되었다가 다시 실행된 것입니다.
       if (!lastActiveTime) {
-        console.log(1);
+        // console.log(1);
         // 사용자가 이전에 로그인한 적이 있는 경우, 간편 로그인 화면으로 이동합니다.
         if (isLoggedIn) {
-          console.log("1-1");
+          // console.log("1-1");
           requestLogin();
         }
         // 사용자가 이전에 로그인한 적이 없으면 회원가입 페이지로 이동합니다.
         else {
-          console.log("1-2");
+          // console.log("1-2");
           requestCreateAccount();
         }
       }
       // lastActiveTime이 있으면, 사용자가 앱을 백그라운드에 두었다가 다시 돌아온 상태입니다.
       else {
-        console.log("2");
+        // console.log("2");
         const lastInURI =
           (localStorage.getItem("lastInURI") !== "/"
             ? localStorage.getItem("lastInURI")
