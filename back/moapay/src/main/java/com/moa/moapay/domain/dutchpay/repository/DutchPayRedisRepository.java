@@ -63,7 +63,7 @@ public class DutchPayRedisRepository {
         long size = listOps.size(key + ":itemNames");
         String[] itemName = new String[(int) size];
         for (int s = 0; s < size; ++s) {
-            itemName[s] = listOps.leftPop(key + ":itemNames");
+            itemName[s] = listOps.index(key + ":itemNames", s);
         }
         return SimpleOrderInfoDto.builder()
                 .thumbnailUrl(thumbnailUrl)
