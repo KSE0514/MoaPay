@@ -3,10 +3,7 @@ package com.moa.moapay.domain.card.entity;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import jakarta.ws.rs.DefaultValue;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import org.hibernate.annotations.DynamicInsert;
 
 import java.util.UUID;
@@ -18,6 +15,7 @@ import java.util.UUID;
 @NoArgsConstructor
 @AllArgsConstructor
 @DynamicInsert
+@ToString
 public class MyCard {
 
     @Id

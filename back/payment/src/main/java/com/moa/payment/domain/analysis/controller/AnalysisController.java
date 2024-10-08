@@ -2,15 +2,14 @@ package com.moa.payment.domain.analysis.controller;
 
 import java.util.UUID;
 
+import com.moa.payment.domain.analysis.model.dto.CardHistoryRequestDto;
+import com.moa.payment.domain.analysis.model.dto.CardHistoryResponseDto;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
-import com.moa.payment.domain.analysis.entity.dto.averageRequestDto;
+import com.moa.payment.domain.analysis.model.dto.averageRequestDto;
+import com.moa.payment.domain.analysis.entity.dto.averageResponseDto;
 import com.moa.payment.domain.analysis.service.AnalysisService;
 import com.moa.payment.global.response.ResultResponse;
 
@@ -21,13 +20,13 @@ import lombok.RequiredArgsConstructor;
 @RequestMapping("/analysis")
 public class AnalysisController {
 
-	private final AnalysisService analysisService;
+    private final AnalysisService analysisService;
 
 	//성별+나이대 총소비량 + 멤버수 저장하기
 	@GetMapping("/saveAverage")
 	public ResponseEntity<ResultResponse> saveAverage(){
 		//uuid 통해 member 찾고 member의 성별, 나이대 구한 후 소비평균 가져오기
-		analysisService.getLastMonthPaymentLog();
+		analysisService.setAverage();
 		ResultResponse resultResponse = ResultResponse.of(HttpStatus.OK, "성별/연령대 별 소비총합과 멤버 수 저장 완료");
 		return ResponseEntity.status(resultResponse.getStatus()).body(resultResponse);
 	}
@@ -37,7 +36,17 @@ public class AnalysisController {
 	public  ResponseEntity<ResultResponse> getAverage(@RequestBody averageRequestDto dto){
 		UUID memberId=dto.getMemberId();
 		Long average=analysisService.average(memberId);
-		ResultResponse resultResponse = ResultResponse.of(HttpStatus.OK, "소비평균",average);
+		averageResponseDto averageDto=new averageResponseDto();
+		averageDto.setAverage(average);
+		ResultResponse resultResponse = ResultResponse.of(HttpStatus.OK, "소비평균",averageDto);
+		return ResponseEntity.status(resultResponse.getStatus()).body(resultResponse);
+	}
+
+    /* 카드별 결제 내역 영역 */
+    @PostMapping("/history")
+    public ResponseEntity<ResultResponse> getCardHistory(@RequestBody CardHistoryRequestDto dto) {
+		CardHistoryResponseDto responseDto = analysisService.getCardHistory(dto);
+		ResultResponse resultResponse = ResultResponse.of(HttpStatus.OK, "결제 내역을 가져왔습니다.", responseDto);
 		return ResponseEntity.status(resultResponse.getStatus()).body(resultResponse);
 	}
 

@@ -35,4 +35,9 @@ public interface DutchPayRepository extends JpaRepository<DutchPay, Long> {
     @Transactional
     @Query("UPDATE DutchPay p Set p.payStatus = :status WHERE p.memberId = :memberId AND p.roomEntity.uuid = :roomUuid")
     void updateStatus(@Param("memberId") UUID memberId, @Param("roomUuid") UUID roomUuid, @Param("status") DutchStatus status);
+
+    @Modifying
+    @Transactional
+    @Query("UPDATE DutchPay p SET p.payStatus = :payStatus WHERE p.uuid = :dutchUuid" )
+    void updateByDutchUuid(@Param("dutchUuid") UUID dutchUuid, DutchStatus payStatus);
 }

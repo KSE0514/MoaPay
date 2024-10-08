@@ -16,7 +16,7 @@ import com.moa.store.global.response.ResultResponse;
 import lombok.RequiredArgsConstructor;
 
 @RestController
-@RequestMapping("/store/payment")
+@RequestMapping("/payment")
 @RequiredArgsConstructor
 public class PaymentInfoController {
 

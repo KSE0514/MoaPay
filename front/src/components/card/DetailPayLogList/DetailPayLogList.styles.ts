@@ -1,23 +1,23 @@
 import styled from "styled-components";
 
 export const Wrapper = styled.div`
-
-`
+  height: 100%;
+`;
 
 export const Log = styled.div`
   font-size: 21px;
   display: flex;
   flex-direction: column;
   // gap: 10px;
-`
+`;
 
 export const Date = styled.div`
   font-size: 21px;
   font-weight: 700;
   padding-bottom: 20px;
-  text-shadow: -1px 0 rgba(255, 255, 255, 0.8), 0 1px rgba(255, 255, 255, 0.8), 1px 0 rgba(255, 255, 255, 0.8), 0 -1px rgba(255, 255, 255, 0.8);
-
-`
+  text-shadow: -1px 0 rgba(255, 255, 255, 0.8), 0 1px rgba(255, 255, 255, 0.8),
+    1px 0 rgba(255, 255, 255, 0.8), 0 -1px rgba(255, 255, 255, 0.8);
+`;
 
 export const Content = styled.div`
   position: relative;
@@ -28,11 +28,11 @@ export const Content = styled.div`
     padding: 10px 0;
   }
 
-  & > div > div:nth-of-type(1){
+  & > div > div:nth-of-type(1) {
     width: 75px;
     height: 75px;
     border-radius: 100%;
-    text-align:center;
+    text-align: center;
     position: relative;
     display: flex;
     align-items: center; /* 수직 중앙 정렬 */
@@ -45,10 +45,9 @@ export const Content = styled.div`
   }
 
   & > hr {
-    border: 1px solid #B97DF9;
+    border: 1px solid #b97df9;
   }
 `;
-
 
 export const Detail = styled.div`
   width: 70%;
@@ -56,14 +55,14 @@ export const Detail = styled.div`
   flex-direction: column;
   gap: 4px;
 
-  & > div:nth-of-type(2){
+  & > div:nth-of-type(2) {
     font-size: 17px;
     color: #626262;
   }
 
-  & > div:nth-of-type(3){
+  & > div:nth-of-type(3) {
     position: absolute;
     right: 0;
     bottom: 25px;
   }
-`
+`;

@@ -1,19 +1,23 @@
 package com.moa.payment.domain.analysis.service;
 
+import com.moa.payment.domain.analysis.model.dto.CardHistoryPaymentLogDto;
+import com.moa.payment.domain.analysis.model.dto.CardHistoryRequestDto;
+import com.moa.payment.domain.analysis.model.dto.CardHistoryResponseDto;
+import com.moa.payment.domain.analysis.repository.PaymentLogQueryRepository;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
-import java.time.LocalDate;
-import java.time.Period;
+import java.time.*;
 import java.util.HashSet;
 import java.util.List;
 import java.util.UUID;
 
 import com.moa.payment.domain.analysis.entity.Analysis;
 import com.moa.payment.domain.analysis.entity.Gender;
-import com.moa.payment.domain.analysis.entity.dto.getMemberResponseDto;
+import com.moa.payment.domain.analysis.model.dto.getMemberResponseDto;
 import com.moa.payment.domain.analysis.repository.AnalysisRepository;
 import com.moa.payment.domain.charge.entity.PaymentLog;
 import com.moa.payment.domain.charge.repository.PaymentLogRepository;
@@ -21,11 +25,13 @@ import com.moa.payment.domain.charge.repository.PaymentLogRepository;
 import lombok.RequiredArgsConstructor;
 
 @Service
+@Slf4j
 @RequiredArgsConstructor
 public class AnalysisServiceImpl implements AnalysisService {
 
 	private final PaymentLogRepository paymentLogRepository;
 	private final AnalysisRepository analysisRepository;
+	private final PaymentLogQueryRepository paymentLogQueryRepository;
 	private final RestTemplate restTemplate;
 
 	@Value("${external-url.member}")
@@ -53,7 +59,7 @@ public class AnalysisServiceImpl implements AnalysisService {
 
 	//-----scheduling 필요
 	@Override
-	public void getLastMonthPaymentLog() {
+	public void setAverage() {
 		// save 배열 초기화 (null 값을 0L로 초기화)
 		for (int i = 0; i < 2; i++) {
 			for (int j = 0; j < 13; j++) {
@@ -103,14 +109,16 @@ public class AnalysisServiceImpl implements AnalysisService {
 
 		for (int i = 0; i < 2; i++) {
 			Gender gender;
-			if(i==0) gender=Gender.MALE;
-			else gender=Gender.FEMALE;
+			if (i == 0)
+				gender = Gender.MALE;
+			else
+				gender = Gender.FEMALE;
 			for (int j = 0; j < 13; j++) {
-				Analysis analysis=Analysis.builder()
+				Analysis analysis = Analysis.builder()
 					.month(previousMonth)
 					.year(previousYear)
 					.gender(gender)
-					.generation(j*10+"")
+					.generation(j * 10 + "")
 					.totalAmount(save[i][j][0])
 					.userCount(save[i][j][1])
 					.build();
@@ -123,7 +131,7 @@ public class AnalysisServiceImpl implements AnalysisService {
 
 	//paymentlog의 cardId에서 member가져오기
 	public UUID getMemberId(UUID cardId) {
-		String url = coreUrl+"/card/getMemberId";
+		String url = coreUrl + "/card/getMemberId";
 
 		// POST 요청으로 cardId를 보내고, UUID로 응답을 받음
 		ResponseEntity<UUID> response = restTemplate.postForEntity(url, cardId, UUID.class);
@@ -133,7 +141,7 @@ public class AnalysisServiceImpl implements AnalysisService {
 
 	public getMemberResponseDto getMemberInfo(UUID memberId) {
 		try {
-			String url = memberUrl+"/getMember";
+			String url = memberUrl + "/getMember";
 
 			// POST 요청으로 memberId를 보내고, getMemberResponseDto로 응답 받음
 			ResponseEntity<getMemberResponseDto> response = restTemplate.postForEntity(url, memberId,
@@ -153,15 +161,17 @@ public class AnalysisServiceImpl implements AnalysisService {
 	//-------
 
 	@Override
-	public Long average(UUID memberId){
-		getMemberResponseDto member=getMemberInfo(memberId);
+	public Long average(UUID memberId) {
+		getMemberResponseDto member = getMemberInfo(memberId);
 		int age = calculateAge(member.getBirthDate()); //나이 ex) 26살
-		String ageGeneration = age/10 * 10 +""; //연령대 ex) 20대
-		Long avg=0L; //소비평균
-		String g=member.getGender();
+		String ageGeneration = age / 10 * 10 + ""; //연령대 ex) 20대
+		long avg = 0; //소비평균
+		String g = member.getGender();
 		Gender gender; //성별
-		if(g.equals("M")) gender=Gender.MALE;
-		else gender=Gender.FEMALE;
+		if (g.equals("M"))
+			gender = Gender.MALE;
+		else
+			gender = Gender.FEMALE;
 
 		// 현재 날짜 가져오기
 		LocalDate currentDate = LocalDate.now();
@@ -173,9 +183,34 @@ public class AnalysisServiceImpl implements AnalysisService {
 		int previousMonth = previousMonthDate.getMonthValue(); // 월
 		int previousYear = previousMonthDate.getYear(); // 년
 
-		Analysis analysis=analysisRepository.findByPreviousMonthAndGenderAndGeneration(previousYear, previousMonth, gender, ageGeneration);
-		avg=analysis.getTotalAmount()/analysis.getUserCount(); //평균구하기
+		Analysis analysis = analysisRepository.findByPreviousMonthAndGenderAndGeneration(previousYear, previousMonth,
+			gender, ageGeneration);
+		avg = analysis.getTotalAmount() / analysis.getUserCount(); //평균구하기
 		return avg;
 	}
 
+	@Override
+	public CardHistoryResponseDto getCardHistory(CardHistoryRequestDto dto) {
+		log.info("get card history - year : {}, month : {}", dto.getYear(), dto.getMonth());
+		Month month = Month.of(dto.getMonth());
+		YearMonth dateInfo = YearMonth.of(dto.getYear(), dto.getMonth());
+		int lastDay = dateInfo.atEndOfMonth().lengthOfMonth();
+		LocalDateTime startTime = LocalDateTime.of(dto.getYear(), dto.getMonth(), 1, 0, 0);
+		LocalDateTime endTime = LocalDateTime.of(dto.getYear(), dto.getMonth(), lastDay, 23, 59);
+		List<CardHistoryPaymentLogDto> paymentLogs = paymentLogQueryRepository.findPaymentLog(dto.getCardId(), startTime, endTime);
+		long totalAmount = 0;
+		long totalBenefit = 0;
+		for(CardHistoryPaymentLogDto log : paymentLogs){
+			totalAmount += log.getAmount();
+			totalBenefit += log.getBenefitBalance();
+		}
+		return CardHistoryResponseDto.builder()
+				.cardId(dto.getCardId())
+				.year(dto.getYear())
+				.month(dto.getMonth())
+				.totalAmount(totalAmount)
+				.totalBenefit(totalBenefit)
+				.paymentLogs(paymentLogs)
+				.build();
+	}
 }

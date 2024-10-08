@@ -30,7 +30,7 @@ self.addEventListener("push", function (e) {
     body: data.notification.body,
   });
 
-  self.registration.showNotification(notificationTitle, notificationOptions);
+  // self.registration.showNotification(notificationTitle, notificationOptions);
 });
 
 self.addEventListener("install", function (e) {
