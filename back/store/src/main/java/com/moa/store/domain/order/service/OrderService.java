@@ -10,4 +10,5 @@ public interface OrderService {
     OrderResponseDto getOrderResponse(UUID orderId);
     OrderResponseDto ChangeOrderStatus(UpdateOrderStatusRequestDto updateOrderStatusRequestDto);
     CreateOrderResponseDto createOrder(CreateOrderRequestDto createOrderRequestDto);
+    GetSimpleOrderResponseDto getSimpleOrder(UUID orderId);
 }

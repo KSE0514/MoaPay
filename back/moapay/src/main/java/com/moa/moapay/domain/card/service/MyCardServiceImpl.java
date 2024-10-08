@@ -51,6 +51,7 @@ public class MyCardServiceImpl implements MyCardService {
 
     @Value("${external-url.payment}")
     private String paymentUrl;
+
     private final ObjectMapper objectMapper;
 
 	@Override
@@ -160,12 +161,8 @@ public class MyCardServiceImpl implements MyCardService {
 	@Override
 	@Transactional
 	public List<GetMyCardsResponseDto> getMyCardFromCardBank(GetMyCardsRequestDto getMyCardsRequestDto) {
-
-		// TODO : 맴버 인증 과정 추가 내 카드목록 마이데이터 불러오기전
-
 		// 카드 뱅크에서 내 카드 목록을 가져오기 위한 REST API 호출
 		ResponseEntity<GetMyCardDtoWrapper> responseEntity = restClient.post()
-			// TODO: 주소 변경
 			.uri(cardbankUrl + "/card/getMyCards")
 			.contentType(MediaType.APPLICATION_JSON)
 			.body(getMyCardsRequestDto)
@@ -281,7 +278,6 @@ public class MyCardServiceImpl implements MyCardService {
 
 		try {
 			ResponseEntity<CardRestWrapperDto> responseEntity = restClient.post()
-				//TODO: 주소 변경
 				.uri(cardbankUrl + "/card/registration")
 				.contentType(MediaType.APPLICATION_JSON)
 				.body(registrationRequestDto)

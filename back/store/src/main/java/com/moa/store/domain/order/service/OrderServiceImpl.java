@@ -152,4 +152,21 @@ public class OrderServiceImpl implements OrderService {
                 .categoryId(store.getCategoryId())
                 .build();
     }
+
+    @Override
+    public GetSimpleOrderResponseDto getSimpleOrder(UUID orderId) {
+        // 썸네일 : 가장 첫번째에 있는 값을 가져온다
+        Order order = orderRepository.findByOrderIdWithItemInfos(orderId).orElseThrow(()
+                -> new BusinessException(HttpStatus.BAD_REQUEST, "주문 UUID를 확인해주세요."));
+        String[] itemNames = new String[order.getItemInfos().size()];
+        List<ItemInfo> itemInfos = order.getItemInfos();
+        String thumbnailUrl = itemInfos.get(0).getItem().getImageUrl();
+        for(int i = 0; i < order.getItemInfos().size(); i++) {
+            itemNames[i] = order.getItemInfos().get(i).getItemName();
+        }
+        return GetSimpleOrderResponseDto.builder()
+                .thumbnailUrl(thumbnailUrl)
+                .itemNames(itemNames)
+                .build(); // URL은 어떻게 해야할지 막막해서 일단 null로... ㅠ
+    }
 }
