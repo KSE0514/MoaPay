@@ -104,7 +104,6 @@ public class PaymentInfoServiceImpl implements PaymentInfoService {
 					.orderId(order.getUuid())
 					.status(ResultStatus.SUCCEED)
 					.build();
-			// todo : 결제 완료 sse 알람 구현
 			notificationService.sendMessage(order.getUuid(), notifyDto);
 		} else {
 			// 다 끝난 게 아니라면 결제 프로세스를 진행중으로 변경

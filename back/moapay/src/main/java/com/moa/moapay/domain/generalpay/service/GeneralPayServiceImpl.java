@@ -73,7 +73,6 @@ public class GeneralPayServiceImpl implements GeneralPayService{
             cardInfoList.add(cardInfoVo);
         } else {
             // 카드 추천형인 경우, 추천된 결과를 기반으로 결제를 진행
-            // todo : 카드 추천하는 서비스 완성하여 여기에서 사용
             log.info("recommend card...");
             cardInfoList = recommendCardService.recommendPayCard(dto.getMemberId(), dto.getCategoryId(), dto.getRecommendType(), dto.getTotalPrice());
             log.info("recommend done");
@@ -133,7 +132,6 @@ public class GeneralPayServiceImpl implements GeneralPayService{
 //            MyCard myCard = myCardRepository.findByCardNumber(barcodeInfo.getCardNumber())
 //                    .orElseThrow(() -> new BusinessException(HttpStatus.BAD_REQUEST, "유효하지 않은 정보입니다."));
             // 카드 ID 정보를 포함해 카드 정보 삽입
-            // todo : 갱신된 카드 정보를 기반으로 cardInfoVo 채우기
             PaymentCardInfoVO cardInfoVo = PaymentCardInfoVO.builder()
                     .cardId(myCardQueryRepository.findUuidByCardNumber(barcodeInfo.getCardNumber()))
                     .cardNumber(barcodeInfo.getCardNumber())
