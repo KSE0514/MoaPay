@@ -75,6 +75,7 @@ const Home = () => {
     try {
       const response = await axios.post(
         `api/moapay/core/code/barcode`,
+        // `http://localhost:8765/moapay/core/code/barcode`,
         {
           memberId: id,
           type: barcodeCardImageAlt === "recommend" ? "RECOMMEND" : "FIX", // FIX, RECOMMEND
@@ -91,7 +92,7 @@ const Home = () => {
       );
       setBarcodeLimitTime(180);
       startLimitTime();
-      setCardBarcodeValue(response.data.barcode);
+      setCardBarcodeValue(response.data.data.barcode);
     } catch (e) {
       console.log(e);
     }
@@ -430,7 +431,7 @@ const Home = () => {
         <BarcordArea>
           <BarcordView>
             <Barcode
-              width={300}
+              width={400}
               height={10000}
               displayValue={false} // 바코드 아래 텍스트 표시 여부
               value={cardBarcodeValue} // 바코드 값 설정
@@ -471,7 +472,7 @@ const Home = () => {
             onTouchEnd={handleTouchEnd}
           >
             {showCards.map((card, index) =>
-              card.id == "add-card" ? (
+              card.uuid == "add-card" ? (
                 <div
                   onClick={() => {
                     navigate("/add-card");
@@ -484,7 +485,7 @@ const Home = () => {
                   </div>
                   <p>카드 등록하기</p>
                 </div>
-              ) : card.id === "recommended-card" ? (
+              ) : card.uuid === "recommended-card" ? (
                 <div className="card recommended-card" key={index}>
                   <div style={{ display: "none" }}>
                     {showCards[2].cardNumber}
@@ -500,10 +501,7 @@ const Home = () => {
                 <div
                   onClick={() => {
                     navigate(
-                      `${PATH.USER_CARD_DETAIL.replace(
-                        ":card_id",
-                        card.cardNumber
-                      )}`
+                      `${PATH.USER_CARD_DETAIL.replace(":id", card.uuid)}`
                     );
                   }}
                   className="card"
