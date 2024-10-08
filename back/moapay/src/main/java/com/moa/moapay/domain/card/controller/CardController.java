@@ -31,9 +31,9 @@ public class CardController {
         return ResponseEntity.status(resultResponse.getStatus()).body(resultResponse);
     }
 
-    @GetMapping("/mycard")
-    public ResponseEntity<ResultResponse> mycard(HttpServletRequest request) {
-        List<MyCardInfoDto> myCardInfo = myCardService.getMyCardInfo(request);
+    @GetMapping("/mycard/{memberId}")
+    public ResponseEntity<ResultResponse> mycard(@PathVariable UUID memberId) {
+        List<MyCardInfoDto> myCardInfo = myCardService.getMyCardInfo(memberId);
         ResultResponse resultResponse = ResultResponse.of(HttpStatus.OK, "나의 카드 조회", myCardInfo);
         return ResponseEntity.status(resultResponse.getStatus()).body(resultResponse);
     }
