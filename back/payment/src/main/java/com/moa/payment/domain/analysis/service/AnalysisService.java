@@ -6,7 +6,7 @@ import com.moa.payment.domain.analysis.model.dto.CardHistoryResponseDto;
 import java.util.UUID;
 
 public interface AnalysisService {
-    void getLastMonthPaymentLog();
+	void setAverage();
     Long average(UUID memberId);
     CardHistoryResponseDto getCardHistory(CardHistoryRequestDto dto);
 }
