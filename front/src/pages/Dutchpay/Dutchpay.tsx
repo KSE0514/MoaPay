@@ -25,8 +25,8 @@ interface ParticipantInfo {
   uuid: string;
   memberId: string;
   memberName: string;
-  charge: number | null;
-  // status: string;
+  amount: number | null;
+  status: string;
 }
 
 // interface confirmPriceInfo {
@@ -181,7 +181,7 @@ const Dutchpay = () => {
 
     // 서버의 응답을 받을 구독 설정
     stompClient.subscribe(`/sub/dutch-room/${roomId}`, (message) => {
-      const response: Participant[] = JSON.parse(message.body); // 서버에서 받은 응답 메시지를 JSON으로 파싱
+      const response: ParticipantInfo[] = JSON.parse(message.body); // 서버에서 받은 응답 메시지를 JSON으로 파싱
       // console.log("Participants received:", response);
       
       // 필터링하여 필요한 정보만 포함하도록 가공
@@ -190,7 +190,8 @@ const Dutchpay = () => {
         uuid: participant.uuid,
         memberId: participant.memberId,
         memberName: participant.memberName,
-        charge: null, // 초기값은 null로 설정 (이후 설정 가능)
+        amount: null, // 초기값은 null로 설정 (이후 설정 가능)
+        status: participant.status
       }));
 
       // 서버 응답을 dutchParticipants 상태에 저장
@@ -239,7 +240,7 @@ const Dutchpay = () => {
 
     const confirmPriceList = dutchParticipants.map((participant) => ({
         memberId: participant.memberId,
-        price: participant.charge || 0, // charge 값이 null일 경우 0으로 대체
+        price: participant.amount || 0, // amount 값이 null일 경우 0으로 대체
     }));
 
     // 요청 바디 구조 정의

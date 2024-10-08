@@ -27,7 +27,7 @@ interface ParticipantProps {
     uuid: string;
     memberId: string;
     memberName: string;
-    charge: number | null;
+    amount: number | null;
     // status: string;
   }[])=>void
   participants: {
@@ -35,7 +35,7 @@ interface ParticipantProps {
     uuid: string;
     memberId: string;
     memberName: string;
-    charge: number | null; // 초기값은 null일 수 있도록 설정
+    amount: number | null; // 초기값은 null일 수 있도록 설정
     // status: string;
   }[];
   leaveRoom: () => void;
@@ -46,7 +46,7 @@ interface ParticipantProps {
 // interface Participant {
 //   name: string;
 //   id: number;
-//   charge: string;
+//   amount: string;
 // }
 
 const Participant = ({maxNum=null, roomId, setDutchParticipants, participants, leaveRoom, confirm, setProcess}: ParticipantProps) => {
@@ -58,11 +58,11 @@ const Participant = ({maxNum=null, roomId, setDutchParticipants, participants, l
   // const [participantPrice, setParticipantsPrice] = useState<number>(0) // 참가자 자동 배분 결제금
   // 테스트용 데이터_ 후에 지울 예정
   // const [participants, setParticipants] = useState<Participant[]>([
-  //   {name: '정유진', id:1, charge: '',
+  //   {name: '정유진', id:1, amount: '',
   //   },
-  //   {name: '이대현', id:2, charge: '',
+  //   {name: '이대현', id:2, amount: '',
   //   },
-  //   {name: '주수아', id:3, charge: '',
+  //   {name: '주수아', id:3, amount: '',
   //   },
   // ])
 
@@ -107,9 +107,9 @@ const Participant = ({maxNum=null, roomId, setDutchParticipants, participants, l
     // 금액 자동 분배하기
     participants.map((participant, index) => {
       if (index === 0) {
-        participant.charge = price - (participantPrice * ( participants.length -1 )) 
+        participant.amount = price - (participantPrice * ( participants.length -1 )) 
       } else {
-        participant.charge = participantPrice
+        participant.amount = participantPrice
       }
     })
   }
@@ -120,8 +120,8 @@ const Participant = ({maxNum=null, roomId, setDutchParticipants, participants, l
     let sumValue: number = 0
     // 결제 요청시 모든 참가자의 결제금 합이 총 금액(price)과 같은지 확인
     participants.map((participant) => {
-      if (participant.charge) {
-        sumValue += participant.charge
+      if (participant.amount) {
+        sumValue += participant.amount
       }
     })
 
@@ -129,29 +129,31 @@ const Participant = ({maxNum=null, roomId, setDutchParticipants, participants, l
       setShowWarning(true);  // 경고 메시지 표시
       setTimeout(() => setShowWarning(false), 1500);  // 3초 후 경고 메시지 숨김
     } else {
-      // 모든 charge가 입력된 경우 결제 요청 로직 수행
+      // 모든 amount가 입력된 경우 결제 요청 로직 수행
       console.log("결제 요청");
       if (setProcess) {
         setProcess(2)
       }
       confirm()
+
+      console.log('컨펌 후 확인용', participants)
     }
 
-    // // 결제 요청 시 모든 참가자의 charge가 입력되었는지 확인
-    // const isAnyChargeEmpty = participants.some(participant => participant.charge === '');
+    // // 결제 요청 시 모든 참가자의 amount가 입력되었는지 확인
+    // const isAnyamountEmpty = participants.some(participant => participant.amount === '');
 
-    // if (isAnyChargeEmpty) {
+    // if (isAnyamountEmpty) {
     //   setShowWarning(true);  // 경고 메시지 표시
     //   setTimeout(() => setShowWarning(false), 1500);  // 3초 후 경고 메시지 숨김
     // } else {
-    //   // 모든 charge가 입력된 경우 결제 요청 로직 수행
+    //   // 모든 amount가 입력된 경우 결제 요청 로직 수행
     //   console.log("결제 요청");
     // }
   }
 
-  const changeCharge = (index: number, value: number) => {
+  const changeAmount = (index: number, value: number) => {
     const updateParticipants = [...participants];
-    updateParticipants[index] = {...updateParticipants[index], charge:value};
+    updateParticipants[index] = {...updateParticipants[index], amount:value};
     setDutchParticipants(updateParticipants)
   }
    
@@ -206,7 +208,7 @@ const Participant = ({maxNum=null, roomId, setDutchParticipants, participants, l
 
               {/* 해당 사용자가 지불해야 할 금액 */}
               {/* 자동으로 n등분 해서 분배해줘야 함_안 나눠 떨어질 경우: 주최자를 제외한 모두에게 (전체 값//사람 수)값 적용. 주최자는 (전체 값-(참가자)*(n-1)) */}
-              {dutchStart&&<input value={Number(participant.charge)} onChange={(e)=>{changeCharge(index, Number(e.target.value))}} type="number" min="0"/> }
+              {dutchStart&&<input value={Number(participant.amount)} onChange={(e)=>{changeAmount(index, Number(e.target.value))}} type="number" min="0"/> }
             </PartiInfo>
           ))
         : true}
