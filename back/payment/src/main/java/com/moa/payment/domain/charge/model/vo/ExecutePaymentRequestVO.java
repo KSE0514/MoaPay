@@ -11,6 +11,7 @@ import java.util.UUID;
 @AllArgsConstructor
 @ToString
 public class ExecutePaymentRequestVO {
+    private UUID dutchPayId;
     private UUID requestId;
     private UUID orderId;
     private UUID merchantId;

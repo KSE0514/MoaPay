@@ -19,4 +19,5 @@ public class DutchPayCompliteVo {
 
     private String status;
     private UUID dutchUuid;
+    private UUID requestId;
 }

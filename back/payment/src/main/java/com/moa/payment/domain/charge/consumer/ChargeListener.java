@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.moa.payment.domain.charge.model.PaymentResultStatus;
 import com.moa.payment.domain.charge.model.dto.PaymentResultDto;
 import com.moa.payment.domain.charge.model.vo.*;
+import com.moa.payment.domain.charge.producer.KafkaProducer;
 import com.moa.payment.domain.charge.repository.ChargeRedisRepository;
 import com.moa.payment.domain.charge.service.ChargeService;
 import com.moa.payment.domain.notification.service.NotificationService;
@@ -25,13 +26,14 @@ public class ChargeListener {
     private final NotificationService notificationService;
     private final ObjectMapper objectMapper;
     private final KafkaTemplate<String, Map> kafkaTemplate;
+    private final KafkaProducer kafkaProducer;
 
     @KafkaListener(topics = "request.payment", groupId = "payments_consumer_group")
     public void executePayment(String message) {
         try {
             Map<String, Object> vo = objectMapper.readValue(message, Map.class);
             ExecutePaymentRequestVO executePaymentRequestVO = objectMapper.convertValue(vo, ExecutePaymentRequestVO.class);
-            log.info("get payment request : {}", executePaymentRequestVO.getRequestId());
+            log.info("get payment request : {}", executePaymentRequestVO.getDutchPayId());
 
             if (executePaymentRequestVO.getOperation().equals("PROGRESS")) {
                 ExecutePaymentResultVO resultVO = chargeService.executePayment(executePaymentRequestVO);
@@ -45,6 +47,19 @@ public class ChargeListener {
                     // 이어서 결제 결과를 가맹점에 전달
                     //TODO: 가맹점 헬프
                     //chargeService.sendResultToStore(executePaymentRequestVO.getOrderId(), resultVO);
+                } else {
+                    List<PaymentResultCardInfoVO> renewList = resultVO.getPaymentResultInfoList();
+                    log.info("더치페이 요청 캔슬");
+                    DutchPayCompliteVo dutchPayCompliteVo = DutchPayCompliteVo.builder()
+                            .requestId(executePaymentRequestVO.getRequestId())
+                            .dutchUuid(executePaymentRequestVO.getDutchPayId())
+                            .status("PROGRESS")
+                            .build();
+
+                    Map<String, Object> map = new HashMap<>();
+                    map.put("dutchpayList", dutchPayCompliteVo);
+
+                    kafkaProducer.send("tracking.dutchpay","2", map);
                 }
                 // 마지막으로 client에게 응답을 전송
                 PaymentResultDto resultDto = chargeService.makePaymentResultDto(resultVO, executePaymentRequestVO);

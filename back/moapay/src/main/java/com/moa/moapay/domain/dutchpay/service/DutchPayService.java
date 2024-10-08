@@ -37,4 +37,6 @@ public interface DutchPayService {
     void dutchpayComplite(DutchPayCompliteVo dutchPayCompliteVo);
 
     DutchRoomInfo getDutchRoomByMember(UUID memberId);
+
+    void cancelDutchRoom(DutchPayRoomLeaveDto roomLeaveDto);
 }

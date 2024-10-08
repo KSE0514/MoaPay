@@ -14,7 +14,7 @@ const PATH = {
   STATISTICS_BENEFITS: "benefits",
   STATISTICS_CONSUMPTION: "consumption",
   USER_CARD_LIST: "/card-list", //nonav
-  USER_CARD_DETAIL: "/card/:card_id", //nonav
+  USER_CARD_DETAIL: "/card/:id", //nonav
   DUTCHPAY: "/dutchpay", //nonav
   DUTCHINVITE: "/dutchpay/invite/:room_id", //nonav
   DUTCHPARTICIPATION: "/dutchpay/participation", //nonav
@@ -22,7 +22,7 @@ const PATH = {
   SELECT_TYPE: "/select-type",
   PAYMENT: "/payment", //nonav
   DUTCHOPEN: "/dutch-open", //nonav
-  SELECT_PAYMENT_TYPE: "/select-payment-type",
+  SELECT_PAYMENT_TYPE: "/select-payment-type/:orderId",
   ADD_CARD: "/add-card",
 } as const;
 
