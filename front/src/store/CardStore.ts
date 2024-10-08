@@ -1,11 +1,43 @@
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
 
+export interface payLog {
+  amount: number;
+  benefitBalance: number;
+  categoryId: string;
+  createTime: string;
+  merchantName: string;
+}
+
 export interface categoryData {
   category: string;
   money: number;
   per: number;
 }
+
+export const categoryImages: { [key: string]: string } = {
+  C0000: "ALL.png",
+  C0001: "간편결제.png",
+  C0002: "교육.png",
+  C0003: "교통.png",
+  C0004: "마트·편의점.png",
+  C0005: "미용.png",
+  C0006: "보험.png",
+  C0007: "생활.png",
+  C0008: "쇼핑.png",
+  C0009: "숙박.png",
+  C0010: "식비.png",
+  C0011: "연회비.png",
+  C0012: "온라인·쇼핑.png",
+  C0013: "의료.png",
+  C0014: "자동차.png",
+  C0015: "주거·통신.png",
+  C0016: "주유.png",
+  C0017: "취미.png",
+  C0018: "카페.png",
+  C0019: "항공·여행.png",
+  C0020: "해외.png",
+};
 
 // 혜택 인터페이스 정의
 export interface Benefit {
@@ -61,6 +93,8 @@ interface CardState {
   removeCard: (index: number) => void; // 카드 삭제 함수
   clearCards: () => void; // 카드 리스트 초기화 함수
   getCardByNumber: (cardNumber: string) => Card | undefined;
+  getCardByUuid: (uuid: string) => Card | undefined;
+  getCategoryImage: (categoryId: string) => string;
 }
 
 export const useCardStore = create<CardState>()(
@@ -171,6 +205,15 @@ export const useCardStore = create<CardState>()(
       getCardByNumber: (cardNumber: string) => {
         const { cardList } = get(); // 상태에서 cardList 가져오기
         return cardList.find((card) => card.cardNumber === cardNumber); // cardNumber로 찾기
+      },
+      getCardByUuid: (uuid: string) => {
+        const { cardList } = get(); // 상태에서 cardList 가져오기
+        return cardList.find((card) => card.uuid === uuid); // cardNumber로 찾기
+      },
+      getCategoryImage: (categoryId: string) => {
+        return categoryImages[categoryId]
+          ? `/assets/image/category/${categoryImages[categoryId]}`
+          : `/assets/image/category/ALL.png`; // 기본 이미지
       },
     }),
     {

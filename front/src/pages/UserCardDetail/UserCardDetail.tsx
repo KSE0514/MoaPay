@@ -19,13 +19,23 @@ import {
 } from "./UserCardDetail.styles";
 import { useAuthStore } from "../../store/AuthStore";
 import { useParams } from "react-router-dom";
-import { Card, useCardStore } from "../../store/CardStore";
+import { Card, payLog, useCardStore } from "../../store/CardStore";
 
 const UserCardDetail = () => {
   const { id } = useParams();
 
   const { accessToken } = useAuthStore();
+  const { getCardByUuid } = useCardStore();
   const [selectedCard, setSelectedCard] = useState<Card | undefined>(undefined);
+  const [payLogList, setPayLogList] = useState<payLog[] | undefined>(undefined);
+  const [payLogResult, setPayLogResult] = useState<{
+    cardId: string;
+    year: number;
+    month: number;
+    totalAmount: number;
+    totalBenefit: number;
+    paymentLogs: payLog;
+  }>();
 
   const currentYear = new Date().getFullYear(); // 현재 년도 가져오기
   const currentMonth = new Date().getMonth() + 1; // 월은 0부터 시작하기 때문에 +1
@@ -33,22 +43,25 @@ const UserCardDetail = () => {
   // 년도와 월을 state로 관리
   const [year, setYear] = useState<number>(currentYear);
   const [month, setMonth] = useState<number>(currentMonth);
-  const [rotate, setRotate] = useState<boolean>(false);
 
   const [isOpen, setIsOpen] = useState<boolean>(false);
   const [tempYear, setTempYear] = useState<number>(year);
   const [tempMonth, setTempMonth] = useState<number>(month);
   const [errorMessage, setErrorMessage] = useState<string>(""); // 오류 메시지 상태
 
-  useEffect(() => {}, []);
+  useEffect(() => {
+    if (id) {
+      setSelectedCard(getCardByUuid(id));
+    }
+  }, [id]); // id가 변경될 때만 useEffect 재실행
 
   // 카드별 결제 내역 조회(년, 월)
   const getCardHistory = async () => {
     console.log(year, month, id);
     try {
       const response = await axios.post(
-        // `api/moapay/core/card/history`,
-        `http://localhost:8765/moapay/core/card/history`,
+        `api/moapay/core/card/history`,
+        // `http://localhost:8765/moapay/core/card/history`,
         { cardId: id, year: year, month: month },
         {
           withCredentials: true,
@@ -59,8 +72,10 @@ const UserCardDetail = () => {
         }
       );
       if (response.status === 200) {
-        console.log(response);
+        console.log(response.data.data);
         console.log("카드 결제내역 조회 완료");
+        setPayLogList(response.data.data.paymentLogs);
+        setPayLogResult(response.data.data);
       }
     } catch (err) {
       console.error("에러 발생", err);
@@ -140,16 +155,6 @@ const UserCardDetail = () => {
     setErrorMessage(""); // 오류 메시지 초기화
   };
 
-  // 카드 가로, 세로 길이에 따른 회전 여부 판단 핸들러
-  const handleImageLoad = (
-    event: React.SyntheticEvent<HTMLImageElement, Event>
-  ) => {
-    const imgElement = event.currentTarget;
-    if (imgElement.naturalWidth < imgElement.naturalHeight) {
-      setRotate(true);
-    }
-  };
-
   return (
     <Wrapper>
       <BackImg>
@@ -194,30 +199,22 @@ const UserCardDetail = () => {
         </Month>
         <CardInfo>
           <img
-            src={selectedCard?.cardProduct.cardProductImgUrl}
-            onLoad={(event) => handleImageLoad(event)}
-            style={{
-              width: rotate ? "66.5px" : "105px",
-              height: rotate ? "105px" : "66.5px",
-              transform: rotate ? "rotate(-90deg)" : "none",
-              marginLeft: rotate ? "17.5px" : "0",
-            }}
+            src={`/assets/image/longWidth/신용카드이미지/${selectedCard?.cardProduct.cardProductImgUrl}.png`}
           />
           <div>
             <div>{selectedCard?.cardProduct.cardProductName}</div>
             <div>
-              실적: {selectedCard?.amount.toLocaleString()} /{" "}
+              실적: {payLogResult?.totalAmount.toLocaleString()} /{" "}
               {selectedCard?.cardProduct.cardProductPerformance.toLocaleString()}
             </div>
-            <div>
-              혜택: {selectedCard?.cardProduct.benefits?.toLocaleString()}원
-            </div>
+            <div>혜택: {payLogResult?.totalBenefit?.toLocaleString()}원</div>
           </div>
         </CardInfo>
       </Top>
       <Main>
-        <DetailPayLogList />
+        <DetailPayLogList payLogList={payLogList ?? []} />
       </Main>
+
       {/* <Bottom>
         <img src={bottomGD} />
       </Bottom> */}
