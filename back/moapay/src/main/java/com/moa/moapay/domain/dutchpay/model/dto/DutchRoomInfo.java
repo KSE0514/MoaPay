@@ -18,7 +18,7 @@ public class DutchRoomInfo {
     private UUID dutchUuid;
     private long memberCnt;
     // 가맹점, 상품 정보
-    private DutchStatus roomStatus;
+    private DutchStatus statusRoom;
     private UUID orderId;
     private UUID merchantId;
     private String merchantName;
