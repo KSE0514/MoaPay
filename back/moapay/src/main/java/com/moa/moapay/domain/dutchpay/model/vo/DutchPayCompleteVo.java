@@ -11,7 +11,7 @@ import java.util.UUID;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class DutchPayCompliteVo {
+public class DutchPayCompleteVo {
     private UUID orderId;
     private UUID merchantId;
     private List<PaymentCardInfoVO> paymentInfoList;
@@ -19,4 +19,5 @@ public class DutchPayCompliteVo {
 
     private String status;
     private UUID dutchUuid;
+    private UUID requestId;
 }

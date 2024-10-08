@@ -13,6 +13,7 @@ import java.util.UUID;
 @ToString
 public class DutchPayPaymentRequsetDto {
     // 더치페이 정보
+    private UUID dutchPayId;
     private UUID dutchRoomId;
     private UUID memberId;
 

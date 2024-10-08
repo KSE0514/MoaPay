@@ -35,6 +35,13 @@ public class OrderController {
         return ResponseEntity.status(resultResponse.getStatus()).body(resultResponse);
     }
 
+    @GetMapping("/simple/{orderId}")
+    public ResponseEntity<ResultResponse> getOrderSimple(@PathVariable("orderId") UUID orderId) {
+        GetSimpleOrderResponseDto responseDto = orderService.getSimpleOrder(orderId);
+        ResultResponse resultResponse = ResultResponse.of(HttpStatus.OK, "주문의 간략한 정보를 조회했습니다.", responseDto);
+        return ResponseEntity.status(resultResponse.getStatus()).body(resultResponse);
+    }
+
     // 주문 상세 조회, API 명세서 9행
     @GetMapping("/detail/{orderId}")
     public ResponseEntity<ResultResponse> getOrderDetail(@PathVariable("orderId") UUID orderId) {

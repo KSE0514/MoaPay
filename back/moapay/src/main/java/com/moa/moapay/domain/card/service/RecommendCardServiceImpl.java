@@ -260,7 +260,6 @@ public class RecommendCardServiceImpl implements RecommendCardService {
                 long mid = (left + right) / 2;
                 BenefitInfo benefitInfo = calculateTotalBenefit(myCard, validBenefitList, categoryId, mid);
                 double thisBenefit = benefitInfo.getTotalBenefit();
-                // todo : 혜택 천장 생각해서 실적처럼 이분탐색하도록 만들기
                 // 이번 실적이 remainedBenefit 이상인 경우, 최고점에 도달했다는 뜻
                 // 왼쪽 구역을 살펴봐야 한다
                 if (!isBenefitInfinite && (long) (thisBenefit) >= remainedBenefit) {
@@ -582,7 +581,6 @@ public class RecommendCardServiceImpl implements RecommendCardService {
             }
         }
         if (recommendList.isEmpty()) {
-            // todo : 실적이 다 채워진 경우 혜택 위주 매커니즘으로 계산하도록 하기
             // 이미 혜택으로 인해 계산한 결과가 없어서 실적으로 넘어온 거라면, 빈 배열 반환
             if (looped) {
                 return recommendList;

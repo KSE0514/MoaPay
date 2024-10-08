@@ -21,6 +21,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.event.TransactionalEventListener;
+import org.springframework.web.client.ResourceAccessException;
 import org.springframework.web.client.RestClient;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
@@ -91,11 +92,12 @@ public class ChargeServiceImpl implements ChargeService {
                 if (vo.getPaymentType().equals("DUTCHPAY")) {
                     log.info("더치페이 요청 캔슬");
                     DutchPayCompliteVo dutchPayCompliteVo = DutchPayCompliteVo.builder()
+                            .requestId(vo.getRequestId())
                             .paymentType(vo.getPaymentType())
                             .paymentInfoList(vo.getPaymentInfoList())
                             .orderId(vo.getOrderId())
                             .merchantId(vo.getMerchantId())
-                            .dutchUuid(vo.getRequestId())
+                            .dutchUuid(vo.getDutchPayId())
                             .status("PROGRESS")
                             .build();
 
@@ -132,7 +134,7 @@ public class ChargeServiceImpl implements ChargeService {
 
             PaymentLog savedPaymentLog = paymentLogRepository.save(paymentLog);
             // paymentLog 저장 후 updateTodayAmount 호출
-            savingService.updateTodayAmount(savedPaymentLog);
+//            savingService.updateTodayAmount(savedPaymentLog);
             // 저장에도 성공했다면 성공 리스트에 넣는다
             paymentResultInfoList.add(
                     PaymentResultCardInfoVO.builder()
@@ -157,11 +159,12 @@ public class ChargeServiceImpl implements ChargeService {
         if (vo.getPaymentType().equals("DUTCHPAY")) {
             log.info("더치페이 요청");
             DutchPayCompliteVo dutchPayCompliteVo = DutchPayCompliteVo.builder()
+                    .requestId(vo.getRequestId())
                     .paymentType(vo.getPaymentType())
                     .paymentInfoList(vo.getPaymentInfoList())
                     .orderId(vo.getOrderId())
                     .merchantId(vo.getMerchantId())
-                    .dutchUuid(vo.getRequestId())
+                    .dutchUuid(vo.getDutchPayId())
                     .status("DONE")
                     .build();
 
@@ -267,15 +270,15 @@ public class ChargeServiceImpl implements ChargeService {
                 .orderId(orderId)
                 .paymentInfo(paymentInfo)
                 .build();
-
-        ResponseEntity<Map> res = restClient.post()
-                .uri(storeUrl + "/payment/online/result")
-                .contentType(MediaType.APPLICATION_JSON)
-                .body(dto)
-                .retrieve()
-                .toEntity(Map.class);
-        if (!res.getStatusCode().is2xxSuccessful()) {
-            log.error("send result to store error - {}", res.getStatusCode());
+        try {
+            ResponseEntity<Map> res = restClient.post()
+                    .uri(storeUrl + "/payment/online/result")
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .body(dto)
+                    .retrieve()
+                    .toEntity(Map.class);
+        } catch(ResourceAccessException e) {
+            log.error("send result to store error");
         }
     }
 
