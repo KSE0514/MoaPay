@@ -212,7 +212,7 @@ public class DutchPayServiceImpl implements DutchPayService {
         ).collect(Collectors.toList());
 
         DutchRoomInfo dutchRoomInfo = DutchRoomInfo.builder()
-                .roomStatus(dutchRoom.getStatus())
+                .statusRoom(dutchRoom.getStatus())
                 .dutchUuid(dutchRoom.getUuid())
                 .categoryId(dutchRoom.getCategoryId())
                 .memberCnt(dutchRoom.getCurPerson())
@@ -376,7 +376,7 @@ public class DutchPayServiceImpl implements DutchPayService {
         ).toList();
 
         DutchRoomInfo dutchRoomInfoByMemberId = DutchRoomInfo.builder()
-                .roomStatus(dutchRoom.getStatus())
+                .statusRoom(dutchRoom.getStatus())
                 .dutchUuid(dutchRoom.getUuid())
                 .categoryId(dutchRoom.getCategoryId())
                 .memberCnt(dutchRoom.getCurPerson())
@@ -426,7 +426,7 @@ public class DutchPayServiceImpl implements DutchPayService {
         ).collect(Collectors.toList());
 
         DutchRoomInfo roomInfo = DutchRoomInfo.builder()
-                .roomStatus(dutchRoom.getStatus())
+                .statusRoom(dutchRoom.getStatus())
                 .merchantName(dutchRoom.getMerchantName())
                 .memberCnt(dutchRoom.getCurPerson())
                 .merchantId(dutchRoom.getMerchantId())
