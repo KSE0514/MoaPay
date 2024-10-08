@@ -50,6 +50,7 @@ public class ChargeListener {
                     List<PaymentResultCardInfoVO> renewList = resultVO.getPaymentResultInfoList();
                     log.info("더치페이 요청 캔슬");
                     DutchPayCompliteVo dutchPayCompliteVo = DutchPayCompliteVo.builder()
+                            .requestId(executePaymentRequestVO.getRequestId())
                             .dutchUuid(executePaymentRequestVO.getDutchPayId())
                             .status("PROGRESS")
                             .build();

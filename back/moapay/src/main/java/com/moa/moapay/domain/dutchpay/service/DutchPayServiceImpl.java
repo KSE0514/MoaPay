@@ -5,10 +5,12 @@ import com.moa.moapay.domain.dutchpay.entity.DutchRoom;
 import com.moa.moapay.domain.dutchpay.entity.DutchStatus;
 import com.moa.moapay.domain.dutchpay.model.dto.*;
 import com.moa.moapay.domain.dutchpay.model.vo.DutchPayCompliteVo;
+import com.moa.moapay.domain.dutchpay.repository.DutchPayRedisRepository;
 import com.moa.moapay.domain.dutchpay.repository.DutchPayRepository;
 import com.moa.moapay.domain.dutchpay.repository.DutchRoomRepository;
 import com.moa.moapay.domain.generalpay.model.dto.ExecuteDutchPayRequestDto;
 import com.moa.moapay.domain.generalpay.model.dto.ExecuteGeneralPayRequestDto;
+import com.moa.moapay.domain.generalpay.model.vo.PaymentCardInfoVO;
 import com.moa.moapay.domain.generalpay.service.GeneralPayService;
 import com.moa.moapay.global.exception.BusinessException;
 import jakarta.persistence.EntityNotFoundException;
@@ -16,11 +18,15 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.autoconfigure.http.HttpMessageConverters;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.client.RestClient;
 
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
@@ -36,6 +42,8 @@ public class DutchPayServiceImpl implements DutchPayService {
     private final HttpMessageConverters messageConverters;
     private final GeneralPayService generalPayService;
     private final FCMService fcmService;
+    private final DutchPayRedisRepository dutchPayRedisRepository;
+    private final RestClient restClient;
 
     @Override
     @Transactional
@@ -86,8 +94,8 @@ public class DutchPayServiceImpl implements DutchPayService {
             throw new BusinessException(HttpStatus.NOT_EXTENDED, "수용인원 초과");
         }
         // 이미 진행중인 방
-        if(existingRoom.getStatus().equals(DutchStatus.PROGRESS)) {
-            throw new BusinessException(HttpStatus.NOT_EXTENDED, "이미 더치페이 진행중인 방입니다");
+        if(!existingRoom.getStatus().equals(DutchStatus.READY)) {
+            throw new BusinessException(HttpStatus.NOT_EXTENDED, "더치페이 방에 입장할 수 없습니다");
         }
 
         DutchPay dutchPay = DutchPay.builder().memberId(dutchPayRoomJoinDto.getMemberId())
@@ -261,9 +269,24 @@ public class DutchPayServiceImpl implements DutchPayService {
 
             for(DutchPay dutchPay : dutchPayList){
                 if(dutchPay.getPayStatus().equals(DutchStatus.DONE)){
+
+                    String requestId = dutchPayRedisRepository.getToken(dutchUuid.toString());
+                    UUID.fromString(requestId);
+
+                    List<PaymentCardInfoVO> paymentInfoList = dutchPayCompliteVo.getPaymentInfoList();
                     // 취소 요청
-                    // 여기서는 UUID로 취소 요청 하면 될듯
-                    generalPayService.dutchCancel(dutchPay.getUuid());
+                    DutchCancelDto dutchCancelDto = DutchCancelDto.builder()
+                            .paymentId(dutchPayCompliteVo.getRequestId())
+                            .cardId(paymentInfoList.get(0).getCardId())
+                            .cardNumber(paymentInfoList.get(0).getCardNumber())
+                            .cvc(paymentInfoList.get(0).getCvc())
+                            .build();
+                    ResponseEntity<Map> paymentResponse = restClient.post()
+                            .uri("localhost:18010/moapay/pay/charge/cancel")
+                            .contentType(MediaType.APPLICATION_JSON)
+                            .body(dutchCancelDto)
+                            .retrieve()
+                            .toEntity(Map.class);
                 }
                 //TODO : 이거 바꿔야해
                 dutchPayRepository.updateByDutchUuid(dutchPay.getUuid(), DutchStatus.CANCEL);
@@ -274,7 +297,6 @@ public class DutchPayServiceImpl implements DutchPayService {
                         .build();
                 fcmService.pushNotification(fcm);
             }
-            return;
         }
         else if(status.equals("PROGRESS")){
             // 결제 요청 다시
@@ -294,6 +316,8 @@ public class DutchPayServiceImpl implements DutchPayService {
 
             List<DutchPay> dutchPayList = byDutchUuid.getDutchPayList();
             DutchPay dutchPayMember = dutchPayRepository.findByUuid(dutchUuid);
+
+            dutchPayRedisRepository.save(dutchUuid.toString(), dutchPayCompliteVo.getRequestId().toString());
 
             boolean flag = true;
             for (DutchPay dutchPay : dutchPayList) { // 해당 더치 내역 다돌면서

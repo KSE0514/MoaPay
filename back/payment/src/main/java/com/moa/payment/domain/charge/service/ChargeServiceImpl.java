@@ -91,6 +91,7 @@ public class ChargeServiceImpl implements ChargeService {
                 if (vo.getPaymentType().equals("DUTCHPAY")) {
                     log.info("더치페이 요청 캔슬");
                     DutchPayCompliteVo dutchPayCompliteVo = DutchPayCompliteVo.builder()
+                            .requestId(vo.getRequestId())
                             .paymentType(vo.getPaymentType())
                             .paymentInfoList(vo.getPaymentInfoList())
                             .orderId(vo.getOrderId())
@@ -157,6 +158,7 @@ public class ChargeServiceImpl implements ChargeService {
         if (vo.getPaymentType().equals("DUTCHPAY")) {
             log.info("더치페이 요청");
             DutchPayCompliteVo dutchPayCompliteVo = DutchPayCompliteVo.builder()
+                    .requestId(vo.getRequestId())
                     .paymentType(vo.getPaymentType())
                     .paymentInfoList(vo.getPaymentInfoList())
                     .orderId(vo.getOrderId())
