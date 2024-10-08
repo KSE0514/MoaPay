@@ -73,6 +73,14 @@ public class DutchPayController {
         return ResponseEntity.status(resultResponse.getStatus()).body(resultResponse);
     }
 
+    @PostMapping("/cancel")
+    public ResponseEntity<?> cancelDutchPay(@RequestParam DutchPayRoomLeaveDto roomLeaveDto) {
+
+        dutchPayService.cancelDutchRoom(roomLeaveDto);
+
+        return null;
+    }
+
     /**
      * 더치페이 완료 전송용 sse
      * @param id

@@ -7,6 +7,7 @@ import com.moa.moapay.domain.dutchpay.model.dto.*;
 import com.moa.moapay.domain.dutchpay.model.vo.DutchPayCompliteVo;
 import com.moa.moapay.domain.dutchpay.repository.DutchPayRepository;
 import com.moa.moapay.domain.dutchpay.repository.DutchRoomRepository;
+import com.moa.moapay.domain.generalpay.model.dto.ExecuteDutchPayRequestDto;
 import com.moa.moapay.domain.generalpay.model.dto.ExecuteGeneralPayRequestDto;
 import com.moa.moapay.domain.generalpay.service.GeneralPayService;
 import com.moa.moapay.global.exception.BusinessException;
@@ -220,10 +221,11 @@ public class DutchPayServiceImpl implements DutchPayService {
     @Transactional
     public void dutchpayPayment(DutchPayPaymentRequsetDto dutchPayPaymentRequsetDto) {
 
-        DutchPay dutchPay = dutchPayRepository.findByUuid(dutchPayPaymentRequsetDto.getRequestId());
+        DutchPay dutchPay = dutchPayRepository.findByUuid(dutchPayPaymentRequsetDto.getDutchPayId());
 
         if(dutchPay.getPayStatus().equals(DutchStatus.READY)) {
-            ExecuteGeneralPayRequestDto executeGeneralPayRequestDto = ExecuteGeneralPayRequestDto.builder()
+            ExecuteDutchPayRequestDto executeGeneralPayRequestDto = ExecuteDutchPayRequestDto.builder()
+                    .dutchPayId(dutchPay.getUuid())
                     .requestId(dutchPayPaymentRequsetDto.getRequestId())
                     .cvc(dutchPayPaymentRequsetDto.getCvc())
                     .cardNumber(dutchPayPaymentRequsetDto.getCardNumber())
@@ -234,7 +236,7 @@ public class DutchPayServiceImpl implements DutchPayService {
                     .orderId(dutchPayPaymentRequsetDto.getOrderId())
                     .build();
 
-            generalPayService.executeGeneralPay(executeGeneralPayRequestDto);
+            generalPayService.executeDutchPay(executeGeneralPayRequestDto);
             dutchPayRepository.updateStatus(dutchPayPaymentRequsetDto.getMemberId(),dutchPayPaymentRequsetDto.getDutchRoomId(),DutchStatus.PROGRESS);
         } else {
             throw new BusinessException(HttpStatus.ALREADY_REPORTED, "이미 결제요청이 진행중입니다.");
@@ -254,6 +256,7 @@ public class DutchPayServiceImpl implements DutchPayService {
         DutchRoom byDutchUuid = dutchRoomRepository.findByDutchUuid(dutchUuid);
 
         if(status.equals("CANCEL")){
+            // 지금은 안쓰는 로직
             List<DutchPay> dutchPayList = byDutchUuid.getDutchPayList();
 
             for(DutchPay dutchPay : dutchPayList){
@@ -275,13 +278,15 @@ public class DutchPayServiceImpl implements DutchPayService {
         }
         else if(status.equals("PROGRESS")){
             // 결제 요청 다시
-            FCMMessageDto fcm = FCMMessageDto.builder()
-                    .memberId(byUuid.getMemberId())
-                    .title("MoaPay")
-                    .message("결제 실패")
-                    .build();
-            fcmService.pushNotification(fcm);
+//            FCMMessageDto fcm = FCMMessageDto.builder()
+//                    .memberId(byUuid.getMemberId())
+//                    .title("MoaPay")
+//                    .message("결제 실패")
+//                    .build();
+//            fcmService.pushNotification(fcm);
 
+            log.info("결제 실패");
+            dutchPayRepository.updateByDutchUuid(dutchUuid, DutchStatus.READY);
         }
         else if(status.equals("DONE")){
             // 결제 상태 변경
@@ -361,10 +366,19 @@ public class DutchPayServiceImpl implements DutchPayService {
 
     @Override
     @Transactional
+    public void cancelDutchRoom(DutchPayRoomLeaveDto roomLeaveDto) {
+        UUID dutchUuid = roomLeaveDto.getRoomId();
+        DutchRoom byDutchUuid = dutchRoomRepository.findByUuid(dutchUuid);
+
+
+    }
+
+    @Override
+    @Transactional
     public void extracted(UUID roomId, List<ConfirmPriceDto> dutchPayDtoList) {
         // 더치 페이 정보 수정
         for(ConfirmPriceDto confirmPriceDto : dutchPayDtoList) {
-            dutchPayRepository.updateAmountByMemberId(confirmPriceDto.getPrice(), confirmPriceDto.getMemberId(), roomId, DutchStatus.PROGRESS);
+            dutchPayRepository.updateAmountByMemberId(confirmPriceDto.getPrice(), confirmPriceDto.getMemberId(), roomId, DutchStatus.READY);
         }
     }
 

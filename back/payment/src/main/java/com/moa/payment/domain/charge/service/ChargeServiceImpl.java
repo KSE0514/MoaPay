@@ -95,7 +95,7 @@ public class ChargeServiceImpl implements ChargeService {
                             .paymentInfoList(vo.getPaymentInfoList())
                             .orderId(vo.getOrderId())
                             .merchantId(vo.getMerchantId())
-                            .dutchUuid(vo.getRequestId())
+                            .dutchUuid(vo.getDutchPayId())
                             .status("PROGRESS")
                             .build();
 
@@ -132,7 +132,7 @@ public class ChargeServiceImpl implements ChargeService {
 
             PaymentLog savedPaymentLog = paymentLogRepository.save(paymentLog);
             // paymentLog 저장 후 updateTodayAmount 호출
-            savingService.updateTodayAmount(savedPaymentLog);
+//            savingService.updateTodayAmount(savedPaymentLog);
             // 저장에도 성공했다면 성공 리스트에 넣는다
             paymentResultInfoList.add(
                     PaymentResultCardInfoVO.builder()
@@ -161,7 +161,7 @@ public class ChargeServiceImpl implements ChargeService {
                     .paymentInfoList(vo.getPaymentInfoList())
                     .orderId(vo.getOrderId())
                     .merchantId(vo.getMerchantId())
-                    .dutchUuid(vo.getRequestId())
+                    .dutchUuid(vo.getDutchPayId())
                     .status("DONE")
                     .build();
 
