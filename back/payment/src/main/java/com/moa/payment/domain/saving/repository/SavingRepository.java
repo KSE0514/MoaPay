@@ -1,5 +1,6 @@
 package com.moa.payment.domain.saving.repository;
 
+import java.util.Optional;
 import java.util.UUID;
 
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -8,5 +9,5 @@ import com.moa.payment.domain.saving.entity.Saving;
 
 @Repository
 public interface SavingRepository extends JpaRepository<Saving,Long> {
-	Saving findByMemberId(UUID memberId);
+	Optional<Saving> findByMemberId(UUID memberId);
 }
