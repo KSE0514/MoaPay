@@ -1,5 +1,6 @@
 package com.moa.moapay.domain.dutchpay.model.dto;
 
+import com.moa.moapay.domain.dutchpay.entity.DutchStatus;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -17,6 +18,7 @@ public class DutchRoomInfo {
     private UUID dutchUuid;
     private long memberCnt;
     // 가맹점, 상품 정보
+    private DutchStatus roomStatus;
     private UUID orderId;
     private UUID merchantId;
     private String merchantName;
