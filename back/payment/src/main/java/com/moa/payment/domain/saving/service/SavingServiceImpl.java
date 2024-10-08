@@ -12,6 +12,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpMethod;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
@@ -27,6 +28,7 @@ import com.moa.payment.domain.saving.entity.dto.LimitRequestDto;
 import com.moa.payment.domain.saving.entity.dto.SetSavingRequestDto;
 import com.moa.payment.domain.saving.entity.dto.UpdateDailyRequestDto;
 import com.moa.payment.domain.saving.repository.SavingRepository;
+import com.moa.payment.global.exception.BusinessException;
 
 import lombok.RequiredArgsConstructor;
 
@@ -46,7 +48,8 @@ public class SavingServiceImpl implements SavingService{
 	@Override
 	@Transactional
 	public void setLimit(LimitRequestDto dto){
-		Saving saving=savingRepository.findByMemberId(dto.getMemberId());
+		Saving saving=savingRepository.findByMemberId(dto.getMemberId()).orElseThrow(()-> new BusinessException(
+			HttpStatus.NOT_FOUND,"해당 멤버의 절약 정보를 찾을 수 없습니다."));
 		saving.updateLimit(dto.getLimitAmount());
 		savingRepository.save(saving);
 	}
@@ -144,7 +147,8 @@ public class SavingServiceImpl implements SavingService{
 	@Override
 	@Transactional
 	public void updateDaily(UpdateDailyRequestDto dto){
-		Saving saving = savingRepository.findByMemberId(dto.getMemberId());
+		Saving saving = savingRepository.findByMemberId(dto.getMemberId()).orElseThrow(()-> new BusinessException(
+			HttpStatus.NOT_FOUND,"해당 멤버의 절약 정보를 찾을 수 없습니다."));;
 		Long todayAmount=saving.getTodayAmount();
 		saving.updateDaily(todayAmount);
 		saving.resetTodayAmount();
@@ -160,7 +164,8 @@ public class SavingServiceImpl implements SavingService{
 		UUID cardId = paymentLog.getCardId();
 		UUID memberId = getMemberId(cardId);
 		System.out.println("멤버:"+memberId);
-		Saving saving = savingRepository.findByMemberId(memberId);
+		Saving saving = savingRepository.findByMemberId(memberId).orElseThrow(()-> new BusinessException(
+			HttpStatus.NOT_FOUND,"해당 멤버의 절약 정보를 찾을 수 없습니다."));;
 		System.out.println("방금 쓴 금액:"+amount);
 		saving.updateTodayAmount(amount);
 		savingRepository.save(saving);
@@ -168,7 +173,8 @@ public class SavingServiceImpl implements SavingService{
 
 	@Override
 	public GetSavingResponseDto getSaving(UUID memberId){
-		Saving saving=savingRepository.findByMemberId(memberId);
+		Saving saving=savingRepository.findByMemberId(memberId).orElseThrow(()-> new BusinessException(
+			HttpStatus.NOT_FOUND,"해당 멤버의 절약 정보를 찾을 수 없습니다."));;
 		GetSavingResponseDto savingDto = GetSavingResponseDto.builder()
 			.todayAmount(saving.getTodayAmount())
 			.amount(saving.getAmount())
