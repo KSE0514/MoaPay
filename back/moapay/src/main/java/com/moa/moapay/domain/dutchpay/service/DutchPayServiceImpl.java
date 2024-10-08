@@ -100,7 +100,7 @@ public class DutchPayServiceImpl implements DutchPayService {
 
         DutchPay dutchPay = DutchPay.builder().memberId(dutchPayRoomJoinDto.getMemberId())
                 .memberName(dutchPayRoomJoinDto.getMemberName())
-                .payStatus(DutchStatus.READY)
+                .payStatus(DutchStatus.JOIN)
                 .roomEntity(existingRoom)
                 .uuid(UUID.randomUUID())
                 .isManager(isManager)
