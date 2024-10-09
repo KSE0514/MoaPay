@@ -41,6 +41,14 @@ public class DutchPayController {
         return ResponseEntity.status(resultResponse.getStatus()).body(resultResponse);
     }
 
+    @GetMapping("/orderInfo/{orderId}")
+    public ResponseEntity<ResultResponse> getOrderInfo(@PathVariable UUID orderId) {
+        log.info("Getting Dutch pay order info");
+        SimpleOrderInfoDto orderInfo = dutchPayService.getSimpleOrderInfoFromRedis(orderId);
+        ResultResponse resultResponse = ResultResponse.of(HttpStatus.OK, "더치페이 결제 정보 조회", orderInfo);
+        return ResponseEntity.status(resultResponse.getStatus()).body(resultResponse);
+    }
+
     @PostMapping("/payment")
     public ResponseEntity<?> payment(@Valid @RequestBody DutchPayPaymentRequsetDto dutchPayPaymentRequsetDto) {
         log.info("Payment request: {}", dutchPayPaymentRequsetDto);
@@ -72,6 +80,9 @@ public class DutchPayController {
         ResultResponse resultResponse = ResultResponse.of(HttpStatus.OK, "맴버아이디로 더치페이 방 정보 조회", dutchRoomByMember);
         return ResponseEntity.status(resultResponse.getStatus()).body(resultResponse);
     }
+
+//    @PostMapping("/getMyPrice")
+//    public ResponseEntity<?> getMyPrice(@Valid @RequestBody )
 
     @PostMapping("/cancel")
     public ResponseEntity<?> cancelDutchPay(@RequestParam DutchPayRoomLeaveDto roomLeaveDto) {

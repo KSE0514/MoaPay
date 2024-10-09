@@ -19,7 +19,7 @@ import java.util.UUID;
 @MessageMapping("/dutchpay")
 @RequiredArgsConstructor
 @Slf4j
-public class DurchStompController {
+public class DutchStompController {
 
     private final DutchPayService dutchPayService;
     private final SimpMessagingTemplate messagingTemplate;

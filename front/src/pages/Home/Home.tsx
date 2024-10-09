@@ -1,5 +1,10 @@
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faRepeat, faBars, faPlus } from "@fortawesome/free-solid-svg-icons";
+import {
+  faRepeat,
+  faBars,
+  faPlus,
+  faRotateLeft,
+} from "@fortawesome/free-solid-svg-icons";
 import {
   Top,
   Bottom,
@@ -445,7 +450,7 @@ const Home = () => {
                 faRefreshBarCord();
               }}
             >
-              <FontAwesomeIcon icon={faRepeat} />
+              <FontAwesomeIcon icon={faRotateLeft} />
             </button>
           </Time>
         </BarcordArea>

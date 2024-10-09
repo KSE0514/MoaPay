@@ -2,6 +2,7 @@ package com.moa.payment.domain.saving.controller;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -52,5 +53,13 @@ public class SavingController {
 		ResultResponse resultResponse = ResultResponse.of(HttpStatus.OK, "일별 지출 업데이트 완료");
 		return ResponseEntity.status(resultResponse.getStatus()).body(resultResponse);
 	}
+
+	@GetMapping("/resetSaving")
+	public ResponseEntity<ResultResponse> resetSaving() {
+		savingService.resetSaving();
+		ResultResponse resultResponse = ResultResponse.of(HttpStatus.OK, "모든 멤버 saving 초기화 완료");
+		return ResponseEntity.status(resultResponse.getStatus()).body(resultResponse);
+	}
+
 
 }

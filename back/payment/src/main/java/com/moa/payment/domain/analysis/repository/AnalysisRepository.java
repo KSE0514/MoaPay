@@ -19,4 +19,6 @@ public interface AnalysisRepository extends JpaRepository<Analysis, Long> {
 		@Param("month") int month,
 		@Param("gender") Gender gender,
 		@Param("generation") String generation);
+
+
 }

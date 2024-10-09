@@ -21,6 +21,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.event.TransactionalEventListener;
+import org.springframework.web.client.ResourceAccessException;
 import org.springframework.web.client.RestClient;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
@@ -269,15 +270,15 @@ public class ChargeServiceImpl implements ChargeService {
                 .orderId(orderId)
                 .paymentInfo(paymentInfo)
                 .build();
-
-        ResponseEntity<Map> res = restClient.post()
-                .uri(storeUrl + "/payment/online/result")
-                .contentType(MediaType.APPLICATION_JSON)
-                .body(dto)
-                .retrieve()
-                .toEntity(Map.class);
-        if (!res.getStatusCode().is2xxSuccessful()) {
-            log.error("send result to store error - {}", res.getStatusCode());
+        try {
+            ResponseEntity<Map> res = restClient.post()
+                    .uri(storeUrl + "/payment/online/result")
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .body(dto)
+                    .retrieve()
+                    .toEntity(Map.class);
+        } catch(ResourceAccessException e) {
+            log.error("send result to store error");
         }
     }
 

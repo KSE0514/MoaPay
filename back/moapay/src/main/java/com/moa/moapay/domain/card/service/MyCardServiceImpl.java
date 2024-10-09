@@ -51,13 +51,13 @@ public class MyCardServiceImpl implements MyCardService {
 
     @Value("${external-url.payment}")
     private String paymentUrl;
+
     private final ObjectMapper objectMapper;
 
 	@Override
-	public List<MyCardInfoDto> getMyCardInfo(HttpServletRequest request) {
+	public List<MyCardInfoDto> getMyCardInfo(UUID memberId) {
 		// todo: 여기서 쿠키를 뜯어서 UUID 찾기
 		// 이건 테스트용
-		UUID memberId = UUID.fromString("550e8400-e29b-41d4-a716-446655440000");
 
 		List<MyCard> myCards = myCardQueryRepository.findAllByMemberIdWithBenefits(memberId);
 
@@ -161,12 +161,8 @@ public class MyCardServiceImpl implements MyCardService {
 	@Override
 	@Transactional
 	public List<GetMyCardsResponseDto> getMyCardFromCardBank(GetMyCardsRequestDto getMyCardsRequestDto) {
-
-		// TODO : 맴버 인증 과정 추가 내 카드목록 마이데이터 불러오기전
-
 		// 카드 뱅크에서 내 카드 목록을 가져오기 위한 REST API 호출
 		ResponseEntity<GetMyCardDtoWrapper> responseEntity = restClient.post()
-			// TODO: 주소 변경
 			.uri(cardbankUrl + "/card/getMyCards")
 			.contentType(MediaType.APPLICATION_JSON)
 			.body(getMyCardsRequestDto)
@@ -282,7 +278,6 @@ public class MyCardServiceImpl implements MyCardService {
 
 		try {
 			ResponseEntity<CardRestWrapperDto> responseEntity = restClient.post()
-				//TODO: 주소 변경
 				.uri(cardbankUrl + "/card/registration")
 				.contentType(MediaType.APPLICATION_JSON)
 				.body(registrationRequestDto)
@@ -427,6 +422,18 @@ public class MyCardServiceImpl implements MyCardService {
             throw new BusinessException(HttpStatus.BAD_REQUEST, "결과를 가져올 수 없었습니다 : " + response.getBody().get("message"));
         }
         return objectMapper.convertValue(response.getBody().get("data"), CardHistoryResponseDto.class);
+    }
+
+    @Override
+    public GetMyCardIdsResponseDto getMyCardIds(UUID memberId) {
+        List<UUID> cardsIds = myCardQueryRepository.findAllCardIdsByMemberId(memberId);
+        if (cardsIds.isEmpty()) {
+            throw new BusinessException(HttpStatus.NOT_FOUND, "마이 카드에 등록된 카드가 없습니다.");
+        }
+        return GetMyCardIdsResponseDto.builder()
+            .myCardIds(cardsIds)
+            .memberId(memberId)
+            .build();
     }
 
 	@Override
