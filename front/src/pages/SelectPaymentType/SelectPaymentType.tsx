@@ -169,7 +169,7 @@ const SelectPaymentType = () => {
     if (QRCode) {
       localStorage.setItem("QRCode", QRCode);
     }
-    settingStoreRequestId();
+    setRequestId(settingStoreRequestId());
   }, [orderId, totalPrice, categoryId, merchantId, QRCode]);
   /**
    *
