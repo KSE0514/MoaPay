@@ -437,6 +437,7 @@ public class DutchPayServiceImpl implements DutchPayService {
     @Override
     @Transactional
     public DutchRoomInfo getDutchRoomInfo(UUID roomId) {
+        log.info("roomID : {}", roomId.toString());
         DutchRoom dutchRoom = dutchRoomRepository.findByRoomId(roomId);
 
         List<DutchPay> dutchPayList = dutchRoom.getDutchPayList();
