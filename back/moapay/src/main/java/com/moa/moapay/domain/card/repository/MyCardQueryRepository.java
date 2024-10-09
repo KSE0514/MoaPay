@@ -35,7 +35,7 @@ public class MyCardQueryRepository {
                 .join(myCard.cardProduct, cardProduct).fetchJoin()
                 .join(cardProduct.benefits, cardBenefit).fetchJoin()
                 .join(cardBenefit.cardBenefitCategory, benefitCategory).fetchJoin()
-                .where(myCard.memberId.eq(memberId))
+                .where(myCard.memberId.eq(memberId).and(myCard.cardStatus.eq(true)))
                 .fetch();
     }
 

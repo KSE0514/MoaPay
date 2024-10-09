@@ -9,7 +9,7 @@ import java.util.UUID;
 
 
 public interface MyCardService {
-    List<MyCardInfoDto> getMyCardInfo(HttpServletRequest request);
+    List<MyCardInfoDto> getMyCardInfo(UUID memberId);
     List<CardInfoResponseDto> getAllCard();
 
     List<GetMyCardsResponseDto> getMyCardFromCardBank(GetMyCardsRequestDto getMyCardsRequestDto);
@@ -21,6 +21,7 @@ public interface MyCardService {
     void ableCard(MyCardStatusRequestDto ableCardRequestDto);
 
     UUID getMemberId(UUID cardId);
+    List<GetMemberCardsDto> getMemberCard(UUID memberId);
 
     CardHistoryResponseDto getCardHistory(CardHistoryRequestDto cardHistoryRequestDto);
     GetMyCardIdsResponseDto getMyCardIds(UUID memberId);

@@ -1,7 +1,7 @@
 package com.moa.moapay.domain.dutchpay.service;
 
-import com.moa.moapay.domain.dutchpay.entity.DutchRoom;
 import com.moa.moapay.domain.dutchpay.model.dto.*;
+import com.moa.moapay.domain.dutchpay.model.vo.DutchPayCompleteVo;
 import jakarta.validation.Valid;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -33,5 +33,12 @@ public interface DutchPayService {
 
     void dutchpayPayment(@Valid DutchPayPaymentRequsetDto dutchPayPaymentRequsetDto);
 
-    void dutchpayComplite();
+    void dutchpayComplite(DutchPayCompleteVo dutchPayCompleteVo);
+
+    DutchRoomInfo getDutchRoomByMember(UUID memberId);
+
+    void cancelDutchRoom(DutchPayRoomLeaveDto roomLeaveDto);
+
+    SimpleOrderInfoDto getSimpleOrderInfoFromStore(UUID orderId);
+    SimpleOrderInfoDto getSimpleOrderInfoFromRedis(UUID orderId);
 }
