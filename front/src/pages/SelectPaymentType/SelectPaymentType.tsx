@@ -193,7 +193,7 @@ const SelectPaymentType = () => {
       //페이먼트 연결
       const eventSource = new EventSource(
         // `http://localhost:18010/moapay/pay/notification/subscribe/${requestId}}`
-        `https://j11c201.p.ssafy.io/api/moapay/pay/notification/subscribe/${requestId}}`
+        `https://j11c201.p.ssafy.io/api/moapay/pay/notification/subscribe/${requestId}`
       );
 
       //페이 연결 열기
