@@ -69,28 +69,28 @@ public class PaymentLog {
     @Column(name = "update_time")
     private LocalDateTime updateTime;
 
-//     @PrePersist
-//     private void prePersist() {
-// //        this.uuid = Generators.timeBasedEpochGenerator().generate();
-//         LocalDateTime now = LocalDateTime.now();
-//         this.createTime = now;
-//         this.updateTime = now;
-//     }
-//
-//     @PreUpdate
-//     private void preUpdate() {
-//         this.updateTime = LocalDateTime.now();
-//     }
-@PrePersist
-private void prePersist() {
-    this.createTime = getRandomNovemberDate();
-    this.updateTime = this.createTime;
-}
+     @PrePersist
+     private void prePersist() {
+ //        this.uuid = Generators.timeBasedEpochGenerator().generate();
+         LocalDateTime now = LocalDateTime.now();
+         this.createTime = now;
+         this.updateTime = now;
+     }
 
-    @PreUpdate
-    private void preUpdate() {
-        this.updateTime = getRandomNovemberDate();
-    }
+     @PreUpdate
+     private void preUpdate() {
+         this.updateTime = LocalDateTime.now();
+     }
+//@PrePersist
+//private void prePersist() {
+//    this.createTime = getRandomNovemberDate();
+//    this.updateTime = this.createTime;
+//}
+//
+//    @PreUpdate
+//    private void preUpdate() {
+//        this.updateTime = getRandomNovemberDate();
+//    }
 
     private LocalDateTime getRandomNovemberDate() {
         // 2023년 11월 1일 00:00:00 ~ 2023년 11월 30일 23:59:59 사이의 랜덤한 날짜와 시간 생성
