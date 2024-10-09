@@ -69,6 +69,7 @@ const RegisterCard: React.FC = () => {
     try {
       const response = await axios.post(
         // `${baseUrl}moapay/core/card/registration`,
+        // `https://j11c201.p.ssafy.io/api/moapay/core/card/registration`,
         `/api/moapay/core/card/registration`,
         {
           memberUuid: id,

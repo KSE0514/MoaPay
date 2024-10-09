@@ -165,7 +165,7 @@ const SelectPaymentType = () => {
     //페이먼트 연결
     const eventSource = new EventSource(
       // `http://localhost:18010/moapay/pay/notification/subscribe/${requestId}}`
-      `/api/moapay/pay/notification/subscribe/${requestId}}`
+      `https://j11c201.p.ssafy.io/api/moapay/pay/notification/subscribe/${requestId}}`
     );
 
     //페이 연결 열기
@@ -231,6 +231,7 @@ const SelectPaymentType = () => {
       try {
         setIsLoading(true);
         const response = await axios.post(
+          // `https://j11c201.p.ssafy.io/api/moapay/core/generalpay/pay`,
           `/api/moapay/core/generalpay/pay`,
           // `http://localhost:8765/moapay/core/generalpay/pay`,
           {

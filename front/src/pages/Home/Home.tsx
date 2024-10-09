@@ -79,6 +79,8 @@ const Home = () => {
     if (barcodeCardNumber === undefined) return;
     try {
       const response = await axios.post(
+        // `https://j11c201.p.ssafy.io/api/moapay/core/code/barcode`,
+
         `/api/moapay/core/code/barcode`,
         // `http://localhost:8765/moapay/core/code/barcode`,
         {
