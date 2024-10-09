@@ -100,7 +100,9 @@ public class StatisticsServiceImpl implements StatisticsService {
     public MonthlyBenefitResponseDto getMonthlyBenefit(int year, int month, GetMyCardIdsRequestDto getMyCardIdsRequestDto) {
         List<UUID> cardIds = getCardsUUID(getMyCardIdsRequestDto);
         List<CardHistoryPaymentLogDto> paymentLogs = getPaymentLogs(year, month, cardIds);
-
+        for (CardHistoryPaymentLogDto pay: paymentLogs) {
+            log.error("pay: {}", pay);
+        }
         long totalBenefit = paymentLogs.stream()
             .mapToLong(CardHistoryPaymentLogDto::getBenefitBalance)
             .sum();
