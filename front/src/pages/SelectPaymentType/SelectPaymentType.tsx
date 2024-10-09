@@ -1,8 +1,13 @@
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { SelectView, Wrapper, Button, Title } from "./SelectPaymentType.styles";
 import { PATH } from "../../constants/path";
+import { useEffect } from "react";
 
 const SelectPaymentType = () => {
+  const { orderId } = useParams();
+  useEffect(() => {
+    console.log(orderId);
+  });
   const navigate = useNavigate();
   return (
     <Wrapper>

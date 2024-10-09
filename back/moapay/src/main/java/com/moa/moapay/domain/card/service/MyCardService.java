@@ -8,7 +8,7 @@ import java.util.List;
 import java.util.UUID;
 
 public interface MyCardService {
-    List<MyCardInfoDto> getMyCardInfo(HttpServletRequest request);
+    List<MyCardInfoDto> getMyCardInfo(UUID memberId);
     List<CardInfoResponseDto> getAllCard();
 
     List<GetMyCardsResponseDto> getMyCardFromCardBank(GetMyCardsRequestDto getMyCardsRequestDto);

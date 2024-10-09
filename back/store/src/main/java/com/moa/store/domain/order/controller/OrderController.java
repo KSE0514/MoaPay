@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.UUID;
-
+@CrossOrigin(origins = "http://localhost:5173") // 프론트엔드 도메인
 @RestController
 @RequestMapping("/store/order")
 @RequiredArgsConstructor
@@ -32,6 +32,13 @@ public class OrderController {
     public ResponseEntity<ResultResponse> getOrdersByMerchant(@PathVariable("merchantId") UUID merchantId) {
         List<OrderListResponseDto> orderListResponseDto = orderService.getOrdersByMerchant(merchantId);
         ResultResponse resultResponse = ResultResponse.of(HttpStatus.OK, "주문 상세 조회를 완료했습니다.", orderListResponseDto);
+        return ResponseEntity.status(resultResponse.getStatus()).body(resultResponse);
+    }
+
+    @GetMapping("/simple/{orderId}")
+    public ResponseEntity<ResultResponse> getOrderSimple(@PathVariable("orderId") UUID orderId) {
+        GetSimpleOrderResponseDto responseDto = orderService.getSimpleOrder(orderId);
+        ResultResponse resultResponse = ResultResponse.of(HttpStatus.OK, "주문의 간략한 정보를 조회했습니다.", responseDto);
         return ResponseEntity.status(resultResponse.getStatus()).body(resultResponse);
     }
 

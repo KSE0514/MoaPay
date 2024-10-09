@@ -63,7 +63,9 @@ public class NotificationServiceImpl implements NotificationService {
         log.info("send payment complete message to store : {} - {}", id.toString(), dto);
         SseEmitter emitter = emitterRepository.getById(id);
         if(emitter == null) {
-            throw new BusinessException(HttpStatus.BAD_REQUEST, "SSE emitter not found");
+            log.error("SSE emitter not found"); // 메시지를 보낼 수 없는 경우, 보내지 않고 종료하는 것으로...
+            return;
+//            throw new BusinessException(HttpStatus.BAD_REQUEST, "SSE emitter not found");
         }
         try {
             emitter.send(SseEmitter.event().id(id.toString()).name("payment-result").data(dto));

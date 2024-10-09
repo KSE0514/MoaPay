@@ -1,25 +1,33 @@
 package com.moa.moapay.domain.dutchpay.service;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.moa.moapay.domain.dutchpay.entity.DutchPay;
 import com.moa.moapay.domain.dutchpay.entity.DutchRoom;
 import com.moa.moapay.domain.dutchpay.entity.DutchStatus;
 import com.moa.moapay.domain.dutchpay.model.dto.*;
-import com.moa.moapay.domain.dutchpay.model.vo.DutchPayCompliteVo;
+import com.moa.moapay.domain.dutchpay.model.vo.DutchPayCompleteVo;
+import com.moa.moapay.domain.dutchpay.repository.DutchPayRedisRepository;
 import com.moa.moapay.domain.dutchpay.repository.DutchPayRepository;
 import com.moa.moapay.domain.dutchpay.repository.DutchRoomRepository;
-import com.moa.moapay.domain.generalpay.model.dto.ExecuteGeneralPayRequestDto;
+import com.moa.moapay.domain.generalpay.model.dto.ExecuteDutchPayRequestDto;
+import com.moa.moapay.domain.generalpay.model.vo.PaymentCardInfoVO;
 import com.moa.moapay.domain.generalpay.service.GeneralPayService;
 import com.moa.moapay.global.exception.BusinessException;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.http.HttpMessageConverters;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.client.RestClient;
 
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
@@ -35,15 +43,21 @@ public class DutchPayServiceImpl implements DutchPayService {
     private final HttpMessageConverters messageConverters;
     private final GeneralPayService generalPayService;
     private final FCMService fcmService;
+    private final DutchPayRedisRepository dutchPayRedisRepository;
+    private final RestClient restClient;
+    private final ObjectMapper objectMapper;
+
+    @Value("${external-url.payment}")
+    private String paymentUrl;
+
+    @Value("${external-url.store}")
+    private String storeUrl;
 
     @Override
     @Transactional
     public UUID createDutchRoom(DutchPayStartRequestDto dutchPayStartRequestDto) {
-        UUID uuid = UUID.randomUUID();
-
         log.info(dutchPayStartRequestDto.toString());
         DutchRoom dutchRoom = DutchRoom.builder()
-                .uuid(uuid)
                 .totalPrice(dutchPayStartRequestDto.getTotalPrice())
                 .merchantName(dutchPayStartRequestDto.getMerchantName())
                 .merchantId(dutchPayStartRequestDto.getMerchantId())
@@ -53,9 +67,11 @@ public class DutchPayServiceImpl implements DutchPayService {
                 .managerId(dutchPayStartRequestDto.getMemberId())
                 .status(DutchStatus.READY)
                 .build();
-
         dutchRoomRepository.save(dutchRoom);
-        return uuid;
+        // 이후 상품정보도 redis에 등록
+        SimpleOrderInfoDto orderInfo = getSimpleOrderInfoFromStore(dutchPayStartRequestDto.getOrderId());
+        dutchPayRedisRepository.RegisterSimpleOrderInfo(dutchPayStartRequestDto.getOrderId(), orderInfo);
+        return dutchRoom.getUuid();
     }
 
     // 더치페이 방에 참여
@@ -85,13 +101,13 @@ public class DutchPayServiceImpl implements DutchPayService {
             throw new BusinessException(HttpStatus.NOT_EXTENDED, "수용인원 초과");
         }
         // 이미 진행중인 방
-        if(existingRoom.getStatus().equals(DutchStatus.PROGRESS)) {
-            throw new BusinessException(HttpStatus.NOT_EXTENDED, "이미 더치페이 진행중인 방입니다");
+        if(!existingRoom.getStatus().equals(DutchStatus.READY)) {
+            throw new BusinessException(HttpStatus.NOT_EXTENDED, "더치페이 방에 입장할 수 없습니다");
         }
 
         DutchPay dutchPay = DutchPay.builder().memberId(dutchPayRoomJoinDto.getMemberId())
                 .memberName(dutchPayRoomJoinDto.getMemberName())
-                .payStatus(DutchStatus.READY)
+                .payStatus(DutchStatus.JOIN)
                 .roomEntity(existingRoom)
                 .uuid(UUID.randomUUID())
                 .isManager(isManager)
@@ -203,6 +219,7 @@ public class DutchPayServiceImpl implements DutchPayService {
         ).collect(Collectors.toList());
 
         DutchRoomInfo dutchRoomInfo = DutchRoomInfo.builder()
+                .statusRoom(dutchRoom.getStatus())
                 .dutchUuid(dutchRoom.getUuid())
                 .categoryId(dutchRoom.getCategoryId())
                 .memberCnt(dutchRoom.getCurPerson())
@@ -220,10 +237,11 @@ public class DutchPayServiceImpl implements DutchPayService {
     @Transactional
     public void dutchpayPayment(DutchPayPaymentRequsetDto dutchPayPaymentRequsetDto) {
 
-        DutchPay dutchPay = dutchPayRepository.findByUuid(dutchPayPaymentRequsetDto.getRequestId());
+        DutchPay dutchPay = dutchPayRepository.findByUuid(dutchPayPaymentRequsetDto.getDutchPayId());
 
         if(dutchPay.getPayStatus().equals(DutchStatus.READY)) {
-            ExecuteGeneralPayRequestDto executeGeneralPayRequestDto = ExecuteGeneralPayRequestDto.builder()
+            ExecuteDutchPayRequestDto executeGeneralPayRequestDto = ExecuteDutchPayRequestDto.builder()
+                    .dutchPayId(dutchPay.getUuid())
                     .requestId(dutchPayPaymentRequsetDto.getRequestId())
                     .cvc(dutchPayPaymentRequsetDto.getCvc())
                     .cardNumber(dutchPayPaymentRequsetDto.getCardNumber())
@@ -234,7 +252,7 @@ public class DutchPayServiceImpl implements DutchPayService {
                     .orderId(dutchPayPaymentRequsetDto.getOrderId())
                     .build();
 
-            generalPayService.executeGeneralPay(executeGeneralPayRequestDto);
+            generalPayService.executeDutchPay(executeGeneralPayRequestDto);
             dutchPayRepository.updateStatus(dutchPayPaymentRequsetDto.getMemberId(),dutchPayPaymentRequsetDto.getDutchRoomId(),DutchStatus.PROGRESS);
         } else {
             throw new BusinessException(HttpStatus.ALREADY_REPORTED, "이미 결제요청이 진행중입니다.");
@@ -245,22 +263,38 @@ public class DutchPayServiceImpl implements DutchPayService {
 
     @Override
     @Transactional
-    public void dutchpayComplite(DutchPayCompliteVo dutchPayCompliteVo) {
+    public void dutchpayComplite(DutchPayCompleteVo dutchPayCompleteVo) {
 
-        UUID dutchUuid = dutchPayCompliteVo.getDutchUuid();
-        String status = dutchPayCompliteVo.getStatus();
+        UUID dutchUuid = dutchPayCompleteVo.getDutchUuid();
+        String status = dutchPayCompleteVo.getStatus();
 
         DutchPay byUuid = dutchPayRepository.findByUuid(dutchUuid);
         DutchRoom byDutchUuid = dutchRoomRepository.findByDutchUuid(dutchUuid);
 
         if(status.equals("CANCEL")){
+            // 지금은 안쓰는 로직
             List<DutchPay> dutchPayList = byDutchUuid.getDutchPayList();
 
             for(DutchPay dutchPay : dutchPayList){
                 if(dutchPay.getPayStatus().equals(DutchStatus.DONE)){
+
+                    String requestId = dutchPayRedisRepository.getToken(dutchUuid.toString());
+                    UUID.fromString(requestId);
+
+                    List<PaymentCardInfoVO> paymentInfoList = dutchPayCompleteVo.getPaymentInfoList();
                     // 취소 요청
-                    // 여기서는 UUID로 취소 요청 하면 될듯
-                    generalPayService.dutchCancel(dutchPay.getUuid());
+                    DutchCancelDto dutchCancelDto = DutchCancelDto.builder()
+                            .paymentId(dutchPayCompleteVo.getRequestId())
+                            .cardId(paymentInfoList.get(0).getCardId())
+                            .cardNumber(paymentInfoList.get(0).getCardNumber())
+                            .cvc(paymentInfoList.get(0).getCvc())
+                            .build();
+                    ResponseEntity<Map> paymentResponse = restClient.post()
+                            .uri(paymentUrl+"/charge/cancel")
+                            .contentType(MediaType.APPLICATION_JSON)
+                            .body(dutchCancelDto)
+                            .retrieve()
+                            .toEntity(Map.class);
                 }
                 //TODO : 이거 바꿔야해
                 dutchPayRepository.updateByDutchUuid(dutchPay.getUuid(), DutchStatus.CANCEL);
@@ -271,17 +305,18 @@ public class DutchPayServiceImpl implements DutchPayService {
                         .build();
                 fcmService.pushNotification(fcm);
             }
-            return;
         }
         else if(status.equals("PROGRESS")){
             // 결제 요청 다시
-            FCMMessageDto fcm = FCMMessageDto.builder()
-                    .memberId(byUuid.getMemberId())
-                    .title("MoaPay")
-                    .message("결제 실패")
-                    .build();
-            fcmService.pushNotification(fcm);
+//            FCMMessageDto fcm = FCMMessageDto.builder()
+//                    .memberId(byUuid.getMemberId())
+//                    .title("MoaPay")
+//                    .message("결제 실패")
+//                    .build();
+//            fcmService.pushNotification(fcm);
 
+            log.info("결제 실패");
+            dutchPayRepository.updateByDutchUuid(dutchUuid, DutchStatus.READY);
         }
         else if(status.equals("DONE")){
             // 결제 상태 변경
@@ -290,11 +325,13 @@ public class DutchPayServiceImpl implements DutchPayService {
             List<DutchPay> dutchPayList = byDutchUuid.getDutchPayList();
             DutchPay dutchPayMember = dutchPayRepository.findByUuid(dutchUuid);
 
+            dutchPayRedisRepository.save(dutchUuid.toString(), dutchPayCompleteVo.getRequestId().toString());
+
             boolean flag = true;
             for (DutchPay dutchPay : dutchPayList) { // 해당 더치 내역 다돌면서
                 DutchStatus dutchStatus = dutchPay.getPayStatus();
                 if(!dutchStatus.equals(DutchStatus.DONE)) {
-                    if(dutchPay.getUuid().equals(dutchPayCompliteVo.getDutchUuid())){
+                    if(dutchPay.getUuid().equals(dutchPayCompleteVo.getDutchUuid())){
                         continue;
                     }
                     flag = false;
@@ -346,6 +383,7 @@ public class DutchPayServiceImpl implements DutchPayService {
         ).toList();
 
         DutchRoomInfo dutchRoomInfoByMemberId = DutchRoomInfo.builder()
+                .statusRoom(dutchRoom.getStatus())
                 .dutchUuid(dutchRoom.getUuid())
                 .categoryId(dutchRoom.getCategoryId())
                 .memberCnt(dutchRoom.getCurPerson())
@@ -361,10 +399,38 @@ public class DutchPayServiceImpl implements DutchPayService {
 
     @Override
     @Transactional
+    public void cancelDutchRoom(DutchPayRoomLeaveDto roomLeaveDto) {
+        UUID dutchUuid = roomLeaveDto.getRoomId();
+        DutchRoom byDutchUuid = dutchRoomRepository.findByUuid(dutchUuid);
+
+
+    }
+
+    @Override
+    public SimpleOrderInfoDto getSimpleOrderInfoFromStore(UUID orderId) {
+        try {
+            ResponseEntity<Map> res = restClient.get()
+                    .uri(storeUrl + "/order/simple/"+orderId.toString())
+                    .retrieve()
+                    .toEntity(Map.class);
+            return objectMapper.convertValue(res.getBody().get("data"), SimpleOrderInfoDto.class);
+        } catch (Exception e) {
+            log.error("failed to register order info");
+            return null;
+        }
+    }
+
+    @Override
+    public SimpleOrderInfoDto getSimpleOrderInfoFromRedis(UUID orderId) {
+        return dutchPayRedisRepository.GetSimpleOrderInfo(orderId);
+    }
+
+    @Override
+    @Transactional
     public void extracted(UUID roomId, List<ConfirmPriceDto> dutchPayDtoList) {
         // 더치 페이 정보 수정
         for(ConfirmPriceDto confirmPriceDto : dutchPayDtoList) {
-            dutchPayRepository.updateAmountByMemberId(confirmPriceDto.getPrice(), confirmPriceDto.getMemberId(), roomId, DutchStatus.PROGRESS);
+            dutchPayRepository.updateAmountByMemberId(confirmPriceDto.getPrice(), confirmPriceDto.getMemberId(), roomId, DutchStatus.READY);
         }
     }
 
@@ -386,6 +452,7 @@ public class DutchPayServiceImpl implements DutchPayService {
         ).collect(Collectors.toList());
 
         DutchRoomInfo roomInfo = DutchRoomInfo.builder()
+                .statusRoom(dutchRoom.getStatus())
                 .merchantName(dutchRoom.getMerchantName())
                 .memberCnt(dutchRoom.getCurPerson())
                 .merchantId(dutchRoom.getMerchantId())
