@@ -120,7 +120,7 @@ const Statistics = () => {
       setDataList(response.data.data.paymentStatistics);
       //받은 소비량 더하기
       const totalPrice = response.data.data.paymentStatistics.reduce(
-        (acc, curr) => acc + curr.money,
+        (acc: number, curr: { money: number }) => acc + curr.money,
         0 // 초기값은 0
       );
       setCalculatedPrice(totalPrice);
@@ -151,7 +151,7 @@ const Statistics = () => {
       setDataList(response.data.data.paymentStatistics);
       //받은 소비량 더하기
       const totalPrice = response.data.data.paymentStatistics.reduce(
-        (acc, curr) => acc + curr.money,
+        (acc: number, curr: { money: number }) => acc + curr.money,
         0 // 초기값은 0
       );
       setCalculatedPrice(totalPrice);
