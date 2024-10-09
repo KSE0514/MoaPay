@@ -169,6 +169,7 @@ const SelectPaymentType = () => {
     if (QRCode) {
       localStorage.setItem("QRCode", QRCode);
     }
+    settingStoreRequestId();
   }, [orderId, totalPrice, categoryId, merchantId, QRCode]);
   /**
    *
@@ -184,9 +185,6 @@ const SelectPaymentType = () => {
    * sse 구독하기
    */
   useEffect(() => {
-    setRequestId(
-      storeRequestId !== null ? storeRequestId : settingStoreRequestId()
-    );
     if (requestId) {
       console.log("sse 연결시작!!!!!");
       console.log("requestId ", requestId);
