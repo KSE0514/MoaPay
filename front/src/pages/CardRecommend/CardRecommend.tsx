@@ -24,8 +24,8 @@ import {
 import { Card, CardProduct, useCardStore } from "../../store/CardStore";
 import axios from "axios";
 import { useAuthStore } from "../../store/AuthStore";
-import CardLoading from "../../components/CardLoading";
 import ParticleCanvas from "../../components/ParticleCanvas";
+import CardLoading from "./CardLoading";
 
 /**
  * 전부  CardProduct 데이터 형식을 가진 list로 사용
@@ -107,7 +107,7 @@ const CardRecommend = () => {
     setIsLoading(true);
     // getRecommendCards();
     console.log(userCardProductList);
-    setIsLoading(false);
+    setIsLoading(true);
   }, []);
 
   return (
