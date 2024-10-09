@@ -99,6 +99,7 @@ public class StatisticsServiceImpl implements StatisticsService {
     @Override
     public MonthlyBenefitResponseDto getMonthlyBenefit(int year, int month, GetMyCardIdsRequestDto getMyCardIdsRequestDto) {
         List<UUID> cardIds = getCardsUUID(getMyCardIdsRequestDto);
+        log.error("@@@@@@@@@@@@@@@@2");
         List<CardHistoryPaymentLogDto> paymentLogs = getPaymentLogs(year, month, cardIds);
         for (CardHistoryPaymentLogDto pay: paymentLogs) {
             log.error("pay: {}", pay);
