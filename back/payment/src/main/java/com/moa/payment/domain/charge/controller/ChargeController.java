@@ -27,4 +27,11 @@ public class ChargeController {
         ResultResponse resultResponse = ResultResponse.of(HttpStatus.OK, "결제가 취소되었습니다.");
         return ResponseEntity.status(resultResponse.getStatus()).body(resultResponse);
     }
+
+//    @PostMapping("/getPaymentLog")
+//    public ResponseEntity<ResultResponse> getPaymentLog(@RequestBody PaymentLogDto dto) {
+//        log.info("get payment log");
+//
+//        return null;
+//    }
 }

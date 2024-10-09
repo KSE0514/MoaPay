@@ -18,6 +18,14 @@ import {
 // useEffect(() => {
 //   // 참가자 목록 불러오기_참가자가 새로 들어올 때마다 리스트 조회가 이루어져야함?
 // }, [])
+interface ParticipantInfo {
+  index: number;
+  uuid: string;
+  memberId: string;
+  memberName: string;
+  amount: number | null;
+  status: string;
+}
 
 interface ParticipantProps {
   maxNum?: number | null;
@@ -44,7 +52,7 @@ interface ParticipantProps {
   confirm: () => void;
   setProcess?: (step: number) => void;
   process: number;
-  roomInfo: DutchPayInfo;
+  roomInfo?: DutchPayInfo;
 }
 
 type UUID = string; // UUID를 문자열로 간주
@@ -68,6 +76,15 @@ interface DutchPayInfo {
   categoryId: string;
   totalPrice: number; // 또는 number, 필요에 따라 선택
   dutchPayList: DutchPayItem[]; // DutchPayItem 배열
+}
+
+interface ParticipantInfo {
+  index: number;
+  uuid: string;
+  memberId: string;
+  memberName: string;
+  amount: number | null;
+  status: string;
 }
 
 // interface Participant {
