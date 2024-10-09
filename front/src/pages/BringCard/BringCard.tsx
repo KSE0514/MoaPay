@@ -42,6 +42,7 @@ const BringCard = () => {
     try {
       const response = await axios.post(
         // `http://localhost:18100/cardbank/card/getMyCards`,
+        // `https://j11c201.p.ssafy.io/cardapi/cardbank/card/getMyCards`,
         `/cardapi/cardbank/card/getMyCards`,
         {
           memberId: id,
@@ -98,6 +99,7 @@ const BringCard = () => {
       const response = await axios.post(
         // `http://localhost:18020/moapay/core/card/disable`,
         // `http://localhost:8765/moapay/core/card/disable`,
+        // `https://j11c201.p.ssafy.io/api/moapay/core/card/disable`,
         `/api/moapay/core/card/disable`,
         {
           memberUuid: id, // member id
