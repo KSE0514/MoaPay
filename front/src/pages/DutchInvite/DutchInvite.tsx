@@ -56,6 +56,7 @@ const DutchInvite = () => {
   const nav = useNavigate();
 
   // const { name, id } = useAuthStore();
+  console.log("이것도 뜨나요?");
 
   // 테스트용 멤버 데이터
   const testUser = {

@@ -31,7 +31,7 @@ import {
   Bottom,
   Btn,
 } from "./Dutchpay.styles";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { PATH } from "../../constants/path";
 
 interface ParticipantInfo {
@@ -52,8 +52,9 @@ const Dutchpay = () => {
   const nav = useNavigate();
   // const location = useLocation();
 
-  // const { name, id } = useAuthStore()
+  const { name, id } = useAuthStore()
 
+  console.log('이름', name, '아이디', id)
   // console.log("Url 넘어오는지 확인용", location.state)
 
   // location.state가 없을 경우 localStorage에서 값을 가져옴
@@ -61,6 +62,7 @@ const Dutchpay = () => {
   // console.log("Received joinUrl:", joinUrl)
   const [process, setProcess] = useState<number>(0); // 진행 단계
   const [timeLeft, setTimeLeft] = useState<number>(2400); // 40분(2400초) 카운트다운을 위한 상태 관리
+  const timerRef = useRef<NodeJS.Timeout | null>(null); // 타이머를 저장할 ref
 
   const [isOpen, setIsOpen] = useState<boolean>(false); // 더치페이 나가기 모달 상태 관리
   const [isCompleteSettingCheck, setIsCompleteSettingCheck] =
@@ -163,7 +165,30 @@ const Dutchpay = () => {
   const [totalPrice, setTotalPrice] = useState<number>(10000); // 총 가격
   const [memberName, setMemberName] = useState<string>("유저이름");
 
+  const [requestId, setRequestId] = useState<string>("");
+
+  // console.log("이것도뜨나?")
+
+  useEffect(() => {
+    // totalPrice는 숫자형으로 변환하되, 유효하지 않을 경우 0으로 설정
+    const storedTotalPrice = parseInt(localStorage.getItem("totalPrice") || "0", 10);
+    const validatedTotalPrice = isNaN(storedTotalPrice) ? 0 : storedTotalPrice;
+
+    // localStorage에서 값 가져오기
+    setOrderId(localStorage.getItem("orderId") || "");
+    setTotalPrice(validatedTotalPrice);
+    setCategoryId(localStorage.getItem("categoryId") || "");
+    setMerchantId(localStorage.getItem("merchantId") || "");
+    setRequestId(localStorage.getItem("requestId") || "");
+    // 값 로그로 출력
+    console.log("Order ID:", localStorage.getItem("orderId"));
+    console.log("Total Price:", localStorage.getItem("totalPrice"));
+    console.log("Category ID:", localStorage.getItem("categoryId"));
+    console.log("Merchant ID:", localStorage.getItem("merchantId"));
+    console.log("Request ID:", localStorage.getItem("requestId"));
+  }, []);
   // 방 생성 함수
+  // TODO : 해결해주세요
   const createRoom = async () => {
     console.log("here... see !!!!!!!!!!!!!!");
     const requestBody = {
@@ -177,6 +202,8 @@ const Dutchpay = () => {
     };
 
     try {
+      console.log(requestBody)
+
       const response = await axios.post(
         "http://localhost:18020/moapay/core/dutchpay/createRoom",
         requestBody
@@ -387,19 +414,25 @@ const Dutchpay = () => {
 
   // 10분 카운트다운 타이머
   useEffect(() => {
-    const timer = setInterval(() => {
-      setTimeLeft((prevTime) => (prevTime > 0 ? prevTime - 1 : 0));
+    // 타이머 설정
+    timerRef.current = setInterval(() => {
+      setTimeLeft((prevTime) => {
+        if (prevTime <= 0) {
+          clearInterval(timerRef.current!);
+          alert("카운트다운이 완료되었습니다.");
+          return 0;
+        }
+        return prevTime - 1;
+      });
     }, 1000);
 
-    // 타이머가 0이 되면 종료
-    if (timeLeft === 0) {
-      clearInterval(timer);
-      alert("카운트다운이 완료되었습니다.");
-      // 원하는 동작을 추가할 수 있습니다.
-    }
-
-    return () => clearInterval(timer); // 컴포넌트가 언마운트될 때 타이머 정리
-  }, [timeLeft]);
+    // 컴포넌트가 언마운트될 때 타이머 정리
+    return () => {
+      if (timerRef.current) {
+        clearInterval(timerRef.current);
+      }
+    };
+  }, []);
 
   // 남은 시간을 분과 초로 변환하는 함수
   const formatTime = (time: number) => {
@@ -409,7 +442,6 @@ const Dutchpay = () => {
       seconds < 10 ? `0${seconds}` : seconds
     }`;
   };
-
 
   // 결제 버튼 클릭
   const onClickPaymentBtn = () => {
@@ -768,7 +800,7 @@ const Dutchpay = () => {
       {/* 더치페이 인원 설정 확인용 모달 */}
       {isCompleteSettingCheck && (
         <Modal isOpen={isCompleteSettingCheck} onClose={closeSettingModal}>
-          <div>{maxMember}명과 더치페이를 진행하시겠습니까?</div>
+          <div>{maxMember}명과 더치페이를<div style={{height: '7px'}}></div>진행하시겠습니까?</div>
           <div>
             <button onClick={onClickAccept}>확인</button>
             <button onClick={goBack}>취소</button>

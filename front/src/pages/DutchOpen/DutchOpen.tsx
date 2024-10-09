@@ -23,9 +23,30 @@ import { PATH } from "../../constants/path";
 
 const DutchOpen = () => {
   const nav = useNavigate()
-  
+
+  const [orderId, setOrderId] = useState("");
+  const [totalPrice, setTotalPrice] = useState("");
+  const [categoryId, setCategoryId] = useState("");
+  const [merchantId, setMerchantId] = useState("");
+  const [requestId, setRequestId] = useState("");
   // const { name, id } = useAuthStore()
-  
+
+  useEffect(() => {
+    // localStorage에서 값 가져오기
+    setOrderId(localStorage.getItem("orderId") || "");
+    setTotalPrice(localStorage.getItem("totalPrice") || "");
+    setCategoryId(localStorage.getItem("categoryId") || "");
+    setMerchantId(localStorage.getItem("merchantId") || "");
+    setRequestId(localStorage.getItem("requestId") || "");
+
+    // 값 로그로 출력
+    console.log("Order ID:", localStorage.getItem("orderId"));
+    console.log("Total Price:", localStorage.getItem("totalPrice"));
+    console.log("Category ID:", localStorage.getItem("categoryId"));
+    console.log("Merchant ID:", localStorage.getItem("merchantId"));
+    console.log("Request ID:", localStorage.getItem("requestId"));
+  }, []);
+
   const [isOpen, setIsOpen] = useState<boolean>(false); // 더치페이 나가기 모달 상태 관리
   const [isCompleteSettingCheck, setIsCompleteSettingCheck] = useState<boolean>(false); // 더치페이 인원 설정 완료 확인용 모달 띄우기 판단용
   const [memberNum, setMemberNum] = useState<number | string>(''); // 참여자 수 입력 받는 변수
@@ -84,10 +105,10 @@ const DutchOpen = () => {
     setStop(true)
   }
 
-  useEffect(() => {
-    // localStorage.removeItem('maxMember');
-    // setMemberSetComplete(false)
-  }, []) // 맨 처음 랜더링 시(더치페이를 처음으로 실행시킬 시) 값 초기화해야할 것들
+  // useEffect(() => {
+  //   // localStorage.removeItem('maxMember');
+  //   // setMemberSetComplete(false)
+  // }, []) // 맨 처음 랜더링 시(더치페이를 처음으로 실행시킬 시) 값 초기화해야할 것들
 
   return (
     <Wrapper>

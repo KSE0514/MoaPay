@@ -493,13 +493,13 @@ const Home = () => {
               ) : card.uuid === "recommended-card" ? (
                 <div className="card recommended-card" key={index}>
                   <div style={{ display: "none" }}>
-                    {showCards[2].cardNumber}
+                    {showCards[2]?.cardNumber}
                   </div>
-                  <div style={{ display: "none" }}>{showCards[2].cvc}</div>
+                  <div style={{ display: "none" }}>{showCards[2]?.cvc}</div>
                   <div style={{ display: "none" }}>
-                    {showCards[2].cardProduct.cardProductPerformance}
+                    {showCards[2]?.cardProduct.cardProductPerformance}
                   </div>
-                  <div style={{ display: "none" }}>{showCards[2].amount}</div>
+                  <div style={{ display: "none" }}>{showCards[2]?.amount}</div>
                   <img src={`/assets/image/card.png`} alt={`recommend`} />
                 </div>
               ) : (
