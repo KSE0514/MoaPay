@@ -274,6 +274,18 @@ const SelectPaymentType = () => {
           // `https://j11c201.p.ssafy.io/api/moapay/core/generalpay/pay`,
           `/api/moapay/core/generalpay/pay`,
           // `http://localhost:8765/moapay/core/generalpay/pay`,
+          // {
+          //   requestId: storedRequestId,
+          //   orderId: storedOrderId,
+          //   merchantId: storedMerchantId,
+          //   categoryId: storedCategoryId,
+          //   totalPrice: parseInt(storedTotalPrice, 10),
+          //   memberId: id,
+          //   cardSelectionType: "RECOMMEND",
+          //   recommendType: paymentType, // RECOMMEND인 경우 사용, BENEFIT / PERFORM
+          //   cardNumber: "", // FIX인 경우 사용
+          //   cvc: "", // FIX인 경우 사용
+          // },
           {
             requestId: storedRequestId,
             orderId: storedOrderId,
@@ -281,10 +293,10 @@ const SelectPaymentType = () => {
             categoryId: storedCategoryId,
             totalPrice: parseInt(storedTotalPrice, 10),
             memberId: id,
-            cardSelectionType: "RECOMMEND",
-            recommendType: paymentType, // RECOMMEND인 경우 사용, BENEFIT / PERFORM
-            cardNumber: "", // FIX인 경우 사용
-            cvc: "", // FIX인 경우 사용
+            cardSelectionType: "FIX",
+            recommendType: "", // RECOMMEND인 경우 사용, BENEFIT / PERFORM
+            cardNumber: "3998541707334420", // FIX인 경우 사용
+            cvc: "123", // FIX인 경우 사용
           },
           {
             withCredentials: true,
