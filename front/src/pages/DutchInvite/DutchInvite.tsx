@@ -39,7 +39,7 @@ interface DutchPayItem {
   uuid: string;
   memberId: string;
   memberName: string;
-  amount: bigint;
+  amount: number;
   status: string;
 }
 
@@ -103,7 +103,7 @@ const DutchInvite = () => {
   const [memberId, setMemberId] = useState<string>(
     "01923d9f-7b3d-78dd-9f9d-32f85c64fbcd"
   ); // 멤버 ID
-  const [roomInfo, setRoomInfo] = useState<DutchPayItem[]>(); // 방 정보
+  const [roomInfo, setRoomInfo] = useState<DutchPayInfo | undefined>(undefined);// 방 정보
   const [stompClient, setStompClient] = useState<Client | null>(null); // STOMP 클라이언트
 
   const [orderId, setOrderId] = useState<string>(
@@ -131,9 +131,9 @@ const DutchInvite = () => {
   const getRoomInfo = async (roomid: string) => {
     try {
       const response = await axios.get(
-        `http://localhost:18020/moapay/core/dutchpay/getDutchRoomInfo/` +
-          roomid,
-        // `api/moapay/core/dutchpay/getDutchRoomInfo/${roomId}`,
+        // `http://localhost:18020/moapay/core/dutchpay/getDutchRoomInfo/` +
+        //   roomid,
+        `api/moapay/core/dutchpay/getDutchRoomInfo/` + roomid,
         {
           withCredentials: true,
         }
@@ -398,7 +398,7 @@ const DutchInvite = () => {
   // 메인 DutchPayInfo 인터페이스
   interface DutchPayInfo {
     dutchUuid: UUID;
-    memberCnt: bigint; // 또는 number, 필요에 따라 선택
+    memberCnt: number; // 또는 number, 필요에 따라 선택
     orderId: UUID;
     merchantId: UUID;
     merchantName: string;

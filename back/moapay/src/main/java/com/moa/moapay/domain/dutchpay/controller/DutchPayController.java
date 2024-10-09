@@ -19,7 +19,7 @@ import java.util.UUID;
 @Slf4j
 @RequiredArgsConstructor
 @RequestMapping("/dutchpay")
-@CrossOrigin(origins = "http://localhost:5173", allowedHeaders = "*", allowCredentials = "true")  // 특정 도메인 허용 및 자격 증명 허용
+@CrossOrigin(origins = "http://localhost:5173", allowCredentials = "true")
 public class DutchPayController {
 
     private final DutchPayService dutchPayService;
