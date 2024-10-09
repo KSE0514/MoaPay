@@ -65,7 +65,9 @@ public class StatisticsServiceImpl implements StatisticsService {
     public MonthlyConsumptionResponseDto getMonthlyConsumption(int year, int month, GetMyCardIdsRequestDto getMyCardIdsRequestDto) {
         List<UUID> cardIds = getCardsUUID(getMyCardIdsRequestDto);
         List<CardHistoryPaymentLogDto> paymentLogs = getPaymentLogs(year, month, cardIds);
-
+        for (CardHistoryPaymentLogDto pay: paymentLogs) {
+            log.error("pay: {}", pay);
+        }
         long totalAmount = paymentLogs.stream()
             .mapToLong(CardHistoryPaymentLogDto::getAmount)
             .sum();
