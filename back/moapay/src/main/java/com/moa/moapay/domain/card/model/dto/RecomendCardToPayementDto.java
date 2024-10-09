@@ -1,4 +1,4 @@
-package com.moa.payment.domain.charge.model.dto;
+package com.moa.moapay.domain.card.model.dto;
 
 import lombok.*;
 
@@ -10,6 +10,6 @@ import java.util.UUID;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class GetPaymentLogRequestDto {
+public class RecomendCardToPayementDto {
     private List<UUID> cardId;
 }
