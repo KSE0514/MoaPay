@@ -88,7 +88,7 @@ public class MyCardQueryRepository {
         QMyCard myCard = QMyCard.myCard;
 
         return queryFactory
-            .select(myCard.cardProduct.uuid)
+            .select(myCard.uuid)
             .from(myCard)
             .where(myCard.memberId.eq(memberId))
             .fetch();

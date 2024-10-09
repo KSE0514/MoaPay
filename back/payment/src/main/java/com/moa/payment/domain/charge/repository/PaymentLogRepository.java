@@ -18,14 +18,14 @@ public interface PaymentLogRepository extends JpaRepository<PaymentLog, Long> {
     Optional<PaymentLog> findByUuid(UUID uuid);
 
     @Query("SELECT p FROM PaymentLog p " +
-        "WHERE YEAR(p.createTime) = YEAR(CURRENT_DATE) " +
-        "AND MONTH(p.createTime) = MONTH(CURRENT_DATE) - 1")
+            "WHERE YEAR(p.createTime) = YEAR(CURRENT_DATE) " +
+            "AND MONTH(p.createTime) = MONTH(CURRENT_DATE) - 1")
     List<PaymentLog> findAllFromLastMonth();
 
     @Query("SELECT p FROM PaymentLog p " +
-        "WHERE p.cardId = :cardId " +
-        "AND FUNCTION('YEAR', p.createTime) = FUNCTION('YEAR', CURRENT_DATE) " +
-        "AND FUNCTION('MONTH', p.createTime) = FUNCTION('MONTH', CURRENT_DATE)")
+            "WHERE p.cardId = :cardId " +
+            "AND FUNCTION('YEAR', p.createTime) = FUNCTION('YEAR', CURRENT_DATE) " +
+            "AND FUNCTION('MONTH', p.createTime) = FUNCTION('MONTH', CURRENT_DATE)")
     List<PaymentLog> findAllFromMonth(@Param("cardId") UUID cardId);
     //
     // @Query("SELECT p FROM PaymentLog p " +

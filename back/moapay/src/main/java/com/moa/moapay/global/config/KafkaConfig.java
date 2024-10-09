@@ -25,8 +25,8 @@ public class KafkaConfig {
     @Bean
     public ProducerFactory<String, Map> producerFactory() {
         Map<String, Object> props = new HashMap<>();
-//        props.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, "kafka-00:19092,kafka-01:19093,kafka-02:19094");
-        props.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, "localhost:9092,localhost:9093,localhost:9094");
+        props.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, "kafka-00:19092,kafka-01:19093,kafka-02:19094");
+        //props.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, "localhost:9092,localhost:9093,localhost:9094");
         props.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class);
         props.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, JsonSerializer.class);
         // key 값이 있을 경우 sticky 방식이 훨신 좋을 것 같지만 현재 우리 서비스에서는 key가 없고, 전송량이 작아 roundrobin 방식을 택하였다.
@@ -42,8 +42,9 @@ public class KafkaConfig {
     @Bean
     public ConsumerFactory<String, String> consumerFactory() {
         Map<String, Object> config = new HashMap<>();
-//        config.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, "kafka-00:19092,kafka-01:19093,kafka-02:19094");
-        config.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, "localhost:9092,localhost:9093,localhost:9094");
+        config.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, "kafka-00:19092,kafka-01:19093,kafka-02:19094");
+
+        //config.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, "localhost:9092,localhost:9093,localhost:9094");
         config.put(ConsumerConfig.GROUP_ID_CONFIG, "my-consumer-group");
         config.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class);
         config.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class);

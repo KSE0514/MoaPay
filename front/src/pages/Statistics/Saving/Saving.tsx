@@ -119,6 +119,7 @@ const Saving = () => {
   const getSavingData = async () => {
     try {
       const response = await axios.post(
+        // `https://j11c201.p.ssafy.io/api/moapay/pay/saving/getSaving`,
         `/api/moapay/pay/saving/getSaving`,
         { memberId: id },
         {
