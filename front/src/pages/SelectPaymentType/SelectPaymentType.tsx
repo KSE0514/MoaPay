@@ -260,7 +260,7 @@ const SelectPaymentType = () => {
       const storedOrderId = localStorage.getItem("orderId");
       const storedMerchantId = localStorage.getItem("merchantId");
       const storedCategoryId = localStorage.getItem("categoryId");
-      const storedTotalPrice = localStorage.getItem("totalPrice");
+      const storedTotalPrice = localStorage.getItem("totalPrice") || "0";
       const storedQRCode = localStorage.getItem("QRCode");
       console.log(
         storedRequestId,
@@ -281,7 +281,7 @@ const SelectPaymentType = () => {
             orderId: storedOrderId,
             merchantId: storedMerchantId,
             categoryId: storedCategoryId,
-            totalPrice: storedTotalPrice,
+            totalPrice: parseInt(storedTotalPrice, 10),
             memberId: id,
             cardSelectionType: "RECOMMEND",
             recommendType: paymentType, // RECOMMEND인 경우 사용, BENEFIT / PERFORM
