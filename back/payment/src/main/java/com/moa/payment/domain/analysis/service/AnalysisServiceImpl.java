@@ -41,8 +41,8 @@ public class AnalysisServiceImpl implements AnalysisService {
 
 	//[0][X]은 남자, [1][X]은 여자
 	//[X][0]은 0대, [X][1]은 10대, [X][2]은 20대, ..., [X][12]은 120대
-	//[X][X][0]은 amount, [X][X][1]은 memberCount
-	private Long[][][] save = new Long[2][13][2];
+	//[X][X][0]은 amount, [X][X][1]은 memberCount, [X][X][2]는 benefit
+	private Long[][][] save = new Long[2][13][3];
 	private HashSet<String> memberNum;
 
 	public static int calculateAge(LocalDate birthDate) {
@@ -57,13 +57,13 @@ public class AnalysisServiceImpl implements AnalysisService {
 		}
 	}
 
-	//-----scheduling 필요
+	//-----scheduling 완료
 	@Override
 	public void setAverage() {
 		// save 배열 초기화 (null 값을 0L로 초기화)
 		for (int i = 0; i < 2; i++) {
 			for (int j = 0; j < 13; j++) {
-				for (int k = 0; k < 2; k++) {
+				for (int k = 0; k < 3; k++) {
 					save[i][j][k] = 0L;  // 초기값 0L로 설정
 				}
 			}
@@ -75,6 +75,7 @@ public class AnalysisServiceImpl implements AnalysisService {
 		List<PaymentLog> paymentLogList = paymentLogRepository.findAllFromLastMonth();
 		for (PaymentLog paylog : paymentLogList) {
 			Long amount = paylog.getAmount(); // 결제한 금액
+			Long benefit = paylog.getBenefitBalance(); //받은 혜택 금액
 			UUID cardId = paylog.getCardId(); //사용한 카드 아이디
 			//CardId로 myCard불러오고 여기서 memberId 뽑아내고
 			UUID memberId = getMemberId(cardId);
@@ -85,11 +86,13 @@ public class AnalysisServiceImpl implements AnalysisService {
 			int ageRange = age / 10; //연령대
 			if (member.getGender().equals("M")) { //남자면 [0]
 				save[0][ageRange][0] += amount;
+				save[0][ageRange][2] += benefit;
 				if (memberNum.add(member.getPhoneNumber())) { //새로 추가
 					save[0][ageRange][1] += 1;
 				}
 			} else { //여자면 [1]
 				save[1][ageRange][0] += amount;
+				save[1][ageRange][2] += benefit;
 				if (memberNum.add(member.getPhoneNumber())) { //새로 추가
 					save[1][ageRange][1] += 1;
 				}
@@ -121,6 +124,7 @@ public class AnalysisServiceImpl implements AnalysisService {
 					.generation(j * 10 + "")
 					.totalAmount(save[i][j][0])
 					.userCount(save[i][j][1])
+					.totalBenefit(save[i][j][2])
 					.build();
 
 				analysisRepository.save(analysis);
@@ -139,6 +143,7 @@ public class AnalysisServiceImpl implements AnalysisService {
 		return response.getBody();  // 응답에서 UUID를 반환
 	}
 
+	@Override
 	public getMemberResponseDto getMemberInfo(UUID memberId) {
 		try {
 			String url = memberUrl + "/getMember";
