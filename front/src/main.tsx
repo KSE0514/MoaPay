@@ -8,9 +8,9 @@ if ("serviceWorker" in navigator) {
   navigator.serviceWorker
     .register("/firebase-messaging-sw.js") // 서비스 워커 파일 경로
     .then((registration) => {
-      console.log("Service Worker Registered:", registration);
+      // console.log("Service Worker Registered:", registration);
     })
     .catch((error) => {
-      console.log("Service Worker registration failed:", error);
+      // console.log("Service Worker registration failed:", error);
     });
 }

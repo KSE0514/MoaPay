@@ -6,6 +6,7 @@ import jakarta.validation.constraints.NotNull;
 import lombok.*;
 import java.time.LocalDateTime;
 import java.util.UUID;
+import java.util.concurrent.ThreadLocalRandom;
 
 @Entity
 @Table(name = "payment_log")
@@ -68,17 +69,37 @@ public class PaymentLog {
     @Column(name = "update_time")
     private LocalDateTime updateTime;
 
-    @PrePersist
-    private void prePersist() {
-//        this.uuid = Generators.timeBasedEpochGenerator().generate();
-        LocalDateTime now = LocalDateTime.now();
-        this.createTime = now;
-        this.updateTime = now;
-    }
+//     @PrePersist
+//     private void prePersist() {
+// //        this.uuid = Generators.timeBasedEpochGenerator().generate();
+//         LocalDateTime now = LocalDateTime.now();
+//         this.createTime = now;
+//         this.updateTime = now;
+//     }
+//
+//     @PreUpdate
+//     private void preUpdate() {
+//         this.updateTime = LocalDateTime.now();
+//     }
+@PrePersist
+private void prePersist() {
+    this.createTime = getRandomNovemberDate();
+    this.updateTime = this.createTime;
+}
 
     @PreUpdate
     private void preUpdate() {
-        this.updateTime = LocalDateTime.now();
+        this.updateTime = getRandomNovemberDate();
+    }
+
+    private LocalDateTime getRandomNovemberDate() {
+        // 2023년 11월 1일 00:00:00 ~ 2023년 11월 30일 23:59:59 사이의 랜덤한 날짜와 시간 생성
+        int randomDay = ThreadLocalRandom.current().nextInt(1, 31); // 1 ~ 30 사이의 랜덤 날짜
+        int randomHour = ThreadLocalRandom.current().nextInt(0, 24); // 0 ~ 23 사이의 랜덤 시간
+        int randomMinute = ThreadLocalRandom.current().nextInt(0, 60); // 0 ~ 59 사이의 랜덤 분
+        int randomSecond = ThreadLocalRandom.current().nextInt(0, 60); // 0 ~ 59 사이의 랜덤 초
+
+        return LocalDateTime.of(2023, 12, randomDay, randomHour, randomMinute, randomSecond);
     }
 
 }
