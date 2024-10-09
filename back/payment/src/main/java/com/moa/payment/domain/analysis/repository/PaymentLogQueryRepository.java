@@ -3,12 +3,14 @@ package com.moa.payment.domain.analysis.repository;
 import com.moa.payment.domain.analysis.model.dto.CardHistoryPaymentLogDto;
 import com.moa.payment.domain.charge.entity.QPaymentLog;
 import com.querydsl.core.types.Projections;
+import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Repository;
 
 import java.time.LocalDateTime;
+import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
 
@@ -29,19 +31,43 @@ public class PaymentLogQueryRepository {
                 .fetch();
     }
 
-    public List<CardHistoryPaymentLogDto> findAllCardsPaymentLogs(List<UUID> cardIds, LocalDateTime start, LocalDateTime end) {
-        QPaymentLog paymentLog = QPaymentLog.paymentLog;
-        return queryFactory.select(Projections.fields(CardHistoryPaymentLogDto.class,
-                        paymentLog.cardId,
-                        paymentLog.merchantName,
-                        paymentLog.benefitBalance,
-                        paymentLog.amount,
-                        paymentLog.categoryId,
-                        paymentLog.createTime))
-                .from(paymentLog)
-                .where(paymentLog.cardId.in(cardIds)
-                        .and(paymentLog.createTime.between(start, end)))
-                .orderBy(paymentLog.createTime.desc())
-                .fetch();
+//    public List<CardHistoryPaymentLogDto> findAllCardsPaymentLogs(List<UUID> cardIds, LocalDateTime start, LocalDateTime end) {
+//        QPaymentLog paymentLog = QPaymentLog.paymentLog;
+//        return queryFactory.select(Projections.fields(CardHistoryPaymentLogDto.class,
+//                        paymentLog.cardId,
+//                        paymentLog.merchantName,
+//                        paymentLog.benefitBalance,
+//                        paymentLog.amount,
+//                        paymentLog.categoryId,
+//                        paymentLog.createTime))
+//                .from(paymentLog)
+//                .where(paymentLog.cardId.in(cardIds)
+//                        .and(paymentLog.createTime.between(start, end)))
+//                .orderBy(paymentLog.createTime.desc())
+//                .fetch();
+//    }
+public List<CardHistoryPaymentLogDto> findAllCardsPaymentLogs(List<UUID> cardIds, LocalDateTime start, LocalDateTime end) {
+    QPaymentLog paymentLog = QPaymentLog.paymentLog;
+
+    // cardIds가 비어있는 경우 처리
+    if (cardIds == null || cardIds.isEmpty()) {
+        return Collections.emptyList();
     }
+
+    BooleanExpression whereCondition = paymentLog.cardId.in(cardIds)
+            .and(paymentLog.createTime.between(start, end));
+
+    return queryFactory
+            .select(Projections.fields(CardHistoryPaymentLogDto.class,
+                    paymentLog.cardId,
+                    paymentLog.merchantName,
+                    paymentLog.benefitBalance,
+                    paymentLog.amount,
+                    paymentLog.categoryId,
+                    paymentLog.createTime))
+            .from(paymentLog)
+            .where(whereCondition)
+            .orderBy(paymentLog.createTime.desc())
+            .fetch();
+}
 }

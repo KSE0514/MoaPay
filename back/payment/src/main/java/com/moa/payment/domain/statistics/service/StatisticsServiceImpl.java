@@ -15,7 +15,6 @@ import com.moa.payment.domain.analysis.model.dto.CardHistoryRequestDto;
 import com.moa.payment.domain.analysis.model.dto.CardHistoryResponseDto;
 import com.moa.payment.domain.analysis.repository.PaymentLogQueryRepository;
 import com.moa.payment.domain.analysis.service.AnalysisService;
-import com.moa.payment.domain.charge.repository.PaymentLogRepository;
 import com.moa.payment.domain.statistics.model.dto.*;
 import com.moa.payment.global.exception.BusinessException;
 import com.moa.payment.global.response.ResultResponse;
@@ -34,17 +33,17 @@ import lombok.extern.slf4j.Slf4j;
 public class StatisticsServiceImpl implements StatisticsService {
 
     private final MoaPayClient moaPayClient;
-    //private final PaymentLogQueryRepository paymentLogQueryRepository;
-    private final PaymentLogRepository paymentLogRepository;
+    private final PaymentLogQueryRepository paymentLogQueryRepository;
     private final ObjectMapper objectMapper;
 
     public List<CardHistoryPaymentLogDto> getPaymentLogs(int year, int month, List<UUID> cardIds) {
         log.info("getPaymentLogs - year : {}, month : {}", year, month);
-//        YearMonth dateInfo = YearMonth.of(year, month);
-//        int lastDay = dateInfo.atEndOfMonth().lengthOfMonth();
-//        LocalDateTime startTime = LocalDateTime.of(year, month, 1, 0, 0);
-//        LocalDateTime endTime = LocalDateTime.of(year, month, lastDay, 23, 59);
-        return paymentLogRepository.findAllCardsPaymentLogs(cardIds, year, month);
+        YearMonth dateInfo = YearMonth.of(year, month);
+        int lastDay = dateInfo.atEndOfMonth().lengthOfMonth();
+        LocalDateTime startTime = LocalDateTime.of(year, month, 1, 0, 0);
+        LocalDateTime endTime = LocalDateTime.of(year, month, lastDay, 23, 59);
+        return paymentLogQueryRepository.findAllCardsPaymentLogs(cardIds,
+            startTime, endTime);
     }
 
     public List<UUID> getCardsUUID(GetMyCardIdsRequestDto getMyCardIdsRequestDto) {
