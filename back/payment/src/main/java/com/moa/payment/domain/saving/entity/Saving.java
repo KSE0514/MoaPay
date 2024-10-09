@@ -61,4 +61,8 @@ public class Saving {
 	public void updateTodayAmount(long amount){
 		this.todayAmount+=amount;
 	}
+
+	public void updateAmount(long amount){
+		this.amount+=amount;
+	}
 }
