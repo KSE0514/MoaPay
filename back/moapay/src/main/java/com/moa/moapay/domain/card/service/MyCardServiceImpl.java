@@ -269,13 +269,14 @@ public class MyCardServiceImpl implements MyCardService {
         }
 
         try {
+            log.info("try문 진입함");
             ResponseEntity<CardRestWrapperDto> responseEntity = restClient.post()
                     .uri(cardbankUrl + "/card/registration")
                     .contentType(MediaType.APPLICATION_JSON)
                     .body(registrationRequestDto)
                     .retrieve()
                     .toEntity(CardRestWrapperDto.class);
-
+            log.info("responseEntity = {} ", responseEntity);
             if (responseEntity.getStatusCode().is2xxSuccessful()) {
                 CardRestTemplateDto cardData = responseEntity.getBody().getData();
                 log.info("cardData = {} ", cardData);
@@ -345,6 +346,8 @@ public class MyCardServiceImpl implements MyCardService {
                         .build();
 
                 return getMyCardsResponseDto;
+            } else {
+                throw new BusinessException(HttpStatus.INTERNAL_SERVER_ERROR, "entity 못 받아옴");
             }
         } catch (HttpClientErrorException e) {
             throw new BusinessException(HttpStatus.NOT_FOUND, "카드사에 해당 상품이 없습니다.");
