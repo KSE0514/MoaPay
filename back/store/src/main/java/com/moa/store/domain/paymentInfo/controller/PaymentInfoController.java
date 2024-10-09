@@ -16,7 +16,7 @@ import com.moa.store.global.response.ResultResponse;
 import lombok.RequiredArgsConstructor;
 
 @RestController
-@RequestMapping("/store/payment")
+@RequestMapping("/payment")
 @RequiredArgsConstructor
 public class PaymentInfoController {
 
@@ -47,4 +47,3 @@ public class PaymentInfoController {
 		return ResponseEntity.status(resultResponse.getStatus()).body(resultResponse);
 	}
 }
-t
