@@ -23,7 +23,7 @@ import UserCardList from "../pages/UserCardList/UserCardList.tsx";
 import Dutchpay from "../pages/Dutchpay/Dutchpay.tsx";
 import DutchInvite from "../pages/DutchInvite/DutchInvite.tsx";
 import DutchParticipation from "../pages/DutchParticipation/DutchParticipation.tsx";
-import BringCard from "../pages/BringCard/BringCard.1.tsx";
+import BringCard from "../pages/BringCard/BringCard.tsx";
 import SelectType from "../pages/SelectType/SelectType.tsx";
 import { elements } from "chart.js";
 import RegisterCard from "../pages/RegisterCard/RegisterCard.tsx";
