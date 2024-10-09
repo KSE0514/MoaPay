@@ -25,7 +25,7 @@ public class PaymentLogQueryRepository {
         return queryFactory.select(Projections.fields(CardHistoryPaymentLogDto.class,
                         paymentLog.merchantName, paymentLog.benefitBalance, paymentLog.amount, paymentLog.categoryId, paymentLog.createTime))
                 .from(paymentLog)
-                .where(paymentLog.createTime.between(start, end))
+                .where(paymentLog.cardId.eq(cardId).and(paymentLog.createTime.between(start, end)))
                 .orderBy(paymentLog.createTime.desc())
                 .fetch();
     }
