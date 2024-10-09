@@ -135,7 +135,7 @@ public class SavingServiceImpl implements SavingService {
 
 	}
 
-	//스케줄링) 매일 23:59:59
+	//스케줄링 완료) 매일 23:59:59
 	@Override
 	@Transactional
 	public void updateDaily(UpdateDailyRequestDto dto) {
@@ -148,19 +148,20 @@ public class SavingServiceImpl implements SavingService {
 		savingRepository.save(saving);
 	}
 
-	//paymentLog 업데이트 되면 todayAmount 업데이트
+	//paymentLog 업데이트 되면 todayAmount 업데이트 + 총 amount 업데이트
 	@Override
 	@Transactional
 	public void updateTodayAmount(PaymentLog paymentLog) {
-		long amount = paymentLog.getAmount();
+		long amount = paymentLog.getAmount(); //방금 결제한 금액
 		UUID cardId = paymentLog.getCardId();
 		UUID memberId = getMemberId(cardId);
-		System.out.println("멤버:" + memberId);
+
 		Saving saving = savingRepository.findByMemberId(memberId)
 			.orElseThrow(() -> new BusinessException(HttpStatus.NOT_FOUND, "해당 멤버의 절약 정보를 찾을 수 없습니다."));
 		;
 		System.out.println("방금 쓴 금액:" + amount);
 		saving.updateTodayAmount(amount);
+		saving.updateAmount(amount);
 		savingRepository.save(saving);
 	}
 
@@ -185,6 +186,20 @@ public class SavingServiceImpl implements SavingService {
 		// POST 요청으로 cardId를 보내고, UUID로 응답을 받음
 		ResponseEntity<UUID> response = restTemplate.postForEntity(url, cardId, UUID.class);
 		return response.getBody();  // 응답에서 UUID를 반환
+	}
+
+	@Override
+	//스케줄링. 매달 1일 00시 00분에 실행.
+	//saving의 모든 데이터의 amount, today_amount, daily 초기화
+	public void resetSaving(){
+		List<Saving> savings = savingRepository.findAll();
+
+		for(Saving saving:savings){
+			saving.resetSaving();
+		}
+
+		savingRepository.saveAll(savings);
+
 	}
 
 }
