@@ -146,27 +146,27 @@ const SelectPaymentType = () => {
 
   useEffect(() => {
     // orderId 저장
-    if (orderId && !localStorage.getItem("orderId")) {
+    if (orderId) {
       localStorage.setItem("orderId", orderId);
     }
 
     // totalPrice 저장
-    if (totalPrice && !localStorage.getItem("totalPrice")) {
+    if (totalPrice) {
       localStorage.setItem("totalPrice", totalPrice);
     }
 
     // categoryId 저장
-    if (categoryId && !localStorage.getItem("categoryId")) {
+    if (categoryId) {
       localStorage.setItem("categoryId", categoryId);
     }
 
     // merchantId 저장
-    if (merchantId && !localStorage.getItem("merchantId")) {
+    if (merchantId) {
       localStorage.setItem("merchantId", merchantId);
     }
 
     // QRCode 저장
-    if (QRCode && !localStorage.getItem("QRCode")) {
+    if (QRCode) {
       localStorage.setItem("QRCode", QRCode);
     }
   }, [orderId, totalPrice, categoryId, merchantId, QRCode]);
