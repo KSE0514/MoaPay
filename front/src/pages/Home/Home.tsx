@@ -238,7 +238,12 @@ const Home = () => {
     }
   };
   useEffect(() => {
+    console.log("=====================진행 전 ==================");
+    console.log(cardList);
     getUserCard();
+    console.log("=====================진행 후 ==================");
+    console.log(cardList);
+
     const cardArray: Card[] = [];
     // cardWithNullName과 cardWithDividPay를 배열에 추가
 
