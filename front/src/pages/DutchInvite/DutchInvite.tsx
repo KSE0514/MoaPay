@@ -17,7 +17,6 @@ import {
   WaitingWrapper,
   WaitingTop,
   WaitingMain,
-
   Wrapper,
   Top,
   Title,
@@ -34,7 +33,7 @@ import {
   Bottom,
   Btn,
   BackImg,
-} from "./DutchInvite.styles"
+} from "./DutchInvite.styles";
 
 interface DutchPayItem {
   uuid: string;
@@ -54,37 +53,37 @@ interface ParticipantInfo {
 }
 
 const DutchInvite = () => {
-  const nav = useNavigate()
+  const nav = useNavigate();
 
   // const { name, id } = useAuthStore();
 
   // 테스트용 멤버 데이터
   const testUser = {
-    name: '김철수',
+    name: "김철수",
     phoneNumber: "01012345678",
-    memberId: '019250e9-b495-75e3-85d9-8bf4767d9fa5'
-  }
-
+    memberId: "019250e9-b495-75e3-85d9-8bf4767d9fa5",
+  };
 
   useEffect(() => {
-
-    console.log(testUser)
-    setMemberName(testUser.name)
-    setMemberId(testUser.memberId)
+    console.log(testUser);
+    setMemberName(testUser.name);
+    setMemberId(testUser.memberId);
 
     // Url로부터 더치페이 입장 roomId 가져오기
     const currentUrl = window.location.href; // 현재 URL을 가져옴
-    const parts = currentUrl.split('/'); // '/'를 기준으로 URL을 분할
+    const parts = currentUrl.split("/"); // '/'를 기준으로 URL을 분할
     const joinRoomId = parts[parts.length - 1]; // 마지막 요소가 roomId
     const maxMemNum = parts[parts.length - 2]; // 마지막에서 두 번째 요소가 MaxMember 수
     console.log("joinRoomId : ", joinRoomId); // "76735551-df91-4f94-9bc5-cc1895587aaf"
-    setRoomId(joinRoomId)
-    setMexMember(Number(maxMemNum))
+    setRoomId(joinRoomId);
+    setMexMember(Number(maxMemNum));
 
-    getRoomInfo() // 방 정보 가지고 오기
-  }, [])
+    getRoomInfo(joinRoomId); // 방 정보 가지고 오기
+  }, []);
 
-  const [dutchParticipants, setDutchParticipants] = useState<ParticipantInfo[]>([]); // join 및 leave 후 남아있는 참여자 정보를 받을 변수
+  const [dutchParticipants, setDutchParticipants] = useState<ParticipantInfo[]>(
+    []
+  ); // join 및 leave 후 남아있는 참여자 정보를 받을 변수
   const [dutchPayListInfo, setDutchPayListInfo] = useState<DutchPayItem[]>([]); // dutch 초대 첫 화면(대기화면)에서 더치페이 방 정보를 불러와 담을 변수
 
   const [isAccept, setIsAccept] = useState<boolean>(false); // 수락 버튼을 눌렀는지 확인용
@@ -93,93 +92,93 @@ const DutchInvite = () => {
   const [process, setProcess] = useState<number>(0); // 진행 단계
   const [isHost, setIsHost] = useState<boolean>(false);
   const [dutchStart, setDutchStart] = useState<boolean>(false);
-  const [maxMember, setMexMember] = useState<number | string>('');
+  const [maxMember, setMexMember] = useState<number | string>("");
 
   const [stop, setStop] = useState(false);
 
+  // 더치페이 방 입장 관련
+  const [roomId, setRoomId] = useState<string>(
+    "ba8deac8-2bb5-40a2-b21f-8cb7d7f13468"
+  ); // 방 ID
+  const [memberId, setMemberId] = useState<string>(
+    "01923d9f-7b3d-78dd-9f9d-32f85c64fbcd"
+  ); // 멤버 ID
+  const [roomInfo, setRoomInfo] = useState<DutchPayItem[]>(); // 방 정보
+  const [stompClient, setStompClient] = useState<Client | null>(null); // STOMP 클라이언트
 
-    // 더치페이 방 입장 관련
-    const [roomId, setRoomId] = useState<string>("ba8deac8-2bb5-40a2-b21f-8cb7d7f13468"); // 방 ID
-    const [memberId, setMemberId] = useState<string>(
-      "01923d9f-7b3d-78dd-9f9d-32f85c64fbcd"
-    ); // 멤버 ID
-    const [roomInfo, setRoomInfo] = useState<any>(null); // 방 정보
-    const [stompClient, setStompClient] = useState<Client | null>(null); // STOMP 클라이언트
-
-    const [orderId, setOrderId] = useState<string>(
-      "01923d9f-7b3d-70e9-ad8d-68a3ab09d578"
-    ); // 주문 ID
-    const [merchantId, setMerchantId] = useState<string>(
-      "01923d9f-7b3d-7a9e-a0b3-24d7970f90d4"
-    ); // 상점 ID
-    const [merchantName, setMerchantName] = useState<string>("Example Merchant"); // 상점 이름
-    const [categoryId, setCategoryId] = useState<string>("category"); // 카테고리 ID
-    const [totalPrice, setTotalPrice] = useState<number>(10000); // 총 가격
-    const [memberName, setMemberName] = useState<string>("");
-
+  const [orderId, setOrderId] = useState<string>(
+    "01923d9f-7b3d-70e9-ad8d-68a3ab09d578"
+  ); // 주문 ID
+  const [merchantId, setMerchantId] = useState<string>(
+    "01923d9f-7b3d-7a9e-a0b3-24d7970f90d4"
+  ); // 상점 ID
+  const [merchantName, setMerchantName] = useState<string>("Example Merchant"); // 상점 이름
+  const [categoryId, setCategoryId] = useState<string>("category"); // 카테고리 ID
+  const [totalPrice, setTotalPrice] = useState<number>(10000); // 총 가격
+  const [memberName, setMemberName] = useState<string>("");
 
   // useEffect(() => {
   //   if (dutchParticipants[0].status === "PROGRESS") {
   //     setProcess(1)
   //   }
   // }, [roomInfo])
-//   useEffect(() => {
-//     if (dutchParticipants.length > 0 && dutchParticipants[0].status === "READY") {
-//         setProcess(1);
-//     }
-// }, [roomInfo]);
+  //   useEffect(() => {
+  //     if (dutchParticipants.length > 0 && dutchParticipants[0].status === "READY") {
+  //         setProcess(1);
+  //     }
+  // }, [roomInfo]);
 
-
-  const getRoomInfo = async () => {
-    try{
+  const getRoomInfo = async (roomid: string) => {
+    try {
       const response = await axios.get(
-        `http://localhost:18020/moapay/core/dutchpay/getDutchRoomInfo/${roomId}`,
+        `http://localhost:18020/moapay/core/dutchpay/getDutchRoomInfo/` +
+          roomid,
         // `api/moapay/core/dutchpay/getDutchRoomInfo/${roomId}`,
         {
-          withCredentials: true
+          withCredentials: true,
         }
       );
       // dutchPayList만 추출하여 상태 업데이트
       const dutchPayList = response.data.data.dutchPayList;
       setDutchPayListInfo(dutchPayList);
       // console.log('참여중인 사람', response.data)
-    //   const PropsParticipants = dutchPayList.map((dutchParticipant, index) => ({
-    //     index,
-    //     uuid: dutchParticipant.uuid,
-    //     memberId: dutchParticipant.memberId,
-    //     memberName: dutchParticipant.memberName,
-    //     amount: null, // 초기값은 null로 설정 (이후 설정 가능)
-    //     status: dutchParticipant.status, // 서버 응답에서 status 필드를 추가
-    // }))
-    //   setDutchParticipants(PropsParticipants)
-      console.log('참여중인 사람', response.data.data.dutchPayList)
-    } catch(err) {
-      console.log('에러 발생:', err)
-      console.log("getRoomInfo-방 정보 조회 함수 에러")
+      //   const PropsParticipants = dutchPayList.map((dutchParticipant, index) => ({
+      //     index,
+      //     uuid: dutchParticipant.uuid,
+      //     memberId: dutchParticipant.memberId,
+      //     memberName: dutchParticipant.memberName,
+      //     amount: null, // 초기값은 null로 설정 (이후 설정 가능)
+      //     status: dutchParticipant.status, // 서버 응답에서 status 필드를 추가
+      // }))
+      //   setDutchParticipants(PropsParticipants)
+      console.log("참여중인 사람", response.data.data.dutchPayList);
+    } catch (err) {
+      console.log("에러 발생:", err);
+      console.log("getRoomInfo-방 정보 조회 함수 에러");
     }
-  }
+  };
 
   const onClickDutchStart = () => {
-    setDutchStart(true)
-    joinRoom()
-  }
+    setDutchStart(true);
+    joinRoom();
+  };
 
-  const onClickAccept = () =>{
-    connectWebSocket() // WebSocket 활성화
-    joinRoom() // 더치페이 방 입장
+  const onClickAccept = () => {
+    connectWebSocket(); // WebSocket 활성화
+    joinRoom(); // 더치페이 방 입장
 
-    localStorage.setItem('isHost', JSON.stringify(false)); // localStorage에 isHost 값 저장--> 언제 삭제할 건지 생각해보기
+    localStorage.setItem("isHost", JSON.stringify(false)); // localStorage에 isHost 값 저장--> 언제 삭제할 건지 생각해보기
     // 삭제해야하는 상황: 모달을 통해 중단할 경우, stomp 중단할 경우......?그런데 host가 invite 페이지로 넘어갔을 때 process값이 2로 설정되어 있어야함....
     // const isHost = JSON.parse(localStorage.getItem('isHost') || 'false'); // localStorage에서 가져오는 코드
     // localStorage.removeItem('isHost'); // 삭제하는 코드
 
-    setIsAccept(true)
+    setIsAccept(true);
     // nav(PATH.DUTCHPARTICIPATION) // 다음 화면으로 전환
-  }
+  };
 
   const goHome = () => {
-    nav(PATH.HOME)
-  }
+    nav(PATH.HOME);
+  };
 
   // [하단]더치페이 참여자 페이지에 있던 것들
   // 더치페이 나가기 버튼 클릭 시 모달 띄우기
@@ -249,17 +248,19 @@ const DutchInvite = () => {
     });
 
     console.log("Leave room:", roomId);
-    nav(PATH.HOME)
+    nav(PATH.HOME);
   };
 
   const check = () => {
     console.log("check Room");
-    if (!stompClient || !stompClient.connected || !roomId){
-      console.log("WebSocket not connected"); return;}
+    if (!stompClient || !stompClient.connected || !roomId) {
+      console.log("WebSocket not connected");
+      return;
+    }
     const requestBody = {
       memberId: memberId,
     };
-    
+
     stompClient.publish({
       destination: `/pub/dutchpay/dutchRoom/${roomId}`,
     });
@@ -269,12 +270,15 @@ const DutchInvite = () => {
 
   const confirm = () => {
     console.log("confirm Room");
-    if (!stompClient || !stompClient.connected || !roomId){
-      console.log("WebSocket not connected"); return;}
+    if (!stompClient || !stompClient.connected || !roomId) {
+      console.log("WebSocket not connected");
+      return;
+    }
 
+    //TODO: dasfs
     const confirmPriceList = dutchParticipants.map((participant) => ({
-        memberId: participant.memberId,
-        price: participant.amount || 0, // amount 값이 null일 경우 0으로 대체
+      memberId: participant.memberId,
+      price: participant.amount || 0, // amount 값이 null일 경우 0으로 대체
     }));
 
     // 요청 바디 구조 정의
@@ -323,7 +327,7 @@ const DutchInvite = () => {
     stompClient.subscribe(`/sub/dutch-room/${roomId}`, (message) => {
       const response: ParticipantInfo[] = JSON.parse(message.body); // 서버에서 받은 응답 메시지를 JSON으로 파싱
       // console.log("Participants received:", response);
-      
+
       // 필터링하여 필요한 정보만 포함하도록 가공
       const filteredParticipants = response.map((participant, index) => ({
         index,
@@ -331,17 +335,17 @@ const DutchInvite = () => {
         memberId: participant.memberId,
         memberName: participant.memberName,
         amount: null, // 초기값은 null로 설정 (이후 설정 가능)
-        status: participant.status
+        status: participant.status,
       }));
 
       // 서버 응답을 dutchParticipants 상태에 저장
       setDutchParticipants(filteredParticipants);
-      console.log('join 응답 확인용', filteredParticipants)
+      console.log("join 응답 확인용", filteredParticipants);
     });
   };
 
   // WebSocket 연결 설정
-  // todo - 최현석
+  // TODO: 최현석
   const connectWebSocket = () => {
     const client = new Client({
       brokerURL: "ws://localhost:18020/moapay/core/ws/dutchpay", // WebSocket URL
@@ -353,9 +357,9 @@ const DutchInvite = () => {
           const roomData = JSON.parse(message.body);
 
           // 여기서 주최자가 보낸 메시지를 확인하여 참가자 process 값 업데이트
-          if (roomData.status === 'PROGRESS') {
+          if (roomData.status === "PROGRESS") {
             setProcess(1);
-            getRoomInfo()
+            getRoomInfo(roomId);
           }
 
           setRoomInfo(roomData); // 받은 메시지를 상태에 저장
@@ -378,328 +382,390 @@ const DutchInvite = () => {
   }, [stompClient]);
   // //////////////////////////////////////////////////////////////////
 
-  return(
+  //TODO: 인터페이스 작성
+  // UUID 타입을 나타내는 TypeScript 타입 정의 (필요에 따라 수정 가능)
+  type UUID = string; // UUID를 문자열로 간주
+
+  // DutchPayList 아이템 인터페이스
+  interface DutchPayItem {
+    uuid: UUID;
+    memberId: UUID;
+    memberName: string;
+    amount: number; // 또는 number, 필요에 따라 선택
+    status: string;
+  }
+
+  // 메인 DutchPayInfo 인터페이스
+  interface DutchPayInfo {
+    dutchUuid: UUID;
+    memberCnt: bigint; // 또는 number, 필요에 따라 선택
+    orderId: UUID;
+    merchantId: UUID;
+    merchantName: string;
+    categoryId: string;
+    totalPrice: number; // 또는 number, 필요에 따라 선택
+    dutchPayList: DutchPayItem[]; // DutchPayItem 배열
+  }
+
+  return (
     <>
-    {isAccept?
-      <Wrapper>
-        <Top>
-          <Title>
-            <div>더치 페이</div>
-            {/* 나가기 아이콘(-> 누르면 모달) */}
-            {(process < 2)&&
-              <svg
-              onClick={openModal}
-              xmlns="http://www.w3.org/2000/svg"
-              x="0px"
-              y="0px"
-              width="32"
-              height="32"
-              viewBox="0 0 48 48"
-              fill="#656565"
-            >
-              <path d="M 11.5 6 C 8.4802259 6 6 8.4802259 6 11.5 L 6 36.5 C 6 39.519774 8.4802259 42 11.5 42 L 29.5 42 C 32.519774 42 35 39.519774 35 36.5 A 1.50015 1.50015 0 1 0 32 36.5 C 32 37.898226 30.898226 39 29.5 39 L 11.5 39 C 10.101774 39 9 37.898226 9 36.5 L 9 11.5 C 9 10.101774 10.101774 9 11.5 9 L 29.5 9 C 30.898226 9 32 10.101774 32 11.5 A 1.50015 1.50015 0 1 0 35 11.5 C 35 8.4802259 32.519774 6 29.5 6 L 11.5 6 z M 33.484375 15.484375 A 1.50015 1.50015 0 0 0 32.439453 18.060547 L 36.878906 22.5 L 15.5 22.5 A 1.50015 1.50015 0 1 0 15.5 25.5 L 36.878906 25.5 L 32.439453 29.939453 A 1.50015 1.50015 0 1 0 34.560547 32.060547 L 41.560547 25.060547 A 1.50015 1.50015 0 0 0 41.560547 22.939453 L 34.560547 15.939453 A 1.50015 1.50015 0 0 0 33.484375 15.484375 z"></path>
-            </svg>}
-          </Title>
-          <Timer>
-            {/* 10분 카운트다운 표시 */}
-            <div>{formatTime(timeLeft)}</div>
-          </Timer>
+      {isAccept ? (
+        <Wrapper>
+          <Top>
+            <Title>
+              <div>더치 페이</div>
+              {/* 나가기 아이콘(-> 누르면 모달) */}
+              {process < 2 && (
+                <svg
+                  onClick={openModal}
+                  xmlns="http://www.w3.org/2000/svg"
+                  x="0px"
+                  y="0px"
+                  width="32"
+                  height="32"
+                  viewBox="0 0 48 48"
+                  fill="#656565"
+                >
+                  <path d="M 11.5 6 C 8.4802259 6 6 8.4802259 6 11.5 L 6 36.5 C 6 39.519774 8.4802259 42 11.5 42 L 29.5 42 C 32.519774 42 35 39.519774 35 36.5 A 1.50015 1.50015 0 1 0 32 36.5 C 32 37.898226 30.898226 39 29.5 39 L 11.5 39 C 10.101774 39 9 37.898226 9 36.5 L 9 11.5 C 9 10.101774 10.101774 9 11.5 9 L 29.5 9 C 30.898226 9 32 10.101774 32 11.5 A 1.50015 1.50015 0 1 0 35 11.5 C 35 8.4802259 32.519774 6 29.5 6 L 11.5 6 z M 33.484375 15.484375 A 1.50015 1.50015 0 0 0 32.439453 18.060547 L 36.878906 22.5 L 15.5 22.5 A 1.50015 1.50015 0 1 0 15.5 25.5 L 36.878906 25.5 L 32.439453 29.939453 A 1.50015 1.50015 0 1 0 34.560547 32.060547 L 41.560547 25.060547 A 1.50015 1.50015 0 0 0 41.560547 22.939453 L 34.560547 15.939453 A 1.50015 1.50015 0 0 0 33.484375 15.484375 z"></path>
+                </svg>
+              )}
+            </Title>
+            <Timer>
+              {/* 10분 카운트다운 표시 */}
+              <div>{formatTime(timeLeft)}</div>
+            </Timer>
 
-          <ProcessContainer>
-            <ProcessLine></ProcessLine>
-            <Process>
-              <Step
-                style={{
-                  fontSize: process === 0 ? "20px" : "17px",
-                  fontWeight: process === 0 ? "700" : "none",
-                  color: 0 < process ? "#868686" : "black",
-                }}
-              >
-                <div
+            <ProcessContainer>
+              <ProcessLine></ProcessLine>
+              <Process>
+                <Step
                   style={{
-                    backgroundColor:
-                      process === 0 ? "#8748F3" : 0 < process ? "black" : "white",
+                    fontSize: process === 0 ? "20px" : "17px",
+                    fontWeight: process === 0 ? "700" : "none",
+                    color: 0 < process ? "#868686" : "black",
                   }}
-                ></div>
-                <div>시작 대기</div>
-              </Step>
-              <Step
-                style={{
-                  fontSize: process === 1 ? "20px" : "17px",
-                  fontWeight: process === 1 ? "700" : "none",
-                  color: 1 < process ? "#868686" : "black",
-                }}
-              >
-                <div
+                >
+                  <div
+                    style={{
+                      backgroundColor:
+                        process === 0
+                          ? "#8748F3"
+                          : 0 < process
+                          ? "black"
+                          : "white",
+                    }}
+                  ></div>
+                  <div>시작 대기</div>
+                </Step>
+                <Step
                   style={{
-                    backgroundColor:
-                      process === 1 ? "#8748F3" : 1 < process ? "black" : "white",
+                    fontSize: process === 1 ? "20px" : "17px",
+                    fontWeight: process === 1 ? "700" : "none",
+                    color: 1 < process ? "#868686" : "black",
                   }}
-                ></div>
-                <div>금액 산정</div>
-              </Step>
-              <Step
-                style={{
-                  fontSize: process === 2 ? "20px" : "17px",
-                  fontWeight: process === 2 ? "700" : "none",
-                  color: 2 < process ? "#868686" : "black",
-                }}
-              >
-                <div
+                >
+                  <div
+                    style={{
+                      backgroundColor:
+                        process === 1
+                          ? "#8748F3"
+                          : 1 < process
+                          ? "black"
+                          : "white",
+                    }}
+                  ></div>
+                  <div>금액 산정</div>
+                </Step>
+                <Step
                   style={{
-                    backgroundColor:
-                      process === 2 ? "#8748F3" : 2 < process ? "black" : "white",
+                    fontSize: process === 2 ? "20px" : "17px",
+                    fontWeight: process === 2 ? "700" : "none",
+                    color: 2 < process ? "#868686" : "black",
                   }}
-                ></div>
-                <div>결제</div>
-              </Step>
-              <Step
-                style={{
-                  fontSize: process === 3 || process === 4 ? "20px" : "17px",
-                  fontWeight: process === 3 || process === 4 ? "700" : "none",
-                  color: 4 < process ? "#868686" : "black",
-                }}
-              >
-                <div
+                >
+                  <div
+                    style={{
+                      backgroundColor:
+                        process === 2
+                          ? "#8748F3"
+                          : 2 < process
+                          ? "black"
+                          : "white",
+                    }}
+                  ></div>
+                  <div>결제</div>
+                </Step>
+                <Step
                   style={{
-                    backgroundColor:
-                      process === 3 || process === 4
-                        ? "#8748F3"
-                        : 4 < process
-                        ? "black"
-                        : "white",
+                    fontSize: process === 3 || process === 4 ? "20px" : "17px",
+                    fontWeight: process === 3 || process === 4 ? "700" : "none",
+                    color: 4 < process ? "#868686" : "black",
                   }}
-                ></div>
-                <div>정산 대기</div>
-              </Step>
-              <Step
-                style={{
-                  fontSize: process === 5 ? "20px" : "17px",
-                  fontWeight: process === 5 ? "700" : "none",
-                  color: 5 < process ? "#868686" : "black",
-                }}
-              >
-                <div
+                >
+                  <div
+                    style={{
+                      backgroundColor:
+                        process === 3 || process === 4
+                          ? "#8748F3"
+                          : 4 < process
+                          ? "black"
+                          : "white",
+                    }}
+                  ></div>
+                  <div>정산 대기</div>
+                </Step>
+                <Step
                   style={{
-                    backgroundColor:
-                      process === 5 ? "#8748F3" : 5 < process ? "black" : "white",
+                    fontSize: process === 5 ? "20px" : "17px",
+                    fontWeight: process === 5 ? "700" : "none",
+                    color: 5 < process ? "#868686" : "black",
                   }}
-                ></div>
-                <div>완료</div>
-              </Step>
-            </Process>
-          </ProcessContainer>
-        </Top>
+                >
+                  <div
+                    style={{
+                      backgroundColor:
+                        process === 5
+                          ? "#8748F3"
+                          : 5 < process
+                          ? "black"
+                          : "white",
+                    }}
+                  ></div>
+                  <div>완료</div>
+                </Step>
+              </Process>
+            </ProcessContainer>
+          </Top>
 
-        <Main
-          style={{
-            backgroundColor:
-              process === 2 ? "#B6BCFF" : "rgba(255, 255, 255, 0.65)",
-          }}
-        >
-          <JoinBtnDiv>
-            {(process === 0)&&!dutchStart? 
-            // <JoinBtnDiv><SquareBtn text="더치페이 참여하기" color='rgba(135, 72, 243, 0.74)' onClick={onClickDutchStart} /></JoinBtnDiv> 
-            <SquareBtn text="더치페이 참여하기" color='rgba(135, 72, 243, 0.74)' onClick={onClickDutchStart} /> 
-            : null}
-
-          </JoinBtnDiv>
-          {/* 3. 더치페이하는 상품 정보 */}
-          {/* 2. 참여자 목록 컴포넌트_2단계인지 판단 기준: memberSetComplete === true */}
-          {process < 2 ? <Participant maxNum={Number(maxMember)} setDutchParticipants={setDutchParticipants} roomId={roomId} participants={dutchParticipants} leaveRoom={leaveRoom} confirm={confirm} setProcess={setProcess} process={process}  /> : null}
-          {process === 2 ? <Payment onClick={onClickPaymentBtn} /> : null}
-          {process === 3 ? (
-            <DutchWaiting>
-              <div>
-                <span>결</span>
-                <span>제</span>
-                <span> </span>
-                <span>진</span>
-                <span>행</span>
-                <span>중</span>
-                <span>.</span>
-                <span>.</span>
-                <span>.</span>
-              </div>
-              <div>결제 완료 시 웃는 얼굴로 변해요!</div>
-            </DutchWaiting>
-          ) : null}
-          {process === 4 ? (
-            <div>
-              다른 사람 결제 대기 화면
-              <div className="container">
-                <div id="spinner"></div>
-              </div>
-            </div>
-          ) : null}
-          {process === 5 ? (
-            <DutchFin>
-              <FinContent>
+          <Main
+            style={{
+              backgroundColor:
+                process === 2 ? "#B6BCFF" : "rgba(255, 255, 255, 0.65)",
+            }}
+          >
+            <JoinBtnDiv>
+              {process === 0 && !dutchStart ? (
+                // <JoinBtnDiv><SquareBtn text="더치페이 참여하기" color='rgba(135, 72, 243, 0.74)' onClick={onClickDutchStart} /></JoinBtnDiv>
+                <SquareBtn
+                  text="더치페이 참여하기"
+                  color="rgba(135, 72, 243, 0.74)"
+                  onClick={onClickDutchStart}
+                />
+              ) : null}
+            </JoinBtnDiv>
+            {/* 3. 더치페이하는 상품 정보 */}
+            {/* 2. 참여자 목록 컴포넌트_2단계인지 판단 기준: memberSetComplete === true */}
+            {process < 2 ? (
+              <Participant
+                maxNum={Number(maxMember)}
+                setDutchParticipants={setDutchParticipants}
+                roomId={roomId}
+                participants={dutchParticipants}
+                leaveRoom={leaveRoom}
+                confirm={confirm}
+                setProcess={setProcess}
+                process={process}
+                roomInfo={roomInfo}
+              />
+            ) : null}
+            {process === 2 ? <Payment onClick={onClickPaymentBtn} /> : null}
+            {process === 3 ? (
+              <DutchWaiting>
                 <div>
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    fill="white"
-                    x="0px"
-                    y="0px"
-                    width="48"
-                    height="48"
-                    viewBox="0 0 24 24"
-                  >
-                    <path d="M 20.738281 5.9941406 A 1.250125 1.250125 0 0 0 19.878906 6.3730469 L 9 17.234375 L 4.1152344 12.361328 A 1.250125 1.250125 0 1 0 2.3496094 14.130859 L 8.1171875 19.884766 A 1.250125 1.250125 0 0 0 9.8828125 19.884766 L 21.644531 8.140625 A 1.250125 1.250125 0 0 0 20.738281 5.9941406 z"></path>
-                  </svg>
+                  <span>결</span>
+                  <span>제</span>
+                  <span> </span>
+                  <span>진</span>
+                  <span>행</span>
+                  <span>중</span>
+                  <span>.</span>
+                  <span>.</span>
+                  <span>.</span>
                 </div>
-                <div>더치페이 완료!</div>
-              </FinContent>
-              <Bottom>
-                <Btn onClick={goHome}>홈으로 돌아가기</Btn>
-              </Bottom>
-            </DutchFin>
-          ) : null}
-        </Main>
+                <div>결제 완료 시 웃는 얼굴로 변해요!</div>
+              </DutchWaiting>
+            ) : null}
+            {process === 4 ? (
+              <div>
+                다른 사람 결제 대기 화면
+                <div className="container">
+                  <div id="spinner"></div>
+                </div>
+              </div>
+            ) : null}
+            {process === 5 ? (
+              <DutchFin>
+                <FinContent>
+                  <div>
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      fill="white"
+                      x="0px"
+                      y="0px"
+                      width="48"
+                      height="48"
+                      viewBox="0 0 24 24"
+                    >
+                      <path d="M 20.738281 5.9941406 A 1.250125 1.250125 0 0 0 19.878906 6.3730469 L 9 17.234375 L 4.1152344 12.361328 A 1.250125 1.250125 0 1 0 2.3496094 14.130859 L 8.1171875 19.884766 A 1.250125 1.250125 0 0 0 9.8828125 19.884766 L 21.644531 8.140625 A 1.250125 1.250125 0 0 0 20.738281 5.9941406 z"></path>
+                    </svg>
+                  </div>
+                  <div>더치페이 완료!</div>
+                </FinContent>
+                <Bottom>
+                  <Btn onClick={goHome}>홈으로 돌아가기</Btn>
+                </Bottom>
+              </DutchFin>
+            ) : null}
+          </Main>
 
-        {/* <Bottom>
+          {/* <Bottom>
           <SquareBtn text={'더치페이 시작'} />
         </Bottom> */}
 
-        {/* 배경 도형 */}
-        <BackImg>
-          <img src={triangle} />
-          <img src={triangle} />
-          <img src={triangle} />
-        </BackImg>
+          {/* 배경 도형 */}
+          <BackImg>
+            <img src={triangle} />
+            <img src={triangle} />
+            <img src={triangle} />
+          </BackImg>
 
-        {/* [종료 버튼 미완]더치페이 나가기 모달 */}
-        {isOpen && (
-          <Modal isOpen={isOpen} onClose={closeModal}>
-            <svg
-              onClick={closeModal}
-              xmlns="http://www.w3.org/2000/svg"
-              x="0px"
-              y="0px"
-              width="20"
-              height="20"
-              viewBox="0 0 48 48"
-            >
-              <path d="M 38.982422 6.9707031 A 2.0002 2.0002 0 0 0 37.585938 7.5859375 L 24 21.171875 L 10.414062 7.5859375 A 2.0002 2.0002 0 0 0 8.9785156 6.9804688 A 2.0002 2.0002 0 0 0 7.5859375 10.414062 L 21.171875 24 L 7.5859375 37.585938 A 2.0002 2.0002 0 1 0 10.414062 40.414062 L 24 26.828125 L 37.585938 40.414062 A 2.0002 2.0002 0 1 0 40.414062 37.585938 L 26.828125 24 L 40.414062 10.414062 A 2.0002 2.0002 0 0 0 38.982422 6.9707031 z"></path>
-            </svg>
-            {stop ? (
-              <div>정말 더치페이를 중단하시겠습니까?</div>
-            ) : (
-              <div>더치페이를 중단 시키시겠습니까?</div>
-            )}
-            <div>
-              {/* <button onClick={closeModal}>취소</button> */}
-              {/* 종료(중단)버튼: 더치페이 주최자는 더치페이가 모두에게 종료되도록하고 참가자는 참가자 본인만 종료되도록 해야함  */}
+          {/* [종료 버튼 미완]더치페이 나가기 모달 */}
+          {isOpen && (
+            <Modal isOpen={isOpen} onClose={closeModal}>
+              <svg
+                onClick={closeModal}
+                xmlns="http://www.w3.org/2000/svg"
+                x="0px"
+                y="0px"
+                width="20"
+                height="20"
+                viewBox="0 0 48 48"
+              >
+                <path d="M 38.982422 6.9707031 A 2.0002 2.0002 0 0 0 37.585938 7.5859375 L 24 21.171875 L 10.414062 7.5859375 A 2.0002 2.0002 0 0 0 8.9785156 6.9804688 A 2.0002 2.0002 0 0 0 7.5859375 10.414062 L 21.171875 24 L 7.5859375 37.585938 A 2.0002 2.0002 0 1 0 10.414062 40.414062 L 24 26.828125 L 37.585938 40.414062 A 2.0002 2.0002 0 1 0 40.414062 37.585938 L 26.828125 24 L 40.414062 10.414062 A 2.0002 2.0002 0 0 0 38.982422 6.9707031 z"></path>
+              </svg>
               {stop ? (
-                <button onClick={leaveRoom}>예</button>
+                <div>정말 더치페이를 중단하시겠습니까?</div>
               ) : (
-                <button onClick={onClickStop}>중단</button>
+                <div>더치페이를 중단 시키시겠습니까?</div>
               )}
-              {stop ? (
-                <button
-                  onClick={() => {
-                    setStop(false);
-                  }}
-                >
-                  취소
-                </button>
-              ) : (
-                <button onClick={goHome}>홈으로</button>
-              )}
-            </div>
-          </Modal>
-        )}
+              <div>
+                {/* <button onClick={closeModal}>취소</button> */}
+                {/* 종료(중단)버튼: 더치페이 주최자는 더치페이가 모두에게 종료되도록하고 참가자는 참가자 본인만 종료되도록 해야함  */}
+                {stop ? (
+                  <button onClick={leaveRoom}>예</button>
+                ) : (
+                  <button onClick={onClickStop}>중단</button>
+                )}
+                {stop ? (
+                  <button
+                    onClick={() => {
+                      setStop(false);
+                    }}
+                  >
+                    취소
+                  </button>
+                ) : (
+                  <button onClick={goHome}>홈으로</button>
+                )}
+              </div>
+            </Modal>
+          )}
 
-<div>
-      <h1>Dutch Pay Test Client</h1>
+          <div>
+            <h1>Dutch Pay Test Client</h1>
 
-      <h2>Create Room</h2>
+            <h2>Create Room</h2>
 
-      {/* <input
+            {/* <input
         type="number"
         placeholder="Member Count"
         value={maxMember}
         onChange={(e) => setMemberCnt(Number(e.target.value))}
       /> */}
-      <p>Order ID: {orderId}</p>
-      <p>Merchant ID: {merchantId}</p>
-      <p>Merchant Name: {merchantName}</p>
-      <p>Category ID: {categoryId}</p>
-      <input
-        type="number"
-        placeholder="Total Price"
-        value={totalPrice}
-        onChange={(e) => setTotalPrice(Number(e.target.value))}
-      />
-      {/* <button onClick={createRoom}>Create Room</button>
+            <p>Order ID: {orderId}</p>
+            <p>Merchant ID: {merchantId}</p>
+            <p>Merchant Name: {merchantName}</p>
+            <p>Category ID: {categoryId}</p>
+            <input
+              type="number"
+              placeholder="Total Price"
+              value={totalPrice}
+              onChange={(e) => setTotalPrice(Number(e.target.value))}
+            />
+            {/* <button onClick={createRoom}>Create Room</button>
       {joinUrl && (
         <p>
           Join URL: <a href={joinUrl}>{joinUrl}</a>
         </p>
       )} */}
 
-      <h2>Join Room</h2>
-      <input
-        type="text"
-        value={memberName}
-        onChange={(e) => setMemberName(e.target.value)} // 멤버 ID 수정 가능하도록 설정
-      />
-      <br></br>
-      <p>Member ID:</p>
-      <input
-        type="text"
-        value={memberId}
-        onChange={(e) => setMemberId(e.target.value)} // 멤버 ID 수정 가능하도록 설정
-      />
-      <br></br>
-      <p>룸 UUID</p>
-      <input
-        type="text"
-        placeholder="Room ID"
-        value={roomId}
-        onChange={(e) => setRoomId(e.target.value)}
-      />
-      <br />
-      <br />
-      <button onClick={connectWebSocket}>Connect WebSocket</button>
-      <button onClick={joinRoom}>Join Room</button>
-      <button onClick={leaveRoom}>Leave Room</button>
-      <button onClick={check}>Check</button>
-      <button onClick={confirm}>Confirm</button>
+            <h2>Join Room</h2>
+            <input
+              type="text"
+              value={memberName}
+              onChange={(e) => setMemberName(e.target.value)} // 멤버 ID 수정 가능하도록 설정
+            />
+            <br></br>
+            <p>Member ID:</p>
+            <input
+              type="text"
+              value={memberId}
+              onChange={(e) => setMemberId(e.target.value)} // 멤버 ID 수정 가능하도록 설정
+            />
+            <br></br>
+            <p>룸 UUID</p>
+            <input
+              type="text"
+              placeholder="Room ID"
+              value={roomId}
+              onChange={(e) => setRoomId(e.target.value)}
+            />
+            <br />
+            <br />
+            <button onClick={connectWebSocket}>Connect WebSocket</button>
+            <button onClick={joinRoom}>Join Room</button>
+            <button onClick={leaveRoom}>Leave Room</button>
+            <button onClick={check}>Check</button>
+            <button onClick={confirm}>Confirm</button>
 
-      {roomInfo && (
-        <div>
-          <h3>Room Info:</h3>
-          <pre>{JSON.stringify(roomInfo, null, 2)}</pre>
-        </div>
+            {roomInfo && (
+              <div>
+                <h3>Room Info:</h3>
+                <pre>{JSON.stringify(roomInfo, null, 2)}</pre>
+              </div>
+            )}
+          </div>
+        </Wrapper>
+      ) : (
+        <WaitingWrapper>
+          <WaitingTop>
+            <img src={backImg} />
+            <div>
+              {/* 상품 정보는 또 어떻게 들고와야하지... */}
+              <Product
+                productName={"새콤달콤 티니핑 시즌4 하츄핑 꽃다발 봉제 인형"}
+                productUrl={
+                  "https://www.ssg.com/item/itemView.ssg?itemId=1000566517100"
+                }
+              />
+            </div>
+          </WaitingTop>
+          <WaitingMain>
+            {/* 주최자 이름을 어떻게 들고와야 하는가... */}
+            {/* <div>'{dutchPayListInfo[0].memberName}'님이</div> */}
+            <div>'' 님이</div>
+            <div>더치페이를</div>
+            <div>신청했습니다.</div>
+            <div>
+              {/* [미완]_수락 버튼 클릭시 어떤 방식으로 처리할 건지 더 생각해보기-> 참가자 전용 진행 페이지 따로? 참가자&주최자 같은 /dutch에서 진행하되 변수로 구분하여 분리...? */}
+              <button onClick={onClickAccept}>수락</button>
+              <button onClick={goHome}>취소</button>
+            </div>
+          </WaitingMain>
+        </WaitingWrapper>
       )}
-    </div>
-    </Wrapper> 
-    :
-    <WaitingWrapper>
-      <WaitingTop>
-        <img src={backImg} />
-        <div>
-          {/* 상품 정보는 또 어떻게 들고와야하지... */}
-          <Product productName={'새콤달콤 티니핑 시즌4 하츄핑 꽃다발 봉제 인형'} productUrl={'https://www.ssg.com/item/itemView.ssg?itemId=1000566517100'} />
-        </div>
-      </WaitingTop>
-      <WaitingMain>
-        {/* 주최자 이름을 어떻게 들고와야 하는가... */}
-        {/* <div>'{dutchPayListInfo[0].memberName}'님이</div> */}
-        <div>'' 님이</div>
-        <div>더치페이를</div>
-        <div>신청했습니다.</div>
-        <div>
-          {/* [미완]_수락 버튼 클릭시 어떤 방식으로 처리할 건지 더 생각해보기-> 참가자 전용 진행 페이지 따로? 참가자&주최자 같은 /dutch에서 진행하되 변수로 구분하여 분리...? */}
-          <button onClick={onClickAccept}>수락</button>
-          <button onClick={goHome}>취소</button>
-        </div>
-      </WaitingMain>
-    </WaitingWrapper>
-  }
     </>
-  )
-}
+  );
+};
 
 export default DutchInvite;
