@@ -24,12 +24,13 @@ import {
 import { useEffect, useState } from "react";
 import { PATH } from "../../constants/path";
 
+
 const DutchParticipation = () => {
   const nav = useNavigate();
 
   const [memberNum, setMemberNum] = useState(""); // 참여자 수 입력 받는 변수
   const [isOpen, setIsOpen] = useState(false); // 더치페이 나가기 모달 상태 관리
-  const [timeLeft, setTimeLeft] = useState(600); // 10분(600초) 카운트다운을 위한 상태 관리
+  const [timeLeft, setTimeLeft] = useState(2400); // 40분(2400초) 카운트다운을 위한 상태 관리
   const [process, setProcess] = useState(2); // 진행 단계
 
   const [stop, setStop] = useState(false);
