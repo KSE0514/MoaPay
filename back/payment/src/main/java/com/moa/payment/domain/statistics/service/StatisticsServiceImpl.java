@@ -47,6 +47,7 @@ public class StatisticsServiceImpl implements StatisticsService {
         for (CardHistoryPaymentLogDto pay: res) {
             log.error("pay: {}", pay);
         }
+        return res;
     }
 
     public List<UUID> getCardsUUID(GetMyCardIdsRequestDto getMyCardIdsRequestDto) {
