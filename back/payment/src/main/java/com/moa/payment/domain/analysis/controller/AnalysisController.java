@@ -9,7 +9,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import com.moa.payment.domain.analysis.model.dto.averageRequestDto;
-import com.moa.payment.domain.analysis.entity.dto.averageResponseDto;
+import com.moa.payment.domain.analysis.model.dto.averageResponseDto;
+import com.moa.payment.domain.analysis.model.dto.getMemberResponseDto;
 import com.moa.payment.domain.analysis.service.AnalysisService;
 import com.moa.payment.global.response.ResultResponse;
 
@@ -36,8 +37,10 @@ public class AnalysisController {
 	public  ResponseEntity<ResultResponse> getAverage(@RequestBody averageRequestDto dto){
 		UUID memberId=dto.getMemberId();
 		Long average=analysisService.average(memberId);
+		getMemberResponseDto member=analysisService.getMemberInfo(memberId);
 		averageResponseDto averageDto=new averageResponseDto();
 		averageDto.setAverage(average);
+		averageDto.setGender(member.getGender());
 		ResultResponse resultResponse = ResultResponse.of(HttpStatus.OK, "소비평균",averageDto);
 		return ResponseEntity.status(resultResponse.getStatus()).body(resultResponse);
 	}

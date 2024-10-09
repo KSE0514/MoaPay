@@ -35,6 +35,10 @@ public class Analysis {
     @Column(name = "total_amount")
     private long totalAmount;
 
+    @NotNull
+    @Column(name = "total_benefit")
+    private long totalBenefit;
+
     @Column(name = "user_count")
     private long userCount;
 

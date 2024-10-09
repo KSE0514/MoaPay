@@ -41,4 +41,6 @@ public interface DutchPayService {
 
     SimpleOrderInfoDto getSimpleOrderInfoFromStore(UUID orderId);
     SimpleOrderInfoDto getSimpleOrderInfoFromRedis(UUID orderId);
+
+    GetMyPriceResponseDto getMyPrice( DutchGetMyPriceRequestDto dutchGetMyPriceRequestDto);
 }
