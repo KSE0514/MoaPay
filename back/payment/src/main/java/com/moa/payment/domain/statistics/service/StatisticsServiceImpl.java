@@ -36,16 +36,44 @@ public class StatisticsServiceImpl implements StatisticsService {
     private final PaymentLogQueryRepository paymentLogQueryRepository;
     private final ObjectMapper objectMapper;
 
+//    public List<CardHistoryPaymentLogDto> getPaymentLogs(int year, int month, List<UUID> cardIds) {
+//        log.info("getPaymentLogs - year : {}, month : {}", year, month);
+//        YearMonth dateInfo = YearMonth.of(year, month);
+//        int lastDay = dateInfo.atEndOfMonth().lengthOfMonth();
+//        LocalDateTime startTime = LocalDateTime.of(year, month, 1, 0, 0);
+//        LocalDateTime endTime = LocalDateTime.of(year, month, lastDay, 23, 59);
+//        List<CardHistoryPaymentLogDto> res = paymentLogQueryRepository.findAllCardsPaymentLogs(cardIds,
+//            startTime, endTime);
+//        for (CardHistoryPaymentLogDto pay: res) {
+//            log.error("pay: {}", pay);
+//        }
+//        return res;
+//    }
+
     public List<CardHistoryPaymentLogDto> getPaymentLogs(int year, int month, List<UUID> cardIds) {
         log.info("getPaymentLogs - year : {}, month : {}", year, month);
         YearMonth dateInfo = YearMonth.of(year, month);
         int lastDay = dateInfo.atEndOfMonth().lengthOfMonth();
         LocalDateTime startTime = LocalDateTime.of(year, month, 1, 0, 0);
         LocalDateTime endTime = LocalDateTime.of(year, month, lastDay, 23, 59);
+
+        // cardIds 내용 로깅
+        log.info("Searching for cardIds: {}", cardIds);
+        log.info("Date range: {} to {}", startTime, endTime);
+
         List<CardHistoryPaymentLogDto> res = paymentLogQueryRepository.findAllCardsPaymentLogs(cardIds,
-            startTime, endTime);
-        for (CardHistoryPaymentLogDto pay: res) {
-            log.error("pay: {}", pay);
+                startTime, endTime);
+
+        // 결과 크기 로깅
+        log.info("Query returned {} results", res.size());
+
+        if (res.isEmpty()) {
+            log.warn("No payment logs found for the given criteria");
+        } else {
+            for (CardHistoryPaymentLogDto pay: res) {
+                // ERROR 대신 INFO 사용
+                log.info("pay: {}", pay);
+            }
         }
         return res;
     }
