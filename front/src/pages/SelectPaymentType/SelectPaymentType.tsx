@@ -72,8 +72,7 @@ interface AppClientResponse {
  * true true => 결제 완료 애니메이션
  * false true => 결제 완료  창
  */
-
-
+const SelectPaymentType = () => {
   const { accessToken, id, paymentType } = useAuthStore();
   const navigate = useNavigate();
 
@@ -379,7 +378,7 @@ interface AppClientResponse {
                 spaceBetween={50}
                 slidesPerView={1}
               >
-                {paymentResult.paymentResultCardInfoList?.map(
+                {paymentResult?.paymentResultCardInfoList?.map(
                   (result, index) => (
                     <SwiperSlide key={index}>
                       <ResultBoxInner>
@@ -431,18 +430,15 @@ interface AppClientResponse {
               {/* 하단 네브바 (점) */}
             </ResultBox>
             <DotNav>
-              {paymentResult.paymentResultCardInfoList.map(
-                (_, index) => (
-                  <span
-                    key={index}
-                    onClick={() => handleNavClick(index)}
-                    style={{
-                      backgroundColor:
-                        activeIndex === index ? "purple" : "white",
-                    }}
-                  ></span>
-                )
-              )}
+              {paymentResult?.paymentResultCardInfoList.map((_, index) => (
+                <span
+                  key={index}
+                  onClick={() => handleNavClick(index)}
+                  style={{
+                    backgroundColor: activeIndex === index ? "purple" : "white",
+                  }}
+                ></span>
+              ))}
             </DotNav>
             <HomeBtn
               onClick={() => {
