@@ -25,41 +25,9 @@ import { PATH } from "../../constants/path";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import axios from "axios";
 import { categoryData } from "../../store/CardStore";
+import { useAuthStore } from "../../store/AuthStore";
 const Statistics = () => {
-  /**
-   * 드롭다운 컨트롤 함수
-   */
-  // const OpenDropDown = () => {
-  //   if (openDropDown) {
-  //     setCloseAnimateClass(true);
-  //     setOpenDropDown(false); // 0.5초 후 드롭다운을 닫음
-  //     setTimeout(() => {
-  //       setCloseAnimateClass(false);
-  //     }, 1100);
-  //   } else {
-  //     setOpenDropDown(true);
-  //   }
-  // };
-  /**
-   * openDropDown값이 변할 때마다 아이콘 애니메이션 실행
-   */
-  // useEffect(() => {
-  //   if (isFirstRender) {
-  //     // 첫 렌더링일 경우 아무 작업도 하지 않음
-  //     setIsFirstRender(false); // 이후 렌더링에는 실행되도록 변경
-  //     return;
-  //   }
-  // 애니메이션 클래스 적용
-  // setIconAnimateClass("binggle");
-
-  // 1초 후 애니메이션 클래스 초기화
-  // const timer = setTimeout(() => {
-  //   setIconAnimateClass("");
-  // }, 1000);
-
-  // 타이머 정리
-  //   return () => clearTimeout(timer);
-  // }, [openDropDown]);
+  const { id, accessToken, name } = useAuthStore();
 
   const navigator = useNavigate();
   const location = useLocation();
@@ -80,10 +48,16 @@ const Statistics = () => {
   const [navPosition, setNavPosition] = useState<string>(
     `calc(calc(100% / 4) * 0)`
   );
-  const [calculatedPrice, setCalculated] = useState<number | null>(null);
+  const [calculatedPrice, setCalculatedPrice] = useState<number>(0);
 
   // 카테고리 데이터
   const [dataList, setDataList] = useState<categoryData[] | null>([]);
+  const [comparisonAmount, setComparisonAmount] = useState<number>(0);
+
+  //절약
+  const [savingGoal, setSavingGoal] = useState<number>(0);
+  const [savingUse, setSavingUse] = useState<number>(0);
+  const [daysLeft, setDaysLeft] = useState<number>(0);
 
   const handlePrevMonth = () => {
     if (selectedMonth === 1) {
@@ -129,12 +103,30 @@ const Statistics = () => {
    */
   const getConsumptionData = async () => {
     console.log("getConsumtionData");
-    // try {
-    //   const response = await axios.get(``);
-    //   setDataList();
-    // } catch (e) {
-    //   console.log(e);
-    // }
+    try {
+      const response = await axios.post(
+        `api/moapay/pay/statistics/consumption/${selectedYear}/${selectedMonth}`,
+        {
+          memberId: id,
+        },
+        {
+          withCredentials: true,
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+            "Content-Type": "application/json",
+          },
+        }
+      );
+      setDataList(response.data.data.paymentStatistics);
+      //받은 소비량 더하기
+      const totalPrice = response.data.data.paymentStatistics.reduce(
+        (acc, curr) => acc + curr.money,
+        0 // 초기값은 0
+      );
+      setCalculatedPrice(totalPrice);
+    } catch (e) {
+      console.log(e);
+    }
   };
 
   /**
@@ -142,16 +134,37 @@ const Statistics = () => {
    */
   const getBenefitData = async () => {
     console.log("getBenefitData");
-    // try {
-    //   const response = await axios.get(``);
-    //   setDataList();
-    // } catch (e) {
-    //   console.log(e);
-    // }
+    try {
+      const response = await axios.post(
+        `api/moapay/pay/statistics/benefit/${selectedYear}/${selectedMonth}`,
+        {
+          memberId: id,
+        },
+        {
+          withCredentials: true,
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+            "Content-Type": "application/json",
+          },
+        }
+      );
+      setDataList(response.data.data.paymentStatistics);
+      //받은 소비량 더하기
+      const totalPrice = response.data.data.paymentStatistics.reduce(
+        (acc, curr) => acc + curr.money,
+        0 // 초기값은 0
+      );
+      setCalculatedPrice(totalPrice);
+      //받은 소비량 더하기
+    } catch (e) {
+      console.log(e);
+    }
   };
 
   /**
    * nav의 값에 따라 컴포넌트 변경
+   *   const [savingGoal, setSavingGoal] = useState<number>(0);
+  const [savingUse, setSavingUse] = useState<number>(0);
    */
   const changeComponent = async (index: number) => {
     setNavPosition(`calc(calc(100% / 4) * ${index})`);
@@ -176,12 +189,76 @@ const Statistics = () => {
         console.log(e);
       }
     } else if (index == 2) {
+      //나의 해당 월 사용량 가져오기
+      setSelectedYear(new Date().getFullYear());
+      setSelectedMonth(new Date().getMonth() + 1);
+      getConsumptionData();
       //또래 비교금액 가져오기
+      const response = await axios.post(
+        `api/moapay/pay/analysis/getAverage`,
+        { memberId: id },
+        {
+          withCredentials: true,
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+            "Content-Type": "application/json",
+          },
+        }
+      );
+      setComparisonAmount(calculatedPrice - response.data.data.average);
+
       setMode("BarGraph");
       navigator(paths[index]);
     } else {
+      //저번달 소비로 가져오기
       setMode("Ano");
-      navigator(paths[index]);
+      setSelectedYear(
+        new Date().getMonth() + 1 === 1
+          ? new Date().getFullYear() - 1
+          : new Date().getMonth() + 1
+      );
+      //저번달 소비로 가져오기
+      setSelectedMonth(
+        new Date().getMonth() + 1 === 1 ? 12 : new Date().getMonth() - 1
+      );
+      getConsumptionData();
+
+      //saving-storage에서 saving-mode가 true일때
+      if (localStorage.getItem("saving-storage")) {
+        try {
+          const response = await axios.post(
+            `api/moapay/pay/saving/getSaving`,
+            { memberId: id },
+            {
+              withCredentials: true,
+              headers: {
+                Authorization: `Bearer ${accessToken}`,
+                "Content-Type": "application/json",
+              },
+            }
+          );
+          setSavingGoal(response.data.data.limitAmount);
+          setSavingUse(response.data.data.amount);
+          const today = new Date();
+
+          // 이번 달의 마지막 날 계산 (다음 달의 1일에서 하루를 빼면 이번 달 마지막 날)
+          const lastDayOfMonth = new Date(
+            today.getFullYear(),
+            today.getMonth() + 1,
+            0
+          );
+
+          // 남은 일수 계산
+          const remainingDays = lastDayOfMonth.getDate() - today.getDate();
+
+          // 상태 업데이트
+          setDaysLeft(remainingDays);
+        } catch (e) {
+          console.log(e);
+        }
+      }
+      //저번달 사용량을 함께 보냄
+      navigator(paths[index], { state: { calculatedPrice } });
     }
   };
 
@@ -203,7 +280,6 @@ const Statistics = () => {
           {mode === "Donut" && (
             <>
               <Month>
-                {/* <div className="dropdown-btn"> */}
                 <div className="month">
                   <div onClick={handlePrevMonth}>
                     <FontAwesomeIcon icon={faChevronLeft} />
@@ -233,14 +309,18 @@ const Statistics = () => {
               <ImageBox>
                 <img
                   src={
-                    true
+                    comparisonAmount < 0
                       ? "/assets/image/good-pig.png"
                       : "/assets/image/sad-pig.png"
                   }
                 ></img>
               </ImageBox>
               <TextBox>
-                {"또래 남성에 비해 50,000원 덜 쓰고,\n34,200원의 혜택을 누렸어요!"
+                {`${name}님은 또래 남성에 비해\n${Math.abs(
+                  comparisonAmount
+                ).toLocaleString()}원 ${
+                  comparisonAmount > 0 ? "더 사용했어요" : "덜 사용했어요"
+                }`
                   .split("\n")
                   .map((line, index) => (
                     <span key={index}>
@@ -253,22 +333,31 @@ const Statistics = () => {
           )}
           {mode === "Ano" && (
             <div className="saving">
-              <p className="title">1월 목표 중 남은 금액</p>
+              <p className="title">
+                {new Date().getMonth() + 1}월 목표 중 남은 금액
+              </p>
               <div className="price">
-                <p>123,200원</p>
+                <p>{savingUse}</p>
                 <p>/</p>
-                <p>800,000원</p>
+                <p>{savingGoal.toLocaleString()}원</p>
               </div>
               <div className="sub">
                 <div>
                   <img src="/assets/image/prinrefacezoom.png" />
                   <p>
-                    목표 금액의 <span style={{ color: "red " }}>84%</span>
+                    목표 금액의{" "}
+                    <span style={{ color: "red " }}>
+                      {Math.round((savingUse / savingGoal) * 100)}%
+                    </span>
                     를 썼어요.
                     <br />
                     앞으로 하루{" "}
-                    <span style={{ color: "#4258ff " }}>30,800원</span>만 쓰면
-                    돼요.
+                    <span style={{ color: "#4258ff " }}>
+                      {(savingGoal - savingUse) /
+                        (daysLeft === 0 ? 1 : daysLeft)}
+                      원
+                    </span>
+                    만 쓰면 돼요.
                   </p>
                 </div>
               </div>
