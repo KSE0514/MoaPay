@@ -79,7 +79,7 @@ public class SecurityConfig {
                                         "/moapay/member/login", "/moapay/member/join",
                                         "/moapay/member/sendSMS", "/moapay/member/verification", "/moapay/member/isMember",
                                         "/moapay/core/code/QRcode", "/api/moapay/core/code/QRcode",
-                                        "/moapay/pay/analysis/history", "/api/moapay/pay/analysis/history", "/moapay/core/generalpay/offline", "/moapay/pay/notification/subscribe/**"
+                                        "/moapay/pay/analysis/history", "/api/moapay/pay/analysis/history", "/moapay/core/generalpay/offline", "/moapay/pay/notification/subscribe/**", "/api/moapay/pay/notification/subscribe/**"
                         ,"/moapay/core/card/getMyCardIds", "/moapay/pay/charge/getPaymentLog",
                                 "/api/moapay/core/card/getMyCardIds"
                                 )
