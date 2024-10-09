@@ -19,7 +19,7 @@ import java.util.UUID;
 @Slf4j
 @RequiredArgsConstructor
 @RequestMapping("/dutchpay")
-@CrossOrigin(origins = "*")
+@CrossOrigin(origins = "http://localhost:5173", allowedHeaders = "*", allowCredentials = "true")  // 특정 도메인 허용 및 자격 증명 허용
 public class DutchPayController {
 
     private final DutchPayService dutchPayService;
@@ -80,6 +80,9 @@ public class DutchPayController {
         ResultResponse resultResponse = ResultResponse.of(HttpStatus.OK, "맴버아이디로 더치페이 방 정보 조회", dutchRoomByMember);
         return ResponseEntity.status(resultResponse.getStatus()).body(resultResponse);
     }
+
+//    @PostMapping("/getMyPrice")
+//    public ResponseEntity<?> getMyPrice(@Valid @RequestBody )
 
     @PostMapping("/cancel")
     public ResponseEntity<?> cancelDutchPay(@RequestParam DutchPayRoomLeaveDto roomLeaveDto) {
