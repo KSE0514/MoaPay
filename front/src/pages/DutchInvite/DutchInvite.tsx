@@ -103,7 +103,7 @@ const DutchInvite = () => {
   const [memberId, setMemberId] = useState<string>(
     "01923d9f-7b3d-78dd-9f9d-32f85c64fbcd"
   ); // 멤버 ID
-  const [roomInfo, setRoomInfo] = useState<DutchPayInfo | undefined>(undefined);// 방 정보
+  const [roomInfo, setRoomInfo] = useState<DutchPayInfo | undefined>(undefined); // 방 정보
   const [stompClient, setStompClient] = useState<Client | null>(null); // STOMP 클라이언트
 
   const [orderId, setOrderId] = useState<string>(
@@ -133,7 +133,7 @@ const DutchInvite = () => {
       const response = await axios.get(
         // `http://localhost:18020/moapay/core/dutchpay/getDutchRoomInfo/` +
         //   roomid,
-        `api/moapay/core/dutchpay/getDutchRoomInfo/` + roomid,
+        `/api/moapay/core/dutchpay/getDutchRoomInfo/` + roomid,
         {
           withCredentials: true,
         }
