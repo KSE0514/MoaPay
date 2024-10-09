@@ -17,4 +17,5 @@ public interface SavingService {
 	void updateDaily(UpdateDailyRequestDto dto);
 	void updateTodayAmount(PaymentLog paymentLog);
 	GetSavingResponseDto getSaving(UUID memberId);
+	void resetSaving();
 }
