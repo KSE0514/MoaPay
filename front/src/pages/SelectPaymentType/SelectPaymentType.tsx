@@ -144,6 +144,32 @@ const SelectPaymentType = () => {
   const [paymentResult, setPaymentResult] =
     useState<AppClientResponse | null>();
 
+  useEffect(() => {
+    // orderId 저장
+    if (orderId && !localStorage.getItem("orderId")) {
+      localStorage.setItem("orderId", orderId);
+    }
+
+    // totalPrice 저장
+    if (totalPrice && !localStorage.getItem("totalPrice")) {
+      localStorage.setItem("totalPrice", totalPrice);
+    }
+
+    // categoryId 저장
+    if (categoryId && !localStorage.getItem("categoryId")) {
+      localStorage.setItem("categoryId", categoryId);
+    }
+
+    // merchantId 저장
+    if (merchantId && !localStorage.getItem("merchantId")) {
+      localStorage.setItem("merchantId", merchantId);
+    }
+
+    // QRCode 저장
+    if (QRCode && !localStorage.getItem("QRCode")) {
+      localStorage.setItem("QRCode", QRCode);
+    }
+  }, [orderId, totalPrice, categoryId, merchantId, QRCode]);
   /**
    *
    * requestId가 없을 경우 발급
@@ -227,7 +253,19 @@ const SelectPaymentType = () => {
     if (selectedPayType == "single") {
       //카드 선택할 수 있도록 함
     } else if (selectedPayType == "multi") {
-      console.log(orderId, totalPrice, categoryId, merchantId);
+      const storedRequestId = localStorage.getItem("requestId");
+      const storedOrderId = localStorage.getItem("orderId");
+      const storedMerchantId = localStorage.getItem("merchantId");
+      const storedCategoryId = localStorage.getItem("categoryId");
+      const storedTotalPrice = localStorage.getItem("totalPrice");
+      const storedQRCode = localStorage.getItem("QRCode");
+      console.log(
+        storedRequestId,
+        storedOrderId,
+        storedMerchantId,
+        storedCategoryId,
+        storedTotalPrice
+      );
       console.log("=======================multi payment gogo=================");
       try {
         setIsLoading(true);
@@ -236,11 +274,11 @@ const SelectPaymentType = () => {
           `/api/moapay/core/generalpay/pay`,
           // `http://localhost:8765/moapay/core/generalpay/pay`,
           {
-            requestId: requestId,
-            orderId: orderId,
-            merchantId: merchantId,
-            categoryId: categoryId,
-            totalPrice: totalPrice,
+            requestId: storedRequestId,
+            orderId: storedOrderId,
+            merchantId: storedMerchantId,
+            categoryId: storedCategoryId,
+            totalPrice: storedTotalPrice,
             memberId: id,
             cardSelectionType: "RECOMMEND",
             recommendType: paymentType, // RECOMMEND인 경우 사용, BENEFIT / PERFORM
