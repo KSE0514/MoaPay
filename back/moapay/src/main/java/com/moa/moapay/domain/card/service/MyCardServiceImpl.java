@@ -424,6 +424,18 @@ public class MyCardServiceImpl implements MyCardService {
         return objectMapper.convertValue(response.getBody().get("data"), CardHistoryResponseDto.class);
     }
 
+    @Override
+    public GetMyCardIdsResponseDto getMyCardIds(UUID memberId) {
+        List<UUID> cardsIds = myCardQueryRepository.findAllCardIdsByMemberId(memberId);
+        if (cardsIds.isEmpty()) {
+            throw new BusinessException(HttpStatus.NOT_FOUND, "마이 카드에 등록된 카드가 없습니다.");
+        }
+        return GetMyCardIdsResponseDto.builder()
+            .myCardIds(cardsIds)
+            .memberId(memberId)
+            .build();
+    }
+
 	@Override
 	public List<GetMemberCardsDto> getMemberCard(UUID memberId) {
 		List<MyCard> myCardList = myCardRepository.findAllByMemberId(memberId);

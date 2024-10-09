@@ -28,4 +28,20 @@ public class PaymentLogQueryRepository {
                 .orderBy(paymentLog.createTime.desc())
                 .fetch();
     }
+
+    public List<CardHistoryPaymentLogDto> findAllCardsPaymentLogs(List<UUID> cardIds, LocalDateTime start, LocalDateTime end) {
+        QPaymentLog paymentLog = QPaymentLog.paymentLog;
+        return queryFactory.select(Projections.fields(CardHistoryPaymentLogDto.class,
+                        paymentLog.cardId,
+                        paymentLog.merchantName,
+                        paymentLog.benefitBalance,
+                        paymentLog.amount,
+                        paymentLog.categoryId,
+                        paymentLog.createTime))
+                .from(paymentLog)
+                .where(paymentLog.cardId.in(cardIds)
+                        .and(paymentLog.createTime.between(start, end)))
+                .orderBy(paymentLog.createTime.desc())
+                .fetch();
+    }
 }
