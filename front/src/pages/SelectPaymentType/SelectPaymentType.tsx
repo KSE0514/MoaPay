@@ -227,6 +227,7 @@ const SelectPaymentType = () => {
     if (selectedPayType == "single") {
       //카드 선택할 수 있도록 함
     } else if (selectedPayType == "multi") {
+      console.log(orderId, totalPrice, categoryId, merchantId);
       console.log("=======================multi payment gogo=================");
       try {
         setIsLoading(true);
