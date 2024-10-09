@@ -42,8 +42,14 @@ public class StatisticsServiceImpl implements StatisticsService {
         int lastDay = dateInfo.atEndOfMonth().lengthOfMonth();
         LocalDateTime startTime = LocalDateTime.of(year, month, 1, 0, 0);
         LocalDateTime endTime = LocalDateTime.of(year, month, lastDay, 23, 59);
-        return paymentLogQueryRepository.findAllCardsPaymentLogs(cardIds,
+        List<CardHistoryPaymentLogDto> result = paymentLogQueryRepository.findAllCardsPaymentLogs(cardIds,
             startTime, endTime);
+        log.info("getPaymentLogs -> result count : {}", result.size());
+        for(CardHistoryPaymentLogDto logDto : result) {
+            log.info(logDto.toString());
+        }
+        log.info("log list ended");
+        return result;
     }
 
     public List<UUID> getCardsUUID(GetMyCardIdsRequestDto getMyCardIdsRequestDto) {
