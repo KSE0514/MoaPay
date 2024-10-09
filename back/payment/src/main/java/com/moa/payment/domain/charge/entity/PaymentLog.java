@@ -99,7 +99,7 @@ private void prePersist() {
         int randomMinute = ThreadLocalRandom.current().nextInt(0, 60); // 0 ~ 59 사이의 랜덤 분
         int randomSecond = ThreadLocalRandom.current().nextInt(0, 60); // 0 ~ 59 사이의 랜덤 초
 
-        return LocalDateTime.of(2024, 6, randomDay, randomHour, randomMinute, randomSecond);
+        return LocalDateTime.of(2024, 7, randomDay, randomHour, randomMinute, randomSecond);
     }
 
 }
