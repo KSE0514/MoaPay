@@ -231,7 +231,8 @@ const SelectPaymentType = () => {
       try {
         setIsLoading(true);
         const response = await axios.post(
-          `https://j11c201.p.ssafy.io/api/moapay/core/generalpay/pay`,
+          // `https://j11c201.p.ssafy.io/api/moapay/core/generalpay/pay`,
+          `/api/moapay/core/generalpay/pay`,
           // `http://localhost:8765/moapay/core/generalpay/pay`,
           {
             requestId: requestId,

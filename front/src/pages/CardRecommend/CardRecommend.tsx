@@ -84,10 +84,10 @@ const CardRecommend = () => {
 
   const getRecommendCards = async () => {
     try {
-      const response = await axios.post(
-        `https://j11c201.p.ssafy.io/api/moapay/core/card/recommend`,
-        // `http://localhost:8765/moapay/core/card/recommend`,
-        {},
+      const response = await axios.get(
+        // `https://j11c201.p.ssafy.io/api/moapay/core/card/recommend/${id}`,
+        `/api/moapay/core/card/recommend/${id}`,
+        // `http://localhost:8765/moapay/core/card/recommend/${id}``,
         {
           withCredentials: true,
           headers: {
@@ -105,9 +105,8 @@ const CardRecommend = () => {
   };
   useEffect(() => {
     setIsLoading(true);
-    // getRecommendCards();
-    console.log(userCardProductList);
-    setIsLoading(true);
+    getRecommendCards();
+    setIsLoading(false);
   }, []);
 
   return (

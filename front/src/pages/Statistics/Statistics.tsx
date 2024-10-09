@@ -105,7 +105,8 @@ const Statistics = () => {
     console.log("getConsumtionData");
     try {
       const response = await axios.post(
-        `https://j11c201.p.ssafy.io/api/moapay/pay/statistics/consumption/${selectedYear}/${selectedMonth}`,
+        // `https://j11c201.p.ssafy.io/api/moapay/pay/statistics/consumption/${selectedYear}/${selectedMonth}`,
+        `/api/moapay/pay/statistics/consumption/${selectedYear}/${selectedMonth}`,
         {
           memberId: id,
         },
@@ -136,7 +137,8 @@ const Statistics = () => {
     console.log("getBenefitData");
     try {
       const response = await axios.post(
-        `https://j11c201.p.ssafy.io/api/moapay/pay/statistics/benefit/${selectedYear}/${selectedMonth}`,
+        // `https://j11c201.p.ssafy.io/api/moapay/pay/statistics/benefit/${selectedYear}/${selectedMonth}`,
+        `/api/moapay/pay/statistics/benefit/${selectedYear}/${selectedMonth}`,
         {
           memberId: id,
         },
@@ -195,7 +197,8 @@ const Statistics = () => {
       getConsumptionData();
       //또래 비교금액 가져오기
       const response = await axios.post(
-        `https://j11c201.p.ssafy.io/api/moapay/pay/analysis/getAverage`,
+        // `https://j11c201.p.ssafy.io/api/moapay/pay/analysis/getAverage`,
+        `/api/moapay/pay/analysis/getAverage`,
         { memberId: id },
         {
           withCredentials: true,
@@ -227,7 +230,8 @@ const Statistics = () => {
       if (localStorage.getItem("saving-storage")) {
         try {
           const response = await axios.post(
-            `https://j11c201.p.ssafy.io/api/moapay/pay/saving/getSaving`,
+            // `https://j11c201.p.ssafy.io/api/moapay/pay/saving/getSaving`,
+            `/api/moapay/pay/saving/getSaving`,
             { memberId: id },
             {
               withCredentials: true,

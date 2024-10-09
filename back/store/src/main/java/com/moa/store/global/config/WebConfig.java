@@ -12,7 +12,7 @@ public class WebConfig implements WebMvcConfigurer {
 		registry.addMapping("/**")
 			.allowedOrigins("https://localhost:8765", "http://localhost:8765", "https://localhost", "http://localhost",
 				"http://localhost:5173", "https://localhost:5173", "https://moapay-7e24e.web.app",
-				"https://j11c201.p.ssafy.io", "https://j11c201.p.ssafy.io/api", "http://j11c201.p.ssafy.io", "http://j11c201.p.ssafy.io/storeapi", "https://j11c201.p.ssafy.io/storeapi")
+				"https://j11c201.p.ssafy.io", "https://j11c201.p.ssafy.io/api", "http://j11c201.p.ssafy.io", "http://j11c201.p.ssafy.io/store", "https://j11c201.p.ssafy.io/store")
 			.allowedMethods("GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS")
 			.allowedHeaders("*")
 			.allowCredentials(true)

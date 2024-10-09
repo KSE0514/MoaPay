@@ -25,7 +25,8 @@ const SelectType = () => {
     try {
       const response = await axios.post(
         // `${baseUrl}moapay/member/selectType`,
-        `https://j11c201.p.ssafy.io/api/moapay/member/selectType`,
+        // `https://j11c201.p.ssafy.io/api/moapay/member/selectType`,
+        `/api/moapay/member/selectType`,
         { type: selectType, uuid: id },
         {
           withCredentials: true,
