@@ -85,7 +85,7 @@ const CardRecommend = () => {
   const getRecommendCards = async () => {
     try {
       const response = await axios.post(
-        `/api/moapay/core/card/recommend`,
+        `https://j11c201.p.ssafy.io/api/moapay/core/card/recommend`,
         // `http://localhost:8765/moapay/core/card/recommend`,
         {},
         {

@@ -133,7 +133,8 @@ const DutchInvite = () => {
       const response = await axios.get(
         // `http://localhost:18020/moapay/core/dutchpay/getDutchRoomInfo/` +
         //   roomid,
-        `/api/moapay/core/dutchpay/getDutchRoomInfo/` + roomid,
+        `https://j11c201.p.ssafy.io/api/moapay/core/dutchpay/getDutchRoomInfo/` +
+          roomid,
         {
           withCredentials: true,
         }

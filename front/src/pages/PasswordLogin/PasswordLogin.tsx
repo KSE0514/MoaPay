@@ -118,7 +118,7 @@ const PasswordLogin: React.FC = () => {
             // 비밀번호 확인 요청
             const response = await axios.post(
               // `${baseUrl}moapay/member/simple/verify`,
-              `/api/moapay/member/simple/verify`,
+              `https://j11c201.p.ssafy.io/api/moapay/member/simple/verify`,
               {
                 uuid: id,
                 simplePassword: password,
@@ -149,7 +149,7 @@ const PasswordLogin: React.FC = () => {
           try {
             const response = await axios.post(
               // `${baseUrl}moapay/member/login`,
-              `/api/moapay/member/login`,
+              `https://j11c201.p.ssafy.io/api/moapay/member/login`,
               {
                 uuid: id,
                 phoneNumber: phoneNumber,
@@ -228,7 +228,7 @@ const PasswordLogin: React.FC = () => {
               //생체정보 설정을 위해 이동 - 선택 가능
               const response = await axios.post(
                 // `${baseUrl}moapay/member/simple/register`,
-                `/api/moapay/member/simple/register`,
+                `https://j11c201.p.ssafy.io/api/moapay/member/simple/register`,
                 {
                   uuid: id,
                   simplePassword: password,
