@@ -347,7 +347,7 @@ public class MyCardServiceImpl implements MyCardService {
 
                 return getMyCardsResponseDto;
             } else {
-                throw new BusinessException(HttpStatus.INTERNAL_SERVER_ERROR, "entity 못 받아옴");
+                log.error("아무것도 못가져와요");
             }
         } catch (HttpClientErrorException e) {
             throw new BusinessException(HttpStatus.NOT_FOUND, "카드사에 해당 상품이 없습니다.");
