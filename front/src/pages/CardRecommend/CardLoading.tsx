@@ -18,8 +18,10 @@ import {
   Card4,
   Card5,
 } from "./CardLoading.styles";
+import { useAuthStore } from "../../store/AuthStore";
 
 const CardLoading: React.FC = () => {
+  const { name } = useAuthStore();
   useEffect(() => {
     const boxIn = () => {
       const tl = gsap
@@ -262,6 +264,11 @@ const CardLoading: React.FC = () => {
 
   return (
     <Wrapper>
+      <div>
+        {name}님의 소비패턴에 맞는
+        <br />
+        카드를 추천해드릴게요
+      </div>
       <Scene className="scene">
         <Box className="box">
           <BoxFace className="box__front">
