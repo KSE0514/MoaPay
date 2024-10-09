@@ -1,12 +1,14 @@
 package com.moa.payment.domain.charge.repository;
 
 import com.fasterxml.jackson.module.paramnames.ParameterNamesModule;
+import com.moa.payment.domain.analysis.model.dto.CardHistoryPaymentLogDto;
 import com.moa.payment.domain.charge.entity.PaymentLog;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -33,4 +35,12 @@ public interface PaymentLogRepository extends JpaRepository<PaymentLog, Long> {
     //     "AND FUNCTION('YEAR', p.createTime) = FUNCTION('YEAR', FUNCTION('DATE_SUB', CURRENT_DATE, 1, 'MONTH')) " +
     //     "AND FUNCTION('MONTH', p.createTime) = FUNCTION('MONTH', FUNCTION('DATE_SUB', CURRENT_DATE, 1, 'MONTH'))")
     // List<PaymentLog> findAllFromMonth(@Param("cardId") UUID cardId);
+    @Query("SELECT new com.moa.payment.domain.analysis.model.dto.CardHistoryPaymentLogDto(pl.merchantName, pl.amount, pl.benefitBalance, pl.categoryId, pl.createTime) " +
+            "FROM PaymentLog pl " +
+            "WHERE pl.cardId IN :cardIds " +
+            "AND pl.createTime BETWEEN :startTime AND :endTime")
+    List<CardHistoryPaymentLogDto> findAllCardsPaymentLogs(
+            @Param("cardIds") List<UUID> cardIds,
+            @Param("startTime") LocalDateTime startTime,
+            @Param("endTime") LocalDateTime endTime);
 }

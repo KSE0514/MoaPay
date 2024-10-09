@@ -49,30 +49,23 @@ public class StatisticsServiceImpl implements StatisticsService {
 //        }
 //        return res;
 //    }
-
     public List<CardHistoryPaymentLogDto> getPaymentLogs(int year, int month, List<UUID> cardIds) {
         log.info("getPaymentLogs - year : {}, month : {}", year, month);
-        YearMonth dateInfo = YearMonth.of(year, month);
-        int lastDay = dateInfo.atEndOfMonth().lengthOfMonth();
-        LocalDateTime startTime = LocalDateTime.of(year, month, 1, 0, 0);
-        LocalDateTime endTime = LocalDateTime.of(year, month, lastDay, 23, 59);
 
-        // cardIds 내용 로깅
-        log.info("Searching for cardIds: {}", cardIds);
+        // Month의 시작과 끝 날짜 생성
+        YearMonth dateInfo = YearMonth.of(year, month);
+        LocalDateTime startTime = dateInfo.atDay(1).atStartOfDay(); // 시작: 해당 월의 첫 날 00:00
+        LocalDateTime endTime = dateInfo.atEndOfMonth().atTime(23, 59, 59); // 끝: 해당 월의 마지막 날 23:59:59
         log.info("Date range: {} to {}", startTime, endTime);
 
-        List<CardHistoryPaymentLogDto> res = paymentLogQueryRepository.findAllCardsPaymentLogs(cardIds,
-                startTime, endTime);
-
-        // 결과 크기 로깅
-        log.info("Query returned {} results", res.size());
+        // 결제 로그 조회
+        List<CardHistoryPaymentLogDto> res = paymentLogQueryRepository.findAllCardsPaymentLogs(cardIds, startTime, endTime);
 
         if (res.isEmpty()) {
             log.warn("No payment logs found for the given criteria");
         } else {
-            for (CardHistoryPaymentLogDto pay: res) {
-                // ERROR 대신 INFO 사용
-                log.info("pay: {}", pay);
+            for (CardHistoryPaymentLogDto pay : res) {
+                log.info("Found payment log: {}", pay);
             }
         }
         return res;
