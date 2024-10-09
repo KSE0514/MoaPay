@@ -263,8 +263,10 @@ public class MyCardServiceImpl implements MyCardService {
 
         List<MyCard> myCards = myCardRepository.findAllByMemberId(registrationRequestDto.getMemberUuid());
 
+        log.info("myCards Size : {}",myCards.size());
         Optional<MyCard> existMycard = myCardRepository.findByCardNumber(String.valueOf(registrationRequestDto.getCardNumber()));
         if (existMycard.isPresent()) {
+            log.info("카드가 이미 존재한다");
             throw new BusinessException(HttpStatus.CONFLICT, "카드가 이미 존재합니다");
         }
 
@@ -347,8 +349,10 @@ public class MyCardServiceImpl implements MyCardService {
                 return getMyCardsResponseDto;
             }
         } catch (HttpClientErrorException e) {
+            log.info("40X 에러 발생, {}", e.getMessage());
             throw new BusinessException(HttpStatus.NOT_FOUND, "카드사에 해당 상품이 없습니다.");
         }
+        log.info("카드사 서버에러 ");
         throw new BusinessException(HttpStatus.INTERNAL_SERVER_ERROR, "카드사 서버 에러");
     }
 
