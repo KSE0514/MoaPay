@@ -94,11 +94,11 @@ private void prePersist() {
 
     private LocalDateTime getRandomNovemberDate() {
         // 2023년 11월 1일 00:00:00 ~ 2023년 11월 30일 23:59:59 사이의 랜덤한 날짜와 시간 생성
-        int randomDay = ThreadLocalRandom.current().nextInt(1, 31); // 1 ~ 30 사이의 랜덤 날짜
+        int randomDay = ThreadLocalRandom.current().nextInt(1, 10); // 1 ~ 30 사이의 랜덤 날짜
         int randomHour = ThreadLocalRandom.current().nextInt(0, 24); // 0 ~ 23 사이의 랜덤 시간
         int randomMinute = ThreadLocalRandom.current().nextInt(0, 60); // 0 ~ 59 사이의 랜덤 분
         int randomSecond = ThreadLocalRandom.current().nextInt(0, 60); // 0 ~ 59 사이의 랜덤 초
 
-        return LocalDateTime.of(2024, 9, randomDay, randomHour, randomMinute, randomSecond);
+        return LocalDateTime.of(2024, 10, randomDay, randomHour, randomMinute, randomSecond);
     }
 }
