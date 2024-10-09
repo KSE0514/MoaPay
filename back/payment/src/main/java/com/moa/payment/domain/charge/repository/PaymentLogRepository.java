@@ -35,12 +35,16 @@ public interface PaymentLogRepository extends JpaRepository<PaymentLog, Long> {
     //     "AND FUNCTION('YEAR', p.createTime) = FUNCTION('YEAR', FUNCTION('DATE_SUB', CURRENT_DATE, 1, 'MONTH')) " +
     //     "AND FUNCTION('MONTH', p.createTime) = FUNCTION('MONTH', FUNCTION('DATE_SUB', CURRENT_DATE, 1, 'MONTH'))")
     // List<PaymentLog> findAllFromMonth(@Param("cardId") UUID cardId);
-    @Query("SELECT new com.moa.payment.domain.analysis.model.dto.CardHistoryPaymentLogDto(pl.merchantName, pl.amount, pl.benefitBalance, pl.categoryId, pl.createTime) " +
-            "FROM PaymentLog pl " +
-            "WHERE pl.cardId IN :cardIds " +
-            "AND pl.createTime BETWEEN :startTime AND :endTime")
+    @Query("SELECT new com.moa.payment.domain.analysis.model.dto.CardHistoryPaymentLogDto(" +
+            "p.merchantName, p.amount, p.benefitBalance, p.categoryId, p.createTime) " +
+            "FROM PaymentLog p " +
+            "WHERE p.cardId IN :cardIds " +
+            "AND YEAR(p.createTime) = :year " +
+            "AND MONTH(p.createTime) = :month " +
+            "ORDER BY p.createTime DESC")
     List<CardHistoryPaymentLogDto> findAllCardsPaymentLogs(
             @Param("cardIds") List<UUID> cardIds,
-            @Param("startTime") LocalDateTime startTime,
-            @Param("endTime") LocalDateTime endTime);
+            @Param("year") int year,
+            @Param("month") int month
+    );
 }

@@ -15,6 +15,7 @@ import com.moa.payment.domain.analysis.model.dto.CardHistoryRequestDto;
 import com.moa.payment.domain.analysis.model.dto.CardHistoryResponseDto;
 import com.moa.payment.domain.analysis.repository.PaymentLogQueryRepository;
 import com.moa.payment.domain.analysis.service.AnalysisService;
+import com.moa.payment.domain.charge.repository.PaymentLogRepository;
 import com.moa.payment.domain.statistics.model.dto.*;
 import com.moa.payment.global.exception.BusinessException;
 import com.moa.payment.global.response.ResultResponse;
@@ -33,42 +34,17 @@ import lombok.extern.slf4j.Slf4j;
 public class StatisticsServiceImpl implements StatisticsService {
 
     private final MoaPayClient moaPayClient;
-    private final PaymentLogQueryRepository paymentLogQueryRepository;
+    //private final PaymentLogQueryRepository paymentLogQueryRepository;
+    private final PaymentLogRepository paymentLogRepository;
     private final ObjectMapper objectMapper;
 
-//    public List<CardHistoryPaymentLogDto> getPaymentLogs(int year, int month, List<UUID> cardIds) {
-//        log.info("getPaymentLogs - year : {}, month : {}", year, month);
+    public List<CardHistoryPaymentLogDto> getPaymentLogs(int year, int month, List<UUID> cardIds) {
+        log.info("getPaymentLogs - year : {}, month : {}", year, month);
 //        YearMonth dateInfo = YearMonth.of(year, month);
 //        int lastDay = dateInfo.atEndOfMonth().lengthOfMonth();
 //        LocalDateTime startTime = LocalDateTime.of(year, month, 1, 0, 0);
 //        LocalDateTime endTime = LocalDateTime.of(year, month, lastDay, 23, 59);
-//        List<CardHistoryPaymentLogDto> res = paymentLogQueryRepository.findAllCardsPaymentLogs(cardIds,
-//            startTime, endTime);
-//        for (CardHistoryPaymentLogDto pay: res) {
-//            log.error("pay: {}", pay);
-//        }
-//        return res;
-//    }
-    public List<CardHistoryPaymentLogDto> getPaymentLogs(int year, int month, List<UUID> cardIds) {
-        log.info("getPaymentLogs - year : {}, month : {}", year, month);
-
-        // Month의 시작과 끝 날짜 생성
-        YearMonth dateInfo = YearMonth.of(year, month);
-        LocalDateTime startTime = dateInfo.atDay(1).atStartOfDay(); // 시작: 해당 월의 첫 날 00:00
-        LocalDateTime endTime = dateInfo.atEndOfMonth().atTime(23, 59, 59); // 끝: 해당 월의 마지막 날 23:59:59
-        log.info("Date range: {} to {}", startTime, endTime);
-
-        // 결제 로그 조회
-        List<CardHistoryPaymentLogDto> res = paymentLogQueryRepository.findAllCardsPaymentLogs(cardIds, startTime, endTime);
-
-        if (res.isEmpty()) {
-            log.warn("No payment logs found for the given criteria");
-        } else {
-            for (CardHistoryPaymentLogDto pay : res) {
-                log.info("Found payment log: {}", pay);
-            }
-        }
-        return res;
+        return paymentLogRepository.findAllCardsPaymentLogs(cardIds, year, month);
     }
 
     public List<UUID> getCardsUUID(GetMyCardIdsRequestDto getMyCardIdsRequestDto) {
@@ -121,8 +97,8 @@ public class StatisticsServiceImpl implements StatisticsService {
     @Override
     public MonthlyBenefitResponseDto getMonthlyBenefit(int year, int month, GetMyCardIdsRequestDto getMyCardIdsRequestDto) {
         List<UUID> cardIds = getCardsUUID(getMyCardIdsRequestDto);
-        log.error("@@@@@@@@@@@@@@@@2");
         List<CardHistoryPaymentLogDto> paymentLogs = getPaymentLogs(year, month, cardIds);
+
         long totalBenefit = paymentLogs.stream()
             .mapToLong(CardHistoryPaymentLogDto::getBenefitBalance)
             .sum();
