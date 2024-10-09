@@ -12,6 +12,6 @@ import com.moa.payment.global.response.ResultResponse;
 @FeignClient(name = "moapay")
 public interface MoaPayClient {
 
-    @PostMapping("moapay/core/card/getMyCardIds")
+    @PostMapping("core/card/getMyCardIds")
     ResponseEntity<ResultResponse> getCardIdsByMemberId(@RequestBody GetMyCardIdsRequestDto getMyCardIdsRequestDto);
 }
