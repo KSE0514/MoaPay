@@ -42,8 +42,11 @@ public class StatisticsServiceImpl implements StatisticsService {
         int lastDay = dateInfo.atEndOfMonth().lengthOfMonth();
         LocalDateTime startTime = LocalDateTime.of(year, month, 1, 0, 0);
         LocalDateTime endTime = LocalDateTime.of(year, month, lastDay, 23, 59);
-        return paymentLogQueryRepository.findAllCardsPaymentLogs(cardIds,
+        List<CardHistoryPaymentLogDto> res = paymentLogQueryRepository.findAllCardsPaymentLogs(cardIds,
             startTime, endTime);
+        for (CardHistoryPaymentLogDto pay: res) {
+            log.error("pay: {}", pay);
+        }
     }
 
     public List<UUID> getCardsUUID(GetMyCardIdsRequestDto getMyCardIdsRequestDto) {
@@ -65,9 +68,6 @@ public class StatisticsServiceImpl implements StatisticsService {
     public MonthlyConsumptionResponseDto getMonthlyConsumption(int year, int month, GetMyCardIdsRequestDto getMyCardIdsRequestDto) {
         List<UUID> cardIds = getCardsUUID(getMyCardIdsRequestDto);
         List<CardHistoryPaymentLogDto> paymentLogs = getPaymentLogs(year, month, cardIds);
-        for (CardHistoryPaymentLogDto pay: paymentLogs) {
-            log.error("pay: {}", pay);
-        }
         long totalAmount = paymentLogs.stream()
             .mapToLong(CardHistoryPaymentLogDto::getAmount)
             .sum();
@@ -101,9 +101,6 @@ public class StatisticsServiceImpl implements StatisticsService {
         List<UUID> cardIds = getCardsUUID(getMyCardIdsRequestDto);
         log.error("@@@@@@@@@@@@@@@@2");
         List<CardHistoryPaymentLogDto> paymentLogs = getPaymentLogs(year, month, cardIds);
-        for (CardHistoryPaymentLogDto pay: paymentLogs) {
-            log.error("pay: {}", pay);
-        }
         long totalBenefit = paymentLogs.stream()
             .mapToLong(CardHistoryPaymentLogDto::getBenefitBalance)
             .sum();
