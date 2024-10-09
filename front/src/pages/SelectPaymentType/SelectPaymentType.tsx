@@ -72,53 +72,7 @@ interface AppClientResponse {
  * true true => 결제 완료 애니메이션
  * false true => 결제 완료  창
  */
-const SelectPaymentType = () => {
-  const mockAppClientResponse: AppClientResponse = {
-    requestId: "b2d4e9d0-7f5d-11ec-90d6-0242ac120003",
-    paymentId: "a4b6f8e2-7f5d-11ec-90d6-0242ac120003",
-    merchantName: "Sample Store",
-    totalPrice: 150000,
-    createTime: "2024-10-08T15:30:00",
-    usedCardCount: 2,
-    paymentResultCardInfoList: [
-      {
-        paymentId: "c8d5f3d1-7f5d-11ec-90d6-0242ac120003",
-        cardName: "Sample Card 1",
-        imageUrl: "1_신한카드_Mr.Life",
-        cardId: "d9a3b1f4-7f5d-11ec-90d6-0242ac120003",
-        cardNumber: "1234-5678-9012-3456",
-        amount: 100000,
-        actualAmount: 95000,
-        performance: 500000,
-        usedAmount: 100000,
-        benefitActivated: true,
-        benefitUsage: 5000,
-        benefitDetail: {
-          discount: 2000,
-          point: 1500,
-          cashback: 1500,
-        },
-      },
-      {
-        paymentId: "e5f6a2c7-7f5d-11ec-90d6-0242ac120003",
-        cardName: "삼성카드&MILEAGE PLATINUM(스카이패스)",
-        imageUrl: "2_삼성카드_&_MILEAGE_PLATINUM_(스카이패스)",
-        cardId: "e7b8c6d8-7f5d-11ec-90d6-0242ac120003",
-        cardNumber: "9876-5432-1098-7654",
-        amount: 50000,
-        actualAmount: 48000,
-        performance: 2000,
-        usedAmount: 50000,
-        benefitActivated: true,
-        benefitUsage: 2000,
-        benefitDetail: {
-          discount: 1000,
-          point: 500,
-          cashback: 500,
-        },
-      },
-    ],
-  };
+
 
   const { accessToken, id, paymentType } = useAuthStore();
   const navigate = useNavigate();
@@ -137,7 +91,6 @@ const SelectPaymentType = () => {
   const [isEnd, setIsEnd] = useState<boolean>(false);
 
   //구독 시 필요한 id
-  const storeRequestId = localStorage.getItem("requestId"); //저장된 결제 요청 값 => 결제 끝나고 지워야함
   const [requestId, setRequestId] = useState<string>("");
 
   //결제 결과
@@ -426,7 +379,7 @@ const SelectPaymentType = () => {
                 spaceBetween={50}
                 slidesPerView={1}
               >
-                {mockAppClientResponse.paymentResultCardInfoList?.map(
+                {paymentResult.paymentResultCardInfoList?.map(
                   (result, index) => (
                     <SwiperSlide key={index}>
                       <ResultBoxInner>
@@ -478,7 +431,7 @@ const SelectPaymentType = () => {
               {/* 하단 네브바 (점) */}
             </ResultBox>
             <DotNav>
-              {mockAppClientResponse.paymentResultCardInfoList.map(
+              {paymentResult.paymentResultCardInfoList.map(
                 (_, index) => (
                   <span
                     key={index}
