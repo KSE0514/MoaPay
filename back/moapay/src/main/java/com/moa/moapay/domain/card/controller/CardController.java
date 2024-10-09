@@ -88,12 +88,16 @@ public class CardController {
         return ResponseEntity.status(resultResponse.getStatus()).body(resultResponse);
     }
 
+    @PostMapping("/getMyCardIds")
+    public ResponseEntity<ResultResponse> getCardIds(@RequestBody GetMyCardIdsRequestDto getMyCardIdsRequestDto){
+        GetMyCardIdsResponseDto resultDto = myCardService.getMyCardIds(getMyCardIdsRequestDto.getMemberId());
+        ResultResponse resultResponse = ResultResponse.of(HttpStatus.OK, "등록 마이카드 UUID들을 불러왔습니다.", resultDto);
+        return ResponseEntity.status(resultResponse.getStatus()).body(resultResponse);
+    }
     //paymnet로 보낼 myCard
     @PostMapping("/getMemberCard")
     public ResponseEntity<List<GetMemberCardsDto>> getMemberCard(@Valid @RequestBody UUID memberId){
         List<GetMemberCardsDto> cards= myCardService.getMemberCard(memberId);
         return ResponseEntity.ok(cards);
     }
-
-
 }
