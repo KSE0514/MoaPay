@@ -65,4 +65,10 @@ public class Saving {
 	public void updateAmount(long amount){
 		this.amount+=amount;
 	}
+
+	public void resetSaving(){
+		this.todayAmount=0L;
+		this.amount = 0L;
+		this.daily="";
+	}
 }

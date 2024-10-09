@@ -188,4 +188,18 @@ public class SavingServiceImpl implements SavingService {
 		return response.getBody();  // 응답에서 UUID를 반환
 	}
 
+	@Override
+	//스케줄링. 매달 1일 00시 00분에 실행.
+	//saving의 모든 데이터의 amount, today_amount, daily 초기화
+	public void resetSaving(){
+		List<Saving> savings = savingRepository.findAll();
+
+		for(Saving saving:savings){
+			saving.resetSaving();
+		}
+
+		savingRepository.saveAll(savings);
+
+	}
+
 }
