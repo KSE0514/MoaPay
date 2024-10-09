@@ -45,8 +45,13 @@ const UserCardList = () => {
     for (const card of disAbleCards) {
       const response = await axios.post(
         // `http://localhost:18020/moapay/core/card/disable`,
+<<<<<<< HEAD
         `http://localhost:8765/moapay/core/card/disable`,
         // `api/moapay/core/card/disable`,
+=======
+        // `http://localhost:8765/moapay/core/card/disable`,
+        `/api/moapay/core/card/disable`,
+>>>>>>> 89fa19b066e686a6d69d74d3e66a7098664358ed
         {
           memberUuid: id, // member id
           cardNumber: card.cardNumber, // 카드 번호

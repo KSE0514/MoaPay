@@ -81,8 +81,14 @@ public class DutchPayController {
         return ResponseEntity.status(resultResponse.getStatus()).body(resultResponse);
     }
 
-//    @PostMapping("/getMyPrice")
-//    public ResponseEntity<?> getMyPrice(@Valid @RequestBody )
+    @PostMapping("/getMyPrice")
+    public ResponseEntity<?> getMyPrice(@Valid @RequestBody DutchGetMyPriceRequestDto dutchGetMyPriceRequestDto) {
+        log.info("getMyPrice");
+        GetMyPriceResponseDto myPrice = dutchPayService.getMyPrice(dutchGetMyPriceRequestDto);
+        ResultResponse resultResponse = ResultResponse.of(HttpStatus.OK, "더치페이 가격 조회", myPrice);
+        return ResponseEntity.status(resultResponse.getStatus()).body(resultResponse);
+    }
+
 
     @PostMapping("/cancel")
     public ResponseEntity<?> cancelDutchPay(@RequestParam DutchPayRoomLeaveDto roomLeaveDto) {

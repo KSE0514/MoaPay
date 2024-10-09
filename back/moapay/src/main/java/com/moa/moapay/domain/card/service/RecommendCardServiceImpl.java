@@ -5,19 +5,21 @@ import com.moa.moapay.domain.card.entity.CardBenefitCategory;
 import com.moa.moapay.domain.card.entity.CardProduct;
 import com.moa.moapay.domain.card.entity.MyCard;
 import com.moa.moapay.domain.card.model.*;
-import com.moa.moapay.domain.card.model.dto.CardBenefitDto;
-import com.moa.moapay.domain.card.model.dto.CardInfoResponseDto;
+import com.moa.moapay.domain.card.model.dto.*;
 import com.moa.moapay.domain.card.repository.CardBenefigCategoryRepository;
 import com.moa.moapay.domain.card.repository.CardProductRepository;
 import com.moa.moapay.domain.card.repository.MyCardQueryRepository;
 import com.moa.moapay.domain.card.repository.MyCardRepository;
 import com.moa.moapay.domain.generalpay.model.vo.PaymentCardInfoVO;
 import com.moa.moapay.global.exception.BusinessException;
-import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestClient;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -31,6 +33,10 @@ public class RecommendCardServiceImpl implements RecommendCardService {
     private final CardBenefigCategoryRepository benefigCategoryRepository;
     private final MyCardRepository myCardRepository;
     private final MyCardQueryRepository myCardQueryRepository;
+    private final RestClient restClient;
+
+    @Value("${external-url.payment}")
+    private String paymentUrl;
 
     /**
      * 카드 상품 추천 로직
@@ -39,59 +45,88 @@ public class RecommendCardServiceImpl implements RecommendCardService {
      * @return
      */
     @Override
-    public List<CardInfoResponseDto> recommendCard(HttpServletRequest request) {
+    public RecommendCardResponseDto recommendCard(UUID memberId) {
 
+        List<MyCard> myCards = myCardRepository.findAllByMemberId(memberId);
+
+        List<UUID> cardId = new ArrayList<>();
+
+        for (MyCard myCard : myCards) {
+            log.info(myCard.toString());
+            cardId.add(myCard.getUuid());
+        }
+
+        RecomendCardToPayementDto recomendCardToPayementDto = RecomendCardToPayementDto.builder().cardId(cardId).build();
         // TODO: 1. 소비 패턴 분석 자료 가져오기
+        ResponseEntity<GetPaymentLogWrapper> responseEntity = restClient.post()
+                .uri(paymentUrl + "/charge/getPaymentLog")
+                .contentType(MediaType.APPLICATION_JSON)
+                .body(recomendCardToPayementDto)
+                .retrieve()
+                .toEntity(GetPaymentLogWrapper.class);
 
-        // 필요 데이터 조회
-        List<CardBenefitCategory> allCategory = benefigCategoryRepository.findAll();
-        List<CardProduct> allProducts = productRepository.findAllWithBenefits();
+        if (responseEntity.getStatusCode().is2xxSuccessful()) {
+            log.info(responseEntity.getBody().toString());
+            GetPaymentLogResponseDto response = responseEntity.getBody().getData();
 
-        log.info("allProducs size {}", allProducts.size());
+            Map<String, Long> categoryCountMap = response.getCategoryCountMap();
 
-        // 점수 계산 (여기에 소비패턴 분석정보 같이 넘겨주기)
-        List<CardProduct> recomendCards = calculateScore(allProducts);
+            // 필요 데이터 조회
+            List<CardBenefitCategory> allCategory = benefigCategoryRepository.findAll();
+            List<CardProduct> allProducts = productRepository.findAllWithBenefits();
 
-        // 4. 제일 점수가 높은 카드 반환
-        List<CardInfoResponseDto> recomendCardDtos = recomendCards.stream()
-                // 점수 계산된 카드를 반복문 돌면서
-                .map(cardProduct -> {
-                    // 혜택 정보를 가지고
-                    List<CardBenefit> benefits = cardProduct.getBenefits();
-                    List<CardBenefitDto> benefitDtos = benefits.stream()
-                            .map(benefit -> {
-                                // 카테고리 id가지고 카테고리 이름으로 바꾸기 (이것도 join으로 하면 될거 같긴 한데..)
-                                String categoryName = allCategory.stream()
-                                        .filter(category -> Objects.equals(category.getId(), benefit.getCardBenefitCategory().getId())) // categoryId 비교
-                                        .map(CardBenefitCategory::getName)
-                                        .findFirst()
-                                        .orElse("Unknown Category");
-                                // 그냥 엔티티를 반환 할 수 도 있지만 나중에 유지보수를 위해 DTO 생성후 리턴
-                                return CardBenefitDto.builder()
-                                        .categoryName(categoryName)
-                                        .benefitUnit(benefit.getBenefitUnit())
-                                        .benefitDesc(benefit.getBenefitDesc())
-                                        .benefitValue(benefit.getBenefitValue())
-                                        .benefitType(benefit.getBenefitType())
-                                        .benefitPoint(benefit.getBenefitPoint())
-                                        .build();
-                            }).collect(Collectors.toList());
+            log.info("allProducs size {}", allProducts.size());
 
-                    // 최종 DTO 생성 후 리턴
-                    return CardInfoResponseDto.builder()
-                            .cardName(cardProduct.getName())
-                            .companyName(cardProduct.getCompanyName())
-                            .cardType(cardProduct.getType())
-                            .annualFee(cardProduct.getAnnualFee())
-                            .annualFeeForeign(cardProduct.getAnnualFeeForeign())
-                            .benefitTotalLimit(cardProduct.getBenefitTotalLimit())
-                            .performance(cardProduct.getPerformance())
-                            .imageUrl(cardProduct.getImageUrl())
-                            .benefits(benefitDtos)
-                            .build();
-                }).collect(Collectors.toList());
+            // 점수 계산 (여기에 소비패턴 분석정보 같이 넘겨주기)
+            List<CardProduct> recomendCards = calculateScore(allProducts, categoryCountMap);
 
-        return recomendCardDtos;
+            // 4. 제일 점수가 높은 카드 반환
+            List<CardInfoResponseDto> recomendCardDtos = recomendCards.stream()
+                    // 점수 계산된 카드를 반복문 돌면서
+                    .map(cardProduct -> {
+                        // 혜택 정보를 가지고
+                        List<CardBenefit> benefits = cardProduct.getBenefits();
+                        List<CardBenefitDto> benefitDtos = benefits.stream()
+                                .map(benefit -> {
+                                    // 카테고리 id가지고 카테고리 이름으로 바꾸기 (이것도 join으로 하면 될거 같긴 한데..)
+                                    String categoryName = allCategory.stream()
+                                            .filter(category -> Objects.equals(category.getId(), benefit.getCardBenefitCategory().getId())) // categoryId 비교
+                                            .map(CardBenefitCategory::getName)
+                                            .findFirst()
+                                            .orElse("Unknown Category");
+                                    // 그냥 엔티티를 반환 할 수 도 있지만 나중에 유지보수를 위해 DTO 생성후 리턴
+                                    return CardBenefitDto.builder()
+                                            .categoryName(categoryName)
+                                            .benefitUnit(benefit.getBenefitUnit())
+                                            .benefitDesc(benefit.getBenefitDesc())
+                                            .benefitValue(benefit.getBenefitValue())
+                                            .benefitType(benefit.getBenefitType())
+                                            .benefitPoint(benefit.getBenefitPoint())
+                                            .build();
+                                }).collect(Collectors.toList());
+
+                        // 최종 DTO 생성 후 리턴
+                        return CardInfoResponseDto.builder()
+                                .cardName(cardProduct.getName())
+                                .companyName(cardProduct.getCompanyName())
+                                .cardType(cardProduct.getType())
+                                .annualFee(cardProduct.getAnnualFee())
+                                .annualFeeForeign(cardProduct.getAnnualFeeForeign())
+                                .benefitTotalLimit(cardProduct.getBenefitTotalLimit())
+                                .performance(cardProduct.getPerformance())
+                                .imageUrl(cardProduct.getImageUrl())
+                                .benefits(benefitDtos)
+                                .build();
+                    }).collect(Collectors.toList());
+
+            return RecommendCardResponseDto.builder()
+                    .categoryUsage(categoryCountMap)
+                    .recommend(recomendCardDtos)
+                    .build();
+        }
+
+        log.info("결제내역 불러오는 중 오류");
+        throw new BusinessException(HttpStatus.NOT_FOUND, "결제내역 불러오는 중 오류");
     }
 
     @Override
@@ -147,7 +182,7 @@ public class RecommendCardServiceImpl implements RecommendCardService {
      * @param allProducts
      * @return
      */
-    private List<CardProduct> calculateScore(List<CardProduct> allProducts) {
+    private List<CardProduct> calculateScore(List<CardProduct> allProducts, Map<String, Long> categoryCountMap) {
         Map<CardProduct, Float> cardScoreMap = new HashMap<>();
 
         // 각 카드의 점수를 계산
@@ -156,9 +191,13 @@ public class RecommendCardServiceImpl implements RecommendCardService {
 
             // 각 카드의 혜택별 점수 계산
             for (CardBenefit cardBenefit : cardProduct.getBenefits()) {
+                String cardCategory = cardBenefit.getCardBenefitCategory().getId();
+
+                Long logs = categoryCountMap.get(cardCategory);
+
                 int benefitPoint = cardBenefit.getBenefitPoint();
                 // TODO : 가중치 계산
-                score += benefitPoint;
+                score += (benefitPoint * logs);
             }
 
             // 전월 실적, 연회비 계산
@@ -250,7 +289,7 @@ public class RecommendCardServiceImpl implements RecommendCardService {
             long right = totalPrice + 1;
             // 혜택이 무한인 경우 고려해!!!
             boolean isBenefitInfinite = false;
-            if(product.getBenefitTotalLimit() == 0) {
+            if (product.getBenefitTotalLimit() == 0) {
                 isBenefitInfinite = true;
             }
             double remainedBenefit = product.getBenefitTotalLimit() - myCard.getBenefitUsage();

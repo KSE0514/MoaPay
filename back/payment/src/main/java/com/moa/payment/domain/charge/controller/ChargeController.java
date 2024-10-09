@@ -1,6 +1,8 @@
 package com.moa.payment.domain.charge.controller;
 
 import com.moa.payment.domain.charge.model.dto.CancelPayRequestDto;
+import com.moa.payment.domain.charge.model.dto.GetPaymentLogRequestDto;
+import com.moa.payment.domain.charge.model.dto.GetPaymentLogResponseDto;
 import com.moa.payment.domain.charge.service.ChargeService;
 import com.moa.payment.global.response.ResultResponse;
 import lombok.RequiredArgsConstructor;
@@ -25,6 +27,14 @@ public class ChargeController {
         log.info("cancel payment");
         chargeService.CancelPayment(dto);
         ResultResponse resultResponse = ResultResponse.of(HttpStatus.OK, "결제가 취소되었습니다.");
+        return ResponseEntity.status(resultResponse.getStatus()).body(resultResponse);
+    }
+
+    @PostMapping("/getPaymentLog")
+    public ResponseEntity<ResultResponse> getPaymentLog(@RequestBody GetPaymentLogRequestDto dto) {
+        log.info("get payment log");
+        GetPaymentLogResponseDto payMentLog = chargeService.getPayMentLog(dto);
+        ResultResponse resultResponse = ResultResponse.of(HttpStatus.OK, "결제 내역 분석 정보", payMentLog);
         return ResponseEntity.status(resultResponse.getStatus()).body(resultResponse);
     }
 }

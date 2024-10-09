@@ -68,8 +68,13 @@ const RegisterCard: React.FC = () => {
     console.log(cardNumber.join(""));
     try {
       const response = await axios.post(
+<<<<<<< HEAD
         `${baseUrl}moapay/core/card/registration`,
         // `api/moapay/core/card/registration`,
+=======
+        // `${baseUrl}moapay/core/card/registration`,
+        `/api/moapay/core/card/registration`,
+>>>>>>> 89fa19b066e686a6d69d74d3e66a7098664358ed
         {
           memberUuid: id,
           cardNumber: cardNumber.join(""), // 카드 번호를 배열이 아닌 문자열로 전송

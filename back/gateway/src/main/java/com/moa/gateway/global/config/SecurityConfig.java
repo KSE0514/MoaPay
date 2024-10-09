@@ -80,7 +80,7 @@ public class SecurityConfig {
                                         "/moapay/member/sendSMS", "/moapay/member/verification", "/moapay/member/isMember",
                                         "/moapay/core/code/QRcode", "/api/moapay/core/code/QRcode",
                                         "/moapay/pay/analysis/history", "/api/moapay/pay/analysis/history", "/moapay/core/generalpay/offline", "/moapay/pay/notification/subscribe/**"
-                        ,"/moapay/core/card/getMyCardIds",
+                        ,"/moapay/core/card/getMyCardIds", "/moapay/pay/charge/getPaymentLog",
                                 "/api/moapay/core/card/getMyCardIds"
                                 )
                                 .permitAll()
@@ -89,23 +89,23 @@ public class SecurityConfig {
                 ).addFilterBefore(authenticationWebFilter(), SecurityWebFiltersOrder.AUTHENTICATION).build();
     }
 
-    // CorsConfigurationSource 메서드 (SecurityConfig 클래스 내부에 추가)
-    @Bean
-    public org.springframework.web.cors.reactive.CorsConfigurationSource corsConfigurationSource() {
-        org.springframework.web.cors.reactive.UrlBasedCorsConfigurationSource source =
-                new org.springframework.web.cors.reactive.UrlBasedCorsConfigurationSource();
-        CorsConfiguration config = new CorsConfiguration();
-        config.setAllowedOrigins(Arrays.asList(
-                "https://localhost:8765", "http://localhost:8765", "https://localhost", "http://localhost",
-                "http://localhost:5173", "https://localhost:5173", "https://moapay-7e24e.web.app",
-                "https://j11c201.p.ssafy.io", "https://j11c201.p.ssafy.io/api", "http://j11c201.p.ssafy.io"
-        ));
-        config.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"));
-        config.setAllowedHeaders(Arrays.asList("*"));
-        config.setAllowCredentials(true);
-        config.setMaxAge(3600L);
-        source.registerCorsConfiguration("/**", config);
-        return source;
-    }
+//    // CorsConfigurationSource 메서드 (SecurityConfig 클래스 내부에 추가)
+//    @Bean
+//    public org.springframework.web.cors.reactive.CorsConfigurationSource corsConfigurationSource() {
+//        org.springframework.web.cors.reactive.UrlBasedCorsConfigurationSource source =
+//                new org.springframework.web.cors.reactive.UrlBasedCorsConfigurationSource();
+//        CorsConfiguration config = new CorsConfiguration();
+//        config.setAllowedOrigins(Arrays.asList(
+//                "https://localhost:8765", "http://localhost:8765", "https://localhost", "http://localhost",
+//                "http://localhost:5173", "https://localhost:5173", "https://moapay-7e24e.web.app",
+//                "https://j11c201.p.ssafy.io", "https://j11c201.p.ssafy.io/api", "http://j11c201.p.ssafy.io"
+//        ));
+//        config.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"));
+//        config.setAllowedHeaders(Arrays.asList("*"));
+//        config.setAllowCredentials(true);
+//        config.setMaxAge(3600L);
+//        source.registerCorsConfiguration("/**", config);
+//        return source;
+//    }
 
 }
