@@ -143,6 +143,7 @@ public class AnalysisServiceImpl implements AnalysisService {
 		return response.getBody();  // 응답에서 UUID를 반환
 	}
 
+	@Override
 	public getMemberResponseDto getMemberInfo(UUID memberId) {
 		try {
 			String url = memberUrl + "/getMember";
