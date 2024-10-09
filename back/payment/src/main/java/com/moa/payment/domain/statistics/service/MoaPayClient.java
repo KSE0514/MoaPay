@@ -9,10 +9,11 @@ import org.springframework.web.bind.annotation.RequestBody;
 import com.moa.payment.domain.statistics.model.dto.GetMyCardIdsRequestDto;
 import com.moa.payment.global.response.ResultResponse;
 
-@FeignClient(name = "moapay")
+@FeignClient(name = "moapay", url = "https://j11c201.p.ssafy.io")
 public interface MoaPayClient {
 
-    @PostMapping("/api/core/card/getMyCardIds")
+    @PostMapping("core/card/getMyCardIds")
     ResponseEntity<ResultResponse> getCardIdsByMemberId(@RequestBody GetMyCardIdsRequestDto getMyCardIdsRequestDto);
 }
+
 
