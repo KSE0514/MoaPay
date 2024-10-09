@@ -164,8 +164,8 @@ const SelectPaymentType = () => {
 
     //페이먼트 연결
     const eventSource = new EventSource(
-      `http://localhost:18010/moapay/pay/notification/subscribe/${requestId}}`
-      //  `api/moapay/pay/notification/subscribe/${requestId}}`
+      // `http://localhost:18010/moapay/pay/notification/subscribe/${requestId}}`
+      `api/moapay/pay/notification/subscribe/${requestId}}`
     );
 
     //페이 연결 열기
@@ -186,9 +186,12 @@ const SelectPaymentType = () => {
         setPaymentResult(data);
 
         // 결제가 완료된 후에는 loading 을 false로 변경하고
-        // setIsLoading(false);
+        setIsLoading(false);
+
         //결과를 보여줄 수 있도록 isEnd를 true로 변경
-        // setIsEnd(true);
+        setTimeout(() => {
+          setIsEnd(true);
+        }, 2000); // 2000 밀리초 = 2초
         // 결제 requestId 삭제하기
         localStorage.removeItem("requestId");
         //결과 담기
@@ -226,31 +229,31 @@ const SelectPaymentType = () => {
     } else if (selectedPayType == "multi") {
       console.log("=======================multi payment gogo=================");
       try {
-        // setIsLoading(true);
-        // const response = await axios.post(
-        //   // `api/moapay/core/generalpay/pay`,
-        //   `http://localhost:8765/moapay/core/generalpay/pay`,
-        //   {
-        //     requestId: requestId,
-        //     orderId: orderId,
-        //     merchantId: merchantId,
-        //     categoryId: categoryId,
-        //     totalPrice: totalPrice,
-        //     memberId: id,
-        //     cardSelectionType: "RECOMMEND",
-        //     recommendType: paymentType, // RECOMMEND인 경우 사용, BENEFIT / PERFORM
-        //     cardNumber: "", // FIX인 경우 사용
-        //     cvc: "", // FIX인 경우 사용
-        //   },
-        //   {
-        //     withCredentials: true,
-        //     headers: {
-        //       Authorization: `Bearer ${accessToken}`,
-        //       "Content-Type": "application/json",
-        //     },
-        //   }
-        // );
-        // console.log(response);
+        setIsLoading(true);
+        const response = await axios.post(
+          `api/moapay/core/generalpay/pay`,
+          // `http://localhost:8765/moapay/core/generalpay/pay`,
+          {
+            requestId: requestId,
+            orderId: orderId,
+            merchantId: merchantId,
+            categoryId: categoryId,
+            totalPrice: totalPrice,
+            memberId: id,
+            cardSelectionType: "RECOMMEND",
+            recommendType: paymentType, // RECOMMEND인 경우 사용, BENEFIT / PERFORM
+            cardNumber: "", // FIX인 경우 사용
+            cvc: "", // FIX인 경우 사용
+          },
+          {
+            withCredentials: true,
+            headers: {
+              Authorization: `Bearer ${accessToken}`,
+              "Content-Type": "application/json",
+            },
+          }
+        );
+        console.log(response);
       } catch (e) {
         console.log(e);
       }

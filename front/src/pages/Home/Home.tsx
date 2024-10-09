@@ -79,8 +79,8 @@ const Home = () => {
     if (barcodeCardNumber === undefined) return;
     try {
       const response = await axios.post(
-        // `api/moapay/core/code/barcode`,
-        `http://localhost:8765/moapay/core/code/barcode`,
+        `api/moapay/core/code/barcode`,
+        // `http://localhost:8765/moapay/core/code/barcode`,
         {
           memberId: id,
           type: barcodeCardImageAlt === "recommend" ? "RECOMMEND" : "FIX", // FIX, RECOMMEND
