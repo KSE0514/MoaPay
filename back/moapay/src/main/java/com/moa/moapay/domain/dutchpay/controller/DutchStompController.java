@@ -32,7 +32,7 @@ public class DutchStompController {
     @MessageMapping("/join/{roomId}")
     @SendTo("/sub/dutch-room/{roomId}")
     public List<DutchPayDto> joinRoom(@DestinationVariable UUID roomId, @Valid @RequestBody DutchPayRoomJoinDto dutchPayRoomJoinDto) {
-        log.info("Joining Dutch room with roomId = {}", roomId);
+        log.info("Joining Dutch room with roomId = {}, {}", roomId, dutchPayRoomJoinDto.getMemberId());
         List<DutchPayDto> dutchPayDto = dutchPayService.joinDutchRoom(roomId, dutchPayRoomJoinDto);
         return dutchPayDto;
     }

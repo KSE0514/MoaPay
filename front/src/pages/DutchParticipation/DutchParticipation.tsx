@@ -208,7 +208,7 @@ const DutchParticipation = () => {
       >
         {/* 3. 더치페이하는 상품 정보 */}
         {/* 2. 참여자 목록 컴포넌트_2단계인지 판단 기준: memberSetComplete === true */}
-        {process < 2 ? <Participant isHost={false} /> : null}
+        {/* {process < 2 ? <Participant isHost={false} /> : null} */}
         {process === 2 ? <Payment onClick={onClickPaymentBtn} /> : null}
         {process === 3 ? (
           <DutchWaiting>
