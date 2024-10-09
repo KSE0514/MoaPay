@@ -1,14 +1,12 @@
 package com.moa.payment.domain.charge.repository;
 
 import com.fasterxml.jackson.module.paramnames.ParameterNamesModule;
-import com.moa.payment.domain.analysis.model.dto.CardHistoryPaymentLogDto;
 import com.moa.payment.domain.charge.entity.PaymentLog;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -20,14 +18,14 @@ public interface PaymentLogRepository extends JpaRepository<PaymentLog, Long> {
     Optional<PaymentLog> findByUuid(UUID uuid);
 
     @Query("SELECT p FROM PaymentLog p " +
-        "WHERE YEAR(p.createTime) = YEAR(CURRENT_DATE) " +
-        "AND MONTH(p.createTime) = MONTH(CURRENT_DATE) - 1")
+            "WHERE YEAR(p.createTime) = YEAR(CURRENT_DATE) " +
+            "AND MONTH(p.createTime) = MONTH(CURRENT_DATE) - 1")
     List<PaymentLog> findAllFromLastMonth();
 
     @Query("SELECT p FROM PaymentLog p " +
-        "WHERE p.cardId = :cardId " +
-        "AND FUNCTION('YEAR', p.createTime) = FUNCTION('YEAR', CURRENT_DATE) " +
-        "AND FUNCTION('MONTH', p.createTime) = FUNCTION('MONTH', CURRENT_DATE)")
+            "WHERE p.cardId = :cardId " +
+            "AND FUNCTION('YEAR', p.createTime) = FUNCTION('YEAR', CURRENT_DATE) " +
+            "AND FUNCTION('MONTH', p.createTime) = FUNCTION('MONTH', CURRENT_DATE)")
     List<PaymentLog> findAllFromMonth(@Param("cardId") UUID cardId);
     //
     // @Query("SELECT p FROM PaymentLog p " +
@@ -35,16 +33,8 @@ public interface PaymentLogRepository extends JpaRepository<PaymentLog, Long> {
     //     "AND FUNCTION('YEAR', p.createTime) = FUNCTION('YEAR', FUNCTION('DATE_SUB', CURRENT_DATE, 1, 'MONTH')) " +
     //     "AND FUNCTION('MONTH', p.createTime) = FUNCTION('MONTH', FUNCTION('DATE_SUB', CURRENT_DATE, 1, 'MONTH'))")
     // List<PaymentLog> findAllFromMonth(@Param("cardId") UUID cardId);
-    @Query("SELECT new com.moa.payment.domain.analysis.model.dto.CardHistoryPaymentLogDto(" +
-            "p.merchantName, p.amount, p.benefitBalance, p.categoryId, p.createTime) " +
-            "FROM PaymentLog p " +
-            "WHERE p.cardId IN :cardIds " +
-            "AND YEAR(p.createTime) = :year " +
-            "AND MONTH(p.createTime) = :month " +
-            "ORDER BY p.createTime DESC")
-    List<CardHistoryPaymentLogDto> findAllCardsPaymentLogs(
-            @Param("cardIds") List<UUID> cardIds,
-            @Param("year") int year,
-            @Param("month") int month
-    );
+
+    @Query("SELECT p.categoryId, COUNT(p) FROM PaymentLog p WHERE p.cardId = :cardId AND p.status != 'CANCELED' GROUP BY p.categoryId")
+    List<Object[]> countByCategoryIdGroupedByCardId(@Param("cardId") UUID cardId);
+
 }

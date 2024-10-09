@@ -101,5 +101,4 @@ private void prePersist() {
 
         return LocalDateTime.of(2023, 11, randomDay, randomHour, randomMinute, randomSecond);
     }
-
 }

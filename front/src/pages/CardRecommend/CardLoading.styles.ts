@@ -5,8 +5,44 @@ export const Wrapper = styled.div`
   z-index: 1000;
   width: 100%;
   height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
   background: linear-gradient(120deg, #f1e5ff 6%, #dcbefc 50%, #ffc6ff);
+  .magictime {
+    animation-iteration-count: infinite;
+  }
 `;
+export const Ment = styled.div`
+  text-align: center;
+  font-size: 20px;
+  line-height: 30px;
+`;
+export const AniView = styled.div`
+  margin-top: 20px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  .CardList {
+    position: relative;
+    width: 180px; /* 카드의 가로 크기 */
+    height: 180px; /* 카드의 세로 크기 */
+  }
+
+  .card {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    opacity: 0; /* 초기 상태는 보이지 않게 설정 */
+    transform-origin: center center; /* 중앙에서 애니메이션 회전 */
+    img {
+      width: 100%;
+      height: 100%;
+    }
+  }
+`;
+
 // Styled Components
 export const Scene = styled.div`
   position: relative;

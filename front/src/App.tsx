@@ -1,4 +1,5 @@
 import "./styles/font.css";
+import "../node_modules/magic.css/dist/magic.css";
 import { useEffect, useState } from "react";
 import { createGlobalStyle, styled } from "styled-components";
 import { RouterProvider } from "react-router-dom";
