@@ -1,4 +1,6 @@
-package com.moa.payment.domain.analysis.entity.dto;
+package com.moa.payment.domain.analysis.model.dto;
+
+import com.moa.payment.domain.analysis.entity.Gender;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -7,4 +9,5 @@ import lombok.Setter;
 @Setter
 public class averageResponseDto {
 	Long average;
+	String gender;
 }

@@ -18,14 +18,10 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.event.TransactionalEventListener;
 import org.springframework.web.client.ResourceAccessException;
 import org.springframework.web.client.RestClient;
-import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
-import java.time.Instant;
 import java.time.LocalDateTime;
 import java.util.*;
 
@@ -37,15 +33,13 @@ public class ChargeServiceImpl implements ChargeService {
     private final RestClient restClient;
     private final ObjectMapper objectMapper;
     private final PaymentLogRepository paymentLogRepository;
-//    private final KafkaTemplate<String, DutchPayCompliteVo> kafkaTemplate;
+    //    private final KafkaTemplate<String, DutchPayCompliteVo> kafkaTemplate;
     private final KafkaProducer kafkaProducer;
-
+    private final SavingService savingService;
     @Value("${external-url.cardbank}")
     private String cardbankUrl;
     @Value("${external-url.store}")
     private String storeUrl;
-
-    private final SavingService savingService;
 
     @Override
     public ExecutePaymentResultVO executePayment(ExecutePaymentRequestVO vo) {
@@ -104,7 +98,7 @@ public class ChargeServiceImpl implements ChargeService {
                     Map<String, Object> map = new HashMap<>();
                     map.put("dutchpayList", dutchPayCompliteVo);
 
-                    kafkaProducer.send("tracking.dutchpay","2", map);
+                    kafkaProducer.send("tracking.dutchpay", "2", map);
                 }
                 // 결제 실패 관련 처리가 끝났다면 더이상 결제를 진행하지 않음
                 return ExecutePaymentResultVO.builder()
@@ -171,7 +165,7 @@ public class ChargeServiceImpl implements ChargeService {
             Map<String, Object> map = new HashMap<>();
             map.put("dutchpayList", dutchPayCompliteVo);
 
-            kafkaProducer.send("tracking.dutchpay","2", map);
+            kafkaProducer.send("tracking.dutchpay", "2", map);
         }
         return ExecutePaymentResultVO.builder()
                 .merchantName(merchantName)
@@ -183,12 +177,12 @@ public class ChargeServiceImpl implements ChargeService {
     @Override
     public void CancelPayment(CancelPayRequestDto dto) {
         ResponseEntity<Map> cancelResponse = restClient.post()
-                .uri(cardbankUrl+"/card/cancel")
+                .uri(cardbankUrl + "/card/cancel")
                 .contentType(MediaType.APPLICATION_JSON)
                 .body(dto)
                 .retrieve()
                 .toEntity(Map.class);
-        if(!cancelResponse.getStatusCode().is2xxSuccessful()) {
+        if (!cancelResponse.getStatusCode().is2xxSuccessful()) {
             // 결제 취소가 잘 되지 않았다면, 그 내용을 기반으로 exception을 발생시킨다.
             ErrorResponse errorResponse = objectMapper.convertValue(cancelResponse.getBody().get("data"), ErrorResponse.class);
             throw new BusinessException(HttpStatus.BAD_REQUEST, "결제 취소 실패 : " + errorResponse.getMessage());
@@ -277,13 +271,13 @@ public class ChargeServiceImpl implements ChargeService {
                     .body(dto)
                     .retrieve()
                     .toEntity(Map.class);
-        } catch(ResourceAccessException e) {
+        } catch (ResourceAccessException e) {
             log.error("send result to store error");
         }
     }
 
     @Override
-    public void dutchCancel(UUID paymentId){
+    public void dutchCancel(UUID paymentId) {
         log.info("dutchCancel");
         Optional<PaymentLog> paymentLogOptional = paymentLogRepository.findByUuid(paymentId);
 
@@ -307,6 +301,43 @@ public class ChargeServiceImpl implements ChargeService {
         } else {
             throw new BusinessException(HttpStatus.NOT_FOUND, "PaymentLog not found for paymentId: " + paymentId);
         }
+    }
+
+    @Override
+    public GetPaymentLogResponseDto getPayMentLog(GetPaymentLogRequestDto dto) {
+
+        List<UUID> uuidList = dto.getCardId();
+
+        // 카테고리 ID와 카운트를 저장할 맵 초기화
+        Map<String, Long> categoryCountMap = new HashMap<>();
+
+        // 카테고리 ID와 해당하는 인덱스를 초기화
+        for (long i = 0; i <= 20; i++) {
+            String key = String.format("C%04d", i);  // C0000, C0001, ..., C0020 형식으로 만듦
+            categoryCountMap.put(key, 0L);
+        }
+
+        // 모든 UUID에 대해 반복
+        for (UUID uuid : uuidList) {
+            List<Object[]> objects = paymentLogRepository.countByCategoryIdGroupedByCardId(uuid);
+
+            for (Object[] object : objects) {
+                String categoryId = (String) object[0];
+                Long count = (Long) object[1];
+
+                log.info("categoryId : {}, count : {}", categoryId, count);
+
+                // categoryId에 해당하는 카운트를 업데이트
+                if (categoryCountMap.containsKey(categoryId)) {
+                    // 현재 카운트에 추가
+                    categoryCountMap.put(categoryId, categoryCountMap.get(categoryId) + count);
+                }
+            }
+        }
+
+        GetPaymentLogResponseDto getPaymentLogResponseDto = GetPaymentLogResponseDto.builder().categoryCountMap(categoryCountMap).build();
+
+        return getPaymentLogResponseDto;
     }
 
 }

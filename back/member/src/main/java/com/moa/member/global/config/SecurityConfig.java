@@ -68,7 +68,7 @@ public class SecurityConfig {
 			.authenticationProvider(memberAuthenticationProvider())
 			.csrf(AbstractHttpConfigurer::disable)
 			.sessionManagement((session) -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-			.cors(Customizer.withDefaults())
+//			.cors(Customizer.withDefaults())
 			.formLogin(AbstractHttpConfigurer::disable)
 			.logout(AbstractHttpConfigurer::disable)
 			.authorizeRequests()    // 다음 리퀘스트에 대한 사용권한 체크
@@ -83,22 +83,22 @@ public class SecurityConfig {
 		//.addFilterBefore(new JwtFilter(jwtTokenProvider), UsernamePasswordAuthenticationFilter.class);
 		return http.build();
 	}
-
-	@Bean
-	public CorsConfigurationSource corsConfigurationSource() {
-		CorsConfiguration config = new CorsConfiguration();
-
-		config.setAllowCredentials(true);
-		config.setAllowedOrigins(
-			List.of("https://localhost:8765", "http://localhost:8765", "https://localhost", "http://localhost",
-				"http://localhost:5173", "https://localhost:5173", "https://moapay-7e24e.web.app",
-				"https://j11c201.p.ssafy.io", "https://j11c201.p.ssafy.io/api", "http://j11c201.p.ssafy.io"));
-		config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"));
-		config.setAllowedHeaders(List.of("*"));
-		config.setExposedHeaders(List.of("*"));
-
-		UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-		source.registerCorsConfiguration("/**", config);
-		return source;
-	}
+//
+//	@Bean
+//	public CorsConfigurationSource corsConfigurationSource() {
+//		CorsConfiguration config = new CorsConfiguration();
+//
+//		config.setAllowCredentials(true);
+//		config.setAllowedOrigins(
+//			List.of("https://localhost:8765", "http://localhost:8765", "https://localhost", "http://localhost",
+//				"http://localhost:5173", "https://localhost:5173", "https://moapay-7e24e.web.app",
+//				"https://j11c201.p.ssafy.io", "https://j11c201.p.ssafy.io/api", "http://j11c201.p.ssafy.io"));
+//		config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"));
+//		config.setAllowedHeaders(List.of("*"));
+//		config.setExposedHeaders(List.of("*"));
+//
+//		UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+//		source.registerCorsConfiguration("/**", config);
+//		return source;
+//	}
 }

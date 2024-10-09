@@ -24,9 +24,9 @@ public class CardController {
     private final RecommendCardService recommendCardService;
     private final MyCardService myCardService;
 
-    @GetMapping("/recommend")
-    public ResponseEntity<ResultResponse> recommend(HttpServletRequest request) {
-        List<CardInfoResponseDto> recommendCardResponseDtos = recommendCardService.recommendCard(request);
+    @GetMapping("/recommend/{memberId}")
+    public ResponseEntity<ResultResponse> recommend(@PathVariable UUID memberId) {
+        RecommendCardResponseDto recommendCardResponseDtos = recommendCardService.recommendCard(memberId);
         ResultResponse resultResponse = ResultResponse.of(HttpStatus.OK, "카드 상품 추천", recommendCardResponseDtos);
         return ResponseEntity.status(resultResponse.getStatus()).body(resultResponse);
     }

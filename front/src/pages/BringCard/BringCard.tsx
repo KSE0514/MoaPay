@@ -42,7 +42,7 @@ const BringCard = () => {
     try {
       const response = await axios.post(
         // `http://localhost:18100/cardbank/card/getMyCards`,
-        `cardapi/cardbank/card/getMyCards`,
+        `/cardapi/cardbank/card/getMyCards`,
         {
           memberId: id,
           phoneNumber: phoneNumber,
@@ -98,7 +98,7 @@ const BringCard = () => {
       const response = await axios.post(
         // `http://localhost:18020/moapay/core/card/disable`,
         // `http://localhost:8765/moapay/core/card/disable`,
-        `api/moapay/core/card/disable`,
+        `/api/moapay/core/card/disable`,
         {
           memberUuid: id, // member id
           cardNumber: card.cardNumber, // 카드 번호

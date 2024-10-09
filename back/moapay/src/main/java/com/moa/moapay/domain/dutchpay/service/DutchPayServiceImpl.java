@@ -426,6 +426,17 @@ public class DutchPayServiceImpl implements DutchPayService {
     }
 
     @Override
+    public GetMyPriceResponseDto getMyPrice(DutchGetMyPriceRequestDto dutchGetMyPriceRequestDto) {
+
+        DutchPay dutchPay = dutchPayRepository.findByRoomIdAndMemberId(dutchGetMyPriceRequestDto.getRoomId(), dutchGetMyPriceRequestDto.getMemberId());
+
+        long price = dutchPay.getAmount();
+
+        GetMyPriceResponseDto getMyPriceResponseDto = GetMyPriceResponseDto.builder().price(price).build();
+        return getMyPriceResponseDto;
+    }
+
+    @Override
     @Transactional
     public void extracted(UUID roomId, List<ConfirmPriceDto> dutchPayDtoList) {
         // 더치 페이 정보 수정

@@ -1,6 +1,6 @@
 import { useEffect, useRef } from "react";
 import { Wrapper, ListItem } from "./List.styles";
-import { categoryData } from "../../../store/CardStore";
+import { categoryData, useCardStore } from "../../../store/CardStore";
 
 interface Props {
   consumptionList: categoryData[]; // props로 받을 데이터 타입 지정
@@ -9,6 +9,7 @@ interface Props {
 const List = ({ consumptionList }: Props) => {
   const imgRefs = useRef<(HTMLImageElement | null)[]>([]); // 여러 이미지 요소 참조
 
+  const { getCategoryImage } = useCardStore();
   useEffect(() => {
     imgRefs.current.forEach((imgElement) => {
       if (imgElement) {
@@ -38,7 +39,7 @@ const List = ({ consumptionList }: Props) => {
               ) : (
                 <img
                   ref={(el) => (imgRefs.current[index] = el)} // 각 이미지를 참조 배열에 저장
-                  src={`/assets/image/category/${consumption.category}.png`}
+                  src={getCategoryImage(consumption.category)}
                   alt={consumption.category}
                 />
               )}
