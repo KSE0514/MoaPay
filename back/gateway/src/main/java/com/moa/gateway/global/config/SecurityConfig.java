@@ -84,7 +84,7 @@ public class SecurityConfig {
                                 "/api/moapay/core/card/getMyCardIds"
                                 )
                                 .permitAll()
-                                .anyExchange()
+                                .anyExchange()  
                                 .authenticated() //나머지 경로는 인증 필요
                 ).addFilterBefore(authenticationWebFilter(), SecurityWebFiltersOrder.AUTHENTICATION).build();
     }
