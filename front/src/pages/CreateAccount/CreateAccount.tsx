@@ -164,7 +164,7 @@ const CreateAccount = () => {
     try {
       await axios.post(
         // `${baseUrl}moapay/member/sendSMS`,
-        `/api/moapay/member/sendSMS`,
+        `https://j11c201.p.ssafy.io/api/moapay/member/sendSMS`,
         {
           phoneNumber: joinUserInfo.phone_number,
         },

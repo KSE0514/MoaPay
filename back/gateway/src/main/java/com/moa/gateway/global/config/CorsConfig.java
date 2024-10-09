@@ -13,17 +13,17 @@ import java.util.Arrays;
 @Configuration
 public class CorsConfig implements WebFluxConfigurer {
 
-  @Override
-  public void addCorsMappings(CorsRegistry registry) {
-    registry.addMapping("/**")
-        .allowedOrigins("https://localhost:8765", "http://localhost:8765", "https://localhost", "http://localhost",
-            "http://localhost:5173", "https://localhost:5173", "https://moapay-7e24e.web.app",
-            "https://j11c201.p.ssafy.io", "https://j11c201.p.ssafy.io/api", "http://j11c201.p.ssafy.io")
-        .allowedMethods("GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS")
-        .allowedHeaders("*")
-        .allowCredentials(true)
-        .maxAge(3600);
-  }
+//  @Override
+//  public void addCorsMappings(CorsRegistry registry) {
+//    registry.addMapping("/**")
+//        .allowedOrigins("https://localhost:8765", "http://localhost:8765", "https://localhost", "http://localhost",
+//            "http://localhost:5173", "https://localhost:5173", "https://moapay-7e24e.web.app",
+//            "https://j11c201.p.ssafy.io", "https://j11c201.p.ssafy.io/api", "http://j11c201.p.ssafy.io")
+//        .allowedMethods("GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS")
+//        .allowedHeaders("*")
+//        .allowCredentials(true)
+//        .maxAge(3600);
+//  }
 
   @Bean
   public CorsWebFilter corsWebFilter() {
