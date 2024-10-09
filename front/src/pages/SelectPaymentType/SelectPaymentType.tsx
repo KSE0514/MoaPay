@@ -294,7 +294,7 @@ const SelectPaymentType = () => {
             totalPrice: parseInt(storedTotalPrice, 10),
             memberId: id,
             cardSelectionType: "FIX",
-            recommendType: "", // RECOMMEND인 경우 사용, BENEFIT / PERFORM
+            recommendType: "FIX", // RECOMMEND인 경우 사용, BENEFIT / PERFORM
             cardNumber: "3998541707334420", // FIX인 경우 사용
             cvc: "123", // FIX인 경우 사용
           },
