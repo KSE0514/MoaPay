@@ -33,4 +33,8 @@ public interface PaymentLogRepository extends JpaRepository<PaymentLog, Long> {
     //     "AND FUNCTION('YEAR', p.createTime) = FUNCTION('YEAR', FUNCTION('DATE_SUB', CURRENT_DATE, 1, 'MONTH')) " +
     //     "AND FUNCTION('MONTH', p.createTime) = FUNCTION('MONTH', FUNCTION('DATE_SUB', CURRENT_DATE, 1, 'MONTH'))")
     // List<PaymentLog> findAllFromMonth(@Param("cardId") UUID cardId);
+
+    @Query("SELECT p.categoryId, COUNT(p) FROM PaymentLog p WHERE p.cardId = :cardId AND p.status != 'CANCELED' GROUP BY p.categoryId")
+    List<Object[]> countByCategoryIdGroupedByCardId(@Param("cardId") UUID cardId);
+
 }
