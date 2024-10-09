@@ -137,7 +137,7 @@ const SelectPaymentType = () => {
   const [isEnd, setIsEnd] = useState<boolean>(false);
 
   //구독 시 필요한 id
-  const storeRequestId = localStorage.getItem("reqeustId"); //저장된 결제 요청 값 => 결제 끝나고 지워야함
+  const storeRequestId = localStorage.getItem("requestId"); //저장된 결제 요청 값 => 결제 끝나고 지워야함
   const [requestId, setRequestId] = useState<string>("");
 
   //결제 결과
@@ -176,7 +176,7 @@ const SelectPaymentType = () => {
    */
   const settingStoreRequestId = (): string => {
     const newRequestId = uuidv4();
-    localStorage.setItem("reqeustId", newRequestId);
+    localStorage.setItem("requestId", newRequestId);
     return newRequestId;
   };
 
@@ -188,6 +188,8 @@ const SelectPaymentType = () => {
       storeRequestId !== null ? storeRequestId : settingStoreRequestId()
     );
     if (requestId) {
+      console.log("sse 연결시작!!!!!");
+      console.log("requestId ", requestId);
       //페이먼트 연결
       const eventSource = new EventSource(
         // `http://localhost:18010/moapay/pay/notification/subscribe/${requestId}}`
