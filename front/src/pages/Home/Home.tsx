@@ -33,7 +33,8 @@ import { onMessage } from "firebase/messaging";
 const Home = () => {
   const navigate = useNavigate();
   const { id, accessToken } = useAuthStore();
-  const { cardWithDividPay, cardWithNullName, cardList } = useCardStore();
+  const { cardWithDividPay, cardWithNullName, cardList, setCardList } =
+    useCardStore();
   const [showCards, setShowCards] = useState<Card[]>([]);
   const containerRef = useRef<HTMLDivElement | null>(null);
   const [isCameraOn, setIsCameraOn] = useState(false); // 카메라 상태 추가
@@ -222,10 +223,23 @@ const Home = () => {
   const onclose = () => {
     setIsOpen(false);
   };
-
+  const getUserCard = async () => {
+    try {
+      const response = await axios.get(`moapay/core/card/mycard/${id}`, {
+        withCredentials: true,
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+          "Content-Type": "application/json",
+        },
+      });
+      setCardList(response.data.data);
+    } catch (e) {
+      console.log(e);
+    }
+  };
   useEffect(() => {
+    getUserCard();
     const cardArray: Card[] = [];
-
     // cardWithNullName과 cardWithDividPay를 배열에 추가
 
     cardArray.push(cardWithNullName);
