@@ -94,6 +94,9 @@ const DutchInvite = () => {
   const [dutchStart, setDutchStart] = useState<boolean>(false);
   const [maxMember, setMexMember] = useState<number | string>("");
 
+  // 금액을 local storage에 저장하는 방식으로 해결해야할 것 같음...
+  // const [confirmAmount, setConfirmAmount] = useState<number>(); // 주최자가 invite페이지로 넘어오기 전 주최자가 얼마를 결제해야할지 저장해놓을 용도. 참가자쪽 최종 확정 결제금 저장해놓을 용도로도 쓸 수 있을 듯
+
   const [stop, setStop] = useState(false);
 
   // 더치페이 방 입장 관련
@@ -117,6 +120,11 @@ const DutchInvite = () => {
   const [totalPrice, setTotalPrice] = useState<number>(10000); // 총 가격
   const [memberName, setMemberName] = useState<string>("");
 
+  useEffect(() => {
+    // 만약 isHost === true이면 setProcess(3), setIsAccept(true);
+
+  }, [])
+
   // useEffect(() => {
   //   if (dutchParticipants[0].status === "PROGRESS") {
   //     setProcess(1)
@@ -131,9 +139,9 @@ const DutchInvite = () => {
   const getRoomInfo = async (roomid: string) => {
     try {
       const response = await axios.get(
-        // `http://localhost:18020/moapay/core/dutchpay/getDutchRoomInfo/` +
-        //   roomid,
-        `api/moapay/core/dutchpay/getDutchRoomInfo/` + roomid,
+        `http://localhost:18020/moapay/core/dutchpay/getDutchRoomInfo/` +
+          roomid,
+        // `api/moapay/core/dutchpay/getDutchRoomInfo/` + roomid,
         {
           withCredentials: true,
         }
@@ -752,8 +760,10 @@ const DutchInvite = () => {
           </WaitingTop>
           <WaitingMain>
             {/* 주최자 이름을 어떻게 들고와야 하는가... */}
-            {/* <div>'{dutchPayListInfo[0].memberName}'님이</div> */}
-            <div>'' 님이</div>
+            {dutchPayListInfo[0]? 
+            <div>'{dutchPayListInfo[0].memberName}'님이</div>
+            : null}
+            {/* <div>'' 님이</div> */}
             <div>더치페이를</div>
             <div>신청했습니다.</div>
             <div>

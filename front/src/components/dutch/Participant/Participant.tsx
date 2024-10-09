@@ -1,7 +1,9 @@
 import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import SquareBtn from "../SquareBtn/SquareBtn";
 import Product from "../Product/Product";
+import { PATH } from "./../../../constants/path"
 
 import line from "./../../../assets/image/dutch_line.png";
 // import { useEffect } from 'react';
@@ -53,6 +55,7 @@ interface ParticipantProps {
   setProcess?: (step: number) => void;
   process: number;
   roomInfo?: DutchPayInfo;
+  setConfirmAmount?: () => void;
 }
 
 type UUID = string; // UUID를 문자열로 간주
@@ -94,6 +97,7 @@ const Participant = ({
   setProcess,
   process,
   roomInfo,
+  setConfirmAmount,
 }: ParticipantProps) => {
   const convertDutchPayItemsToParticipantInfo = (
     items: DutchPayItem[]
@@ -127,6 +131,7 @@ const Participant = ({
 
   }, [roomInfo])
 
+  const nav = useNavigate()
   // const [participants, setParticipants] = useState([])
   const [isHost, setIsHost] = useState<boolean>(false);
   const [dutchStart, setDutchStart] = useState<boolean>(false);
@@ -213,6 +218,12 @@ const Participant = ({
       console.log("컨펌 후 확인용", participants);
     }
 
+    // setConfirmAmount((participants[0].amount)) // 주최자 결제금 저장
+
+    // leaveRoom()
+    // nav(`/dutchpay/invite/${maxNum}/${roomId}`) // 넘어갈 때 local storage에서 maxMember 불러오고 roomid도 넘겨줘야 함
+    
+    
     // // 결제 요청 시 모든 참가자의 amount가 입력되었는지 확인
     // const isAnyamountEmpty = participants.some(participant => participant.amount === '');
 
