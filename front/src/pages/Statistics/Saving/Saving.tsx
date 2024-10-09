@@ -119,7 +119,7 @@ const Saving = () => {
   const getSavingData = async () => {
     try {
       const response = await axios.post(
-        `api/moapay/pay/saving/getSaving`,
+        `/api/moapay/pay/saving/getSaving`,
         { memberId: id },
         {
           withCredentials: true,
