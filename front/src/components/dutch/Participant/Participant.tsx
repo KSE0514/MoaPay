@@ -70,6 +70,15 @@ interface DutchPayInfo {
   dutchPayList: DutchPayItem[]; // DutchPayItem 배열
 }
 
+interface ParticipantInfo {
+  index: number;
+  uuid: string;
+  memberId: string;
+  memberName: string;
+  amount: number | null;
+  status: string;
+}
+
 // interface Participant {
 //   name: string;
 //   id: number;
