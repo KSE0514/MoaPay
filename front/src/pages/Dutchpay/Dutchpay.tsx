@@ -57,7 +57,7 @@ const Dutchpay = () => {
   const nav = useNavigate();
   // const location = useLocation();
 
-  const { name, id } = useAuthStore();
+  const { name, id, accessToken } = useAuthStore();
 
   console.log("이름", name, "아이디", id);
   // console.log("Url 넘어오는지 확인용", location.state)
@@ -369,6 +369,9 @@ const Dutchpay = () => {
     console.log("connect websocket");
     const client = new Client({
       brokerURL: "wss://j11c201.p.ssafy.io/api/moapay/core/ws/dutchpay", // WebSocket URL
+      connectHeaders: {
+        Authorization: "Bearer " + accessToken, // 여기에서 JWT 토큰을 추가합니다.
+      },
       onConnect: (frame) => {
         console.log("Connected: " + frame);
 
