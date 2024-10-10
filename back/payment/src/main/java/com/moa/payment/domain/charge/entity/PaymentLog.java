@@ -81,12 +81,12 @@ public class PaymentLog {
  //     private void preUpdate() {
  //         this.updateTime = LocalDateTime.now();
  //     }
-// @PrePersist
-// private void prePersist() {
-//    this.createTime = getRandomNovemberDate();
-//    this.updateTime = this.createTime;
-// }
-//
+@PrePersist
+private void prePersist() {
+   this.createTime = getRandomNovemberDate();
+   this.updateTime = this.createTime;
+}
+
    @PreUpdate
    private void preUpdate() {
        this.updateTime = getRandomNovemberDate();
