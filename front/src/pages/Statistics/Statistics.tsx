@@ -151,10 +151,8 @@ const Statistics = () => {
         }
       );
       setDataList(response.data.data.paymentStatistics);
-      //받은 소비량 더하기
       const totalPrice = response.data.data.totalBenefits;
       setCalculatedPrice(totalPrice);
-      //받은 소비량 더하기
     } catch (e) {
       console.log(e);
     }
@@ -276,15 +274,24 @@ const Statistics = () => {
   }, []);
 
   useEffect(() => {
-    console.log("useEffect 월별 변경");
-    if (window.location.pathname == paths[0]) {
-      console.log("load consumptionData");
+    if (window.location.pathname === paths[0]) {
       getConsumptionData();
-    } else if (window.location.pathname == paths[1]) {
-      console.log("load benefitData");
+    } else if (window.location.pathname === paths[1]) {
       getBenefitData();
     }
   }, [selectedMonth, selectedYear]);
+
+  useEffect(() => {
+    if (window.location.pathname === paths[0]) {
+      if (dataList) {
+        navigator(paths[0], { state: dataList });
+      }
+    } else if (window.location.pathname === paths[1]) {
+      if (dataList) {
+        navigator(paths[1], { state: dataList });
+      }
+    }
+  }, [dataList]);
 
   return (
     <>
