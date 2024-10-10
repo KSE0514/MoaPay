@@ -209,7 +209,7 @@ export const Loading = styled.div`
     -moz-box-shadow: 9px 9px 9px -2px rgba(135, 58, 224, 0.52);
     -webkit-box-shadow: 9px 9px 9px -2px rgba(135, 58, 224, 0.52);
     transform: rotate(90deg);
-    animation: slide-down 1.2s 0.6s cubic-bezier(0.645, 0.045, 0.355, 1) both;
+    animation: slide-down 1.2s 0.8s cubic-bezier(0.645, 0.045, 0.355, 1) both;
   }
   .card-fadeout {
     animation: slide-up 1.2s 1s cubic-bezier(0.645, 0.045, 0.355, 1) both;

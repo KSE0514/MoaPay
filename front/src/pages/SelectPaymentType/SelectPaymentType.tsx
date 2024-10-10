@@ -228,10 +228,10 @@ const SelectPaymentType = () => {
     );
     if (selectedPayType == "single") {
       setShowModal(true);
+      // setIsAuth(true);
     } else if (selectedPayType == "multi") {
       setShowModal(true);
-
-      // 요청보내기
+      // setIsAuth(true);
     } else if (selectedPayType == "dutch") {
       //더치페이지로 이동할때 필요한 정보 들고 가세용
       navigate(PATH.DUTCHOPEN);
