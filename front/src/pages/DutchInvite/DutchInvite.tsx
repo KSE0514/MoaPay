@@ -406,7 +406,7 @@ const DutchInvite = () => {
   const connectWebSocket = () => {
     const client = new Client({
       // brokerURL: "ws://localhost:18020/moapay/core/ws/dutchpay", // WebSocket URL
-      brokerURL: "ws://j11c201.p.ssafy.io/api/moapay/core/ws/dutchpay", // WebSocket URL
+      brokerURL: "wss://j11c201.p.ssafy.io/api/moapay/core/ws/dutchpay", // WebSocket URL
       onConnect: (frame) => {
         console.log("Connected: " + frame);
         // 방 참여 시 메시지 구독
