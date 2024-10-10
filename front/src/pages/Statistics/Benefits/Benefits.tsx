@@ -11,11 +11,12 @@ const Benefits = () => {
   const [benefitList, setBenefitList] = useState<categoryData[]>(
     location.state || [] // location.state가 없을 때 빈 배열로 초기화
   );
+
   console.log("혜택 location은 있을까용 >? ", location.state);
+
   const getBenefitData = async () => {
     try {
       const response = await axios.post(
-        // `https://j11c201.p.ssafy.io/api/moapay/pay/statistics/benefit/${selectedYear}/${selectedMonth}`,
         `/api/moapay/pay/statistics/benefit/${new Date().getFullYear()}/${
           new Date().getMonth() + 1
         }`,
@@ -35,16 +36,24 @@ const Benefits = () => {
       console.log(e);
     }
   };
-  // 처음 렌더링되는 경우에만 데이터 가져오기
+
+  // 처음 렌더링될 때 데이터를 가져오고, location.state가 변경될 때 benefitList를 업데이트
   useEffect(() => {
-    if (!location.state) {
-      getBenefitData(); // location.state가 없을 때만 데이터를 가져옴
+    if (location.state) {
+      // location.state가 있을 때는 해당 데이터를 사용
+      console.log("location.state를 기반으로 리스트 업데이트");
+      setBenefitList(location.state);
+    } else {
+      console.log("데이터 가져올 거에옹");
+      getBenefitData(); // location.state가 없을 때는 API 호출
     }
   }, [location.state]); // location.state가 변경될 때만 호출
+
   return (
     <>
       <List consumptionList={benefitList} />
     </>
   );
 };
+
 export default Benefits;

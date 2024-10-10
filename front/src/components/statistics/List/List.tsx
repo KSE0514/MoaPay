@@ -47,7 +47,11 @@ const List = ({ consumptionList }: Props) => {
             </div>
           </div>
           <div className="Col">
-            <p>{getCategoryImage(consumption.categoryId).slice(0, -4)}</p>
+            <p>
+              {getCategoryImage(consumption.categoryId)
+                .replace("/assets/image/category/", "")
+                .slice(0, -4)}
+            </p>
             <p>
               {`${consumption.per}%`} | {consumption.money.toLocaleString()}{" "}
             </p>

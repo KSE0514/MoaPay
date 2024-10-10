@@ -12,6 +12,7 @@ const Consumption = () => {
     location.state || [] // location.state가 없을 때 빈 배열로 초기화
   );
   console.log("소비 location은 있을까용 >? ", location.state);
+
   const getConsumptionData = async () => {
     console.log("first get Data");
     try {
@@ -36,12 +37,17 @@ const Consumption = () => {
     }
   };
 
-  // 처음 렌더링되는 경우에만 데이터 가져오기
+  // 처음 렌더링될 때 데이터를 가져오고, location.state가 변경될 때 consumptionList를 업데이트
   useEffect(() => {
-    if (!location.state) {
-      getConsumptionData(); // location.state가 없을 때만 데이터를 가져옴
+    if (location.state) {
+      // location.state가 있을 때는 해당 데이터를 사용
+      console.log("location.state를 기반으로 리스트 업데이트");
+      setConsumptionList(location.state);
+    } else {
+      console.log("데이터 가져올 거에옹");
+      getConsumptionData(); // location.state가 없을 때는 API 호출
     }
-  }, [location.state]); // location.state가 변경될 때만 호출
+  }, [location.state]); // location.state가 변경될 때 호출
 
   return (
     <>
