@@ -15,7 +15,6 @@ public class WebConfig implements WebMvcConfigurer {
 				"https://j11c201.p.ssafy.io", "https://j11c201.p.ssafy.io/api", "http://j11c201.p.ssafy.io", "http://j11c201.p.ssafy.io/store", "https://j11c201.p.ssafy.io/store")
 			.allowedMethods("GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS")
 			.allowedHeaders("*")
-			.allowCredentials(true)
 			.maxAge(3600);
 	}
 }
