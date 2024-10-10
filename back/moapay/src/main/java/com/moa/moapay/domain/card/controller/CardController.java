@@ -19,7 +19,6 @@ import java.util.UUID;
 @RequiredArgsConstructor
 @Slf4j
 @RequestMapping("/card")
-@CrossOrigin(origins = {"http://localhost:5173", "https://moapay-7e24e.web.app"}, allowedHeaders = "*", allowCredentials = "true")
 public class CardController {
 
     private final RecommendCardService recommendCardService;
