@@ -10,7 +10,7 @@ export interface payLog {
 }
 
 export interface categoryData {
-  category: string;
+  categoryId: string;
   money: number;
   per: number;
 }
