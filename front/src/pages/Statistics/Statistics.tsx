@@ -101,6 +101,8 @@ const Statistics = () => {
    */
   const getConsumptionData = async () => {
     console.log("getConsumtionData");
+    console.log(selectedYear, selectedMonth);
+    console.log("=======================================");
     try {
       const response = await axios.post(
         // `https://j11c201.p.ssafy.io/api/moapay/pay/statistics/consumption/${selectedYear}/${selectedMonth}`,
@@ -118,11 +120,7 @@ const Statistics = () => {
       );
       setDataList(response.data.data.paymentStatistics);
       //받은 소비량 더하기
-      const totalPrice = response.data.data.paymentStatistics.reduce(
-        (acc: number, curr: { money: number }) => acc + curr.money,
-        0 // 초기값은 0
-      );
-      setCalculatedPrice(totalPrice);
+      setCalculatedPrice(response.data.data.totalAmounts);
     } catch (e) {
       console.log(e);
     }
@@ -133,6 +131,8 @@ const Statistics = () => {
    */
   const getBenefitData = async () => {
     console.log("getBenefitData");
+    console.log(selectedYear, selectedMonth);
+    console.log("=======================================");
     try {
       const response = await axios.post(
         // `https://j11c201.p.ssafy.io/api/moapay/pay/statistics/benefit/${selectedYear}/${selectedMonth}`,
@@ -150,10 +150,7 @@ const Statistics = () => {
       );
       setDataList(response.data.data.paymentStatistics);
       //받은 소비량 더하기
-      const totalPrice = response.data.data.paymentStatistics.reduce(
-        (acc: number, curr: { money: number }) => acc + curr.money,
-        0 // 초기값은 0
-      );
+      const totalPrice = response.data.data.totalBenefits;
       setCalculatedPrice(totalPrice);
       //받은 소비량 더하기
     } catch (e) {
@@ -167,13 +164,14 @@ const Statistics = () => {
   const [savingUse, setSavingUse] = useState<number>(0);
    */
   const changeComponent = async (index: number) => {
+    console.log("nav index ", index);
     setNavPosition(`calc(calc(100% / 4) * ${index})`);
     //데이터 요청받아서 navigate할때 같이 보내줘야함 -> navigator(paths[index],{state:[datalist]]})
     //받을 때는 locationt사용   const location = useLocation();  const data = location.state;
     if (index == 0) {
       setMode("Donut");
       try {
-        getConsumptionData();
+        await getConsumptionData();
         navigator(paths[index], { state: dataList });
       } catch (e) {
         console.log(e);
@@ -183,7 +181,7 @@ const Statistics = () => {
       //받을 때는 locationt사용   const location = useLocation();  const data = location.state;
       setMode("Donut");
       try {
-        getBenefitData();
+        await getBenefitData();
         navigator(paths[index], { state: dataList });
       } catch (e) {
         console.log(e);

@@ -445,7 +445,9 @@ const SelectPaymentType = () => {
                             <div>받은 혜택 금액</div>
                             <div style={{ color: "#a959ff" }}>
                               {(
-                                result.amount - result.actualAmount
+                                result.benefitDetail.discount +
+                                result.benefitDetail.point +
+                                result.benefitDetail.cashback
                               ).toLocaleString()}
                               원
                             </div>

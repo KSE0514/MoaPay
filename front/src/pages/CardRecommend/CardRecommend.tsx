@@ -101,7 +101,7 @@ const CardRecommend = () => {
         }
       );
       if (response.status === 200) {
-        setRecommendCardList(response.data.data);
+        setRecommendCardList(response.data.data.recommend);
       }
     } catch (e) {
       console.log(e);
