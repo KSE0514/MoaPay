@@ -9,6 +9,8 @@ import testCard from "./../../../assets/image/cards/신용카드이미지/12_올
 import testCard2 from "./../../../assets/image/cards/신용카드이미지/14_JADE_Classic.png";
 import { Card } from "../../../store/CardStore";
 import { useCardStore } from "../../../store/CardStore";
+import { useAuthStore } from "../../../store/AuthStore";
+
 import {
   Wrapper,
   Price,
@@ -18,6 +20,7 @@ import {
   Btn,
   SelectModal,
 } from "./Payment.styles";
+import axios from "axios";
 
 const testMainCard = {
   index: 0,
@@ -33,9 +36,12 @@ const testMainCard2 = {
 interface PaymentProps {
   onClick: () => void;
   confirmAmount: number;
+  onFinish: () => void;
 }
 
-const Payment = ({ onClick, confirmAmount }: PaymentProps) => {
+const Payment = ({ onClick, confirmAmount, onFinish }: PaymentProps) => {
+  const { accessToken, id, paymentType } = useAuthStore();
+  const cardList = useCardStore((state) => state.cardList);
 
   const [rotate, setRotate] = useState(false);
   const [selectedCard, setSelectedCard] = useState<Card | null>(); // 선택된 카드(결제 카드)
@@ -50,10 +56,15 @@ const Payment = ({ onClick, confirmAmount }: PaymentProps) => {
     "01923d9f-7b3d-7a9e-a0b3-24d7970f90d4"
   ); // 상점 ID
   const [requestId, setRequestId] = useState<string>("");
+  const [dutchPayId, setDutchPayId] = useState<string>("");
+  const [dutchRoomId, setDutchRoomId] = useState<string>("");
 
   useEffect(() => {
     // totalPrice는 숫자형으로 변환하되, 유효하지 않을 경우 0으로 설정
-    const storedTotalPrice = parseInt(localStorage.getItem("totalPrice") || "0", 10);
+    const storedTotalPrice = parseInt(
+      localStorage.getItem("totalPrice") || "0",
+      10
+    );
     const validatedTotalPrice = isNaN(storedTotalPrice) ? 0 : storedTotalPrice;
 
     // localStorage에서 값 가져오기
@@ -62,12 +73,28 @@ const Payment = ({ onClick, confirmAmount }: PaymentProps) => {
     setCategoryId(localStorage.getItem("categoryId") || "");
     setMerchantId(localStorage.getItem("merchantId") || "");
     setRequestId(localStorage.getItem("requestId") || "");
+
+    setDutchRoomId(localStorage.getItem("dutchRoomId") || "");
     // 값 로그로 출력
+    const path = window.location.pathname; // 예: /items/10000/details
+    const segments = path.split("/"); // '/'로 구분하여 배열로 변환
+
     console.log("Order ID:", localStorage.getItem("orderId"));
     console.log("Total Price:", localStorage.getItem("totalPrice"));
     console.log("Category ID:", localStorage.getItem("categoryId"));
     console.log("Merchant ID:", localStorage.getItem("merchantId"));
     console.log("Request ID:", localStorage.getItem("requestId"));
+
+    const priceString = segments[4]; // segments[4]가 가격이 됩니다.
+
+    setSelectedCard(cardList[0]);
+
+    if (priceString) {
+      const price = Number(priceString); // 문자열을 숫자로 변환
+      if (!isNaN(price)) {
+        setTotalPrice(price); // totalPrice 설정
+      }
+    }
   }, []);
 
   // 카드 가로, 세로 길이에 따른 회전 여부 판단 핸들러
@@ -86,8 +113,140 @@ const Payment = ({ onClick, confirmAmount }: PaymentProps) => {
     setIsOpen(true);
   };
 
+  const pay = async () => {
+    console.log("sse 연결시작!!!!!");
+    console.log("requestId ", requestId);
+    //페이먼트 연결
+    const dutchPayId = localStorage.getItem("dutchPayId") || "";
+    console.log(selectedCard?.cardNumber);
+    console.log(selectedCard?.cvc);
+
+    onClick();
+
+    try {
+      // setIsLoading(true);
+
+      console.log(
+        "dutchPayID : ",
+        dutchPayId,
+        "dutchRoomId : ",
+        dutchRoomId,
+        "requestId : ",
+        requestId,
+        "orderId : ",
+        orderId,
+        "merchantId : ",
+        merchantId,
+        "categoryId : ",
+        categoryId,
+        "id : ",
+        id
+      );
+
+      const response = await axios.post(
+        // `https://j11c201.p.ssafy.io/api/moapay/core/generalpay/pay`,
+        `/api/moapay/core/generalpay/pay`,
+        // `http://localhost:8765/moapay/core/generalpay/pay`,
+        // `http://localhost:18020/moapay/core/dutchpay/payment`,
+        {
+          //TODO : 더치페이 아이디랑 더치 룸 아이디 가져와야함
+          dutchPayId: dutchPayId,
+          dutchRoomId: dutchRoomId,
+          requestId: requestId,
+          orderId: orderId,
+          merchantId: merchantId,
+          categoryId: categoryId,
+          totalPrice: confirmAmount,
+          memberId: id,
+          cardSelectionType: "DUTCHPAY",
+          // recommendType: paymentType || "PERFORM", // RECOMMEND인 경우 사용, BENEFIT / PERFORM
+          cardNumber: selectedCard?.cardNumber, // FIX인 경우 사용
+          cvc: selectedCard?.cvc, // FIX인 경우 사용
+        },
+        // {
+        //   requestId: storedRequestId,
+        //   orderId: storedOrderId,
+        //   merchantId: storedMerchantId,
+        //   categoryId: storedCategoryId,
+        //   totalPrice: parseInt(storedTotalPrice, 10),
+        //   memberId: id,
+        //   cardSelectionType: "FIX",
+        //   recommendType: "BENEFIT", // RECOMMEND인 경우 사용, BENEFIT / PERFORM
+        //   cardNumber: "3998541707334420", // FIX인 경우 사용
+        //   cvc: "123", // FIX인 경우 사용
+        // },
+        {
+          withCredentials: true,
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+            "Content-Type": "application/json",
+          },
+        }
+      );
+      console.log(response);
+    } catch (e) {
+      console.log(e);
+    }
+
+    const eventSource = new EventSource(
+      // `http://localhost:18010/moapay/pay/notification/subscribe/${requestId}`
+      `https://j11c201.p.ssafy.io/api/moapay/pay/notification/subscribe/${requestId}`
+    );
+
+    eventSource.onopen = async () => {
+      await console.log(
+        "==============pay - SSE connection opened!=============="
+      );
+      console.log(eventSource);
+    };
+
+    // 'payment-completed' 이벤트를 수신할 때 실행될 로직 (이벤트 이름을 'payment-completed'로 변경)
+    // 결제 완료를 보내주는 것
+    eventSource.addEventListener("payment-completed", (event) => {
+      console.log("Received 'sse' event:", event.data, "");
+      try {
+        const data = JSON.parse(event.data);
+        console.log("Parsed data: ", data);
+        // setPaymentResult(data);
+
+        if (data.status === "SUCCEED") {
+          console.log("success pay");
+          onFinish();
+        }
+
+        // 결제가 완료된 후에는 loading 을 false로 변경하고
+        // setIsLoading(false);
+
+        //결과를 보여줄 수 있도록 isEnd를 true로 변경
+        setTimeout(() => {
+          // setIsEnd(true);
+        }, 2000); // 2000 밀리초 = 2초
+        // 결제 requestId 삭제하기
+        localStorage.removeItem("requestId");
+        //결과 담기
+      } catch (error) {
+        console.error("Data is not valid JSON:", event.data);
+        // 만약 데이터가 JSON이 아니라 문자열인 경우 그대로 저장
+      }
+    });
+
+    // 'sse' 이벤트를 수신할 때 실행될 로직
+    eventSource.addEventListener("sse", (event) => {
+      console.log("Received 'sse' event:", event.data);
+      try {
+        const data = JSON.parse(event.data);
+        console.log("Parsed data: ", data);
+      } catch (error) {
+        console.error("Data is not valid JSON:", event.data);
+      }
+    });
+  };
+
   // 결제할 카드를 선택했을 경우
   const onSelectCard = (card: Card) => {
+    console.log("selected Card : ", card);
+
+    setSelectedCard(card);
     setIsOpen(false);
   };
 
@@ -122,14 +281,14 @@ const Payment = ({ onClick, confirmAmount }: PaymentProps) => {
               transform: rotate ? "rotate(-90deg)" : "none", // 회전시키기
               marginLeft: rotate ? "17.5px" : "0",
             }}
-            src={testMainCard.img}
+            src={selectedCard?.cardProduct.cardProductImgUrl}
           />
-          <div>{testMainCard.name}</div>
+          <div>{selectedCard?.cardProduct.cardProductName}</div>
         </CardInfo>
         <div onClick={onClickChangeCard}>다른카드 선택하기</div>
         <Bottom>
           {/* 결제 금액 넘겨 받아야 함 */}
-          <Btn onClick={onClick}>{confirmAmount}원 결제하기</Btn>
+          <Btn onClick={pay}>{confirmAmount}원 결제하기</Btn>
           {/* text={'7,000원 결제하기'} color={'white'} onClick={onClick} /> */}
         </Bottom>
       </CardView>

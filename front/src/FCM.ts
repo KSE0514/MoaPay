@@ -38,16 +38,18 @@ export async function requestPermission(
           "BBcjhdZbKx2EUhuNyojxymSj4qMf5zmjT4QKQcX4LkMD4BMWLCRbloVMh5g-c4dzD3DvvGWt4glH7ZPVzpf1hg8",
       });
 
-      // console.log(`푸시 토큰 발급 완료 : ${token}`);
+      console.log(`푸시 토큰 발급 완료 : ${token}`);
 
       // AuthStore에서 사용자 정보 가져오기
 
       // 서버에 토큰 전송
       const response = await axios.post(
-        `api/moapay/core/dutchpay/fcmTokens`,
+        `http://localhost:18020/moapay/core/dutchpay/fcmTokens`,
         {
           token: token, // 푸시 토큰
           memberId: id, // 사용자 ID
+          title: "title",
+          message: "message",
         },
         {
           headers: {
@@ -56,11 +58,11 @@ export async function requestPermission(
         }
       );
 
-      // console.log("서버 응답: ", response.data);
+      console.log("서버 응답: ", response.data);
     } catch (err) {
-      // console.error("푸시 토큰 가져오는 중에 에러 발생", err);
+      console.error("푸시 토큰 가져오는 중에 에러 발생", err);
     }
   } else if (permission === "denied") {
-    // console.log("푸시 권한 차단");
+    console.log("푸시 권한 차단");
   }
 }

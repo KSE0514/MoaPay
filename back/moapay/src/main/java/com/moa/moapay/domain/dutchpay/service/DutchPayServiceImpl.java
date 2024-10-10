@@ -336,25 +336,28 @@ public class DutchPayServiceImpl implements DutchPayService {
                     }
                     flag = false;
                 }
-//                FCMMessageDto fcmMessageDto = FCMMessageDto.builder()
-//                        .memberId(dutchPay.getMemberId())
-//                        .title("MoaPay")
-//                        .message(dutchPayMember.getMemberName() + " 님의 더치페이 결제가 완료되었습니다.")
-//                        .build();
-//                fcmService.pushNotification(fcmMessageDto);
+
+                log.info("더치페이 : {}", dutchPay.toString());
+
+                FCMMessageDto fcmMessageDto = FCMMessageDto.builder()
+                        .memberId(dutchPay.getMemberId())
+                        .title("MoaPay")
+                        .message(dutchPayMember.getMemberName() + " 님의 더치페이 결제가 완료되었습니다.")
+                        .build();
+                fcmService.pushNotification(fcmMessageDto);
             }
 
             if(flag) {
                 log.info("더치페이 완료");
                 // 일단 오류 때문에 넣어둠
-//                for(DutchPay dutchPay : dutchPayList) {
-//                    FCMMessageDto fcmMessageDto = FCMMessageDto.builder()
-//                            .memberId(dutchPay.getMemberId())
-//                            .title("MoaPay")
-//                            .message("더치페이가 완료되었습니다.")
-//                            .build();
-//                    fcmService.pushNotification(fcmMessageDto);
-//                }
+                for(DutchPay dutchPay : dutchPayList) {
+                    FCMMessageDto fcmMessageDto = FCMMessageDto.builder()
+                            .memberId(dutchPay.getMemberId())
+                            .title("MoaPay")
+                            .message("더치페이가 완료되었습니다.")
+                            .build();
+                    fcmService.pushNotification(fcmMessageDto);
+                }
                 dutchRoomRepository.updateDutchRoomConfirm(byDutchUuid.getCurPerson(), DutchStatus.DONE, byDutchUuid.getUuid());
             }
 
