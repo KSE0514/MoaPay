@@ -21,5 +21,5 @@ public class RecomendCardInfoResponseDto {
     private long cardProductAnnualFeeForeign;
     private long cardProductPerformance;
     private String cardProductImgUrl;
-    private List<CardBenefitDto> benefits;
+    private List<CardBenefitDto> cardBenefits;
 }
