@@ -328,7 +328,7 @@ const Participant = ({
         <>
           {/* 더치페이 하여 구매할 상품 정보 */}
           <Product
-            productName={"새콤달콤 티니핑 시즌4 하츄핑 꽃다발 봉제 인형"}
+            productName={" BESPOKE 냉장고 4도어 키친핏 615L (UV탈취)"}
             productUrl={
               "https://www.ssg.com/item/itemView.ssg?itemId=1000566517100"
             }
