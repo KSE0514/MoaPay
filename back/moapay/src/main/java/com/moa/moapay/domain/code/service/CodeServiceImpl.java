@@ -24,6 +24,7 @@ public class CodeServiceImpl implements CodeService {
 
     @Override
     public GetQRCodeResponseDto getQRCode(GetQRCodeRequestDto dto) {
+        log.info("make QRcode => {}", dto);
         // [1] 등록된 값과 연동할 QRcode 발급, redis에 등록(Hash)
         int QRCode;
         while(true) {
@@ -32,7 +33,7 @@ public class CodeServiceImpl implements CodeService {
         }
         // [2] 중복 아닌 거 확인했다면 그 값 기반으로 나머지 결제정보 등록
         String code = redisRepository.RegistQRCodeInfo(QRCode, dto);
-
+        log.info("QRcode done");
         // [3] QRcode 리턴
         return GetQRCodeResponseDto.builder()
                 .QRCode(code)
@@ -41,14 +42,17 @@ public class CodeServiceImpl implements CodeService {
 
     @Override
     public GetQRInfoResponseDto getQRInfo(String QRCode) {
+        log.info("get QRcode info => {}", QRCode);
         HashMap<String, String> searchedInfo = redisRepository.findQRCodeInfo(QRCode);
-        return GetQRInfoResponseDto.builder()
+        GetQRInfoResponseDto result = GetQRInfoResponseDto.builder()
                 .orderId(UUID.fromString(searchedInfo.get("orderId")))
                 .merchantId(UUID.fromString(searchedInfo.get("merchantId")))
                 .merchantName(searchedInfo.get("merchantName"))
                 .categoryId(searchedInfo.get("categoryId"))
                 .totalPrice(Long.parseLong(searchedInfo.get("totalPrice")))
                 .build();
+        log.info("got information => {}", result);
+        return result;
     }
 
     @Override

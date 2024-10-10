@@ -60,7 +60,6 @@ const Saving = () => {
     limitAmount: 0,
     amount: 0,
     daily: [],
-    // daily: [15000, 23000, 12000, 8000, 16000, 30000, 45000, 17000, 22000],
   });
 
   // 해당 주차의 총 금액
@@ -73,7 +72,7 @@ const Saving = () => {
     try {
       const response = await axios.post(
         `/api/moapay/pay/saving/setLimit`,
-        { memberId: id, limitAmount: goal * 1000 },
+        { memberId: id, limitAmount: goal * 10000 },
         {
           withCredentials: true,
           headers: {
@@ -83,7 +82,7 @@ const Saving = () => {
         }
       );
       if (response.status == 200) {
-        // setSettingStep(3);
+        setSettingStep(3);
       }
     } catch (e) {
       console.log(e);
@@ -161,7 +160,7 @@ const Saving = () => {
   useEffect(() => {
     // 주차와 데이터 설정
     setSelectedWeek(getWeekOfMonth());
-    // getSavingData();
+    getSavingData();
   }, []);
 
   useEffect(() => {

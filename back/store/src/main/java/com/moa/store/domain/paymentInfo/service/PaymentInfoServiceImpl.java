@@ -57,7 +57,6 @@ public class PaymentInfoServiceImpl implements PaymentInfoService {
 			}
 			getQRCodeFromMoaPayDto getQRCodeFromMoaPayDto = objectMapper.convertValue((getQRcode.getBody().getData()), getQRCodeFromMoaPayDto.class);
 			log.info("getQRCodeFromMoaPayDto:{}", getQRCodeFromMoaPayDto);
-
             return GetQRCodeResponseDto.builder()
 					.orderId(createOrderResponseDto.getOrderId())
 					.QRCode(getQRCodeFromMoaPayDto.getQRCode())
