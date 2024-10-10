@@ -46,7 +46,7 @@ const List = ({ consumptionList }: Props) => {
             </div>
           </div>
           <div className="Col">
-            <p>{`${consumption.category}`}</p>
+            <p>{getCategoryImage(consumption.category).slice(0, -4)}</p>
             <p>
               {`${consumption.per}%`} | {consumption.money.toLocaleString()}{" "}
             </p>

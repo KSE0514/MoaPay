@@ -11,7 +11,7 @@ const Consumption = () => {
   const [consumptionList, setConsumptionList] = useState<categoryData[]>(
     location.state || [] // location.state가 없을 때 빈 배열로 초기화
   );
-
+  console.log("소비 location은 있을까용 >? ", consumptionList);
   const getConsumptionData = async () => {
     console.log("first get Data");
     try {
