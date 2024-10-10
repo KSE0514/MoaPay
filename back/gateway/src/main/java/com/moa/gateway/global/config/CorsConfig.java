@@ -33,6 +33,7 @@ public class CorsConfig implements WebFluxConfigurer {
 //        "https://j11c201.p.ssafy.io", "https://j11c201.p.ssafy.io/api", "http://j11c201.p.ssafy.io"));
     corsConfig.setAllowedOriginPatterns(Arrays.asList("*"));
     corsConfig.setMaxAge(3600L);
+    corsConfig.setAllowCredentials(true);
     corsConfig.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"));
     corsConfig.setAllowedHeaders(Arrays.asList("*"));
     corsConfig.setAllowCredentials(true);
