@@ -317,7 +317,13 @@ const Statistics = () => {
               <Info>
                 <DonutChart dataList={dataList} />
                 <StatisticDonutChartText
-                  text={`${selectedMonth}월에는\n${calculatedPrice}원\n소비했어요!`}
+                  text={`${selectedMonth}월에는\n${calculatedPrice}원\n${
+                    location.pathname.includes("consumption")
+                      ? "소비했어요!"
+                      : location.pathname.includes("benefits")
+                      ? "혜택을 받았어요!"
+                      : ""
+                  }`}
                 />
               </Info>
             </>

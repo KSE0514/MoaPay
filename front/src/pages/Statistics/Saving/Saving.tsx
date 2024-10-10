@@ -72,7 +72,7 @@ const Saving = () => {
   const settingGoal = async () => {
     try {
       const response = await axios.post(
-        `/moapay/pay/saving/setLimit`,
+        `api/moapay/pay/saving/setLimit`,
         { memberId: id, limitAmount: goal * 1000 },
         {
           withCredentials: true,
