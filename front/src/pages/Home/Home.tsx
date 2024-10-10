@@ -553,7 +553,7 @@ const Home = () => {
           {remainder !== null
             ? remainder <= 0
               ? `실적달성🎉`
-              : `다음 실적까지 ${remainder}원`
+              : `다음 실적까지 ${remainder.toLocaleString()}원`
             : "모아"}
         </div>
 
