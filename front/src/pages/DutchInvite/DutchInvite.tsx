@@ -396,6 +396,11 @@ const DutchInvite = () => {
     });
   };
 
+  const handleFinish = () => {
+    console.log("결제 완료!");
+    // 결제 완료 후 처리할 로직을 추가하세요.
+  };
+
   // WebSocket 연결 설정
   // TODO: 최현석
   const connectWebSocket = () => {
@@ -628,6 +633,7 @@ const DutchInvite = () => {
               <Payment
                 onClick={onClickPaymentBtn}
                 confirmAmount={confirmAmount}
+                onFinish={handleFinish}
               />
             ) : null}
             {process === 3 ? (
