@@ -106,7 +106,9 @@ const CardRecommend = () => {
   useEffect(() => {
     setIsLoading(true);
     getRecommendCards();
-    setIsLoading(false);
+    setTimeout(() => {
+      setIsLoading(false);
+    }, 2000);
   }, []);
 
   return (
@@ -126,7 +128,7 @@ const CardRecommend = () => {
             <RecommeCardListView>
               <RecommendResultCardList
                 onCardClick={onCardClick}
-                cardList={userCardProductList}
+                cardList={recommendCardList}
               />
             </RecommeCardListView>
             <button
