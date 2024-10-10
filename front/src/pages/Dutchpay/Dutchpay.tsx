@@ -368,7 +368,7 @@ const Dutchpay = () => {
   const connectWebSocket = () => {
     console.log("connect websocket");
     const client = new Client({
-      brokerURL: "wss://j11c201.p.ssafy.io/api/moapay/core/ws/dutchpay", // WebSocket URL
+      brokerURL: "ws://j11c201.p.ssafy.io/api/moapay/core/ws/dutchpay", // WebSocket URL
       onConnect: (frame) => {
         console.log("Connected: " + frame);
 
