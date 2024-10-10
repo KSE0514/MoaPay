@@ -92,6 +92,7 @@ public class PaymentLog {
        this.updateTime = getRandomNovemberDate();
    }
 
+
     private LocalDateTime getRandomNovemberDate() {
         // 2023년 11월 1일 00:00:00 ~ 2023년 11월 30일 23:59:59 사이의 랜덤한 날짜와 시간 생성
         int randomDay = ThreadLocalRandom.current().nextInt(1, 10); // 1 ~ 30 사이의 랜덤 날짜
