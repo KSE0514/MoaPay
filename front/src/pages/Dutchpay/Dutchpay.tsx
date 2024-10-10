@@ -216,7 +216,13 @@ const Dutchpay = () => {
       const response = await axios.post(
         // "http://localhost:18020/moapay/core/dutchpay/createRoom",
         `/api/moapay/core/dutchpay/createRoom`,
-        requestBody
+        requestBody,
+        {
+          withCredentials: true,
+          headers: {
+            Authorization: `Bearer ${accessToken}`, // Authorization 헤더에 Bearer 토큰 추가
+          },
+        }
       );
       console.log("Room created:", response.data);
 
