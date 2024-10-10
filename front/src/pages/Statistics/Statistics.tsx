@@ -174,6 +174,7 @@ const Statistics = () => {
       setMode("Donut");
       try {
         await getConsumptionData();
+        console.log("소비 데이터 가져옴 ", dataList);
         navigator(paths[index], { state: dataList });
       } catch (e) {
         console.log(e);
@@ -184,6 +185,7 @@ const Statistics = () => {
       setMode("Donut");
       try {
         await getBenefitData();
+        console.log("혜택 데이터 가져옴 ", dataList);
         navigator(paths[index], { state: dataList });
       } catch (e) {
         console.log(e);

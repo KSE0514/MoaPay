@@ -8,6 +8,7 @@ const Benefits = () => {
   const [benefitList, setBenefitList] = useState<categoryData[]>(
     location.state || [] // location.state가 없을 때 빈 배열로 초기화
   );
+  console.log("혜택 페이지에옹 ", benefitList);
   return (
     <>
       <List consumptionList={benefitList} />

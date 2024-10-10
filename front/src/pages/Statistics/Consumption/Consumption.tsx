@@ -42,7 +42,7 @@ const Consumption = () => {
       getConsumptionData();
     }
   }, [consumptionList]);
-
+  console.log("소비 페이지에옹 ", consumptionList);
   return (
     <>
       <List consumptionList={consumptionList} />
