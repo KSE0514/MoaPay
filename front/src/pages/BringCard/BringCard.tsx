@@ -43,7 +43,7 @@ const BringCard = () => {
       const response = await axios.post(
         // `http://localhost:18100/cardbank/card/getMyCards`,
         // `https://j11c201.p.ssafy.io/cardapi/cardbank/card/getMyCards`,
-        `/cardapi/cardbank/card/getMyCards`,
+        `/api/moapay/core/card/getMyCards`,
         {
           memberId: id,
           phoneNumber: phoneNumber,
