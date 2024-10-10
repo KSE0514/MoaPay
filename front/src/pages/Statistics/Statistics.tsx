@@ -180,7 +180,7 @@ const Statistics = () => {
       setSelectedYear(
         new Date().getMonth() + 1 === 1
           ? new Date().getFullYear() - 1
-          : new Date().getMonth() + 1
+          : new Date().getFullYear()
       );
       //저번달 소비로 가져오기
       setSelectedMonth(
