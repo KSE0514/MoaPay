@@ -230,7 +230,7 @@ const Dutchpay = () => {
       const parsedMessage: DutchRoomMessage = response.data;
       localStorage.setItem("dutchRoomId", parsedMessage.data);
       // const generatedUrl = `http://localhost:5173/dutchpay/invite/${orderId}/${totalPrice}/${categoryId}/${merchantId}/${requestId}/${maxMember}/${parsedMessage.data}`;
-      const generatedUrl = `http://j11c201.p.ssafy.io/api/dutchpay/invite/${orderId}/${totalPrice}/${categoryId}/${merchantId}/${requestId}/${maxMember}/${parsedMessage.data}`;
+      const generatedUrl = `https://j11c201.p.ssafy.io/api/dutchpay/invite/${orderId}/${totalPrice}/${categoryId}/${merchantId}/${requestId}/${maxMember}/${parsedMessage.data}`;
       console.log("Generated joinUrl:", generatedUrl);
       // localStorage.setItem('joinUrl', generatedUrl);  // localStorage에 joinUrl 저장
       // setJoinUrl(parsedMessage.data); // 방 생성 후 반환된 URL 저장
