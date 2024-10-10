@@ -39,11 +39,11 @@ const Analysis = () => {
           },
         }
       );
-      const benefitList = response.data.data.monthlyBenefits
+      const AmountList = response.data.data.monthlyAmounts
         .reverse()
-        .map((item: { benefit: number }) => item.benefit);
+        .map((item: { amount: number }) => item.amount);
 
-      setUserDataList(benefitList);
+      setUserDataList(AmountList);
     } catch (e) {
       console.log(e);
     }
@@ -64,11 +64,11 @@ const Analysis = () => {
           },
         }
       );
-      const AmountList = response.data.data.monthlyAmounts
+      const benefitList = response.data.data.monthlyBenefits
         .reverse()
         .map((item: { benefit: number }) => item.benefit);
 
-      setUserDataList(AmountList);
+      setUserDataList(benefitList);
     } catch (e) {
       console.log(e);
     }

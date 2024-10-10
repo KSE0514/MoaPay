@@ -29,6 +29,7 @@ import { useAuthStore } from "../../store/AuthStore";
 const Statistics = () => {
   const { id, accessToken, name } = useAuthStore();
 
+  const [gender, setGender] = useState<string>("");
   const navigator = useNavigate();
   const location = useLocation();
   const paths = [
@@ -192,7 +193,12 @@ const Statistics = () => {
           },
         }
       );
+      console.log(
+        "비교 금액 구하기",
+        calculatedPrice - response.data.data.average
+      );
       setComparisonAmount(calculatedPrice - response.data.data.average);
+      setGender(response.data.data.gender == "F" ? "여" : "남");
       setMode("BarGraph");
       navigator(paths[index]);
     } else {
@@ -329,7 +335,7 @@ const Statistics = () => {
                 ></img>
               </ImageBox>
               <TextBox>
-                {`${name}님은 또래 남성에 비해\n${Math.abs(
+                {`${name}님은 또래 ${gender}성에 비해\n${Math.abs(
                   comparisonAmount
                 ).toLocaleString()}원 ${
                   comparisonAmount > 0 ? "더 사용했어요" : "덜 사용했어요"
