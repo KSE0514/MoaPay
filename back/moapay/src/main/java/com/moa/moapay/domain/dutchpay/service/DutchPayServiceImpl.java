@@ -308,12 +308,12 @@ public class DutchPayServiceImpl implements DutchPayService {
         }
         else if(status.equals("PROGRESS")){
             // 결제 요청 다시
-//            FCMMessageDto fcm = FCMMessageDto.builder()
-//                    .memberId(byUuid.getMemberId())
-//                    .title("MoaPay")
-//                    .message("결제 실패")
-//                    .build();
-//            fcmService.pushNotification(fcm);
+            FCMMessageDto fcm = FCMMessageDto.builder()
+                    .memberId(byUuid.getMemberId())
+                    .title("MoaPay")
+                    .message("결제 실패")
+                    .build();
+            fcmService.pushNotification(fcm);
 
             log.info("결제 실패");
             dutchPayRepository.updateByDutchUuid(dutchUuid, DutchStatus.READY);
