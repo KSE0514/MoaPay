@@ -150,6 +150,7 @@ public class OrderServiceImpl implements OrderService {
                 .merchantId(store.getUuid())
                 .merchantName(store.getName())
                 .categoryId(store.getCategoryId())
+                .totalPrice(savedOrder.getTotalPrice())
                 .build();
     }
 
