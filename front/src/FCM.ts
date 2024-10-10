@@ -44,7 +44,7 @@ export async function requestPermission(
 
       // 서버에 토큰 전송
       const response = await axios.post(
-        `http://localhost:18020/moapay/core/dutchpay/fcmTokens`,
+        `/api/moapay/core/dutchpay/fcmTokens`,
         {
           token: token, // 푸시 토큰
           memberId: id, // 사용자 ID

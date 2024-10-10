@@ -239,7 +239,7 @@ public class DutchPayServiceImpl implements DutchPayService {
 
         DutchPay dutchPay = dutchPayRepository.findByUuid(dutchPayPaymentRequsetDto.getDutchPayId());
 
-        log.info("{}", dutchPayPaymentRequsetDto.getDutchPayId());
+        log.info("dutchPayID : {}", dutchPayPaymentRequsetDto.getDutchPayId());
 
         if(dutchPay.getPayStatus().equals(DutchStatus.READY)) {
             ExecuteDutchPayRequestDto executeGeneralPayRequestDto = ExecuteDutchPayRequestDto.builder()
