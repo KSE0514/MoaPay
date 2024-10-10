@@ -129,6 +129,8 @@ public class GeneralPayServiceImpl implements GeneralPayService {
             throw new BusinessException(HttpStatus.BAD_REQUEST, "중복된 결제 요청입니다.");
         }
 
+        log.info("결제 dto 정보 = {}", dto.toString());
+
         // [1] 사용할 카드 선택
         // FIX인 경우, 주어진 값을 기반으로 사용할 카드 값을 가져온다.
         List<PaymentCardInfoVO> cardInfoList = new ArrayList<>();
