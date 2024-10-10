@@ -86,7 +86,8 @@ public class SecurityConfig {
                                         "/api/moapay/core/generalpay/offline", "/moapay/core/generalpay/offline",
                                         "/api/moapay/pay/notification/subscribe/**", "/moapay/pay/notification/subscribe/**",
                                         "/api/moapay/core/card/getMyCardIds", "/moapay/core/card/getMyCardIds",
-                                        "/api/moapay/pay/charge/getPaymentLog", "/moapay/pay/charge/getPaymentLog"
+                                        "/api/moapay/pay/charge/getPaymentLog", "/moapay/pay/charge/getPaymentLog",
+                                        "/api/moapay/member/getMember", "/moapay/member/getMember"
                                 )
                                 .permitAll()
                                 .anyExchange()
