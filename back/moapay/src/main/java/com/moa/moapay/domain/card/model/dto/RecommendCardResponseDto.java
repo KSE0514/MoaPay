@@ -12,5 +12,5 @@ import java.util.Map;
 @AllArgsConstructor
 public class RecommendCardResponseDto {
     private Map<String, Long> categoryUsage;
-    private List<CardInfoResponseDto> recommend;
+    private List<RecomendCardInfoResponseDto> recommend;
 }
