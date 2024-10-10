@@ -60,6 +60,7 @@ const Statistics = () => {
   const [daysLeft, setDaysLeft] = useState<number>(0);
 
   const handlePrevMonth = () => {
+    console.log("날짜변경 - 줄어듬");
     if (selectedMonth === 1) {
       setSelectedYear((prevYear) => prevYear - 1);
       setSelectedMonth(12);
@@ -75,6 +76,7 @@ const Statistics = () => {
   };
 
   const handleNextMonth = () => {
+    console.log("날짜변경 - 늘어남");
     if (
       selectedYear == new Date().getFullYear() &&
       selectedMonth > new Date().getMonth()
@@ -100,7 +102,7 @@ const Statistics = () => {
    * 특정 달에 대한 소비 데이터 가져오기 - 년도와 월을 보내야함(selectedYear selectedMonth)
    */
   const getConsumptionData = async () => {
-    console.log("getConsumtionData");
+    console.log("getConsumtionData 함수 실행");
     console.log(selectedYear, selectedMonth);
     console.log("=======================================");
     try {
@@ -130,7 +132,7 @@ const Statistics = () => {
    * 특정 달에 대한 혜택 데이터 가져오기 - 년도와 월을 보내야함
    */
   const getBenefitData = async () => {
-    console.log("getBenefitData");
+    console.log("getBenefitData 함수 실행");
     console.log(selectedYear, selectedMonth);
     console.log("=======================================");
     try {
@@ -206,7 +208,6 @@ const Statistics = () => {
       );
       setComparisonAmount(calculatedPrice - response.data.data.average);
       setMode("BarGraph");
-
       navigator(paths[index]);
     } else {
       //저번달 소비로 가져오기
@@ -266,13 +267,14 @@ const Statistics = () => {
     const currentPath = location.pathname;
     // URL 경로에 맞게 index 값을 설정
     const index = paths.findIndex((path) => path === currentPath);
-    console.log("index: " + index);
+    console.log("useEffect index: " + index);
     if (index !== -1) {
       changeComponent(index); // URL에 맞는 컴포넌트를 렌더링
     }
   }, []);
+
   useEffect(() => {
-    console.log("월별 변경");
+    console.log("useEffect 월별 변경");
     if (window.location.pathname == paths[0]) {
       console.log("load consumptionData");
       getConsumptionData();
@@ -280,7 +282,7 @@ const Statistics = () => {
       console.log("load benefitData");
       getBenefitData();
     }
-  }, [selectedMonth, selectedYear, paths, getConsumptionData, getBenefitData]);
+  }, [selectedMonth, selectedYear]);
 
   return (
     <>
@@ -311,7 +313,6 @@ const Statistics = () => {
               </Info>
             </>
           )}
-
           {mode === "BarGraph" && (
             <TopWrapper>
               <NowDate>{`${new Date().getFullYear()}년 ${String(
@@ -342,7 +343,6 @@ const Statistics = () => {
               </TextBox>
             </TopWrapper>
           )}
-
           {mode === "Ano" && (
             <div className="saving">
               <p className="title">
@@ -366,7 +366,7 @@ const Statistics = () => {
                     앞으로 하루{" "}
                     <span style={{ color: "#4258ff " }}>
                       {(savingGoal - savingUse) /
-                        (daysLeft === 0 ? 1 : daysLeft)}{" "}
+                        (daysLeft === 0 ? 1 : daysLeft)}
                       원
                     </span>
                     만 쓰면 돼요.
