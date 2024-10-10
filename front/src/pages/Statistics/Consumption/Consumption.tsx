@@ -15,7 +15,7 @@ const Consumption = () => {
     try {
       const response = await axios.post(
         // `https://j11c201.p.ssafy.io/api/moapay/pay/statistics/consumption/${selectedYear}/${selectedMonth}`,
-        `/api/moapay/pay/statistics/consumption/${new Date().getFullYear}/${
+        `/api/moapay/pay/statistics/consumption/${new Date().getFullYear()}/${
           new Date().getMonth() + 1
         }`,
         {
