@@ -64,7 +64,7 @@ const CardDetail = ({ selectedCard, closeCardDetail }: Props) => {
           <div className="line"></div>
         </header>
         <ul>
-          {selectedCard?.benefits?.map((benefit) => (
+          {selectedCard?.cardBenefits?.map((benefit) => (
             <div>
               <p></p>
               <li>{benefit.benefitDesc}</li>
