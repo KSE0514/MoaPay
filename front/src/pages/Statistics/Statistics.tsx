@@ -177,8 +177,15 @@ const Statistics = () => {
       }
     } else if (index == 2) {
       //나의 해당 월 사용량 가져오기
-      setSelectedYear(new Date().getFullYear());
-      setSelectedMonth(new Date().getMonth() + 1);
+      setSelectedYear(
+        new Date().getMonth() + 1 === 1
+          ? new Date().getFullYear() - 1
+          : new Date().getMonth() + 1
+      );
+      //저번달 소비로 가져오기
+      setSelectedMonth(
+        new Date().getMonth() + 1 === 1 ? 12 : new Date().getMonth() - 1
+      );
       getConsumptionData();
       //또래 비교금액 가져오기
       const response = await axios.post(
@@ -322,9 +329,7 @@ const Statistics = () => {
           )}
           {mode === "BarGraph" && (
             <TopWrapper>
-              <NowDate>{`${new Date().getFullYear()}년 ${String(
-                new Date().getMonth() + 1
-              )}월엔...`}</NowDate>
+              <NowDate>{`${selectedYear}년 ${selectedMonth}월엔...`}</NowDate>
               <ImageBox>
                 <img
                   src={
