@@ -117,13 +117,8 @@ const PasswordLogin: React.FC = () => {
           try {
             // 비밀번호 확인 요청
             const response = await axios.post(
-<<<<<<< HEAD
               `${baseUrl}moapay/member/simple/verify`,
               // `api/moapay/member/simple/verify`,
-=======
-              // `${baseUrl}moapay/member/simple/verify`,
-              `/api/moapay/member/simple/verify`,
->>>>>>> 89fa19b066e686a6d69d74d3e66a7098664358ed
               {
                 uuid: id,
                 simplePassword: password,
@@ -153,13 +148,8 @@ const PasswordLogin: React.FC = () => {
           console.log(password);
           try {
             const response = await axios.post(
-<<<<<<< HEAD
               `${baseUrl}moapay/member/login`,
               // `api/moapay/member/login`,
-=======
-              // `${baseUrl}moapay/member/login`,
-              `/api/moapay/member/login`,
->>>>>>> 89fa19b066e686a6d69d74d3e66a7098664358ed
               {
                 uuid: id,
                 phoneNumber: phoneNumber,
@@ -237,13 +227,8 @@ const PasswordLogin: React.FC = () => {
               console.log(password);
               //생체정보 설정을 위해 이동 - 선택 가능
               const response = await axios.post(
-<<<<<<< HEAD
                 `${baseUrl}moapay/member/simple/register`,
                 // `api/moapay/member/simple/register`,
-=======
-                // `${baseUrl}moapay/member/simple/register`,
-                `/api/moapay/member/simple/register`,
->>>>>>> 89fa19b066e686a6d69d74d3e66a7098664358ed
                 {
                   uuid: id,
                   simplePassword: password,

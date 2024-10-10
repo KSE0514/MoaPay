@@ -85,13 +85,8 @@ const CardRecommend = () => {
   const getRecommendCards = async () => {
     try {
       const response = await axios.post(
-<<<<<<< HEAD
         // `api/moapay/core/card/recommend`,
         `http://localhost:8765/moapay/core/card/recommend`,
-=======
-        `/api/moapay/core/card/recommend`,
-        // `http://localhost:8765/moapay/core/card/recommend`,
->>>>>>> 89fa19b066e686a6d69d74d3e66a7098664358ed
         {},
         {
           withCredentials: true,

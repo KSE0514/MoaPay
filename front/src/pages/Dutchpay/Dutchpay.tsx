@@ -77,6 +77,8 @@ const Dutchpay = () => {
     []
   ); // join 및 leave 후 남아있는 참여자 정보를 받을 변수
 
+
+  const [ confirmAmount, setConfirmAmount] = useState<number>(0); // 주최자 확정 금액
   // console.log(joinUrl)
   // useEffect (() => {
   //   if (joinUrl) {
@@ -146,7 +148,7 @@ const Dutchpay = () => {
   //////////////////////////////////////////////////////////////////////////////////////////
   const [roomId, setRoomId] = useState<string>(""); // 방 ID
   const [memberId, setMemberId] = useState<string>(
-    "01923d9f-7b3d-78dd-9f9d-32f85c64fbcd"
+    id || ''
   ); // 멤버 ID
   const [joinUrl, setJoinUrl] = useState<string>(""); // 방 참여 URL
   const [roomInfo, setRoomInfo] = useState<DutchPayInfo>(); // 방 정보
@@ -162,8 +164,9 @@ const Dutchpay = () => {
   ); // 상점 ID
   const [merchantName, setMerchantName] = useState<string>("Example Merchant"); // 상점 이름
   const [categoryId, setCategoryId] = useState<string>("category"); // 카테고리 ID
-  const [totalPrice, setTotalPrice] = useState<number>(10000); // 총 가격
-  const [memberName, setMemberName] = useState<string>("유저이름");
+  const [totalPrice, setTotalPrice] = useState<number>(0); // 총 가격
+  // const [memberName, setMemberName] = useState<string>("유저이름");
+  const [memberName, setMemberName] = useState<string>(name||'');
 
   const [requestId, setRequestId] = useState<string>("");
 
@@ -187,6 +190,7 @@ const Dutchpay = () => {
     console.log("Merchant ID:", localStorage.getItem("merchantId"));
     console.log("Request ID:", localStorage.getItem("requestId"));
   }, []);
+  
   // 방 생성 함수
   // TODO : 해결해주세요
   const createRoom = async () => {
@@ -212,7 +216,7 @@ const Dutchpay = () => {
 
       // message.body를 DutchRoomMessage 타입으로 변환
       const parsedMessage: DutchRoomMessage = response.data;
-      const generatedUrl = `http://localhost:5173/dutchpay/invite/${maxMember}/${parsedMessage.data}`;
+      const generatedUrl = `http://localhost:5173/dutchpay/invite/${orderId}/${totalPrice}/${categoryId}/${merchantId}/${requestId}/${maxMember}/${parsedMessage.data}`;
       console.log("Generated joinUrl:", generatedUrl);
       // localStorage.setItem('joinUrl', generatedUrl);  // localStorage에 joinUrl 저장
       // setJoinUrl(parsedMessage.data); // 방 생성 후 반환된 URL 저장
@@ -600,6 +604,8 @@ const Dutchpay = () => {
                   confirm={confirm}
                   setProcess={setProcess}
                   process={process}
+                  setConfirmAmount = {setConfirmAmount}
+                  totalPrice={totalPrice}
                 />
               }
             </Main>
@@ -737,7 +743,7 @@ const Dutchpay = () => {
                 process === 2 ? "#B6BCFF" : "rgba(255, 255, 255, 0.65)",
             }}
           >
-      {process === 2 ? <Payment onClick={onClickPaymentBtn} /> : null}
+      {process === 2 ? <Payment onClick={onClickPaymentBtn} confirmAmount={confirmAmount}  /> : null}
             {process === 3 ? (
               <DutchWaiting>
                 <div>
