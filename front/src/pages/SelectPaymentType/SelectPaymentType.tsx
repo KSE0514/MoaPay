@@ -80,11 +80,15 @@ const SelectPaymentType = () => {
 
   // 쿼리 파라미터 값 읽기
   const [searchParams] = useSearchParams();
-  const orderId = searchParams.get("orderId");
-  const totalPrice = searchParams.get("totalPrice");
-  const categoryId = searchParams.get("categoryId");
-  const merchantId = searchParams.get("merchantId");
-  const QRCode = searchParams.get("QRCode");
+  // const orderId = searchParams.get("orderId");
+  // const totalPrice = searchParams.get("totalPrice");
+  // const categoryId = searchParams.get("categoryId");
+  // const merchantId = searchParams.get("merchantId");
+  // const QRCode = searchParams.get("QRCode");
+  const orderId = '0192719d-1efd-7f62-a92d-5c45c1935e6c'
+  const totalPrice = '1234'
+  const categoryId = 'C0001'
+  const merchantId = '0192719d-1efd-7dff-8265-79918bf46041'
 
   // 단일결제 = single , 분할결제 = multi , 분할결제 = dutch
   const [selectedPayType, setSelectedPayType] = useState<string | null>(null);
@@ -313,6 +317,13 @@ const SelectPaymentType = () => {
       // 요청보내기
     } else if (selectedPayType == "dutch") {
       //더치페이지로 이동할때 필요한 정보 들고 가세용
+      // console.log(orderId)
+      localStorage.setItem("orderId", orderId);
+      localStorage.setItem("totalPrice", totalPrice);
+      localStorage.setItem("categoryId", categoryId);
+      localStorage.setItem("merchantId", merchantId);
+      localStorage.setItem("requestId", requestId);
+      navigate(PATH.DUTCHOPEN)
     }
   };
 
