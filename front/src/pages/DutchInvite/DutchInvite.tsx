@@ -396,12 +396,17 @@ const DutchInvite = () => {
     });
   };
 
+  const handleFinish = () => {
+    console.log("결제 완료!");
+    // 결제 완료 후 처리할 로직을 추가하세요.
+  };
+
   // WebSocket 연결 설정
   // TODO: 최현석
   const connectWebSocket = () => {
     const client = new Client({
       // brokerURL: "ws://localhost:18020/moapay/core/ws/dutchpay", // WebSocket URL
-      brokerURL: "ws://j11c201.p.ssafy.io/api/moapay/core/ws/dutchpay", // WebSocket URL
+      brokerURL: "wss://j11c201.p.ssafy.io/api/moapay/core/ws/dutchpay", // WebSocket URL
       onConnect: (frame) => {
         console.log("Connected: " + frame);
         // 방 참여 시 메시지 구독
@@ -628,6 +633,7 @@ const DutchInvite = () => {
               <Payment
                 onClick={onClickPaymentBtn}
                 confirmAmount={confirmAmount}
+                onFinish={handleFinish}
               />
             ) : null}
             {process === 3 ? (
