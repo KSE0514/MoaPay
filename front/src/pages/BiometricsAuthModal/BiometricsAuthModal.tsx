@@ -5,7 +5,7 @@ import { PATH } from "../../constants/path";
 import { useState } from "react";
 import { useAuthStore } from "../../store/AuthStore";
 
-const BiometricsLogin = () => {
+const BiometricsAuthModal = ({ endAuth }) => {
   const navigate = useNavigate();
   const { name, accessToken, mode } = useAuthStore();
   const [error, setError] = useState<boolean>(false);
@@ -64,6 +64,7 @@ const BiometricsLogin = () => {
 
       if (credential) {
         //모달 닫힘
+        endAuth();
       } else {
         setError(true);
       }
@@ -125,4 +126,4 @@ const BiometricsLogin = () => {
   );
 };
 
-export default BiometricsLogin;
+export default BiometricsAuthModal;

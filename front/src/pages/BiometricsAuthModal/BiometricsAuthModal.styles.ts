@@ -31,6 +31,8 @@ const fadeInAndOut = keyframes`
 `;
 
 export const Wrapper = styled.div`
+  position: absolute;
+  left: 0;
   background-color: var(--light-purple);
   padding: 30% 0% 0% 0%;
   width: 100%;
