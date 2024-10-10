@@ -4,8 +4,12 @@ import { useNavigate } from "react-router-dom";
 import { PATH } from "../../constants/path";
 import { useState } from "react";
 import { useAuthStore } from "../../store/AuthStore";
-
-const BiometricsAuthModal = ({ endAuth }) => {
+interface BiometricsAuthModalProps {
+  endAuth: () => void; // endAuth는 반환값이 없는 함수임을 명시
+}
+const BiometricsAuthModal: React.FC<BiometricsAuthModalProps> = ({
+  endAuth,
+}) => {
   const navigate = useNavigate();
   const { name, accessToken, mode } = useAuthStore();
   const [error, setError] = useState<boolean>(false);
