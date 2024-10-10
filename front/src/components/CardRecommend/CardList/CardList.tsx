@@ -6,9 +6,10 @@ import { Card, CardProduct } from "../../../store/CardStore";
 interface Props {
   cardList: CardProduct[];
   onCardClick: (card: CardProduct) => void;
+  controllDetailView: (state: boolean) => void;
 }
 
-const CardList = ({ cardList, onCardClick }: Props) => {
+const CardList = ({ cardList, onCardClick, controllDetailView }: Props) => {
   const [translateX, setTranslateX] = useState<{ [key: number]: number }>({});
   const [startX, setStartX] = useState<number | null>(null); // 터치 시작 위치 저장
   const [showCardDetail, setShowCardDetail] = useState<boolean>(false); // 새로운 화면 표시 여부
@@ -35,6 +36,7 @@ const CardList = ({ cardList, onCardClick }: Props) => {
       const diffX = startX - endX; // 실제 이동 거리 계산
       if (Math.abs(diffX) > 200) {
         // 이동 거리가 300px 이상일 때만 새로운 화면을 표시
+        controllDetailView(true);
         setShowCardDetail(true);
         setSelectedCard(cardList[index]);
       }
@@ -53,6 +55,7 @@ const CardList = ({ cardList, onCardClick }: Props) => {
 
   const closeCardDetail = () => {
     setShowCardDetail(false);
+    controllDetailView(false);
   };
 
   return (

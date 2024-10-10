@@ -34,6 +34,7 @@ import CardLoading from "./CardLoading";
  * 3. 클릭 시 비교 comparisonCard에 넣기
  */
 const CardRecommend = () => {
+  const [viewDetail, setViewDeatil] = useState<boolean>(false);
   const [compare, setCompare] = useState<boolean>(false);
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const { id, accessToken, name } = useAuthStore();
@@ -56,6 +57,9 @@ const CardRecommend = () => {
     `calc(calc(100% / 2) * 0)`
   );
 
+  const controllDetailView = (state: boolean) => {
+    setViewDeatil(state);
+  };
   const changeShowComparisonViewState = () => {
     setShowComparisonView((current) => !current);
   };
@@ -127,11 +131,13 @@ const CardRecommend = () => {
             </Title>
             <RecommeCardListView>
               <RecommendResultCardList
+                controllDetailView={controllDetailView}
                 onCardClick={onCardClick}
                 cardList={recommendCardList}
               />
             </RecommeCardListView>
             <button
+              style={{ zIndex: viewDetail ? 0 : 10 }}
               onClick={() => {
                 setCompare(true);
               }}
@@ -345,6 +351,7 @@ const CardRecommend = () => {
                 <div className="slide-notify">밀어서 상세보기</div>
               </div>
               <CardList
+                controllDetailView={controllDetailView}
                 onCardClick={onCardClick}
                 cardList={
                   showUserCard ? userCardProductList : recommendCardList
