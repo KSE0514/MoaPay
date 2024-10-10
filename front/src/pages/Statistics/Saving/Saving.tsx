@@ -301,11 +301,13 @@ const Saving = () => {
           </div>
           <div className="total">
             <p>한 주 동안</p>
-            <p>{weekTotalAmount}원 썼어요</p>
+            <p>{weekTotalAmount.toLocaleString()}원 썼어요</p>
           </div>
           <div className="avg">
             <p>하루 평균 결제💸</p>
-            <p>{(weekTotalAmount! / 7).toFixed(0)}원</p>
+            <p>
+              {Number((weekTotalAmount! / 7).toFixed(0)).toLocaleString()}원
+            </p>
           </div>
           <SmallBarGraph consumptionList={weekAmountList} />
         </Wrapper>
