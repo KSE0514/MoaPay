@@ -9,6 +9,7 @@ interface Props {
 const List = ({ consumptionList }: Props) => {
   const imgRefs = useRef<(HTMLImageElement | null)[]>([]); // 여러 이미지 요소 참조
 
+  console.log("마지막 위치", consumptionList);
   const { getCategoryImage } = useCardStore();
   useEffect(() => {
     imgRefs.current.forEach((imgElement) => {

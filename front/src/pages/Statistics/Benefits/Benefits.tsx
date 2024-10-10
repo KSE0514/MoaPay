@@ -11,6 +11,7 @@ const Benefits = () => {
   const [benefitList, setBenefitList] = useState<categoryData[]>(
     location.state || [] // location.state가 없을 때 빈 배열로 초기화
   );
+  console.log("혜택 location은 있을까용 >? ", location.state);
   const getBenefitData = async () => {
     try {
       const response = await axios.post(
@@ -40,7 +41,6 @@ const Benefits = () => {
       getBenefitData(); // location.state가 없을 때만 데이터를 가져옴
     }
   }, [location.state]); // location.state가 변경될 때만 호출
-  console.log("혜택 페이지에옹 ", benefitList);
   return (
     <>
       <List consumptionList={benefitList} />

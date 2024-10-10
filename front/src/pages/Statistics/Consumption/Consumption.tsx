@@ -11,7 +11,7 @@ const Consumption = () => {
   const [consumptionList, setConsumptionList] = useState<categoryData[]>(
     location.state || [] // location.state가 없을 때 빈 배열로 초기화
   );
-  console.log("소비 location은 있을까용 >? ", consumptionList);
+  console.log("소비 location은 있을까용 >? ", location.state);
   const getConsumptionData = async () => {
     console.log("first get Data");
     try {
@@ -42,8 +42,6 @@ const Consumption = () => {
       getConsumptionData(); // location.state가 없을 때만 데이터를 가져옴
     }
   }, [location.state]); // location.state가 변경될 때만 호출
-
-  console.log("소비 페이지에옹 ", consumptionList);
 
   return (
     <>

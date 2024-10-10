@@ -82,14 +82,6 @@ const Statistics = () => {
     } else {
       setSelectedMonth((prevMonth) => prevMonth + 1);
     }
-    //현재페이지에 따라 데이터 새로 가져오기
-    if (window.location.pathname == paths[0]) {
-      console.log("load consumptionData");
-      getConsumptionData();
-    } else if (window.location.pathname == paths[1]) {
-      console.log("load benefitData");
-      getBenefitData();
-    }
   };
 
   /**
