@@ -88,7 +88,7 @@ const DutchInvite = () => {
   const [roomId, setRoomId] = useState<string>(
     "ba8deac8-2bb5-40a2-b21f-8cb7d7f13468"
   ); // 방 ID
-  const [memberId, setMemberId] = useState<string>(
+  const [memberId, setMemberId] = useState<string | null>(
     "01923d9f-7b3d-78dd-9f9d-32f85c64fbcd"
   ); // 멤버 ID
   const [roomInfo, setRoomInfo] = useState<DutchPayInfo | undefined>(undefined); // 방 정보
@@ -103,7 +103,7 @@ const DutchInvite = () => {
   const [merchantName, setMerchantName] = useState<string>("Example Merchant"); // 상점 이름
   const [categoryId, setCategoryId] = useState<string>("category"); // 카테고리 ID
   const [totalPrice, setTotalPrice] = useState<number>(10000); // 총 가격
-  const [memberName, setMemberName] = useState<string>("");
+  const [memberName, setMemberName] = useState<string | null>("");
 
   const [requestId, setRequestId] = useState<string>("");
 
