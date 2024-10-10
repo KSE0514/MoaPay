@@ -62,20 +62,12 @@ function App() {
             icon: payload.notification?.icon ?? "/default-icon.png", // 알림 아이콘 고정
           }
         );
-
-        notification.onclick = (event) => {
-          //todo: 더치페이url 넣어주기
-          window.open(payload.data?.click_action ?? "https://naver.com");
-
-          // 클릭할 때마다 같은 내용의 알림을 1초 뒤에 다시 보냄
-          setTimeout(() => {
-            showNotification();
-          }, 1000); // 1초 후에 같은 알림 생성
-        };
       };
 
-      // 첫 번째 알림 표시
-      showNotification();
+      // 첫 번째 알림을 2초 뒤에 표시
+      setTimeout(() => {
+        showNotification();
+      }, 2000); // 2초 후에 첫 알림 표시
     });
 
     return () => {
