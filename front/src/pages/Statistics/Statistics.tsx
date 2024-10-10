@@ -361,28 +361,40 @@ const Statistics = () => {
                 {new Date().getMonth() + 1}월 목표 중 남은 금액
               </p>
               <div className="price">
-                <p>{savingUse}</p>
+                <p>{savingUse.toLocaleString()}</p>
                 <p>/</p>
                 <p>{savingGoal.toLocaleString()}원</p>
               </div>
               <div className="sub">
                 <div>
                   <img src="/assets/image/prinrefacezoom.png" />
-                  <p>
-                    목표 금액의{" "}
-                    <span style={{ color: "red " }}>
-                      {Math.round((savingUse / savingGoal) * 100)}%
-                    </span>
-                    를 썼어요.
-                    <br />
-                    앞으로 하루{" "}
-                    <span style={{ color: "#4258ff " }}>
-                      {(savingGoal - savingUse) /
-                        (daysLeft === 0 ? 1 : daysLeft)}
-                      원
-                    </span>
-                    만 쓰면 돼요.
-                  </p>
+                  {Math.round((savingUse / savingGoal) * 100) > 100 ? (
+                    <>
+                      <p>
+                        목표 금액보다 더 사용했어요
+                        <br />
+                        불필요한 지출을 줄여보는게 어떨까요?
+                      </p>
+                    </>
+                  ) : (
+                    <>
+                      <p>
+                        목표 금액의{" "}
+                        <span style={{ color: "red " }}>
+                          {Math.round((savingUse / savingGoal) * 100)}%
+                        </span>
+                        를 썼어요.
+                        <br />
+                        앞으로 하루{" "}
+                        <span style={{ color: "#4258ff " }}>
+                          {(savingGoal - savingUse) /
+                            (daysLeft === 0 ? 1 : daysLeft)}
+                          원
+                        </span>
+                        만 쓰면 돼요.
+                      </p>
+                    </>
+                  )}
                 </div>
               </div>
             </div>
