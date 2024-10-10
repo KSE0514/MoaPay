@@ -1,6 +1,6 @@
 import Product from "../Product/Product";
 // import SquareBtn from "../SquareBtn/SquareBtn";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 import SelectCardList from "./../SelectCardList/SelectCardList";
 import Modal from "../Modal/Modal";
@@ -8,6 +8,7 @@ import line from "./../../../assets/image/dutch_line_white.png";
 import testCard from "./../../../assets/image/cards/신용카드이미지/12_올바른_FLEX_카드.png";
 import testCard2 from "./../../../assets/image/cards/신용카드이미지/14_JADE_Classic.png";
 import { Card } from "../../../store/CardStore";
+import { useCardStore } from "../../../store/CardStore";
 import {
   Wrapper,
   Price,
@@ -31,12 +32,43 @@ const testMainCard2 = {
 
 interface PaymentProps {
   onClick: () => void;
+  confirmAmount: number;
 }
 
-const Payment = ({ onClick }: PaymentProps) => {
+const Payment = ({ onClick, confirmAmount }: PaymentProps) => {
+
   const [rotate, setRotate] = useState(false);
   const [selectedCard, setSelectedCard] = useState<Card | null>(); // 선택된 카드(결제 카드)
   const [isOpen, setIsOpen] = useState<boolean>(false);
+
+  const [orderId, setOrderId] = useState<string>(
+    "01923d9f-7b3d-70e9-ad8d-68a3ab09d578"
+  ); // 주문 ID
+  const [totalPrice, setTotalPrice] = useState<number>(10000); // 총 가격
+  const [categoryId, setCategoryId] = useState<string>("category"); // 카테고리 ID
+  const [merchantId, setMerchantId] = useState<string>(
+    "01923d9f-7b3d-7a9e-a0b3-24d7970f90d4"
+  ); // 상점 ID
+  const [requestId, setRequestId] = useState<string>("");
+
+  useEffect(() => {
+    // totalPrice는 숫자형으로 변환하되, 유효하지 않을 경우 0으로 설정
+    const storedTotalPrice = parseInt(localStorage.getItem("totalPrice") || "0", 10);
+    const validatedTotalPrice = isNaN(storedTotalPrice) ? 0 : storedTotalPrice;
+
+    // localStorage에서 값 가져오기
+    setOrderId(localStorage.getItem("orderId") || "");
+    setTotalPrice(validatedTotalPrice);
+    setCategoryId(localStorage.getItem("categoryId") || "");
+    setMerchantId(localStorage.getItem("merchantId") || "");
+    setRequestId(localStorage.getItem("requestId") || "");
+    // 값 로그로 출력
+    console.log("Order ID:", localStorage.getItem("orderId"));
+    console.log("Total Price:", localStorage.getItem("totalPrice"));
+    console.log("Category ID:", localStorage.getItem("categoryId"));
+    console.log("Merchant ID:", localStorage.getItem("merchantId"));
+    console.log("Request ID:", localStorage.getItem("requestId"));
+  }, []);
 
   // 카드 가로, 세로 길이에 따른 회전 여부 판단 핸들러
   const handleImageLoad = (
@@ -74,7 +106,7 @@ const Payment = ({ onClick }: PaymentProps) => {
       />
 
       {/* <div>총 금액: {prduct_price}원</div> */}
-      <Price>총 금액: 22,990 원</Price>
+      <Price>총 금액: {totalPrice.toLocaleString()} 원</Price>
 
       {/* 구분 점선 */}
       <img src={line} />
@@ -97,7 +129,7 @@ const Payment = ({ onClick }: PaymentProps) => {
         <div onClick={onClickChangeCard}>다른카드 선택하기</div>
         <Bottom>
           {/* 결제 금액 넘겨 받아야 함 */}
-          <Btn onClick={onClick}>7,000원 결제하기</Btn>
+          <Btn onClick={onClick}>{confirmAmount}원 결제하기</Btn>
           {/* text={'7,000원 결제하기'} color={'white'} onClick={onClick} /> */}
         </Bottom>
       </CardView>

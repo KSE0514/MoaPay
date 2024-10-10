@@ -56,6 +56,7 @@ const DutchInvite = () => {
   const nav = useNavigate();
 
   // const { name, id } = useAuthStore();
+  console.log("이것도 뜨나요?");
 
   // 테스트용 멤버 데이터
   const testUser = {
@@ -64,22 +65,6 @@ const DutchInvite = () => {
     memberId: "019250e9-b495-75e3-85d9-8bf4767d9fa5",
   };
 
-  useEffect(() => {
-    console.log(testUser);
-    setMemberName(testUser.name);
-    setMemberId(testUser.memberId);
-
-    // Url로부터 더치페이 입장 roomId 가져오기
-    const currentUrl = window.location.href; // 현재 URL을 가져옴
-    const parts = currentUrl.split("/"); // '/'를 기준으로 URL을 분할
-    const joinRoomId = parts[parts.length - 1]; // 마지막 요소가 roomId
-    const maxMemNum = parts[parts.length - 2]; // 마지막에서 두 번째 요소가 MaxMember 수
-    console.log("joinRoomId : ", joinRoomId); // "76735551-df91-4f94-9bc5-cc1895587aaf"
-    setRoomId(joinRoomId);
-    setMexMember(Number(maxMemNum));
-
-    getRoomInfo(joinRoomId); // 방 정보 가지고 오기
-  }, []);
 
   const [dutchParticipants, setDutchParticipants] = useState<ParticipantInfo[]>(
     []
@@ -93,6 +78,9 @@ const DutchInvite = () => {
   const [isHost, setIsHost] = useState<boolean>(false);
   const [dutchStart, setDutchStart] = useState<boolean>(false);
   const [maxMember, setMexMember] = useState<number | string>("");
+
+  // 금액을 local storage에 저장하는 방식으로 해결해야할 것 같음...
+  const [confirmAmount, setConfirmAmount] = useState<number>(0); // 참가자 확정 금액
 
   const [stop, setStop] = useState(false);
 
@@ -117,6 +105,43 @@ const DutchInvite = () => {
   const [totalPrice, setTotalPrice] = useState<number>(10000); // 총 가격
   const [memberName, setMemberName] = useState<string>("");
 
+  const [requestId, setRequestId] = useState<string>("");
+
+  useEffect(() => {
+    console.log(testUser);
+    setMemberName(testUser.name);
+    setMemberId(testUser.memberId);
+
+    // Url로부터 더치페이 입장 roomId 가져오기
+    const currentUrl = window.location.href; // 현재 URL을 가져옴
+    const parts = currentUrl.split("/"); // '/'를 기준으로 URL을 분할
+    console.log(parts);
+    const joinRoomId = parts[parts.length - 1]; // 마지막 요소가 roomId
+    const maxMemNum = parts[parts.length - 2]; // 마지막에서 두 번째 요소가 MaxMember 수
+    const requestID = parts[parts.length - 3]; // 마지막에서 세 번째 요소가 requestId
+    const merchantID = parts[parts.length - 4]; // 마지막에서 네 번째 요소가 merchantId
+    const categoryID = parts[parts.length - 5]; // 마지막에서 다섯 번째 요소가 categoryId
+    const totalPRICE = parts[parts.length - 6]; // 마지막에서 여섯 번째 요소가 totalPrice
+    const orderID = parts[parts.length - 7]; // 마지막에서 여섯 번째 요소가 orderId
+    
+    console.log("joinRoomId : ", joinRoomId); // "76735551-df91-4f94-9bc5-cc1895587aaf"
+    setRoomId(joinRoomId);
+    setMexMember(Number(maxMemNum));
+    setRequestId(requestID);
+    setMerchantId(merchantID);
+    setCategoryId(categoryID);
+    console.log(totalPRICE)
+    setTotalPrice(Number(totalPRICE));
+    setOrderId(orderID);
+
+    getRoomInfo(joinRoomId); // 방 정보 가지고 오기
+  }, []);
+
+  useEffect(() => {
+    // 만약 isHost === true이면 setProcess(3), setIsAccept(true);
+
+  }, [])
+
   // useEffect(() => {
   //   if (dutchParticipants[0].status === "PROGRESS") {
   //     setProcess(1)
@@ -131,9 +156,9 @@ const DutchInvite = () => {
   const getRoomInfo = async (roomid: string) => {
     try {
       const response = await axios.get(
-        // `http://localhost:18020/moapay/core/dutchpay/getDutchRoomInfo/` +
-        //   roomid,
-        `/api/moapay/core/dutchpay/getDutchRoomInfo/` + roomid,
+        `http://localhost:18020/moapay/core/dutchpay/getDutchRoomInfo/` +
+          roomid,
+        // `api/moapay/core/dutchpay/getDutchRoomInfo/` + roomid,
         {
           withCredentials: true,
         }
@@ -566,9 +591,11 @@ const DutchInvite = () => {
                 setProcess={setProcess}
                 process={process}
                 roomInfo={roomInfo}
+                setConfirmAmount={setConfirmAmount}
+                totalPrice={totalPrice}
               />
             ) : null}
-            {process === 2 ? <Payment onClick={onClickPaymentBtn} /> : null}
+            {process === 2 ? <Payment onClick={onClickPaymentBtn} confirmAmount={confirmAmount} /> : null}
             {process === 3 ? (
               <DutchWaiting>
                 <div>
@@ -752,8 +779,10 @@ const DutchInvite = () => {
           </WaitingTop>
           <WaitingMain>
             {/* 주최자 이름을 어떻게 들고와야 하는가... */}
-            {/* <div>'{dutchPayListInfo[0].memberName}'님이</div> */}
-            <div>'' 님이</div>
+            {dutchPayListInfo[0]? 
+            <div>'{dutchPayListInfo[0].memberName}'님이</div>
+            : null}
+            {/* <div>'' 님이</div> */}
             <div>더치페이를</div>
             <div>신청했습니다.</div>
             <div>

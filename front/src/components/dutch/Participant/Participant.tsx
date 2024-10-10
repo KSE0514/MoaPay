@@ -1,7 +1,10 @@
 import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import SquareBtn from "../SquareBtn/SquareBtn";
 import Product from "../Product/Product";
+import { PATH } from "./../../../constants/path"
+import { useAuthStore } from "../../../store/AuthStore";
 
 import line from "./../../../assets/image/dutch_line.png";
 // import { useEffect } from 'react';
@@ -53,6 +56,8 @@ interface ParticipantProps {
   setProcess?: (step: number) => void;
   process: number;
   roomInfo?: DutchPayInfo;
+  setConfirmAmount: (amount: number) => void;
+  totalPrice: number;
 }
 
 type UUID = string; // UUID를 문자열로 간주
@@ -103,6 +108,8 @@ const Participant = ({
   setProcess,
   process,
   roomInfo,
+  totalPrice,
+  setConfirmAmount,
 }: ParticipantProps) => {
   const convertDutchPayItemsToParticipantInfo = (
     items: DutchPayItem[]
@@ -116,6 +123,8 @@ const Participant = ({
       status: item.status,
     }));
   };
+
+  console.log("totalPrice : ", totalPrice)
 
   useEffect(() => {
     if (roomInfo && roomInfo.dutchPayList) {
@@ -136,11 +145,28 @@ const Participant = ({
 
   }, [roomInfo])
 
+  const nav = useNavigate()
+  const { name, id } = useAuthStore()
+
   // const [participants, setParticipants] = useState([])
   const [isHost, setIsHost] = useState<boolean>(false);
   const [dutchStart, setDutchStart] = useState<boolean>(false);
   const [showWarning, setShowWarning] = useState<boolean>(false); // 경고 메시지 상태 추가
-  const [price, setPrice] = useState<number>(1001); // 더치페이 상품 가격
+  const [price, setPrice] = useState<number>(totalPrice || 0); // 더치페이 상품 가격
+
+  useEffect(() => {
+    // totalPrice는 숫자형으로 변환하되, 유효하지 않을 경우 0으로 설정
+    const storedTotalPrice = parseInt(localStorage.getItem("totalPrice") || "0", 10);
+    const validatedTotalPrice = isNaN(storedTotalPrice) ? 0 : storedTotalPrice;
+
+    setPrice(validatedTotalPrice);
+    // setPrice(15000); // 테스트용 추후 지울 예정
+
+    // 값 로그로 출력
+    console.log("Total Price:", localStorage.getItem("totalPrice"));
+
+
+  }, []);
   // const [participantPrice, setParticipantsPrice] = useState<number>(0) // 참가자 자동 배분 결제금
   // 테스트용 데이터_ 후에 지울 예정
   // const [participants, setParticipants] = useState<Participant[]>([
@@ -198,8 +224,29 @@ const Participant = ({
     });
   };
 
+  const getDutchAmount = async () => {
+    const requestBody = {
+      roomId : roomId || null,
+      memberId: id || null,
+    }
+
+    console.log(requestBody);
+
+    try {
+      const response = await axios.post(
+        "http://localhost:18020/moapay/core/dutchpay/getMyPrice",
+        requestBody
+      );
+
+      console.log("getDutchAmount 응답 결과:", response.data.data.price)
+      setConfirmAmount(response.data.data.price)
+    } catch (err) {
+      console.error("결제금 조회 에러 발생:", err)
+    }
+  }
+
   // 결제 요청 버튼을 눌렀을 시
-  const onClickRequest = () => {
+  const onClickRequest = async () => {
     let sumValue: number = 0;
     // 결제 요청시 모든 참가자의 결제금 합이 총 금액(price)과 같은지 확인
     participants.map((participant) => {
@@ -217,11 +264,20 @@ const Participant = ({
       if (setProcess) {
         setProcess(2);
       }
-      confirm();
+      await confirm();
+
+      
 
       console.log("컨펌 후 확인용", participants);
+      getDutchAmount() // 주최자 결제금 조회
     }
 
+    // setConfirmAmount((participants[0].amount)) // 주최자 결제금 저장
+
+    // leaveRoom()
+    // nav(`/dutchpay/invite/${maxNum}/${roomId}`) // 넘어갈 때 local storage에서 maxMember 불러오고 roomid도 넘겨줘야 함
+    
+    
     // // 결제 요청 시 모든 참가자의 amount가 입력되었는지 확인
     // const isAnyamountEmpty = participants.some(participant => participant.amount === '');
 
@@ -235,6 +291,8 @@ const Participant = ({
   };
 
   const onPaymentStart = () => {
+    getDutchAmount() // 참가자 결제금 조회
+
     if (setProcess) {
       setProcess(2); // 참가자 결제 페이지로 이동
     }
@@ -310,10 +368,9 @@ const Participant = ({
                     <path d="M 38.982422 6.9707031 A 2.0002 2.0002 0 0 0 37.585938 7.5859375 L 24 21.171875 L 10.414062 7.5859375 A 2.0002 2.0002 0 0 0 8.9785156 6.9804688 A 2.0002 2.0002 0 0 0 7.5859375 10.414062 L 21.171875 24 L 7.5859375 37.585938 A 2.0002 2.0002 0 1 0 10.414062 40.414062 L 24 26.828125 L 37.585938 40.414062 A 2.0002 2.0002 0 1 0 40.414062 37.585938 L 26.828125 24 L 40.414062 10.414062 A 2.0002 2.0002 0 0 0 38.982422 6.9707031 z"></path>
                   </svg>
                 )}
-                {/* <div>여기는?</div> */}
                 {
                   // !isHost&&
-                  (participant.index === 0 || !isHost) && <div></div>
+                  (participant.index === 0 || !isHost) && (!dutchStart)&& <div></div>
                 }
 
                 {/* 해당 사용자가 지불해야 할 금액 */}
@@ -361,7 +418,7 @@ const Participant = ({
         ) : // null
         process === 1 && !isHost ? (
           <SquareBtn
-            text={`---원 결제하기`}
+            text={`결제하기`}
             color="rgba(135, 72, 243, 0.74)"
             onClick={onPaymentStart}
           />

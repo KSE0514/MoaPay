@@ -25,7 +25,7 @@ interface JoinUserInfo {
 
 const CreateAccount = () => {
   // const baseUrl = import.meta.env.VITE_BASE_URL;
-  const baseUrl = `http://localhost:18040/`;
+  const baseUrl = `http://localhost:8765/`;
   const navigate = useNavigate();
   const [limitTime, setLimitTime] = useState<number>(2000); // 초기 값 2000으로 설정
   const timerRef = useRef<NodeJS.Timeout | null>(null); //타이머

@@ -1,17 +1,19 @@
 import { useState } from "react";
 
-import testcard1 from "./../../../assets/image/cards/신용카드이미지/14_JADE_Classic.png";
-import testcard2 from "./../../../assets/image/cards/신용카드이미지/12_올바른_FLEX_카드.png";
-import testcard3 from "./../../../assets/image/cards/신용카드이미지/11_삼성_iD_SIMPLE_카드.png";
+// import testcard1 from "./../../../assets/image/cards/신용카드이미지/14_JADE_Classic.png";
+// import testcard2 from "./../../../assets/image/cards/신용카드이미지/12_올바른_FLEX_카드.png";
+// import testcard3 from "./../../../assets/image/cards/신용카드이미지/11_삼성_iD_SIMPLE_카드.png";
 
 import { Wrapper, CardView } from "./SelectCardList.styles";
 import { Card } from "../../../store/CardStore";
-import { MyCardList } from "../../../constants/card";
+import { useCardStore } from "../../../store/CardStore";
+// import { MyCardList } from "../../../constants/card";
 
 interface SelectCardListProps {
   onSelectCard: (card: Card) => void;
 }
 const SelectCardList: React.FC<SelectCardListProps> = ({ onSelectCard }) => {
+  const { cardList } = useCardStore()
   const [rotate, setRotate] = useState<{ [key: number]: boolean }>({});
 
   // 카드 가로, 세로 길이에 따른 회전 여부 판단 핸들러
@@ -27,13 +29,13 @@ const SelectCardList: React.FC<SelectCardListProps> = ({ onSelectCard }) => {
 
   return (
     <Wrapper>
-      {/* {MyCardList.map((card, index) => (
+      {cardList.map((card, index) => (
         <div key={index}>
           <CardView key={index} onClick={() => onSelectCard(card)}>
             <div>
               <img
-                src={card.cardInfo.imageUrl}
-                alt={card.cardInfo.cardName}
+                src={card.cardProduct.cardProductImgUrl}
+                alt={card.cardProduct.cardProductName}
                 onLoad={(event) => handleImageLoad(event, index)} // 이미지가 로드되면 handleImageLoad 호출
                 style={{
                   position: "absolute",
@@ -46,11 +48,11 @@ const SelectCardList: React.FC<SelectCardListProps> = ({ onSelectCard }) => {
                 }}
                 draggable="false" // 이미지 드래그 방지
               />
-              <div>{card.cardInfo.cardName}</div>
+              <div>{card.cardProduct.cardProductName}</div>
             </div>
           </CardView>
         </div>
-      ))} */}
+      ))}
     </Wrapper>
   );
 };
