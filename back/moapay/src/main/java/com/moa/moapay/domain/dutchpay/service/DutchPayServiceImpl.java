@@ -333,6 +333,7 @@ public class DutchPayServiceImpl implements DutchPayService {
             for (DutchPay dutchPay : dutchPayList) { // 해당 더치 내역 다돌면서
                 DutchStatus dutchStatus = dutchPay.getPayStatus();
                 if(!dutchStatus.equals(DutchStatus.DONE)) {
+                    log.info("더치 완료 ?? {}", dutchPay.toString());
                     if(dutchPay.getUuid().equals(dutchPayCompleteVo.getDutchUuid())){
                         continue;
                     }
