@@ -29,7 +29,7 @@ const Analysis = () => {
     try {
       const response = await axios.post(
         // `https://j11c201.p.ssafy.io/api/moapay/pay/statistics/consumption`,
-        `/api/moapay/pay/statistics/consumption`,
+        `/api/moapay/pay/statistics/consumption/statistics`,
         { memberId: id },
         {
           withCredentials: true,
@@ -54,7 +54,7 @@ const Analysis = () => {
     try {
       const response = await axios.post(
         // `https://j11c201.p.ssafy.io/api/moapay/pay/statistics/benefit`,
-        `/api/moapay/pay/statistics/benefit`,
+        `/api/moapay/pay/statistics/benefit/statistics`,
         { memberId: id },
         {
           withCredentials: true,
