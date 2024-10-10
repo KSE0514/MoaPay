@@ -81,7 +81,7 @@ public class RecommendCardServiceImpl implements RecommendCardService {
             List<CardProduct> recomendCards = calculateScore(allProducts, categoryCountMap);
 
             // 4. 제일 점수가 높은 카드 반환
-            List<CardInfoResponseDto> recomendCardDtos = recomendCards.stream()
+            List<RecomendCardInfoResponseDto> recomendCardDtos = recomendCards.stream()
                     // 점수 계산된 카드를 반복문 돌면서
                     .map(cardProduct -> {
                         // 혜택 정보를 가지고
@@ -106,15 +106,16 @@ public class RecommendCardServiceImpl implements RecommendCardService {
                                 }).collect(Collectors.toList());
 
                         // 최종 DTO 생성 후 리턴
-                        return CardInfoResponseDto.builder()
-                                .cardName(cardProduct.getName())
-                                .companyName(cardProduct.getCompanyName())
-                                .cardType(cardProduct.getType())
-                                .annualFee(cardProduct.getAnnualFee())
-                                .annualFeeForeign(cardProduct.getAnnualFeeForeign())
-                                .benefitTotalLimit(cardProduct.getBenefitTotalLimit())
-                                .performance(cardProduct.getPerformance())
-                                .imageUrl(cardProduct.getImageUrl())
+                        return RecomendCardInfoResponseDto.builder()
+                                .cardProductUuid(cardProduct.getUuid())
+                                .cardProductName(cardProduct.getName())
+                                .cardProductCompanyName(cardProduct.getCompanyName())
+                                .cardProductPerformance(cardProduct.getPerformance())
+                                .cardProductType(cardProduct.getType())
+                                .cardProductAnnualFeeForeign(cardProduct.getAnnualFeeForeign())
+                                .cardProductAnnualFee(cardProduct.getAnnualFee())
+                                .cardProductImgUrl(cardProduct.getImageUrl())
+                                .cardProductBenefitTotalLimit(cardProduct.getBenefitTotalLimit())
                                 .benefits(benefitDtos)
                                 .build();
                     }).collect(Collectors.toList());
