@@ -57,7 +57,7 @@ const Dutchpay = () => {
   const nav = useNavigate();
   // const location = useLocation();
 
-  const { name, id } = useAuthStore();
+  const { name, id, accessToken } = useAuthStore();
 
   console.log("이름", name, "아이디", id);
   // console.log("Url 넘어오는지 확인용", location.state)
@@ -216,7 +216,13 @@ const Dutchpay = () => {
       const response = await axios.post(
         // "http://localhost:18020/moapay/core/dutchpay/createRoom",
         `/api/moapay/core/dutchpay/createRoom`,
-        requestBody
+        requestBody,
+        {
+          withCredentials: true,
+          headers: {
+            Authorization: `Bearer ${accessToken}`, // Authorization 헤더에 Bearer 토큰 추가
+          },
+        }
       );
       console.log("Room created:", response.data);
 
@@ -224,7 +230,7 @@ const Dutchpay = () => {
       const parsedMessage: DutchRoomMessage = response.data;
       localStorage.setItem("dutchRoomId", parsedMessage.data);
       // const generatedUrl = `http://localhost:5173/dutchpay/invite/${orderId}/${totalPrice}/${categoryId}/${merchantId}/${requestId}/${maxMember}/${parsedMessage.data}`;
-      const generatedUrl = `http://j11c201.p.ssafy.io/api/dutchpay/invite/${orderId}/${totalPrice}/${categoryId}/${merchantId}/${requestId}/${maxMember}/${parsedMessage.data}`;
+      const generatedUrl = `https://j11c201.p.ssafy.io/api/dutchpay/invite/${orderId}/${totalPrice}/${categoryId}/${merchantId}/${requestId}/${maxMember}/${parsedMessage.data}`;
       console.log("Generated joinUrl:", generatedUrl);
       // localStorage.setItem('joinUrl', generatedUrl);  // localStorage에 joinUrl 저장
       // setJoinUrl(parsedMessage.data); // 방 생성 후 반환된 URL 저장
@@ -369,6 +375,9 @@ const Dutchpay = () => {
     console.log("connect websocket");
     const client = new Client({
       brokerURL: "wss://j11c201.p.ssafy.io/api/moapay/core/ws/dutchpay", // WebSocket URL
+      connectHeaders: {
+        Authorization: "Bearer " + accessToken, // 여기에서 JWT 토큰을 추가합니다.
+      },
       onConnect: (frame) => {
         console.log("Connected: " + frame);
 

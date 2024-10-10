@@ -16,7 +16,8 @@ const PATH = {
   USER_CARD_LIST: "/card-list", //nonav
   USER_CARD_DETAIL: "/card/:id", //nonav
   DUTCHPAY: "/dutchpay", //nonav
-  DUTCHINVITE: "/dutchpay/invite/:orderId/:totalPrice/:categoryId/:merchantId/:requestId/:maxMember/:room_id", //nonav
+  DUTCHINVITE:
+    "/api/dutchpay/invite/:orderId/:totalPrice/:categoryId/:merchantId/:requestId/:maxMember/:room_id", //nonav
   DUTCHPARTICIPATION: "/dutchpay/participation", //nonav
   BRING_CARD: "/bring-card",
   SELECT_TYPE: "/select-type",

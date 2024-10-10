@@ -145,7 +145,7 @@ const Payment = ({ onClick, confirmAmount, onFinish }: PaymentProps) => {
 
       const response = await axios.post(
         // `https://j11c201.p.ssafy.io/api/moapay/core/generalpay/pay`,
-        `/api/moapay/core/generalpay/pay`,
+        `/api/moapay/core/dutchpay/payment`,
         // `http://localhost:8765/moapay/core/generalpay/pay`,
         // `http://localhost:18020/moapay/core/dutchpay/payment`,
         {

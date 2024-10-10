@@ -53,7 +53,7 @@ interface ParticipantInfo {
 }
 
 const DutchInvite = () => {
-  const { id } = useAuthStore();
+  const { id, accessToken } = useAuthStore();
   const nav = useNavigate();
 
   // const { name, id } = useAuthStore();
@@ -407,6 +407,9 @@ const DutchInvite = () => {
     const client = new Client({
       // brokerURL: "ws://localhost:18020/moapay/core/ws/dutchpay", // WebSocket URL
       brokerURL: "wss://j11c201.p.ssafy.io/api/moapay/core/ws/dutchpay", // WebSocket URL
+      connectHeaders: {
+        Authorization: "Bearer " + accessToken, // 여기에서 JWT 토큰을 추가합니다.
+      },
       onConnect: (frame) => {
         console.log("Connected: " + frame);
         // 방 참여 시 메시지 구독

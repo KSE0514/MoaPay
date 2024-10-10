@@ -28,10 +28,12 @@ public class CorsConfig implements WebFluxConfigurer {
   @Bean
   public CorsWebFilter corsWebFilter() {
     CorsConfiguration corsConfig = new CorsConfiguration();
-    corsConfig.setAllowedOrigins(Arrays.asList("https://localhost:8765", "http://localhost:8765", "https://localhost", "http://localhost",
-        "http://localhost:5173", "https://localhost:5173", "https://moapay-7e24e.web.app",
-        "https://j11c201.p.ssafy.io", "https://j11c201.p.ssafy.io/api", "http://j11c201.p.ssafy.io"));
+//    corsConfig.setAllowedOrigins(Arrays.asList("https://localhost:8765", "http://localhost:8765", "https://localhost", "http://localhost",
+//        "http://localhost:5173", "https://localhost:5173", "https://moapay-7e24e.web.app",
+//        "https://j11c201.p.ssafy.io", "https://j11c201.p.ssafy.io/api", "http://j11c201.p.ssafy.io"));
+    corsConfig.setAllowedOriginPatterns(Arrays.asList("*"));
     corsConfig.setMaxAge(3600L);
+    corsConfig.setAllowCredentials(true);
     corsConfig.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"));
     corsConfig.setAllowedHeaders(Arrays.asList("*"));
     corsConfig.setAllowCredentials(true);
