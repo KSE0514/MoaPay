@@ -74,7 +74,7 @@ public class SecurityConfig {
                                         "/api/moapay/member/getMember", "/api/moapay/core/card/getMemberId",
                                         "/api/moapay/core/card/getMemberCard", "/moapay/member/getMember",
                                         "/moapay/core/card/getMemberId", "/moapay/core/card/getMemberCard",
-                                        "/moapay/core/ws/dutchpay"
+                                        "/api/moapay/core/ws/dutchpay", "/api/moapay/core/dutchpay/createRoom"
                                 )
                                 .permitAll()
                                 .anyExchange()
