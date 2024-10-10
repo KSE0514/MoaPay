@@ -9,6 +9,7 @@ import java.time.LocalDateTime;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
+@ToString
 public class CardHistoryPaymentLogDto {
     private String merchantName;
     private long amount;

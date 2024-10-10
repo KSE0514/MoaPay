@@ -28,6 +28,7 @@ const Analysis = () => {
   const getMonthlyConsumptionList = async () => {
     try {
       const response = await axios.post(
+        // `https://j11c201.p.ssafy.io/api/moapay/pay/statistics/consumption`,
         `/api/moapay/pay/statistics/consumption`,
         { memberId: id },
         {
@@ -52,6 +53,7 @@ const Analysis = () => {
   const getMonthlyBenefitList = async () => {
     try {
       const response = await axios.post(
+        // `https://j11c201.p.ssafy.io/api/moapay/pay/statistics/benefit`,
         `/api/moapay/pay/statistics/benefit`,
         { memberId: id },
         {

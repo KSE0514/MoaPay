@@ -60,8 +60,9 @@ const UserCardDetail = () => {
     console.log(year, month, id);
     try {
       const response = await axios.post(
-        // `api/moapay/core/card/history`,
-        `http://localhost:8765/moapay/core/card/history`,
+        // `https://j11c201.p.ssafy.io/api/moapay/core/card/history`,
+        `/api/moapay/core/card/history`,
+        // `http://localhost:8765/moapay/core/card/history`,
         { cardId: id, year: year, month: month },
         {
           withCredentials: true,

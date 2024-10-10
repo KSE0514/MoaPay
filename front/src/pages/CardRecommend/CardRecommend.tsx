@@ -34,6 +34,7 @@ import CardLoading from "./CardLoading";
  * 3. 클릭 시 비교 comparisonCard에 넣기
  */
 const CardRecommend = () => {
+  const [viewDetail, setViewDeatil] = useState<boolean>(false);
   const [compare, setCompare] = useState<boolean>(false);
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const { id, accessToken, name } = useAuthStore();
@@ -56,6 +57,9 @@ const CardRecommend = () => {
     `calc(calc(100% / 2) * 0)`
   );
 
+  const controllDetailView = (state: boolean) => {
+    setViewDeatil(state);
+  };
   const changeShowComparisonViewState = () => {
     setShowComparisonView((current) => !current);
   };
@@ -84,10 +88,10 @@ const CardRecommend = () => {
 
   const getRecommendCards = async () => {
     try {
-      const response = await axios.post(
-        // `api/moapay/core/card/recommend`,
-        `http://localhost:8765/moapay/core/card/recommend`,
-        {},
+      const response = await axios.get(
+        // `https://j11c201.p.ssafy.io/api/moapay/core/card/recommend/${id}`,
+        `/api/moapay/core/card/recommend/${id}`,
+        // `http://localhost:8765/moapay/core/card/recommend/${id}``,
         {
           withCredentials: true,
           headers: {
@@ -97,7 +101,7 @@ const CardRecommend = () => {
         }
       );
       if (response.status === 200) {
-        setRecommendCardList(response.data.data);
+        setRecommendCardList(response.data.data.recommend);
       }
     } catch (e) {
       console.log(e);
@@ -105,9 +109,10 @@ const CardRecommend = () => {
   };
   useEffect(() => {
     setIsLoading(true);
-    // getRecommendCards();
-    console.log(userCardProductList);
-    setIsLoading(true);
+    getRecommendCards();
+    setTimeout(() => {
+      setIsLoading(false);
+    }, 2000);
   }, []);
 
   return (
@@ -126,11 +131,13 @@ const CardRecommend = () => {
             </Title>
             <RecommeCardListView>
               <RecommendResultCardList
+                controllDetailView={controllDetailView}
                 onCardClick={onCardClick}
-                cardList={userCardProductList}
+                cardList={recommendCardList}
               />
             </RecommeCardListView>
             <button
+              style={{ zIndex: viewDetail ? 0 : 10 }}
               onClick={() => {
                 setCompare(true);
               }}
@@ -344,6 +351,7 @@ const CardRecommend = () => {
                 <div className="slide-notify">밀어서 상세보기</div>
               </div>
               <CardList
+                controllDetailView={controllDetailView}
                 onCardClick={onCardClick}
                 cardList={
                   showUserCard ? userCardProductList : recommendCardList

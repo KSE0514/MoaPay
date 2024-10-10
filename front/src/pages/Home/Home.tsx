@@ -33,7 +33,8 @@ import { onMessage } from "firebase/messaging";
 const Home = () => {
   const navigate = useNavigate();
   const { id, accessToken } = useAuthStore();
-  const { cardWithDividPay, cardWithNullName, cardList } = useCardStore();
+  const { cardWithDividPay, cardWithNullName, cardList, setCardList } =
+    useCardStore();
   const [showCards, setShowCards] = useState<Card[]>([]);
   const containerRef = useRef<HTMLDivElement | null>(null);
   const [isCameraOn, setIsCameraOn] = useState(false); // 카메라 상태 추가
@@ -79,8 +80,10 @@ const Home = () => {
     if (barcodeCardNumber === undefined) return;
     try {
       const response = await axios.post(
-        // `api/moapay/core/code/barcode`,
-        `http://localhost:8765/moapay/core/code/barcode`,
+        // `https://j11c201.p.ssafy.io/api/moapay/core/code/barcode`,
+
+        `/api/moapay/core/code/barcode`,
+        // `http://localhost:8765/moapay/core/code/barcode`,
         {
           memberId: id,
           type: barcodeCardImageAlt === "recommend" ? "RECOMMEND" : "FIX", // FIX, RECOMMEND
@@ -220,10 +223,28 @@ const Home = () => {
   const onclose = () => {
     setIsOpen(false);
   };
-
+  const getUserCard = async () => {
+    try {
+      const response = await axios.get(`moapay/core/card/mycard/${id}`, {
+        withCredentials: true,
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+          "Content-Type": "application/json",
+        },
+      });
+      setCardList(response.data.data);
+    } catch (e) {
+      console.log(e);
+    }
+  };
   useEffect(() => {
-    const cardArray: Card[] = [];
+    console.log("=====================진행 전 ==================");
+    console.log(cardList);
+    getUserCard();
+    console.log("=====================진행 후 ==================");
+    console.log(cardList);
 
+    const cardArray: Card[] = [];
     // cardWithNullName과 cardWithDividPay를 배열에 추가
 
     cardArray.push(cardWithNullName);
@@ -532,7 +553,7 @@ const Home = () => {
           {remainder !== null
             ? remainder <= 0
               ? `실적달성🎉`
-              : `다음 실적까지 ${remainder}원`
+              : `다음 실적까지 ${remainder.toLocaleString()}원`
             : "모아"}
         </div>
 

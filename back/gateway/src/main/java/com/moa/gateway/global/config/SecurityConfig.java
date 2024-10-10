@@ -66,6 +66,7 @@ public class SecurityConfig {
             return Mono.empty();
         };
     }
+
     @Bean
     public SecurityWebFilterChain securityWebFilterChain(ServerHttpSecurity http) {
         return http.httpBasic(httpBasic -> httpBasic.disable()) // HTTP Basic 인증 비활성화
@@ -74,14 +75,18 @@ public class SecurityConfig {
                 .securityContextRepository(NoOpServerSecurityContextRepository.getInstance()) //session stateless 설정
                 .formLogin(formLogin -> formLogin.disable()) // 폼 로그인 비활성화
                 .logout(logout -> logout.disable()) // 로그아웃 비활성화
-                .authorizeExchange(exchanges -> exchanges.pathMatchers("/api/moapay/member/login", "/api/moapay/member/join",
-                                        "/api/moapay/member/sendSMS", "/api/moapay/member/verification", "/api/moapay/member/isMember",
-                                        "/moapay/member/login", "/moapay/member/join",
-                                        "/moapay/member/sendSMS", "/moapay/member/verification", "/moapay/member/isMember",
-                                        "/moapay/core/code/QRcode", "/api/moapay/core/code/QRcode",
-                                        "/moapay/pay/analysis/history", "/api/moapay/pay/analysis/history", "/moapay/core/generalpay/offline", "/moapay/pay/notification/subscribe/**"
-                        ,"/moapay/core/card/getMyCardIds", "/moapay/pay/charge/getPaymentLog",
-                                "/api/moapay/core/card/getMyCardIds"
+                .authorizeExchange(exchanges -> exchanges.pathMatchers(
+                                        "/api/moapay/member/login", "/moapay/member/login",
+                                        "/api/moapay/member/join", "/moapay/member/join",
+                                        "/api/moapay/member/sendSMS", "/moapay/member/sendSMS",
+                                        "/api/moapay/member/verification", "/moapay/member/verification",
+                                        "/api/moapay/member/isMember", "/moapay/member/isMember",
+                                        "/api/moapay/core/code/QRcode", "/moapay/core/code/QRcode",
+                                        "/api/moapay/pay/analysis/history", "/moapay/pay/analysis/history",
+                                        "/api/moapay/core/generalpay/offline", "/moapay/core/generalpay/offline",
+                                        "/api/moapay/pay/notification/subscribe/**", "/moapay/pay/notification/subscribe/**",
+                                        "/api/moapay/core/card/getMyCardIds", "/moapay/core/card/getMyCardIds",
+                                        "/api/moapay/pay/charge/getPaymentLog", "/moapay/pay/charge/getPaymentLog"
                                 )
                                 .permitAll()
                                 .anyExchange()

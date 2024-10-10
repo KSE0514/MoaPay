@@ -26,6 +26,7 @@ import { Swiper, SwiperSlide } from "swiper/react";
 // import 'swiper/swiper-bundle.min.css';
 import "../../../node_modules/swiper/swiper-bundle.min.css";
 import ParticleCanvas from "../../components/ParticleCanvas";
+import { useCardStore } from "../../store/CardStore";
 interface BenefitDetail {
   discount: number; // long, 할인 금액
   point: number; // long, 적립 포인트
@@ -73,54 +74,8 @@ interface AppClientResponse {
  * false true => 결제 완료  창
  */
 const SelectPaymentType = () => {
-  const mockAppClientResponse: AppClientResponse = {
-    requestId: "b2d4e9d0-7f5d-11ec-90d6-0242ac120003",
-    paymentId: "a4b6f8e2-7f5d-11ec-90d6-0242ac120003",
-    merchantName: "Sample Store",
-    totalPrice: 150000,
-    createTime: "2024-10-08T15:30:00",
-    usedCardCount: 2,
-    paymentResultCardInfoList: [
-      {
-        paymentId: "c8d5f3d1-7f5d-11ec-90d6-0242ac120003",
-        cardName: "Sample Card 1",
-        imageUrl: "1_신한카드_Mr.Life",
-        cardId: "d9a3b1f4-7f5d-11ec-90d6-0242ac120003",
-        cardNumber: "1234-5678-9012-3456",
-        amount: 100000,
-        actualAmount: 95000,
-        performance: 500000,
-        usedAmount: 100000,
-        benefitActivated: true,
-        benefitUsage: 5000,
-        benefitDetail: {
-          discount: 2000,
-          point: 1500,
-          cashback: 1500,
-        },
-      },
-      {
-        paymentId: "e5f6a2c7-7f5d-11ec-90d6-0242ac120003",
-        cardName: "삼성카드&MILEAGE PLATINUM(스카이패스)",
-        imageUrl: "2_삼성카드_&_MILEAGE_PLATINUM_(스카이패스)",
-        cardId: "e7b8c6d8-7f5d-11ec-90d6-0242ac120003",
-        cardNumber: "9876-5432-1098-7654",
-        amount: 50000,
-        actualAmount: 48000,
-        performance: 2000,
-        usedAmount: 50000,
-        benefitActivated: true,
-        benefitUsage: 2000,
-        benefitDetail: {
-          discount: 1000,
-          point: 500,
-          cashback: 500,
-        },
-      },
-    ],
-  };
-
   const { accessToken, id, paymentType } = useAuthStore();
+  const { cardList } = useCardStore();
   const navigate = useNavigate();
 
   // 쿼리 파라미터 값 읽기
@@ -141,20 +96,46 @@ const SelectPaymentType = () => {
   const [isEnd, setIsEnd] = useState<boolean>(false);
 
   //구독 시 필요한 id
-  const storeRequestId = localStorage.getItem("reqeustId"); //저장된 결제 요청 값 => 결제 끝나고 지워야함
-  const [requestId, setRequestId] = useState<string>("0192719d-1efd-7521-8e6d-a2410743df53");
+  const [requestId, setRequestId] = useState<string>("");
 
   //결제 결과
   const [paymentResult, setPaymentResult] =
     useState<AppClientResponse | null>();
 
+  useEffect(() => {
+    // orderId 저장
+    if (orderId) {
+      localStorage.setItem("orderId", orderId);
+    }
+
+    // totalPrice 저장
+    if (totalPrice) {
+      localStorage.setItem("totalPrice", totalPrice);
+    }
+
+    // categoryId 저장
+    if (categoryId) {
+      localStorage.setItem("categoryId", categoryId);
+    }
+
+    // merchantId 저장
+    if (merchantId) {
+      localStorage.setItem("merchantId", merchantId);
+    }
+
+    // QRCode 저장
+    if (QRCode) {
+      localStorage.setItem("QRCode", QRCode);
+    }
+    setRequestId(settingStoreRequestId());
+  }, [orderId, totalPrice, categoryId, merchantId, QRCode]);
   /**
    *
    * requestId가 없을 경우 발급
    */
   const settingStoreRequestId = (): string => {
     const newRequestId = uuidv4();
-    localStorage.setItem("reqeustId", newRequestId);
+    localStorage.setItem("requestId", newRequestId);
     return newRequestId;
   };
 
@@ -162,93 +143,164 @@ const SelectPaymentType = () => {
    * sse 구독하기
    */
   useEffect(() => {
-    setRequestId(
-      storeRequestId !== null ? storeRequestId : settingStoreRequestId()
-    );
-
-    //페이먼트 연결
-    const eventSource = new EventSource(
-      `http://localhost:18010/moapay/pay/notification/subscribe/${requestId}}`
-      // `api/moapay/pay/notification/subscribe/${requestId}}`
-    );
-
-    //페이 연결 열기
-    eventSource.onopen = async () => {
-      await console.log(
-        "==============pay - SSE connection opened!=============="
+    if (requestId) {
+      console.log("sse 연결시작!!!!!");
+      console.log("requestId ", requestId);
+      //페이먼트 연결
+      const eventSource = new EventSource(
+        // `http://localhost:18010/moapay/pay/notification/subscribe/${requestId}}`
+        `https://j11c201.p.ssafy.io/api/moapay/pay/notification/subscribe/${requestId}`
       );
-      console.log(eventSource);
-    };
 
-    // 'payment-completed' 이벤트를 수신할 때 실행될 로직 (이벤트 이름을 'payment-completed'로 변경)
-    // 결제 완료를 보내주는 것
-    eventSource.addEventListener("payment-completed", (event) => {
-      console.log("Received 'sse' event:", event.data, "");
-      try {
-        const data = JSON.parse(event.data);
-        console.log("Parsed data: ", data);
-        setPaymentResult(data);
+      //페이 연결 열기
+      eventSource.onopen = async () => {
+        await console.log(
+          "==============pay - SSE connection opened!=============="
+        );
+        console.log(eventSource);
+      };
 
-        // 결제가 완료된 후에는 loading 을 false로 변경하고
-        setIsLoading(false);
+      // 'payment-completed' 이벤트를 수신할 때 실행될 로직 (이벤트 이름을 'payment-completed'로 변경)
+      // 결제 완료를 보내주는 것
+      eventSource.addEventListener("payment-completed", (event) => {
+        console.log("Received 'sse' event:", event.data, "");
+        try {
+          const data = JSON.parse(event.data);
+          console.log("Parsed data: ", data);
+          setPaymentResult(data);
 
-        //결과를 보여줄 수 있도록 isEnd를 true로 변경
-        setTimeout(() => {
-          setIsEnd(true);
-        }, 2000); // 2000 밀리초 = 2초
-        // 결제 requestId 삭제하기
-        localStorage.removeItem("requestId");
-        //결과 담기
-      } catch (error) {
-        console.error("Data is not valid JSON:", event.data);
-        // 만약 데이터가 JSON이 아니라 문자열인 경우 그대로 저장
-      }
-    });
+          // 결제가 완료된 후에는 loading 을 false로 변경하고
+          setIsLoading(false);
 
-    // 'sse' 이벤트를 수신할 때 실행될 로직
-    eventSource.addEventListener("sse", (event) => {
-      console.log("Received 'sse' event:", event.data);
-      try {
-        const data = JSON.parse(event.data);
-        console.log("Parsed data: ", data);
-      } catch (error) {
-        console.error("Data is not valid JSON:", event.data);
-      }
-    });
+          //결과를 보여줄 수 있도록 isEnd를 true로 변경
+          setTimeout(() => {
+            setIsEnd(true);
+          }, 2000); // 2000 밀리초 = 2초
+          // 결제 requestId 삭제하기
+          localStorage.removeItem("requestId");
+          //결과 담기
+        } catch (error) {
+          console.error("Data is not valid JSON:", event.data);
+          // 만약 데이터가 JSON이 아니라 문자열인 경우 그대로 저장
+        }
+      });
 
-    // 페이에서 에러 발생 시 실행될 로직
-    eventSource.onerror = async (e) => {
-      await console.log("Error with pay SSE", e);
-      // 에러가 발생하면 SSE를 닫음
-      eventSource.close();
-    };
-  }, []);
+      // 'sse' 이벤트를 수신할 때 실행될 로직
+      eventSource.addEventListener("sse", (event) => {
+        console.log("Received 'sse' event:", event.data);
+        try {
+          const data = JSON.parse(event.data);
+          console.log("Parsed data: ", data);
+        } catch (error) {
+          console.error("Data is not valid JSON:", event.data);
+        }
+      });
+
+      // 페이에서 에러 발생 시 실행될 로직
+      eventSource.onerror = async (e) => {
+        await console.log("Error with pay SSE", e);
+        // 에러가 발생하면 SSE를 닫음
+        eventSource.close();
+      };
+    }
+  }, [requestId]);
 
   /**
    * 결제 진행 함수
    */
   const startPay = async () => {
+    const storedRequestId = localStorage.getItem("requestId");
+    const storedOrderId = localStorage.getItem("orderId");
+    const storedMerchantId = localStorage.getItem("merchantId");
+    const storedCategoryId = localStorage.getItem("categoryId");
+    const storedTotalPrice = localStorage.getItem("totalPrice") || "0";
+    const storedQRCode = localStorage.getItem("QRCode");
+    console.log(
+      storedRequestId,
+      storedOrderId,
+      storedMerchantId,
+      storedCategoryId,
+      storedTotalPrice
+    );
     if (selectedPayType == "single") {
       //카드 선택할 수 있도록 함
+      console.log(
+        "=======================single payment gogo================="
+      );
+      try {
+        setIsLoading(true);
+        const response = await axios.post(
+          // `https://j11c201.p.ssafy.io/api/moapay/core/generalpay/pay`,
+          `/api/moapay/core/generalpay/pay`,
+          // `http://localhost:8765/moapay/core/generalpay/pay`,
+          {
+            requestId: storedRequestId,
+            orderId: storedOrderId,
+            merchantId: storedMerchantId,
+            categoryId: storedCategoryId,
+            totalPrice: parseInt(storedTotalPrice, 10),
+            memberId: id,
+            cardSelectionType: "FIX",
+            recommendType: paymentType || "PERFORM", // RECOMMEND인 경우 사용, BENEFIT / PERFORM
+            cardNumber: cardList[0].cardNumber, // FIX인 경우 사용
+            cvc: cardList[0].cvc, // FIX인 경우 사용
+          },
+          // {
+          //   requestId: storedRequestId,
+          //   orderId: storedOrderId,
+          //   merchantId: storedMerchantId,
+          //   categoryId: storedCategoryId,
+          //   totalPrice: parseInt(storedTotalPrice, 10),
+          //   memberId: id,
+          //   cardSelectionType: "FIX",
+          //   recommendType: "BENEFIT", // RECOMMEND인 경우 사용, BENEFIT / PERFORM
+          //   cardNumber: "3998541707334420", // FIX인 경우 사용
+          //   cvc: "123", // FIX인 경우 사용
+          // },
+          {
+            withCredentials: true,
+            headers: {
+              Authorization: `Bearer ${accessToken}`,
+              "Content-Type": "application/json",
+            },
+          }
+        );
+        console.log(response);
+      } catch (e) {
+        console.log(e);
+      }
     } else if (selectedPayType == "multi") {
       console.log("=======================multi payment gogo=================");
       try {
         setIsLoading(true);
         const response = await axios.post(
-          // `api/moapay/core/generalpay/pay`,
-          `http://localhost:8765/moapay/core/generalpay/pay`,
+          // `https://j11c201.p.ssafy.io/api/moapay/core/generalpay/pay`,
+          `/api/moapay/core/generalpay/pay`,
+          // `http://localhost:8765/moapay/core/generalpay/pay`,
           {
-            requestId: requestId,
-            orderId: orderId,
-            merchantId: merchantId,
-            categoryId: categoryId,
-            totalPrice: totalPrice,
+            requestId: storedRequestId,
+            orderId: storedOrderId,
+            merchantId: storedMerchantId,
+            categoryId: storedCategoryId,
+            totalPrice: parseInt(storedTotalPrice, 10),
             memberId: id,
             cardSelectionType: "RECOMMEND",
-            recommendType: paymentType, // RECOMMEND인 경우 사용, BENEFIT / PERFORM
-            cardNumber: "", // FIX인 경우 사용
-            cvc: "", // FIX인 경우 사용
+            recommendType: paymentType || "PERFORM", // RECOMMEND인 경우 사용, BENEFIT / PERFORM
+            cardNumber: cardList[0].cardNumber, // FIX인 경우 사용
+            cvc: cardList[0].cvc, // FIX인 경우 사용
           },
+          // {
+          //   requestId: storedRequestId,
+          //   orderId: storedOrderId,
+          //   merchantId: storedMerchantId,
+          //   categoryId: storedCategoryId,
+          //   totalPrice: parseInt(storedTotalPrice, 10),
+          //   memberId: id,
+          //   cardSelectionType: "FIX",
+          //   recommendType: "BENEFIT", // RECOMMEND인 경우 사용, BENEFIT / PERFORM
+          //   cardNumber: "3998541707334420", // FIX인 경우 사용
+          //   cvc: "123", // FIX인 경우 사용
+          // },
           {
             withCredentials: true,
             headers: {
@@ -384,7 +436,7 @@ const SelectPaymentType = () => {
                 spaceBetween={50}
                 slidesPerView={1}
               >
-                {mockAppClientResponse.paymentResultCardInfoList?.map(
+                {paymentResult?.paymentResultCardInfoList?.map(
                   (result, index) => (
                     <SwiperSlide key={index}>
                       <ResultBoxInner>
@@ -404,7 +456,9 @@ const SelectPaymentType = () => {
                             <div>받은 혜택 금액</div>
                             <div style={{ color: "#a959ff" }}>
                               {(
-                                result.amount - result.actualAmount
+                                result.benefitDetail.discount +
+                                result.benefitDetail.point +
+                                result.benefitDetail.cashback
                               ).toLocaleString()}
                               원
                             </div>
@@ -436,18 +490,15 @@ const SelectPaymentType = () => {
               {/* 하단 네브바 (점) */}
             </ResultBox>
             <DotNav>
-              {mockAppClientResponse.paymentResultCardInfoList.map(
-                (_, index) => (
-                  <span
-                    key={index}
-                    onClick={() => handleNavClick(index)}
-                    style={{
-                      backgroundColor:
-                        activeIndex === index ? "purple" : "white",
-                    }}
-                  ></span>
-                )
-              )}
+              {paymentResult?.paymentResultCardInfoList.map((_, index) => (
+                <span
+                  key={index}
+                  onClick={() => handleNavClick(index)}
+                  style={{
+                    backgroundColor: activeIndex === index ? "purple" : "white",
+                  }}
+                ></span>
+              ))}
             </DotNav>
             <HomeBtn
               onClick={() => {

@@ -3,6 +3,7 @@ package com.moa.payment.domain.analysis.repository;
 import com.moa.payment.domain.analysis.model.dto.CardHistoryPaymentLogDto;
 import com.moa.payment.domain.charge.entity.QPaymentLog;
 import com.querydsl.core.types.Projections;
+import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -24,12 +25,15 @@ public class PaymentLogQueryRepository {
         return queryFactory.select(Projections.fields(CardHistoryPaymentLogDto.class,
                         paymentLog.merchantName, paymentLog.benefitBalance, paymentLog.amount, paymentLog.categoryId, paymentLog.createTime))
                 .from(paymentLog)
-                .where(paymentLog.createTime.between(start, end))
+                .where(paymentLog.cardId.eq(cardId).and(paymentLog.createTime.between(start, end)))
                 .orderBy(paymentLog.createTime.desc())
                 .fetch();
     }
 
     public List<CardHistoryPaymentLogDto> findAllCardsPaymentLogs(List<UUID> cardIds, LocalDateTime start, LocalDateTime end) {
+        for (UUID uuid: cardIds) {
+            log.info("uuid: {}", uuid);
+        }
         QPaymentLog paymentLog = QPaymentLog.paymentLog;
         return queryFactory.select(Projections.fields(CardHistoryPaymentLogDto.class,
                         paymentLog.cardId,
@@ -39,9 +43,23 @@ public class PaymentLogQueryRepository {
                         paymentLog.categoryId,
                         paymentLog.createTime))
                 .from(paymentLog)
-                .where(paymentLog.cardId.in(cardIds)
+                .where(cardIdInExpression(cardIds)
                         .and(paymentLog.createTime.between(start, end)))
                 .orderBy(paymentLog.createTime.desc())
                 .fetch();
+    }
+
+    private BooleanExpression cardIdInExpression(List<UUID> cardIds) {
+        QPaymentLog paymentLog = QPaymentLog.paymentLog;
+        BooleanExpression booleanExpression = null;
+        for (UUID cardId : cardIds) {
+            BooleanExpression condition = paymentLog.cardId.eq(cardId);
+            if (booleanExpression == null) {
+                booleanExpression = condition;
+            } else {
+                booleanExpression = booleanExpression.or(condition);
+            }
+        }
+        return booleanExpression;
     }
 }
