@@ -3,6 +3,7 @@ import { useLocation } from "react-router-dom";
 import List from "../../../components/statistics/List/List";
 import { categoryData } from "../../../store/CardStore";
 import axios from "axios";
+import { useAuthStore } from "../../../store/AuthStore";
 
 const Benefits = () => {
   const { id, accessToken } = useAuthStore();
