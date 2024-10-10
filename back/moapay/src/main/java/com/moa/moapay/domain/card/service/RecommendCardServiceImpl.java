@@ -116,7 +116,7 @@ public class RecommendCardServiceImpl implements RecommendCardService {
                                 .cardProductAnnualFee(cardProduct.getAnnualFee())
                                 .cardProductImgUrl(cardProduct.getImageUrl())
                                 .cardProductBenefitTotalLimit(cardProduct.getBenefitTotalLimit())
-                                .benefits(benefitDtos)
+                                .cardBenefits(benefitDtos)
                                 .build();
                     }).collect(Collectors.toList());
 
