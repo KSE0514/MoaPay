@@ -7,7 +7,8 @@ import java.util.UUID;
 
 @Getter
 @NoArgsConstructor
-public class GetQRCodeRequestDto {
+public class
+GetQRCodeRequestDto {
     private UUID orderId;
     private UUID merchantId;
     private String merchantName;
