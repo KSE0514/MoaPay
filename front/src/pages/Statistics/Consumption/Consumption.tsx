@@ -12,6 +12,7 @@ const Consumption = () => {
     location.state || [] // location.state가 없을 때 빈 배열로 초기화
   );
   const getConsumptionData = async () => {
+    console.log("first get Data");
     try {
       const response = await axios.post(
         // `https://j11c201.p.ssafy.io/api/moapay/pay/statistics/consumption/${selectedYear}/${selectedMonth}`,

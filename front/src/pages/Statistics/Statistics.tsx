@@ -205,8 +205,8 @@ const Statistics = () => {
         }
       );
       setComparisonAmount(calculatedPrice - response.data.data.average);
-
       setMode("BarGraph");
+
       navigator(paths[index]);
     } else {
       //저번달 소비로 가져오기
@@ -272,6 +272,7 @@ const Statistics = () => {
     }
   }, []);
   useEffect(() => {
+    console.log("월별 변경");
     if (window.location.pathname == paths[0]) {
       console.log("load consumptionData");
       getConsumptionData();
@@ -279,7 +280,7 @@ const Statistics = () => {
       console.log("load benefitData");
       getBenefitData();
     }
-  }, [selectedMonth, selectedYear]);
+  }, [selectedMonth, selectedYear, paths, getConsumptionData, getBenefitData]);
 
   return (
     <>
@@ -310,6 +311,7 @@ const Statistics = () => {
               </Info>
             </>
           )}
+
           {mode === "BarGraph" && (
             <TopWrapper>
               <NowDate>{`${new Date().getFullYear()}년 ${String(
@@ -340,6 +342,7 @@ const Statistics = () => {
               </TextBox>
             </TopWrapper>
           )}
+
           {mode === "Ano" && (
             <div className="saving">
               <p className="title">
@@ -363,7 +366,7 @@ const Statistics = () => {
                     앞으로 하루{" "}
                     <span style={{ color: "#4258ff " }}>
                       {(savingGoal - savingUse) /
-                        (daysLeft === 0 ? 1 : daysLeft)}
+                        (daysLeft === 0 ? 1 : daysLeft)}{" "}
                       원
                     </span>
                     만 쓰면 돼요.
