@@ -53,7 +53,7 @@ interface ParticipantInfo {
 }
 
 const DutchInvite = () => {
-  const { id, accessToken } = useAuthStore();
+  const { id, accessToken, name, phoneNumber } = useAuthStore();
   const nav = useNavigate();
 
   // const { name, id } = useAuthStore();
@@ -61,9 +61,9 @@ const DutchInvite = () => {
 
   // 테스트용 멤버 데이터
   const testUser = {
-    name: "김철수",
-    phoneNumber: "01012345678",
-    memberId: "019250e9-b495-75e3-85d9-8bf4767d9fa5",
+    name: name,
+    phoneNumber: phoneNumber,
+    memberId: id,
   };
 
   const [dutchParticipants, setDutchParticipants] = useState<ParticipantInfo[]>(
