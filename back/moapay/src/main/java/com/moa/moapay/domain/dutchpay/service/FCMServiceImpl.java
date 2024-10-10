@@ -46,6 +46,9 @@ public class FCMServiceImpl implements FCMService {
 
     @Override
     public void pushNotification(FCMMessageDto fcmMessageDto) {
+
+        log.info("FCM 전송");
+
         String token = fcmRedisRepository.getToken(String.valueOf(fcmMessageDto.getMemberId()));
         if (token == null) {
             throw new BusinessException(HttpStatus.NOT_FOUND, "토큰이 없습니다");

@@ -45,7 +45,7 @@ public class MyCardServiceImpl implements MyCardService {
     private String paymentUrl;
 
     @Override
-    public List<MyCardInfoDto> getMyCardInfo(UUID memberId) {
+    public List<GetMyCardsResponseDto> getMyCardInfo(UUID memberId) {
         // todo: 여기서 쿠키를 뜯어서 UUID 찾기
         // 이건 테스트용
 
@@ -55,7 +55,7 @@ public class MyCardServiceImpl implements MyCardService {
             throw new BusinessException(HttpStatus.NOT_FOUND, "등록된 카드가 없어요");
         }
 
-        List<MyCardInfoDto> myCardsDto = myCards.stream().map(myCard -> {
+        List<GetMyCardsResponseDto> myCardsDto = myCards.stream().map(myCard -> {
             List<CardBenefitDto> benefitDtos = myCard.getCardProduct()
                     .getBenefits()
                     .stream()
@@ -69,26 +69,29 @@ public class MyCardServiceImpl implements MyCardService {
                             .build())
                     .collect(Collectors.toList());
 
-            CardInfoResponseDto cardInfo = CardInfoResponseDto.builder()
-                    .cardName(myCard.getCardProduct().getName())
-                    .cardType(myCard.getCardProduct().getType())
-                    .annualFee(myCard.getCardProduct().getAnnualFee())
-                    .annualFeeForeign(myCard.getCardProduct().getAnnualFeeForeign())
-                    .performance(myCard.getCardProduct().getPerformance())
-                    .imageUrl(myCard.getCardProduct().getImageUrl())
-                    .companyName(myCard.getCardProduct().getCompanyName())
-                    .benefits(benefitDtos)
+            CardProductDto cardInfo = CardProductDto.builder()
+                    .cardBenefits(benefitDtos)
+                    .cardProductPerformance(myCard.getCardProduct().getPerformance())
+                    .cardProductName(myCard.getCardProduct().getName())
+                    .cardProductUuid(myCard.getCardProduct().getUuid())
+                    .cardProductType(myCard.getCardProduct().getType().toString())
+                    .cardProductCompanyName(myCard.getCardProduct().getCompanyName())
+                    .cardProductBenefitTotalLimit(myCard.getCardProduct().getBenefitTotalLimit())
+                    .cardProductImgUrl(myCard.getCardProduct().getImageUrl())
+                    .cardProductAnnualFee(myCard.getCardProduct().getAnnualFee())
+                    .cardProductAnnualFeeForeign(myCard.getCardProduct().getAnnualFeeForeign())
                     .build();
 
-            return MyCardInfoDto.builder()
-                    .cvc(myCard.getCvc())
-                    .cardNumber(String.valueOf(myCard.getCardNumber()))
-                    .amount(myCard.getAmount())
+
+            return GetMyCardsResponseDto.builder()
+                    .cardProduct(cardInfo)
+                    .uuid(myCard.getUuid())
                     .cardLimit(myCard.getCardLimit())
+                    .cvc(myCard.getCvc())
+                    .amount(myCard.getAmount())
                     .benefitUsage(myCard.getBenefitUsage())
                     .performanceFlag(myCard.isPerformanceFlag())
-                    .cardStatus(myCard.getCardStatus())
-                    .cardInfo(cardInfo)
+                    .cardNumber(String.valueOf(myCard.getCardNumber()))
                     .build();
         }).collect(Collectors.toList());
 
@@ -263,7 +266,7 @@ public class MyCardServiceImpl implements MyCardService {
 
         List<MyCard> myCards = myCardRepository.findAllByMemberId(registrationRequestDto.getMemberUuid());
 
-        log.info("myCards Size : {}",myCards.size());
+        log.info("myCards Size : {}", myCards.size());
         Optional<MyCard> existMycard = myCardRepository.findByCardNumber(String.valueOf(registrationRequestDto.getCardNumber()));
         if (existMycard.isPresent()) {
             log.info("카드가 이미 존재한다");
