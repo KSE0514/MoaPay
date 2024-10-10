@@ -26,14 +26,14 @@ const DonutChart = ({ dataList }: Props) => {
   const newDataList: categoryData[] = [
     ...top5Data,
     {
-      category: "기타",
+      categoryId: "기타",
       money: otherMoney,
       per: otherPer,
     },
   ];
 
   // sortedDataList에서 레이블과 데이터 추출
-  const labels = newDataList.map((item) => item.category);
+  const labels = newDataList.map((item) => item.categoryId);
   const values = newDataList.map((item) => item.money);
   const data = {
     labels: labels,
