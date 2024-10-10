@@ -87,8 +87,12 @@ public class SecurityConfig {
                                         "/api/moapay/pay/notification/subscribe/**", "/moapay/pay/notification/subscribe/**",
                                         "/api/moapay/core/card/getMyCardIds", "/moapay/core/card/getMyCardIds",
                                         "/api/moapay/pay/charge/getPaymentLog", "/moapay/pay/charge/getPaymentLog",
-                                        "/api/moapay/member/getMember", "/moapay/member/getMember"
-                                )
+                                        "/api/moapay/member/getMember", "/moapay/member/getMember",
+                                        "/api/moapay/pay/analysis/saveAverage", "/moapay/pay/analysis/saveAverage",
+                                        "/api/moapay/member/getMember", "/api/moapay/core/card/getMemberId",
+                                        "/api/moapay/core/card/getMemberCard", "/moapay/member/getMember",
+                                        "/moapay/core/card/getMemberId", "/moapay/core/card/getMemberCard"
+                        )
                                 .permitAll()
                                 .anyExchange()
                                 .authenticated() //나머지 경로는 인증 필요

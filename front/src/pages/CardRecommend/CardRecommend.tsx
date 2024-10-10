@@ -276,7 +276,7 @@ const CardRecommend = () => {
                         <div className="row benefit">
                           <p className="benefit-row">
                             {comparisonCard[0]
-                              ? comparisonCard[0].benefits?.map(
+                              ? comparisonCard[0].cardBenefits?.map(
                                   (benefit, index) => (
                                     <>
                                       <p
@@ -301,7 +301,7 @@ const CardRecommend = () => {
                           ></div>
                           <p className="benefit-row">
                             {comparisonCard[1]
-                              ? comparisonCard[1].benefits?.map(
+                              ? comparisonCard[1].cardBenefits?.map(
                                   (benefit, index) => (
                                     <>
                                       <p
