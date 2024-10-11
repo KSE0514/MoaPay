@@ -184,7 +184,7 @@ const Statistics = () => {
       );
       //저번달 소비로 가져오기
       setSelectedMonth(
-        new Date().getMonth() + 1 === 1 ? 12 : new Date().getMonth() - 1
+        new Date().getMonth() + 1 === 1 ? 12 : new Date().getMonth()
       );
       getConsumptionData();
       //또래 비교금액 가져오기
@@ -329,7 +329,7 @@ const Statistics = () => {
           )}
           {mode === "BarGraph" && (
             <TopWrapper>
-              <NowDate>{`${selectedYear}년 ${selectedMonth}월엔...`}</NowDate>
+              <NowDate>{`2024년 9월엔...`}</NowDate>
               <ImageBox>
                 <img
                   src={
