@@ -29,7 +29,32 @@ const Analysis = () => {
     try {
       const response = await axios.post(
         // `https://j11c201.p.ssafy.io/api/moapay/pay/statistics/consumption`,
-        `/api/moapay/pay/statistics/consumption`,
+        `/api/moapay/pay/statistics/consumption/statistics`,
+        { memberId: id },
+        {
+          withCredentials: true,
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+            "Content-Type": "application/json",
+          },
+        }
+      );
+      const AmountList = response.data.data.monthlyAmounts
+        .reverse()
+        .map((item: { amount: number }) => item.amount);
+
+      setUserDataList(AmountList);
+    } catch (e) {
+      console.log(e);
+    }
+  };
+
+  //매달 혜택 총액 가져오기
+  const getMonthlyBenefitList = async () => {
+    try {
+      const response = await axios.post(
+        // `https://j11c201.p.ssafy.io/api/moapay/pay/statistics/benefit`,
+        `/api/moapay/pay/statistics/benefit/statistics`,
         { memberId: id },
         {
           withCredentials: true,
@@ -44,31 +69,6 @@ const Analysis = () => {
         .map((item: { benefit: number }) => item.benefit);
 
       setUserDataList(benefitList);
-    } catch (e) {
-      console.log(e);
-    }
-  };
-
-  //매달 혜택 총액 가져오기
-  const getMonthlyBenefitList = async () => {
-    try {
-      const response = await axios.post(
-        // `https://j11c201.p.ssafy.io/api/moapay/pay/statistics/benefit`,
-        `/api/moapay/pay/statistics/benefit`,
-        { memberId: id },
-        {
-          withCredentials: true,
-          headers: {
-            Authorization: `Bearer ${accessToken}`,
-            "Content-Type": "application/json",
-          },
-        }
-      );
-      const AmountList = response.data.data.monthlyAmounts
-        .reverse()
-        .map((item: { benefit: number }) => item.benefit);
-
-      setUserDataList(AmountList);
     } catch (e) {
       console.log(e);
     }

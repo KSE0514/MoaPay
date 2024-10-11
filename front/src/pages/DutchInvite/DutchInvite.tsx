@@ -53,6 +53,7 @@ interface ParticipantInfo {
 }
 
 const DutchInvite = () => {
+  const { id, accessToken, name, phoneNumber } = useAuthStore();
   const nav = useNavigate();
 
   // const { name, id } = useAuthStore();
@@ -60,11 +61,10 @@ const DutchInvite = () => {
 
   // 테스트용 멤버 데이터
   const testUser = {
-    name: "김철수",
-    phoneNumber: "01012345678",
-    memberId: "019250e9-b495-75e3-85d9-8bf4767d9fa5",
+    name: name,
+    phoneNumber: phoneNumber,
+    memberId: id,
   };
-
 
   const [dutchParticipants, setDutchParticipants] = useState<ParticipantInfo[]>(
     []
@@ -88,7 +88,7 @@ const DutchInvite = () => {
   const [roomId, setRoomId] = useState<string>(
     "ba8deac8-2bb5-40a2-b21f-8cb7d7f13468"
   ); // 방 ID
-  const [memberId, setMemberId] = useState<string>(
+  const [memberId, setMemberId] = useState<string | null>(
     "01923d9f-7b3d-78dd-9f9d-32f85c64fbcd"
   ); // 멤버 ID
   const [roomInfo, setRoomInfo] = useState<DutchPayInfo | undefined>(undefined); // 방 정보
@@ -103,7 +103,7 @@ const DutchInvite = () => {
   const [merchantName, setMerchantName] = useState<string>("Example Merchant"); // 상점 이름
   const [categoryId, setCategoryId] = useState<string>("category"); // 카테고리 ID
   const [totalPrice, setTotalPrice] = useState<number>(10000); // 총 가격
-  const [memberName, setMemberName] = useState<string>("");
+  const [memberName, setMemberName] = useState<string | null>("");
 
   const [requestId, setRequestId] = useState<string>("");
 
@@ -123,14 +123,20 @@ const DutchInvite = () => {
     const categoryID = parts[parts.length - 5]; // 마지막에서 다섯 번째 요소가 categoryId
     const totalPRICE = parts[parts.length - 6]; // 마지막에서 여섯 번째 요소가 totalPrice
     const orderID = parts[parts.length - 7]; // 마지막에서 여섯 번째 요소가 orderId
-    
+
+    localStorage.setItem("orderId", orderID);
+    localStorage.setItem("merchantId", merchantID);
+    localStorage.setItem("requestId", requestID);
+    localStorage.setItem("totalPrice", totalPRICE);
+    localStorage.setItem("categoryId", categoryID);
+
     console.log("joinRoomId : ", joinRoomId); // "76735551-df91-4f94-9bc5-cc1895587aaf"
     setRoomId(joinRoomId);
     setMexMember(Number(maxMemNum));
     setRequestId(requestID);
     setMerchantId(merchantID);
     setCategoryId(categoryID);
-    console.log(totalPRICE)
+    console.log(totalPRICE);
     setTotalPrice(Number(totalPRICE));
     setOrderId(orderID);
 
@@ -139,8 +145,7 @@ const DutchInvite = () => {
 
   useEffect(() => {
     // 만약 isHost === true이면 setProcess(3), setIsAccept(true);
-
-  }, [])
+  }, []);
 
   // useEffect(() => {
   //   if (dutchParticipants[0].status === "PROGRESS") {
@@ -156,9 +161,9 @@ const DutchInvite = () => {
   const getRoomInfo = async (roomid: string) => {
     try {
       const response = await axios.get(
-        `http://localhost:18020/moapay/core/dutchpay/getDutchRoomInfo/` +
-          roomid,
-        // `api/moapay/core/dutchpay/getDutchRoomInfo/` + roomid,
+        // `http://localhost:18020/moapay/core/dutchpay/getDutchRoomInfo/` +
+        //   roomid,
+        `api/moapay/core/dutchpay/getDutchRoomInfo/` + roomid,
         {
           withCredentials: true,
         }
@@ -177,6 +182,17 @@ const DutchInvite = () => {
       // }))
       //   setDutchParticipants(PropsParticipants)
       console.log("참여중인 사람", response.data.data.dutchPayList);
+
+      localStorage.setItem("dutchRoomId", roomid);
+
+      for (let i = 0; i < response.data.data.dutchPayList.length; i++) {
+        if (response.data.data.dutchPayList[i].memberId == id) {
+          localStorage.setItem(
+            "dutchPayId",
+            response.data.data.dutchPayList[i].uuid
+          );
+        }
+      }
     } catch (err) {
       console.log("에러 발생:", err);
       console.log("getRoomInfo-방 정보 조회 함수 에러");
@@ -351,7 +367,18 @@ const DutchInvite = () => {
     // 서버의 응답을 받을 구독 설정
     stompClient.subscribe(`/sub/dutch-room/${roomId}`, (message) => {
       const response: ParticipantInfo[] = JSON.parse(message.body); // 서버에서 받은 응답 메시지를 JSON으로 파싱
-      // console.log("Participants received:", response);
+      console.log("Participants received:", response);
+
+      for (let i = 0; i < response.length; i++) {
+        if (id == null) {
+          localStorage.setItem("dutchPayId", response[1].uuid);
+          break;
+        }
+
+        if (response[i].memberId == id) {
+          localStorage.setItem("dutchPayId", response[i].uuid);
+        }
+      }
 
       // 필터링하여 필요한 정보만 포함하도록 가공
       const filteredParticipants = response.map((participant, index) => ({
@@ -369,11 +396,20 @@ const DutchInvite = () => {
     });
   };
 
+  const handleFinish = () => {
+    console.log("결제 완료!");
+    // 결제 완료 후 처리할 로직을 추가하세요.
+  };
+
   // WebSocket 연결 설정
   // TODO: 최현석
   const connectWebSocket = () => {
     const client = new Client({
-      brokerURL: "ws://localhost:18020/moapay/core/ws/dutchpay", // WebSocket URL
+      // brokerURL: "ws://localhost:18020/moapay/core/ws/dutchpay", // WebSocket URL
+      brokerURL: "wss://j11c201.p.ssafy.io/api/moapay/core/ws/dutchpay", // WebSocket URL
+      connectHeaders: {
+        Authorization: "Bearer " + accessToken, // 여기에서 JWT 토큰을 추가합니다.
+      },
       onConnect: (frame) => {
         console.log("Connected: " + frame);
         // 방 참여 시 메시지 구독
@@ -595,7 +631,14 @@ const DutchInvite = () => {
                 totalPrice={totalPrice}
               />
             ) : null}
-            {process === 2 ? <Payment onClick={onClickPaymentBtn} confirmAmount={confirmAmount} /> : null}
+            {/* //TODO : 바꾸기 */}
+            {process === 2 ? (
+              <Payment
+                onClick={onClickPaymentBtn}
+                confirmAmount={confirmAmount}
+                onFinish={handleFinish}
+              />
+            ) : null}
             {process === 3 ? (
               <DutchWaiting>
                 <div>
@@ -697,71 +740,6 @@ const DutchInvite = () => {
               </div>
             </Modal>
           )}
-
-          <div>
-            <h1>Dutch Pay Test Client</h1>
-
-            <h2>Create Room</h2>
-
-            {/* <input
-        type="number"
-        placeholder="Member Count"
-        value={maxMember}
-        onChange={(e) => setMemberCnt(Number(e.target.value))}
-      /> */}
-            <p>Order ID: {orderId}</p>
-            <p>Merchant ID: {merchantId}</p>
-            <p>Merchant Name: {merchantName}</p>
-            <p>Category ID: {categoryId}</p>
-            <input
-              type="number"
-              placeholder="Total Price"
-              value={totalPrice}
-              onChange={(e) => setTotalPrice(Number(e.target.value))}
-            />
-            {/* <button onClick={createRoom}>Create Room</button>
-      {joinUrl && (
-        <p>
-          Join URL: <a href={joinUrl}>{joinUrl}</a>
-        </p>
-      )} */}
-
-            <h2>Join Room</h2>
-            <input
-              type="text"
-              value={memberName}
-              onChange={(e) => setMemberName(e.target.value)} // 멤버 ID 수정 가능하도록 설정
-            />
-            <br></br>
-            <p>Member ID:</p>
-            <input
-              type="text"
-              value={memberId}
-              onChange={(e) => setMemberId(e.target.value)} // 멤버 ID 수정 가능하도록 설정
-            />
-            <br></br>
-            <p>룸 UUID</p>
-            <input
-              type="text"
-              placeholder="Room ID"
-              value={roomId}
-              onChange={(e) => setRoomId(e.target.value)}
-            />
-            <br />
-            <br />
-            <button onClick={connectWebSocket}>Connect WebSocket</button>
-            <button onClick={joinRoom}>Join Room</button>
-            <button onClick={leaveRoom}>Leave Room</button>
-            <button onClick={check}>Check</button>
-            <button onClick={confirm}>Confirm</button>
-
-            {roomInfo && (
-              <div>
-                <h3>Room Info:</h3>
-                <pre>{JSON.stringify(roomInfo, null, 2)}</pre>
-              </div>
-            )}
-          </div>
         </Wrapper>
       ) : (
         <WaitingWrapper>
@@ -779,9 +757,9 @@ const DutchInvite = () => {
           </WaitingTop>
           <WaitingMain>
             {/* 주최자 이름을 어떻게 들고와야 하는가... */}
-            {dutchPayListInfo[0]? 
-            <div>'{dutchPayListInfo[0].memberName}'님이</div>
-            : null}
+            {dutchPayListInfo[0] ? (
+              <div>'{dutchPayListInfo[0].memberName}'님이</div>
+            ) : null}
             {/* <div>'' 님이</div> */}
             <div>더치페이를</div>
             <div>신청했습니다.</div>

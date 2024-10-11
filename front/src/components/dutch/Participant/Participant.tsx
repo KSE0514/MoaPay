@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import SquareBtn from "../SquareBtn/SquareBtn";
 import Product from "../Product/Product";
-import { PATH } from "./../../../constants/path"
+import { PATH } from "./../../../constants/path";
 import { useAuthStore } from "../../../store/AuthStore";
 
 import line from "./../../../assets/image/dutch_line.png";
@@ -124,29 +124,42 @@ const Participant = ({
     }));
   };
 
-  console.log("totalPrice : ", totalPrice)
+  console.log("totalPrice : ", totalPrice);
+  const [confirmPrice, setConfirmPrice] = useState<number>();
 
   useEffect(() => {
     if (roomInfo && roomInfo.dutchPayList) {
-      console.log(roomInfo);
-  
+      console.log("방 정보 : ", roomInfo);
+
       // roomInfo.dutchPayList를 ParticipantInfo로 변환
       const participantInfoList = convertDutchPayItemsToParticipantInfo(
         roomInfo.dutchPayList
       );
-  
+
+      for (let i = 0; i < roomInfo.dutchPayList.length; i++) {
+        if (id == null) {
+          setConfirmAmount(100000);
+        }
+
+        if (roomInfo.dutchPayList[i].memberId === id) {
+          setConfirmAmount(roomInfo.dutchPayList[i].amount ?? 0);
+        }
+      }
+
+      console.log("==============", roomInfo.totalPrice);
+      setConfirmPrice(roomInfo.totalPrice);
+
       // 변환된 리스트를 setDutchParticipants로 설정
       setDutchParticipants(participantInfoList);
-  
+
       // roomInfo가 null이 아닐 때 실행할 추가 작업
     } else {
       console.warn("roomInfo is null");
     }
+  }, [roomInfo]);
 
-  }, [roomInfo])
-
-  const nav = useNavigate()
-  const { name, id } = useAuthStore()
+  const nav = useNavigate();
+  const { name, id } = useAuthStore();
 
   // const [participants, setParticipants] = useState([])
   const [isHost, setIsHost] = useState<boolean>(false);
@@ -156,7 +169,10 @@ const Participant = ({
 
   useEffect(() => {
     // totalPrice는 숫자형으로 변환하되, 유효하지 않을 경우 0으로 설정
-    const storedTotalPrice = parseInt(localStorage.getItem("totalPrice") || "0", 10);
+    const storedTotalPrice = parseInt(
+      localStorage.getItem("totalPrice") || "0",
+      10
+    );
     const validatedTotalPrice = isNaN(storedTotalPrice) ? 0 : storedTotalPrice;
 
     setPrice(validatedTotalPrice);
@@ -164,26 +180,7 @@ const Participant = ({
 
     // 값 로그로 출력
     console.log("Total Price:", localStorage.getItem("totalPrice"));
-
-
   }, []);
-  // const [participantPrice, setParticipantsPrice] = useState<number>(0) // 참가자 자동 배분 결제금
-  // 테스트용 데이터_ 후에 지울 예정
-  // const [participants, setParticipants] = useState<Participant[]>([
-  //   {name: '정유진', id:1, amount: '',
-  //   },
-  //   {name: '이대현', id:2, amount: '',
-  //   },
-  //   {name: '주수아', id:3, amount: '',
-  //   },
-  // ])
-
-  // 참가자 정보 가져오기(방 정보 불러오기를 통해 참가자 리스트 조회)
-  // const getDutchRoomData = async () => {
-  //   try{
-  //     const response = await axios.
-  //   }
-  // }
 
   // [미완]특정 참가자 추방(삭제) api 호출 함수_id로 삭제하게 될 것 같아 id를 인자로 넘겨놓음(나중에 다시 체크하기)
   const onDelete = async (id: number) => {
@@ -224,26 +221,26 @@ const Participant = ({
     });
   };
 
-  const getDutchAmount = async () => {
-    const requestBody = {
-      roomId : roomId || null,
-      memberId: id || null,
-    }
+  // const getDutchAmount = async () => {
+  //   const requestBody = {
+  //     roomId: roomId || null,
+  //     memberId: id || null,
+  //   };
 
-    console.log(requestBody);
+  //   console.log(requestBody);
 
-    try {
-      const response = await axios.post(
-        "http://localhost:18020/moapay/core/dutchpay/getMyPrice",
-        requestBody
-      );
+  //   try {
+  //     const response = await axios.post(
+  //       "http://localhost:18020/moapay/core/dutchpay/getMyPrice",
+  //       requestBody
+  //     );
 
-      console.log("getDutchAmount 응답 결과:", response.data.data.price)
-      setConfirmAmount(response.data.data.price)
-    } catch (err) {
-      console.error("결제금 조회 에러 발생:", err)
-    }
-  }
+  //     console.log("getDutchAmount 응답 결과:", response.data.data.price);
+  //     setConfirmAmount(response.data.data.price);
+  //   } catch (err) {
+  //     console.error("결제금 조회 에러 발생:", err);
+  //   }
+  // };
 
   // 결제 요청 버튼을 눌렀을 시
   const onClickRequest = async () => {
@@ -266,18 +263,29 @@ const Participant = ({
       }
       await confirm();
 
-      
-
       console.log("컨펌 후 확인용", participants);
-      getDutchAmount() // 주최자 결제금 조회
+
+      // 예시: participants 배열과 id 값이 주어졌다고 가정
+      for (let i = 0; i < participants.length; i++) {
+        if (participants[i].memberId === id) {
+          // amount가 null이 아닐 때만 confirmAmount 설정
+
+          localStorage.setItem("dutchPayId", participants[i].uuid.toString());
+
+          if (participants[i].amount !== null) {
+            setConfirmAmount(participants[i].amount ?? -1);
+          }
+        }
+      }
+
+      // getDutchAmount(); // 주최자 결제금 조회
     }
 
     // setConfirmAmount((participants[0].amount)) // 주최자 결제금 저장
 
     // leaveRoom()
     // nav(`/dutchpay/invite/${maxNum}/${roomId}`) // 넘어갈 때 local storage에서 maxMember 불러오고 roomid도 넘겨줘야 함
-    
-    
+
     // // 결제 요청 시 모든 참가자의 amount가 입력되었는지 확인
     // const isAnyamountEmpty = participants.some(participant => participant.amount === '');
 
@@ -291,7 +299,7 @@ const Participant = ({
   };
 
   const onPaymentStart = () => {
-    getDutchAmount() // 참가자 결제금 조회
+    // getDutchAmount(); // 참가자 결제금 조회
 
     if (setProcess) {
       setProcess(2); // 참가자 결제 페이지로 이동
@@ -320,14 +328,14 @@ const Participant = ({
         <>
           {/* 더치페이 하여 구매할 상품 정보 */}
           <Product
-            productName={"새콤달콤 티니핑 시즌4 하츄핑 꽃다발 봉제 인형"}
+            productName={" BESPOKE 냉장고 4도어 키친핏 615L (UV탈취)"}
             productUrl={
               "https://www.ssg.com/item/itemView.ssg?itemId=1000566517100"
             }
           />
 
           {/* <div>총 금액: {prduct_price}원</div> */}
-          <Price>총 금액: {price.toLocaleString()} 원</Price>
+          <Price>총 금액: {price} 원</Price>
 
           {/* 구분 점선 */}
           <img src={line} />
@@ -370,7 +378,9 @@ const Participant = ({
                 )}
                 {
                   // !isHost&&
-                  (participant.index === 0 || !isHost) && (!dutchStart)&& <div></div>
+                  (participant.index === 0 || !isHost) && !dutchStart && (
+                    <div></div>
+                  )
                 }
 
                 {/* 해당 사용자가 지불해야 할 금액 */}

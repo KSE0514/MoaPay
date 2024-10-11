@@ -29,6 +29,7 @@ import { useAuthStore } from "../../store/AuthStore";
 const Statistics = () => {
   const { id, accessToken, name } = useAuthStore();
 
+  const [gender, setGender] = useState<string>("");
   const navigator = useNavigate();
   const location = useLocation();
   const paths = [
@@ -176,8 +177,15 @@ const Statistics = () => {
       }
     } else if (index == 2) {
       //나의 해당 월 사용량 가져오기
-      setSelectedYear(new Date().getFullYear());
-      setSelectedMonth(new Date().getMonth() + 1);
+      setSelectedYear(
+        new Date().getMonth() + 1 === 1
+          ? new Date().getFullYear() - 1
+          : new Date().getFullYear()
+      );
+      //저번달 소비로 가져오기
+      setSelectedMonth(
+        new Date().getMonth() + 1 === 1 ? 12 : new Date().getMonth()
+      );
       getConsumptionData();
       //또래 비교금액 가져오기
       const response = await axios.post(
@@ -192,7 +200,12 @@ const Statistics = () => {
           },
         }
       );
+      console.log(
+        "비교 금액 구하기",
+        calculatedPrice - response.data.data.average
+      );
       setComparisonAmount(calculatedPrice - response.data.data.average);
+      setGender(response.data.data.gender == "F" ? "여" : "남");
       setMode("BarGraph");
       navigator(paths[index]);
     } else {
@@ -316,9 +329,7 @@ const Statistics = () => {
           )}
           {mode === "BarGraph" && (
             <TopWrapper>
-              <NowDate>{`${new Date().getFullYear()}년 ${String(
-                new Date().getMonth() + 1
-              )}월엔...`}</NowDate>
+              <NowDate>{`2024년 9월엔...`}</NowDate>
               <ImageBox>
                 <img
                   src={
@@ -329,7 +340,7 @@ const Statistics = () => {
                 ></img>
               </ImageBox>
               <TextBox>
-                {`${name}님은 또래 남성에 비해\n${Math.abs(
+                {`${name}님은 또래 ${gender}성에 비해\n${Math.abs(
                   comparisonAmount
                 ).toLocaleString()}원 ${
                   comparisonAmount > 0 ? "더 사용했어요" : "덜 사용했어요"
@@ -350,28 +361,40 @@ const Statistics = () => {
                 {new Date().getMonth() + 1}월 목표 중 남은 금액
               </p>
               <div className="price">
-                <p>{savingUse}</p>
+                <p>{savingUse.toLocaleString()}</p>
                 <p>/</p>
                 <p>{savingGoal.toLocaleString()}원</p>
               </div>
               <div className="sub">
                 <div>
                   <img src="/assets/image/prinrefacezoom.png" />
-                  <p>
-                    목표 금액의{" "}
-                    <span style={{ color: "red " }}>
-                      {Math.round((savingUse / savingGoal) * 100)}%
-                    </span>
-                    를 썼어요.
-                    <br />
-                    앞으로 하루{" "}
-                    <span style={{ color: "#4258ff " }}>
-                      {(savingGoal - savingUse) /
-                        (daysLeft === 0 ? 1 : daysLeft)}
-                      원
-                    </span>
-                    만 쓰면 돼요.
-                  </p>
+                  {Math.round((savingUse / savingGoal) * 100) > 100 ? (
+                    <>
+                      <p>
+                        목표 금액보다 더 사용했어요
+                        <br />
+                        불필요한 지출을 줄여보는게 어떨까요?
+                      </p>
+                    </>
+                  ) : (
+                    <>
+                      <p>
+                        목표 금액의{" "}
+                        <span style={{ color: "red " }}>
+                          {Math.round((savingUse / savingGoal) * 100)}%
+                        </span>
+                        를 썼어요.
+                        <br />
+                        앞으로 하루{" "}
+                        <span style={{ color: "#4258ff " }}>
+                          {(savingGoal - savingUse) /
+                            (daysLeft === 0 ? 1 : daysLeft)}
+                          원
+                        </span>
+                        만 쓰면 돼요.
+                      </p>
+                    </>
+                  )}
                 </div>
               </div>
             </div>
