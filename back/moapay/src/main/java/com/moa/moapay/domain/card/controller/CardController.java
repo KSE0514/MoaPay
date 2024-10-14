@@ -8,6 +8,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.coyote.Response;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -100,5 +101,13 @@ public class CardController {
     public ResponseEntity<List<GetMemberCardsDto>> getMemberCard(@Valid @RequestBody UUID memberId){
         List<GetMemberCardsDto> cards= myCardService.getMemberCard(memberId);
         return ResponseEntity.ok(cards);
+    }
+
+    @GetMapping("/initialize")
+    public ResponseEntity<ResultResponse> initialize() {
+        log.info("initialize card amount and benefit usage");
+        myCardService.initialize();
+        ResultResponse resultResponse = ResultResponse.of(HttpStatus.OK, "카드 사용량을 초기화하였습니다.");
+        return ResponseEntity.status(resultResponse.getStatus()).body(resultResponse);
     }
 }

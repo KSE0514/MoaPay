@@ -75,5 +75,13 @@ public class CardController {
         return ResponseEntity.status(resultResponse.getStatus()).body(resultResponse);
     }
 
+    @GetMapping("/initialize")
+    public ResponseEntity<ResultResponse> initialize() {
+        log.info("initialize card amount and benefit usage");
+        cardService.initialize();
+        ResultResponse resultResponse = ResultResponse.of(HttpStatus.OK, "카드 사용량을 초기화하였습니다.");
+        return ResponseEntity.status(resultResponse.getStatus()).body(resultResponse);
+    }
+
 
 }
