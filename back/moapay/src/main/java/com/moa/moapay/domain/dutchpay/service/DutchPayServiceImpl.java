@@ -303,6 +303,7 @@ public class DutchPayServiceImpl implements DutchPayService {
                 FCMMessageDto fcm = FCMMessageDto.builder()
                         .memberId(dutchPay.getMemberId())
                         .title("MoaPay")
+                        .roomId(byDutchUuid.getUuid())
                         .message("더치페이가 중단 되었습니다.")
                         .build();
                 fcmService.pushNotification(fcm);
@@ -313,6 +314,7 @@ public class DutchPayServiceImpl implements DutchPayService {
             FCMMessageDto fcm = FCMMessageDto.builder()
                     .memberId(byUuid.getMemberId())
                     .title("MoaPay")
+                    .roomId(byDutchUuid.getUuid())
                     .message("결제 실패")
                     .build();
             fcmService.pushNotification(fcm);
@@ -344,11 +346,12 @@ public class DutchPayServiceImpl implements DutchPayService {
                     flag = false;
                 }
 
-                log.info("더치페이 : {}", dutchPay.toString());
+                log.info("더치페이 : {}", dutchPay.getPayStatus());
 
                 FCMMessageDto fcmMessageDto = FCMMessageDto.builder()
                         .memberId(dutchPay.getMemberId())
                         .title("MoaPay")
+                        .roomId(byDutchUuid.getUuid())
                         .message(dutchPayMember.getMemberName() + " 님의 더치페이 결제가 완료되었습니다.")
                         .build();
                 fcmService.pushNotification(fcmMessageDto);
@@ -360,6 +363,7 @@ public class DutchPayServiceImpl implements DutchPayService {
                     FCMMessageDto fcmMessageDto = FCMMessageDto.builder()
                             .memberId(dutchPay.getMemberId())
                             .title("MoaPay")
+                            .roomId(byDutchUuid.getUuid())
                             .message("더치페이가 완료되었습니다.")
                             .build();
                     fcmService.pushNotification(fcmMessageDto);

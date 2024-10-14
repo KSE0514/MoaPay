@@ -293,10 +293,13 @@ const Home = () => {
 
       notification.onclick = (event) => {
         event.preventDefault(); // 기본 클릭 동작 방지 (알림 닫기 방지)
-        window.open(
-          payload.data?.click_action ?? "https://default-url.com",
-          "_blank"
-        );
+        // 더치페이 결과 화면으로 이동 (예: /dutch-pay/result/{dutchUuid})
+        const dutchUuid = payload.data?.dutchUuid; // 더치페이 UUID가 payload 데이터에 있다고 가정
+        if (dutchUuid) {
+          navigate(`/dutch-pay/result/${dutchUuid}`);
+        } else {
+          console.error("DutchPay UUID not found in payload.");
+        }
       };
     });
 

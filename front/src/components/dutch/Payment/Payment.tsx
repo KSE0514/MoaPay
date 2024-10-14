@@ -10,6 +10,7 @@ import testCard2 from "./../../../assets/image/cards/신용카드이미지/14_JA
 import { Card } from "../../../store/CardStore";
 import { useCardStore } from "../../../store/CardStore";
 import { useAuthStore } from "../../../store/AuthStore";
+import { v4 as uuidv4 } from "uuid"; // ES Modules
 
 import {
   Wrapper,
@@ -23,7 +24,7 @@ import {
 import axios from "axios";
 import apiClient from "../../../axios";
 
-apiClient.get('/endpoint') // https://your-api-base-url.com/endpoint
+apiClient.get("/endpoint"); // https://your-api-base-url.com/endpoint
 
 const testMainCard = {
   index: 0,
@@ -40,9 +41,11 @@ interface PaymentProps {
   onClick: () => void;
   confirmAmount: number;
   onFinish: () => void;
+  merchantName: string;
+  merchantThumbnailUrl: string;
 }
 
-const Payment = ({ onClick, confirmAmount, onFinish }: PaymentProps) => {
+const Payment = ({ onClick, confirmAmount, onFinish, merchantName, merchantThumbnailUrl }: PaymentProps) => {
   const { accessToken, id, paymentType } = useAuthStore();
   const cardList = useCardStore((state) => state.cardList);
 
@@ -75,7 +78,7 @@ const Payment = ({ onClick, confirmAmount, onFinish }: PaymentProps) => {
     setTotalPrice(validatedTotalPrice);
     setCategoryId(localStorage.getItem("categoryId") || "");
     setMerchantId(localStorage.getItem("merchantId") || "");
-    setRequestId(localStorage.getItem("requestId") || "");
+    setRequestId(settingStoreRequestId() || "");
 
     setDutchRoomId(localStorage.getItem("dutchRoomId") || "");
     // 값 로그로 출력
@@ -99,6 +102,12 @@ const Payment = ({ onClick, confirmAmount, onFinish }: PaymentProps) => {
       }
     }
   }, []);
+
+  const settingStoreRequestId = (): string => {
+    const newRequestId = uuidv4();
+    localStorage.setItem("requestId", newRequestId);
+    return newRequestId;
+  };
 
   // 카드 가로, 세로 길이에 따른 회전 여부 판단 핸들러
   const handleImageLoad = (
@@ -261,9 +270,9 @@ const Payment = ({ onClick, confirmAmount, onFinish }: PaymentProps) => {
     <Wrapper>
       {/* 상품 이름 및 경로를 어떻게 가져올 것인지에 대해서 생각해봐야 함 */}
       <Product
-        productName={"새콤달콤 티니핑 시즌4 하츄핑 꽃다발 봉제 인형"}
+        productName={merchantName}
         productUrl={
-          "https://www.ssg.com/item/itemView.ssg?itemId=1000566517100"
+          merchantThumbnailUrl
         }
       />
 
@@ -271,7 +280,7 @@ const Payment = ({ onClick, confirmAmount, onFinish }: PaymentProps) => {
       <Price>총 금액: {totalPrice.toLocaleString()} 원</Price>
 
       {/* 구분 점선 */}
-      <img src={line} style={{width: '100%'}} />
+      <img src={line} style={{ width: "100%" }} />
 
       <CardView>
         <CardInfo>

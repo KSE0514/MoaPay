@@ -10,8 +10,9 @@ import { useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 import axios from "axios";
 import apiClient from "../../axios";
+import DutchComplite from "../../pages/DutchComplite/DutchComplite";
 
-apiClient.get('/endpoint') // https://your-api-base-url.com/endpoint
+apiClient.get("/endpoint"); // https://your-api-base-url.com/endpoint
 
 import { Client } from "@stomp/stompjs";
 import { PATH } from "../../constants/path";
@@ -150,6 +151,10 @@ const DutchInvite = () => {
   useEffect(() => {
     // 만약 isHost === true이면 setProcess(3), setIsAccept(true);
   }, []);
+
+  const goComplite = () => {
+    setProcess(6);
+  };
 
   // useEffect(() => {
   //   if (dutchParticipants[0].status === "PROGRESS") {
@@ -403,6 +408,7 @@ const DutchInvite = () => {
   const handleFinish = () => {
     console.log("결제 완료!");
     // 결제 완료 후 처리할 로직을 추가하세요.
+    setProcess(5);
   };
 
   // WebSocket 연결 설정
@@ -633,6 +639,7 @@ const DutchInvite = () => {
                 roomInfo={roomInfo}
                 setConfirmAmount={setConfirmAmount}
                 totalPrice={totalPrice}
+                isHostProp={false}
               />
             ) : null}
             {/* //TODO : 바꾸기 */}
@@ -683,12 +690,17 @@ const DutchInvite = () => {
                       <path d="M 20.738281 5.9941406 A 1.250125 1.250125 0 0 0 19.878906 6.3730469 L 9 17.234375 L 4.1152344 12.361328 A 1.250125 1.250125 0 1 0 2.3496094 14.130859 L 8.1171875 19.884766 A 1.250125 1.250125 0 0 0 9.8828125 19.884766 L 21.644531 8.140625 A 1.250125 1.250125 0 0 0 20.738281 5.9941406 z"></path>
                     </svg>
                   </div>
-                  <div>더치페이 완료!</div>
+                  <div>결제 완료!</div>
                 </FinContent>
                 <Bottom>
                   <Btn onClick={goHome}>홈으로 돌아가기</Btn>
+                  <Btn onClick={goComplite}>더치페이 현황</Btn>
                 </Bottom>
               </DutchFin>
+            ) : null}
+            {/* //TODO: 여기 바꾸기 */}
+            {process === 6 ? (
+              <DutchComplite roomId={roomId}></DutchComplite>
             ) : null}
           </Main>
 

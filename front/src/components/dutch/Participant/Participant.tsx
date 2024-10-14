@@ -61,6 +61,9 @@ interface ParticipantProps {
   roomInfo?: DutchPayInfo;
   setConfirmAmount: (amount: number) => void;
   totalPrice: number;
+  isHostProp: boolean;
+  merchantName: string;
+  merchantThumbnailUrl: string;
 }
 
 type UUID = string; // UUID를 문자열로 간주
@@ -113,6 +116,9 @@ const Participant = ({
   roomInfo,
   totalPrice,
   setConfirmAmount,
+  isHostProp,
+  merchantName,
+  merchantThumbnailUrl,
 }: ParticipantProps) => {
   const convertDutchPayItemsToParticipantInfo = (
     items: DutchPayItem[]
@@ -318,7 +324,8 @@ const Participant = ({
 
   useEffect(() => {
     setDutchStart(false);
-    setIsHost(JSON.parse(localStorage.getItem("isHost") || "false")); // localStorage에서 가져오는 코드
+    setIsHost(isHostProp);
+    // setIsHost(JSON.parse(localStorage.getItem("isHost") || "false")); // localStorage에서 가져오는 코드
 
     console.log(roomInfo);
   }, []);
@@ -331,9 +338,9 @@ const Participant = ({
         <>
           {/* 더치페이 하여 구매할 상품 정보 */}
           <Product
-            productName={" BESPOKE 냉장고 4도어 키친핏 615L (UV탈취)"}
+            productName={merchantName}
             productUrl={
-              "https://www.ssg.com/item/itemView.ssg?itemId=1000566517100"
+              merchantThumbnailUrl
             }
           />
 

@@ -66,7 +66,7 @@ export const WaitingMain = styled.div`
 export const Wrapper = styled.div`
   position: relative;
   height: 100vh;
-  overflow: auto; // [추후 삭제 예정]stomp확인용으로 추가한 것
+  // overflow: auto; // [추후 삭제 예정]stomp확인용으로 추가한 것
 `
 
 export const Top = styled.div`

@@ -7,6 +7,8 @@ import { Client } from "@stomp/stompjs";
 import { useAuthStore } from "../../store/AuthStore";
 import Payment from "../../components/dutch/Payment/Payment";
 import apiClient from "../../axios";
+import DutchComplite from "../../pages/DutchComplite/DutchComplite";
+import { v4 as uuidv4 } from "uuid"; // ES Modules
 
 apiClient.get("/endpoint"); // https://your-api-base-url.com/endpoint
 
@@ -97,6 +99,10 @@ const Dutchpay = () => {
   // 테스트용 변수... 나중에 지울 예정(host)
   const [isHost, setIsHost] = useState<boolean>(true); // 쓰진 않을 것 같음...
 
+  const goComplite = () => {
+    setProcess(6);
+  };
+
   // // 참여자 수 바인딩
   // const onChangeMember = (e: React.ChangeEvent<HTMLInputElement>) => {
   //   console.log("확인용",e.target.value)
@@ -168,6 +174,7 @@ const Dutchpay = () => {
     "01923d9f-7b3d-7a9e-a0b3-24d7970f90d4"
   ); // 상점 ID
   const [merchantName, setMerchantName] = useState<string>("Example Merchant"); // 상점 이름
+  const [merchantThumbnailUrl, setMerchantThumbnailUrl] = useState<string>('')
   const [categoryId, setCategoryId] = useState<string>("category"); // 카테고리 ID
   const [totalPrice, setTotalPrice] = useState<number>(0); // 총 가격
   // const [memberName, setMemberName] = useState<string>("유저이름");
@@ -190,14 +197,24 @@ const Dutchpay = () => {
     setTotalPrice(validatedTotalPrice);
     setCategoryId(localStorage.getItem("categoryId") || "");
     setMerchantId(localStorage.getItem("merchantId") || "");
-    setRequestId(localStorage.getItem("requestId") || "");
+    setRequestId(settingStoreRequestId() || "");
+
     // 값 로그로 출력
     console.log("Order ID:", localStorage.getItem("orderId"));
     console.log("Total Price:", localStorage.getItem("totalPrice"));
     console.log("Category ID:", localStorage.getItem("categoryId"));
     console.log("Merchant ID:", localStorage.getItem("merchantId"));
     console.log("Request ID:", localStorage.getItem("requestId"));
+
+    // 상품 정보 조회
+    loadProduct(localStorage.getItem("orderId") || "")
   }, []);
+
+  const settingStoreRequestId = (): string => {
+    const newRequestId = uuidv4();
+    localStorage.setItem("requestId", newRequestId);
+    return newRequestId;
+  };
 
   // 방 생성 함수
   // TODO : 해결해주세요
@@ -410,6 +427,28 @@ const Dutchpay = () => {
   }, [stompClient]);
 
   /////////////////////////////////////////////
+
+  const loadProduct = async (orderId: string) => {
+    try {
+      const response = await apiClient.get(
+        `/api/moapay/core/dutchpay/orderInfo/${orderId}`,
+        {
+          withCredentials: true,
+          headers: {
+            Authorization: `Bearer ${accessToken}`, // Authorization 헤더에 Bearer 토큰 추가
+          },
+        });
+      console.log("상품 정보 조회 성공", response.data.data)
+      const productInfo = response.data.data
+      setMerchantName(productInfo.itemNames[0])
+      setMerchantThumbnailUrl(productInfo.thumbnailUrl)
+
+    } catch (error) {
+      console.error("에러 발생", error)
+      console.log("상품조회 실패")
+    }
+  }
+
   useEffect(() => {
     console.log("hello..?");
     console.log("Dutchpay 페이지 로드");
@@ -629,6 +668,9 @@ const Dutchpay = () => {
                 process={process}
                 setConfirmAmount={setConfirmAmount}
                 totalPrice={totalPrice}
+                isHostProp={true}
+                merchantName={merchantName}
+                merchantThumbnailUrl={merchantThumbnailUrl}
               />
             }
           </Main>
@@ -847,51 +889,13 @@ const Dutchpay = () => {
                 </FinContent>
                 <Bottom>
                   <Btn onClick={goHome}>홈으로 돌아가기</Btn>
+                  <Btn onClick={goComplite}>더치페이 현황</Btn>
                 </Bottom>
               </DutchFin>
             ) : null}
+            {/* //TODO: 여기도 바꿔야함 */}
             {process === 6 ? (
-              <div>
-                {/* 다른 사람 결제 대기 화면 */}
-                {/* <div className="container">
-                  <div id="spinner"></div>
-                </div> */}
-                <ParticipantTitle>
-                  참여자({dutchParticipants.length}/{maxMember})
-                </ParticipantTitle>
-                {/* 참가자가 있을 경우에만 출력되도록 */}
-                <PartiList>
-                  {dutchParticipants.length > 0
-                    ? dutchParticipants.map((participant, index) => (
-                        <PartiInfo key={index}>
-                          {/* 랜덤 프로필_랜덤 사진 */}
-                          <div>{participant.status}</div>
-                          {participant.status == "DONE" ? (
-                            <div>완료됬어요</div>
-                          ) : (
-                            true
-                          )}
-                          <div
-                            style={{
-                              border: "2px solid black",
-                              width: "50px",
-                              height: "50px",
-                              borderRadius: "100%",
-                            }}
-                          ></div>
-
-                          <div>{participant.memberName}</div>
-
-                          {
-                            // 이름을 중앙에 오게 하기 위해 추가한 꼼수div...
-                            // (participant.index === 0 || !isHost) &&
-                            <div></div>
-                          }
-                        </PartiInfo>
-                      ))
-                    : true}
-                </PartiList>
-              </div>
+              <DutchComplite roomId={roomId}></DutchComplite>
             ) : null}
           </InviteMain>
         </>
