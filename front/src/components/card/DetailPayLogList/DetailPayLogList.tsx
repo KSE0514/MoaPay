@@ -131,7 +131,7 @@ const DetailPayLogList = ({ payLogList = [] }: DetailPayLogListProps) => {
                     <Content key={logIndex}>
                       <div>
                         <DetailLeft>
-                          <div style={{ backgroundColor: "gray" }}>
+                          <div style={{ backgroundColor: "white" }}>
                             <img
                               ref={(el) => (imgRefs.current[refIndex] = el)}
                               src={getCategoryImage(logItem.categoryId)}
