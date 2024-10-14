@@ -229,12 +229,12 @@ const SelectPaymentType = () => {
 
         // 결제가 완료된 후에는 loading 을 false로 변경하고
         setTimeout(() => {
-          setIsLoading(false);
+          setIsEnd(true);
         }, 2300); // 2000 밀리초 = 2초
         //결과를 보여줄 수 있도록 isEnd를 true로 변경
 
         setTimeout(() => {
-          setIsEnd(true);
+          setIsLoading(false);
         }, 3300);
         // 결제 requestId 삭제하기
         localStorage.removeItem("requestId");
