@@ -26,6 +26,7 @@ const PATH = {
   DUTCHOPEN: "/dutch-open", //nonav
   SELECT_PAYMENT_TYPE: "/select-payment-type",
   ADD_CARD: "/add-card",
+  DUTCH_RESULT: "/dutch-result/:roomId",
 } as const;
 
 export { PATH };

@@ -1,0 +1,232 @@
+import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { PATH } from "../../constants/path";
+import { useAuthStore } from "../../store/AuthStore";
+import apiClient from "../../axios";
+import { AxiosError } from "axios";
+import { useParams } from "react-router-dom";
+import triangle from "./../../assets/image/triangle.png";
+import DutchPayImg from "../../assets/image/DutchPay.gif";
+
+import Product from "../../components/dutch/Product/Product";
+
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import {
+  faRotateLeft,
+  faCircleCheck,
+  faCircle,
+} from "@fortawesome/free-solid-svg-icons";
+
+import {
+  Container,
+  Header,
+  Button,
+  MemberList,
+  MemberItem,
+  MemberStatus,
+  Wrapper,
+  Main,
+  Reload,
+  BackImg,
+  Merchant,
+} from "./DutchResult.styles"; // 스타일을 임포트
+
+interface DutchPayMember {
+  uuid: string;
+  memberId: string;
+  memberName: string;
+  amount: number | null;
+  status: "DONE" | "READY" | "PROGRESS" | "CANCEL";
+}
+
+interface DutchRoomInfo {
+  dutchUuid: string;
+  memberCnt: number;
+  statusRoom: string;
+  orderId: string;
+  merchantId: string;
+  merchantName: string;
+  categoryId: string;
+  totalPrice: number;
+  dutchPayList: DutchPayMember[];
+}
+
+interface DutchCompliteResponse {
+  status: string;
+  message: string;
+  data: DutchRoomInfo;
+}
+
+interface DutchCompliteProps {
+  roomid: string; // roomId를 props로 받음
+}
+
+interface OrderInfo {
+  thumbnailUrl: string;
+  itemNames: string[];
+  url: string;
+}
+
+const DutchResult = () => {
+  const { roomId } = useParams(); // URL에서 roomId 가져오기
+  const navigate = useNavigate();
+  const [roomInfo, setRoomInfo] = useState<DutchCompliteResponse | null>(null); // 방 정보를 저장하는 state
+  const [orderInfo, setOrderInfo] = useState<OrderInfo | null>(null); // orderInfo 데이터를 저장하는 state
+  const { accessToken, mode, setPaymentType } = useAuthStore();
+  const [orderId, setOrderId] = useState<string | null>(null);
+
+  // 완료된 멤버 수 계산
+  const completedMembers = roomInfo
+    ? roomInfo.data.dutchPayList.filter((member) => member.status === "DONE")
+        .length
+    : 0;
+  const totalMembers = roomInfo ? roomInfo.data.dutchPayList.length : 0;
+
+  // 컴포넌트가 처음 마운트될 때 실행
+  useEffect(() => {
+    getRoomInfo();
+  }, []); // roomId가 변경될 때마다 실행
+
+  useEffect(() => {
+    if (roomInfo?.data.orderId) {
+      setOrderId(roomInfo.data.orderId); // roomInfo에서 orderId를 설정
+      getOrderInfo(roomInfo.data.orderId); // orderInfo를 불러옴
+    }
+  }, [roomInfo]);
+
+  const getOrderInfo = async (orderId: string) => {
+    try {
+      const response = await apiClient.get(
+        // `http://localhost:18020/moapay/core/dutchpay/orderInfo/${orderId}`
+        `api/moapay/core/dutchpay/orderInfo/${orderId}`,
+        {
+          withCredentials: true,
+          headers: {
+            Authorization: `Bearer ${accessToken}`, // Authorization 헤더에 Bearer 토큰 추가
+          },
+        }
+      );
+      if (response?.status === 200) {
+        const orderData = response.data;
+        setOrderInfo(orderData);
+      }
+    } catch (e) {
+      const error = e as AxiosError;
+      console.log(error);
+    }
+  };
+
+  const getRoomInfo = async () => {
+    console.log(roomId);
+    try {
+      const response = await apiClient.get(
+        // `http://localhost:18020/moapay/core/dutchpay/getDutchRoomInfo/${roomId}`
+        `api/moapay/core/dutchpay/getDutchRoomInfo/${roomId}`,
+        {
+          withCredentials: true,
+          headers: {
+            Authorization: `Bearer ${accessToken}`, // Authorization 헤더에 Bearer 토큰 추가
+          },
+        }
+      );
+      if (response?.status === 200) {
+        const roomData = response.data;
+        setRoomInfo(roomData);
+      }
+    } catch (e) {
+      const error = e as AxiosError;
+      console.log(error);
+    }
+  };
+
+  // 버튼 클릭 시 실행될 함수
+  const handleButtonClick = () => {
+    getRoomInfo();
+  };
+
+  return (
+    <Wrapper>
+      <Header>
+        <img src={DutchPayImg} alt="" style={{ width: "150px" }} />
+        <br />
+        더치페이
+        <Reload>
+          <Button onClick={handleButtonClick}>
+            <FontAwesomeIcon icon={faRotateLeft} />
+          </Button>
+        </Reload>
+      </Header>
+
+      {roomInfo ? (
+        <div>
+          <Main>
+            {/* 완료된 멤버 수와 총 멤버 수 표시 */}
+
+            {/* OrderInfo 데이터 렌더링 */}
+            {orderInfo && (
+              <div>
+                <Product
+                  productName={
+                    Array.isArray(orderInfo.itemNames) &&
+                    orderInfo.itemNames.length > 0
+                      ? orderInfo.itemNames[0]
+                      : "삼성 냉장고"
+                  }
+                  productUrl={orderInfo.url || "#"} // URL도 null 체크를 추가
+                />
+              </div>
+            )}
+            <Merchant>
+              <div
+                style={{
+                  fontSize: "30px",
+                  fontWeight: "bold",
+                  margin: "10px",
+                }}
+              >
+                ({completedMembers} / {totalMembers})
+              </div>
+              {/* 총 금액 표시 */}
+              <div style={{ fontSize: "25px" }}>
+                {roomInfo.data.totalPrice} 원
+              </div>
+            </Merchant>
+
+            <MemberList>
+              {roomInfo.data.dutchPayList.map((member) => (
+                <MemberItem key={member.uuid}>
+                  {member.status === "DONE" ? (
+                    <MemberStatus>
+                      <FontAwesomeIcon
+                        icon={faCircleCheck}
+                        style={{ color: "#939cff", fontSize: "25px" }}
+                      />
+                    </MemberStatus>
+                  ) : (
+                    <MemberStatus>
+                      <FontAwesomeIcon
+                        icon={faCircle}
+                        style={{ color: "#e4e6ff", fontSize: "25px" }}
+                      />
+                    </MemberStatus>
+                  )}
+                  {member.memberName} - {member.amount ?? "No Amount"}원
+                </MemberItem>
+              ))}
+            </MemberList>
+          </Main>
+        </div>
+      ) : (
+        <p>방 정보를 불러오는 중...</p>
+      )}
+
+      <BackImg>
+        <img src={triangle} />
+        <img src={triangle} />
+        <img src={triangle} />
+      </BackImg>
+    </Wrapper>
+  );
+};
+
+export default DutchResult;
