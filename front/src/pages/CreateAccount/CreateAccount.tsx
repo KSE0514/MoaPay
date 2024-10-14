@@ -11,6 +11,7 @@ import {
 import { PATH } from "../../constants/path";
 import axios, { AxiosError } from "axios";
 import { useAuthStore } from "../../store/AuthStore";
+import apiClient from "../../axios";
 
 interface JoinUserInfo {
   name: string;
@@ -162,7 +163,7 @@ const CreateAccount = () => {
     }
     // 인증번호 발급하기
     try {
-      await axios.post(
+      await apiClient.post(
         // `${baseUrl}moapay/member/sendSMS`,
         // `https://j11c201.p.ssafy.io/api/moapay/member/sendSMS`,
         `/api/moapay/member/sendSMS`,
@@ -204,7 +205,7 @@ const CreateAccount = () => {
     }
     try {
       // 인증번호 확인하기
-      const response = await axios.post(
+      const response = await apiClient.post(
         // `${baseUrl}moapay/member/verification`,
         // `https://j11c201.p.ssafy.io/api/moapay/member/verification`,
         `/api/moapay/member/verification`,
@@ -249,7 +250,7 @@ const CreateAccount = () => {
     try {
       // 인증번호가 일치하면 존재하는 멤버인지 확인해야함
       // 요청 결과에 따라 비밀번호 로그인 또는 회원가입으로 전달
-      const existUserCheckResponse = await axios.post(
+      const existUserCheckResponse = await apiClient.post(
         `/api/moapay/member/isMember`,
         // `https://j11c201.p.ssafy.io/api/moapay/member/isMember`,
         // `${baseUrl}moapay/member/isMember`,
@@ -301,7 +302,7 @@ const CreateAccount = () => {
     //회원 가입 요청 보내기
     if (!endSMSAuth) return;
     try {
-      const response = await axios.post(
+      const response = await apiClient.post(
         // `${baseUrl}moapay/member/join`,
         // `https://j11c201.p.ssafy.io/api/moapay/member/join`,
         `/api/moapay/member/join`,
@@ -317,7 +318,7 @@ const CreateAccount = () => {
       if (response.status == 200) {
         setUserInfo(response.data.data.id, response.data.data.name);
         //로그인 보내기
-        const loginResponse = await axios.post(
+        const loginResponse = await apiClient.post(
           // `${baseUrl}moapay/member/login`,
           // `https://j11c201.p.ssafy.io/api/moapay/member/login`,
           `/api/moapay/member/login`,

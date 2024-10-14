@@ -4,6 +4,7 @@ import MixedChart from "../../../components/statistics/Chart/BarGraph/BarGraph";
 import Toggle from "../../../../src/components/statistics/Toggle/Toggle";
 import axios from "axios";
 import { useAuthStore } from "../../../store/AuthStore";
+import apiClient from "../../../axios";
 
 const Analysis = () => {
   const { id, accessToken } = useAuthStore();
@@ -27,7 +28,7 @@ const Analysis = () => {
   //매달 소비 총액 가져오기
   const getMonthlyConsumptionList = async () => {
     try {
-      const response = await axios.post(
+      const response = await apiClient.post(
         // `https://j11c201.p.ssafy.io/api/moapay/pay/statistics/consumption`,
         `/api/moapay/pay/statistics/consumption/statistics`,
         { memberId: id },
@@ -52,7 +53,7 @@ const Analysis = () => {
   //매달 혜택 총액 가져오기
   const getMonthlyBenefitList = async () => {
     try {
-      const response = await axios.post(
+      const response = await apiClient.post(
         // `https://j11c201.p.ssafy.io/api/moapay/pay/statistics/benefit`,
         `/api/moapay/pay/statistics/benefit/statistics`,
         { memberId: id },

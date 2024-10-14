@@ -330,13 +330,16 @@ public class DutchPayServiceImpl implements DutchPayService {
             dutchPayRedisRepository.save(dutchUuid.toString(), dutchPayCompleteVo.getRequestId().toString());
 
             boolean flag = true;
+            log.info("DutchPay size() : {}", dutchPayList.size());
+
             for (DutchPay dutchPay : dutchPayList) { // 해당 더치 내역 다돌면서
                 DutchStatus dutchStatus = dutchPay.getPayStatus();
+                if (dutchPay.getUuid().equals(dutchPayCompleteVo.getDutchUuid())) {
+                    log.info("{} 님 더치 완료", dutchPay.getMemberName());
+                    continue;
+                }
                 if(!dutchStatus.equals(DutchStatus.DONE)) {
                     log.info("더치 완료 ?? {}, {}", dutchPay.getMemberName(), dutchPay.getPayStatus());
-                    if(dutchPay.getUuid().equals(dutchPayCompleteVo.getDutchUuid())){
-                        continue;
-                    }
                     flag = false;
                 }
 
@@ -352,7 +355,6 @@ public class DutchPayServiceImpl implements DutchPayService {
 
             if(flag) {
                 log.info("더치페이 완료");
-                // 일단 오류 때문에 넣어둠
                 for(DutchPay dutchPay : dutchPayList) {
                     FCMMessageDto fcmMessageDto = FCMMessageDto.builder()
                             .memberId(dutchPay.getMemberId())
@@ -436,7 +438,9 @@ public class DutchPayServiceImpl implements DutchPayService {
 
         DutchPay dutchPay = dutchPayRepository.findByRoomIdAndMemberId(dutchGetMyPriceRequestDto.getRoomId(), dutchGetMyPriceRequestDto.getMemberId());
 
+        log.info(dutchPay.getAmount().toString());
         long price = dutchPay.getAmount();
+        log.info("price = {}", price);
 
         GetMyPriceResponseDto getMyPriceResponseDto = GetMyPriceResponseDto.builder().price(price).build();
         return getMyPriceResponseDto;

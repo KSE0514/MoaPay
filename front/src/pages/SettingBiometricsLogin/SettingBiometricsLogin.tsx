@@ -113,7 +113,7 @@ const SettingBiometricsLogin = () => {
       <div className="area">
         <Header>
           <h1>생체 인증</h1>
-          <p>인증 정보 등록을 완료해주세요!</p>
+          <p>인증 정보 등록을 완료해주세요</p>
           <div>
             <svg
               xmlns="http://www.w3.org/2000/svg"

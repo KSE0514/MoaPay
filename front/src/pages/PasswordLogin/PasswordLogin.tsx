@@ -17,10 +17,10 @@ import {
 import { PATH } from "../../constants/path";
 import axios from "axios";
 import { useAuthStore } from "../../store/AuthStore";
+import apiClient from "../../axios";
 
 const PasswordLogin: React.FC = () => {
   // const baseUrl = import.meta.env.VITE_BASE_URL;
-  const baseUrl = `http://localhost:8765/`;
   const {
     id,
     mode,
@@ -116,7 +116,7 @@ const PasswordLogin: React.FC = () => {
           console.log(password);
           try {
             // 비밀번호 확인 요청
-            const response = await axios.post(
+            const response = await apiClient.post(
               // `${baseUrl}moapay/member/simple/verify`,
               // `https://j11c201.p.ssafy.io/api/moapay/member/simple/verify`,
               `/api/moapay/member/simple/verify`,
@@ -148,7 +148,7 @@ const PasswordLogin: React.FC = () => {
           console.log("login password");
           console.log(password);
           try {
-            const response = await axios.post(
+            const response = await apiClient.post(
               // `${baseUrl}moapay/member/login`,
               // `https://j11c201.p.ssafy.io/api/moapay/member/login`,
               `/api/moapay/member/login`,
@@ -228,7 +228,7 @@ const PasswordLogin: React.FC = () => {
               console.log("here join password");
               console.log(password);
               //생체정보 설정을 위해 이동 - 선택 가능
-              const response = await axios.post(
+              const response = await apiClient.post(
                 // `${baseUrl}moapay/member/simple/register`,
                 // `https://j11c201.p.ssafy.io/api/moapay/member/simple/register`,
                 `/api/moapay/member/simple/register`,

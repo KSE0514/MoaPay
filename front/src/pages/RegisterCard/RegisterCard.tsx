@@ -14,6 +14,7 @@ import {
 import axios from "axios";
 import { useAuthStore } from "../../store/AuthStore";
 import { useCardStore } from "../../store/CardStore";
+import apiClient from "../../axios";
 
 const RegisterCard: React.FC = () => {
   // const baseUrl = import.meta.env.VITE_BASE_URL;
@@ -67,7 +68,7 @@ const RegisterCard: React.FC = () => {
     setError(false); // 에러 초기화d
     console.log(cardNumber.join(""));
     try {
-      const response = await axios.post(
+      const response = await apiClient.post(
         // `${baseUrl}moapay/core/card/registration`,
         // `https://j11c201.p.ssafy.io/api/moapay/core/card/registration`,
         `/api/moapay/core/card/registration`,

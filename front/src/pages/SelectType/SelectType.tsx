@@ -4,6 +4,7 @@ import axios, { AxiosError } from "axios";
 import { useNavigate } from "react-router-dom";
 import { PATH } from "../../constants/path";
 import { useAuthStore } from "../../store/AuthStore";
+import apiClient from "../../axios";
 
 const SelectType = () => {
   // const baseUrl = import.meta.env.VITE_BASE_URL;
@@ -23,7 +24,7 @@ const SelectType = () => {
   const addType = async () => {
     //요청보내기
     try {
-      const response = await axios.post(
+      const response = await apiClient.post(
         // `${baseUrl}moapay/member/selectType`,
         // `https://j11c201.p.ssafy.io/api/moapay/member/selectType`,
         `/api/moapay/member/selectType`,

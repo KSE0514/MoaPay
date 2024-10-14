@@ -9,7 +9,8 @@ export const Wrapper = styled.div`
       opacity: 1;
     }
   } */
-  background-color: var(--light-purple);
+  /* background-color: var(--light-purple); */
+  background: linear-gradient(120deg, #f1e5ff 6%, #dcbefc 50%, #ffc6ff);
   padding: 20% 10% 20% 10%;
   width: 100%;
   height: 100vh;
@@ -25,7 +26,8 @@ export const Container = styled.div`
   /* border-bottom-right-radius: 0;
   border-bottom-left-radius: 0; */
   padding: 30% 30px;
-  background-color: white;
+  /* background-color: white; */
+  background-color: rgba(255, 255, 255);
   display: flex;
   flex-direction: column;
   align-items: center;
