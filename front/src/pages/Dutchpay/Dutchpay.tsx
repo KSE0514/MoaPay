@@ -220,7 +220,7 @@ const Dutchpay = () => {
 
   const goComplite = () => {
     console.log("dutchRoom ID : ", roomId);
-    nav("/dutch-result", { state: { roomId } });
+    nav(`/dutch-result/${roomId}`);
   };
 
   // 방 생성 함수

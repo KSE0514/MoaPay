@@ -18,6 +18,8 @@ import {
   MainNoBorder,
   Benefits,
   TopContainer,
+  Progress,
+  Bar,
 } from "./UserCardDetail.styles";
 import { useAuthStore } from "../../store/AuthStore";
 import { useParams } from "react-router-dom";
@@ -52,6 +54,8 @@ const UserCardDetail = () => {
   const [tempMonth, setTempMonth] = useState<number>(month);
   const [errorMessage, setErrorMessage] = useState<string>(""); // 오류 메시지 상태
 
+  //막대 바
+  const [progressWidth, setProgressWidth] = useState(0);
   useEffect(() => {
     if (id) {
       setSelectedCard(getCardByUuid(id));
@@ -80,6 +84,12 @@ const UserCardDetail = () => {
         console.log("카드 결제내역 조회 완료");
         setPayLogList(response.data.data.paymentLogs);
         setPayLogResult(response.data.data);
+        // ProgressBar의 너비 계산
+        const selectedCardPerformance = response.data.data.totalBenefit || 0;
+        const totalAmount = response.data.data.totalAmount || 1;
+        console.log(selectedCardPerformance, totalAmount);
+        const calculatedWidth = (totalAmount / selectedCardPerformance) * 100;
+        setProgressWidth(calculatedWidth > 100 ? 100 : calculatedWidth);
       }
     } catch (err) {
       console.error("에러 발생", err);
@@ -207,7 +217,7 @@ const UserCardDetail = () => {
           <CardInfo>
             {/* 이거 다시 돌려야함 */}
             <img
-              src={`/assets/image/longWidth/신용카드이미지/${selectedCard?.cardProduct.cardProductImgUrl}.png`}
+              src={`/assets/image/longHeight/신용카드이미지/${selectedCard?.cardProduct.cardProductImgUrl}.png`}
             />
             {/* {
               <img src="/assets/image/longWidth/신용카드이미지/1_신한카드_Mr.Life.png" />
@@ -218,16 +228,28 @@ const UserCardDetail = () => {
                 <div>{selectedCard?.cardProduct.cardProductCompanyName}</div>
                 <div>{selectedCard?.cardNumber}</div>
               </CardNameInfo>
+              <div className="benefit-area">
+                <p>
+                  받은 혜택 : {payLogResult?.totalBenefit?.toLocaleString()}원
+                </p>
+              </div>
             </div>
           </CardInfo>
           <Benefits>
             <div>
-              실적: {payLogResult?.totalAmount.toLocaleString()} /&nbsp;
-              {selectedCard?.cardProduct.cardProductPerformance.toLocaleString()}
-              원
-            </div>
-            <div style={{ marginLeft: 10 }}>
-              혜택: {payLogResult?.totalBenefit?.toLocaleString()}원
+              <p> 실적 : {payLogResult?.totalAmount.toLocaleString()} </p>
+              <Progress>
+                <Bar
+                  style={{
+                    width: `${progressWidth}%`,
+                    transitionDuration: "2s",
+                    height: "30px",
+                  }}
+                />
+              </Progress>
+              <div className="goal">
+                {selectedCard?.cardProduct.cardProductPerformance.toLocaleString()}
+              </div>
             </div>
           </Benefits>
         </TopContainer>

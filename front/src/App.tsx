@@ -39,6 +39,11 @@ const GlobalStyles = createGlobalStyle`
 
 const Wrapper = styled.div`
   font-family: "Pretendard-Regular";
+
+  /* * {
+    font-family: "Noto Sans KR", sans-serif;
+    font-optical-sizing: auto;
+  } */
 `;
 
 function App() {
