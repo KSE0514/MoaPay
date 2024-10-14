@@ -217,6 +217,7 @@ const UserCardDetail = () => {
           <CardInfo>
             {/* 이거 다시 돌려야함 */}
             <img
+              style={{ marginTop: 10 }}
               src={`/assets/image/longHeight/신용카드이미지/${selectedCard?.cardProduct.cardProductImgUrl}.png`}
             />
             {/* {

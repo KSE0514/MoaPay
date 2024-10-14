@@ -50,6 +50,7 @@ export const Wrapper = styled.div`
   }
 `;
 export const Benefits = styled.div`
+  list-style: none;
   header {
   }
   ul {
