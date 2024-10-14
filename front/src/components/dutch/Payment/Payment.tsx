@@ -21,6 +21,9 @@ import {
   SelectModal,
 } from "./Payment.styles";
 import axios from "axios";
+import apiClient from "../../../axios";
+
+apiClient.get('/endpoint') // https://your-api-base-url.com/endpoint
 
 const testMainCard = {
   index: 0,
@@ -143,7 +146,7 @@ const Payment = ({ onClick, confirmAmount, onFinish }: PaymentProps) => {
         id
       );
 
-      const response = await axios.post(
+      const response = await apiClient.post(
         // `https://j11c201.p.ssafy.io/api/moapay/core/generalpay/pay`,
         `/api/moapay/core/dutchpay/payment`,
         // `http://localhost:8765/moapay/core/generalpay/pay`,
@@ -268,7 +271,7 @@ const Payment = ({ onClick, confirmAmount, onFinish }: PaymentProps) => {
       <Price>총 금액: {totalPrice.toLocaleString()} 원</Price>
 
       {/* 구분 점선 */}
-      <img src={line} />
+      <img src={line} style={{width: '100%'}} />
 
       <CardView>
         <CardInfo>

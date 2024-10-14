@@ -9,6 +9,7 @@ import java.util.UUID;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
+@ToString
 public class DutchGetMyPriceRequestDto {
     private UUID roomId;
     private UUID memberId;
