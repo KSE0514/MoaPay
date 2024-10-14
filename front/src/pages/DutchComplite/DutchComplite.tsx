@@ -22,7 +22,7 @@ const DutchComplite = ({ roomId }: DutchCompliteProps) => {
   const getRoomInfo = async () => {
     try {
       const response = await apiClient.get(
-        `/api/moapay/core/getDutchRoomInfo/${roomId}`,
+        `/api/moapay/core/dutchpay/getDutchRoomInfo/${roomId}`,
         {
           withCredentials: true,
           headers: {
