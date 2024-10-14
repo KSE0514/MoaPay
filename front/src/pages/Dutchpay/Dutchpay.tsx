@@ -515,11 +515,11 @@ const Dutchpay = () => {
   const onClickPaymentBtn = () => {
     // 결제하는 api 작성
 
-    setProcess(3); // 다음 화면으로 전환
+    setProcess(4); // 다음 화면으로 전환
   };
 
   const finish = () => {
-    setProcess(4);
+    setProcess(5);
   };
 
   const onClickRequestUrl = () => {
