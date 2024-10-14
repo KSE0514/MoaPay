@@ -21,9 +21,8 @@ const DutchComplite = ({ roomId }: DutchCompliteProps) => {
 
   const getRoomInfo = async () => {
     try {
-      const response = await apiClient.post(
+      const response = await apiClient.get(
         `/api/moapay/core/getDutchRoomInfo/${roomId}`,
-        {},
         {
           withCredentials: true,
           headers: {
