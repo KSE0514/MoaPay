@@ -3,6 +3,9 @@ import axios from "axios";
 import { initializeApp } from "firebase/app";
 import { getMessaging, getToken, onMessage } from "firebase/messaging";
 import { useAuthStore } from "./store/AuthStore";
+import apiClient from "./axios";
+
+apiClient.get('/endpoint') // https://your-api-base-url.com/endpoint
 // TODO: Add SDKs for Firebase products that you want to use
 // https://firebase.google.com/docs/web/setup#available-libraries
 
@@ -43,7 +46,7 @@ export async function requestPermission(
       // AuthStore에서 사용자 정보 가져오기
 
       // 서버에 토큰 전송
-      const response = await axios.post(
+      const response = await apiClient.post(
         `/api/moapay/core/dutchpay/fcmTokens`,
         {
           token: token, // 푸시 토큰

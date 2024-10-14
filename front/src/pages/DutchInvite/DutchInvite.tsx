@@ -9,6 +9,10 @@ import backImg from "./../../assets/image/dutchheader.png";
 import { useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 import axios from "axios";
+import apiClient from "../../axios";
+
+apiClient.get('/endpoint') // https://your-api-base-url.com/endpoint
+
 import { Client } from "@stomp/stompjs";
 import { PATH } from "../../constants/path";
 import { useAuthStore } from "../../store/AuthStore";
@@ -160,7 +164,7 @@ const DutchInvite = () => {
 
   const getRoomInfo = async (roomid: string) => {
     try {
-      const response = await axios.get(
+      const response = await apiClient.get(
         // `http://localhost:18020/moapay/core/dutchpay/getDutchRoomInfo/` +
         //   roomid,
         `api/moapay/core/dutchpay/getDutchRoomInfo/` + roomid,

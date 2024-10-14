@@ -6,6 +6,9 @@ import axios from "axios";
 import { Client } from "@stomp/stompjs";
 import { useAuthStore } from "../../store/AuthStore";
 import Payment from "../../components/dutch/Payment/Payment";
+import apiClient from "../../axios";
+
+apiClient.get('/endpoint') // https://your-api-base-url.com/endpoint
 
 import {
   Wrapper,
@@ -213,7 +216,7 @@ const Dutchpay = () => {
     try {
       console.log(requestBody);
 
-      const response = await axios.post(
+      const response = await apiClient.post(
         // "http://localhost:18020/moapay/core/dutchpay/createRoom",
         `/api/moapay/core/dutchpay/createRoom`,
         requestBody,

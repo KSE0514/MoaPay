@@ -5,6 +5,9 @@ import SquareBtn from "../SquareBtn/SquareBtn";
 import Product from "../Product/Product";
 import { PATH } from "./../../../constants/path";
 import { useAuthStore } from "../../../store/AuthStore";
+import apiClient from "../../../axios";
+
+apiClient.get('/endpoint') // https://your-api-base-url.com/endpoint
 
 import line from "./../../../assets/image/dutch_line.png";
 // import { useEffect } from 'react';
@@ -186,7 +189,7 @@ const Participant = ({
   const onDelete = async (id: number) => {
     // console.log(id, "삭제")
     try {
-      const response = await axios.delete(`요청 api 주소 입력`, {
+      const response = await apiClient.delete(`요청 api 주소 입력`, {
         headers: {
           "Content-Type": "application/json",
         },
