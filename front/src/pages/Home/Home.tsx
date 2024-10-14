@@ -31,6 +31,8 @@ import { requestPermission, messaging } from "../../FCM.ts";
 import { onMessage } from "firebase/messaging";
 import apiClient from "../../axios.ts";
 
+import Favicon from "../../assets/image/favicon.jpg";
+
 const Home = () => {
   const navigate = useNavigate();
   const { id, accessToken } = useAuthStore();
@@ -287,14 +289,14 @@ const Home = () => {
         payload.notification?.title ?? "Title",
         {
           body: payload.notification?.body ?? "Body",
-          icon: payload.notification?.icon ?? "/default-icon.png",
+          icon: "../../assets/image/favicon.jpg",
         }
       );
 
       notification.onclick = (event) => {
         event.preventDefault(); // 기본 클릭 동작 방지 (알림 닫기 방지)
         // 더치페이 결과 화면으로 이동 (예: /dutch-pay/result/{dutchUuid})
-        const dutchUuid = payload.data?.dutchUuid; // 더치페이 UUID가 payload 데이터에 있다고 가정
+        const dutchUuid = payload.data?.roomId; // 더치페이 UUID가 payload 데이터에 있다고 가정
         if (dutchUuid) {
           navigate(`/dutch-pay/result/${dutchUuid}`);
         } else {
@@ -558,7 +560,8 @@ const Home = () => {
           </div>
         </CardList>
 
-        <div className="remaining-performance"
+        <div
+          className="remaining-performance"
           style={{
             whiteSpace: "nowrap",
           }}

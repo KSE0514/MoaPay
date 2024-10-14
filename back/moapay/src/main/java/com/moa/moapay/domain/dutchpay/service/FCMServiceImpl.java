@@ -59,6 +59,7 @@ public class FCMServiceImpl implements FCMService {
                     .setWebpushConfig(WebpushConfig.builder()
 //                            .putHeader("ttl", "300")
                             .setNotification(new WebpushNotification("MoaPay", fcmMessageDto.getMessage()))
+                            .putData("roomId", String.valueOf(fcmMessageDto.getRoomId()))
                             .build())
                     .build();
             String response = FirebaseMessaging.getInstance().sendAsync(message).get();
