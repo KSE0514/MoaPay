@@ -53,6 +53,7 @@ export const Benefits = styled.div`
   header {
   }
   ul {
+    list-style: none;
     div {
       height: 100%;
       width: 100%;
