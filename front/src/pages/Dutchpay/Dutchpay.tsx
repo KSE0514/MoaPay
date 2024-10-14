@@ -427,11 +427,11 @@ const Dutchpay = () => {
       const response = await apiClient.get(
         `/api/moapay/core/dutchpay/orderInfo/${orderId}`,
         {
+          withCredentials: true,
           headers: {
-            Authorization: `Bearer ${accessToken}`,
+            Authorization: `Bearer ${accessToken}`, // Authorization 헤더에 Bearer 토큰 추가
           },
-          withCredentials: true,  // 쿠키를 전송해야 할 경우
-        });;
+        });
       console.log("상품 정보 조회 성공", response.data)
     } catch (error) {
       console.error("에러 발생", error)
