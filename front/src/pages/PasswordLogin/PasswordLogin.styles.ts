@@ -86,6 +86,10 @@ export const KeyPad = styled.div`
       height: 70px;
     }
   }
+  button.active {
+    background-color: var(--light-purple);
+    color: white;
+  }
   button:active {
     background-color: var(--light-purple);
     color: white;

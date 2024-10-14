@@ -65,28 +65,60 @@ const PasswordLogin: React.FC = () => {
    * 비밀번호 입력
    */
   const handleKeypadClick = (value: string) => {
-    if (value == "+") {
-      if (mode != "Join" && mode != "NewLogin") {
+    if (value === "+") {
+      if (mode !== "Join" && mode !== "NewLogin") {
         navigate(PATH.BIOMETRICS_LOGIN);
       } else {
         return;
       }
     }
-    if (value == "-") {
-      if (!isDoubleCheck)
-        setPassword(password.slice(0, -1)); //startIndex에서 endIndex전까지
-      else setDoubleCheckPassword(doubleCheckPassword.slice(0, -1));
-    } else {
+
+    if (value === "-") {
+      // 비밀번호 삭제 로직
       if (!isDoubleCheck) {
-        if (password.length < 6) {
-          setPassword((prev) => prev + value); // 비밀번호 6자리까지 입력
+        if (password.length > 0) {
+          setPassword(password.slice(0, -1)); // 마지막 문자를 삭제
         }
       } else {
-        if (doubleCheckPassword.length < 6) {
-          setDoubleCheckPassword((prev) => prev + value); // 비밀번호 6자리까지 입력
+        if (doubleCheckPassword.length > 0) {
+          setDoubleCheckPassword(doubleCheckPassword.slice(0, -1)); // 마지막 문자를 삭제
         }
       }
+      return;
     }
+
+    // 실제로 비밀번호에 입력될 숫자 처리
+    if (!isDoubleCheck) {
+      if (password.length < 6) {
+        setPassword((prev) => prev + value); // 비밀번호 6자리까지 입력
+      }
+    } else {
+      if (doubleCheckPassword.length < 6) {
+        setDoubleCheckPassword((prev) => prev + value); // 비밀번호 6자리까지 입력
+      }
+    }
+
+    // 다른 랜덤한 번호 선택 (비밀번호 입력에는 영향 없음)
+    const remainingKeys = keyPads.filter(
+      (key) => key !== value && key !== "-" && key !== "+"
+    );
+    const randomKey =
+      remainingKeys[Math.floor(Math.random() * remainingKeys.length)];
+
+    // 버튼에 active 클래스 추가 (시각적 효과만)
+    const buttonElement = document.querySelector(`button[data-key="${value}"]`);
+    const randomButtonElement = document.querySelector(
+      `button[data-key="${randomKey}"]`
+    );
+
+    if (buttonElement) buttonElement.classList.add("active");
+    if (randomButtonElement) randomButtonElement.classList.add("active");
+
+    // 일정 시간 후 active 클래스 제거 (200ms 후 제거)
+    setTimeout(() => {
+      if (buttonElement) buttonElement.classList.remove("active");
+      if (randomButtonElement) randomButtonElement.classList.remove("active");
+    }, 200);
   };
 
   /**
@@ -338,7 +370,11 @@ const PasswordLogin: React.FC = () => {
         </PasswordView>
         <KeyPad>
           {keyPads.map((num) => (
-            <button key={num} onClick={() => handleKeypadClick(num)}>
+            <button
+              key={num}
+              data-key={num}
+              onClick={() => handleKeypadClick(num)}
+            >
               {num === "-" ? (
                 <FontAwesomeIcon icon={faArrowLeft} />
               ) : mode !== "Join" && num === "+" ? (
