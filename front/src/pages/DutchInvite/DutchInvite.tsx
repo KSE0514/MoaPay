@@ -63,6 +63,7 @@ const DutchInvite = () => {
   const nav = useNavigate();
 
   // const { name, id } = useAuthStore();
+  console.log("이것도 뜨나요?");
 
   // 테스트용 멤버 데이터
   const testUser = {
@@ -343,6 +344,12 @@ const DutchInvite = () => {
 
     console.log("confirm room:", roomId);
   };
+
+  useEffect(() => {
+    if (process === 6) {
+      navigate("/dutch-result", { state: { roomId } });
+    }
+  }, [process, navigate, roomId]); // process와 roomId가 변경될 때마다 effect가 실행됩니다.
 
   const confirm = () => {
     console.log("confirm Room");
@@ -729,9 +736,6 @@ const DutchInvite = () => {
               </DutchFin>
             ) : null}
             {/* //TODO: 여기 바꾸기 */}
-            {process === 6
-              ? navigate("/dutch-result", { state: { roomId } })
-              : null}
           </Main>
 
           {/* <Bottom>
