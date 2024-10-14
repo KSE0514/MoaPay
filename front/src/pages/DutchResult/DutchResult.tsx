@@ -97,7 +97,14 @@ const DutchResult = () => {
   const getOrderInfo = async (orderId: string) => {
     try {
       const response = await apiClient.get(
-        `http://localhost:18020/moapay/core/dutchpay/orderInfo/${orderId}`
+        // `http://localhost:18020/moapay/core/dutchpay/orderInfo/${orderId}`
+        `api/moapay/core/dutchpay/orderInfo/${orderId}`,
+        {
+          withCredentials: true,
+          headers: {
+            Authorization: `Bearer ${accessToken}`, // Authorization 헤더에 Bearer 토큰 추가
+          },
+        }
       );
       if (response?.status === 200) {
         const orderData = response.data;
@@ -113,7 +120,14 @@ const DutchResult = () => {
     console.log(roomId);
     try {
       const response = await apiClient.get(
-        `http://localhost:18020/moapay/core/dutchpay/getDutchRoomInfo/${roomId}`
+        // `http://localhost:18020/moapay/core/dutchpay/getDutchRoomInfo/${roomId}`
+        `api/moapay/core/dutchpay/getDutchRoomInfo/${roomId}`,
+        {
+          withCredentials: true,
+          headers: {
+            Authorization: `Bearer ${accessToken}`, // Authorization 헤더에 Bearer 토큰 추가
+          },
+        }
       );
       if (response?.status === 200) {
         const roomData = response.data;
