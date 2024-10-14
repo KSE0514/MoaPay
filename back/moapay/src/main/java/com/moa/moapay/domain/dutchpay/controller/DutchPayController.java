@@ -83,7 +83,7 @@ public class DutchPayController {
 
     @PostMapping("/getMyPrice")
     public ResponseEntity<?> getMyPrice(@Valid @RequestBody DutchGetMyPriceRequestDto dutchGetMyPriceRequestDto) {
-        log.info("getMyPrice");
+        log.info("getMyPrice : {}", dutchGetMyPriceRequestDto.toString());
         GetMyPriceResponseDto myPrice = dutchPayService.getMyPrice(dutchGetMyPriceRequestDto);
         ResultResponse resultResponse = ResultResponse.of(HttpStatus.OK, "더치페이 가격 조회", myPrice);
         return ResponseEntity.status(resultResponse.getStatus()).body(resultResponse);

@@ -109,7 +109,7 @@ const Payment = ({ onClick, confirmAmount }: PaymentProps) => {
       <Price>총 금액: {totalPrice.toLocaleString()} 원</Price>
 
       {/* 구분 점선 */}
-      <img src={line} />
+      <img src={line} style={{width: '100%'}} />
 
       <CardView>
         <CardInfo>

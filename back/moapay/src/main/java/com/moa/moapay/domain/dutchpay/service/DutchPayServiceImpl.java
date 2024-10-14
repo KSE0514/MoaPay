@@ -430,7 +430,9 @@ public class DutchPayServiceImpl implements DutchPayService {
 
         DutchPay dutchPay = dutchPayRepository.findByRoomIdAndMemberId(dutchGetMyPriceRequestDto.getRoomId(), dutchGetMyPriceRequestDto.getMemberId());
 
+        log.info(dutchPay.getAmount().toString());
         long price = dutchPay.getAmount();
+        log.info("price = {}", price);
 
         GetMyPriceResponseDto getMyPriceResponseDto = GetMyPriceResponseDto.builder().price(price).build();
         return getMyPriceResponseDto;
