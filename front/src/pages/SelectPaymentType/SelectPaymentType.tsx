@@ -178,9 +178,12 @@ const SelectPaymentType = () => {
           // 결제가 완료된 후에는 loading 을 false로 변경하고
           setTimeout(() => {
             setIsLoading(false);
-          }, 2000); // 2000 밀리초 = 2초
+          }, 3000); // 2000 밀리초 = 2초
           //결과를 보여줄 수 있도록 isEnd를 true로 변경
-          setIsEnd(true);
+
+          setTimeout(() => {
+            setIsEnd(true);
+          }, 4500);
           // 결제 requestId 삭제하기
           localStorage.removeItem("requestId");
           //결과 담기
@@ -231,6 +234,7 @@ const SelectPaymentType = () => {
       setShowModal(true);
       // setIsAuth(true);
     } else if (selectedPayType == "multi") {
+      // console.log("here");
       setShowModal(true);
       // setIsAuth(true);
     } else if (selectedPayType == "dutch") {

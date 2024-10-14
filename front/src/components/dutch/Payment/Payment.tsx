@@ -294,7 +294,7 @@ const Payment = ({ onClick, confirmAmount, onFinish, merchantName, merchantThumb
               transform: rotate ? "rotate(-90deg)" : "none", // 회전시키기
               marginLeft: rotate ? "17.5px" : "0",
             }}
-            src={selectedCard?.cardProduct.cardProductImgUrl}
+            src={`/assets/image/longWidth/신용카드이미지/${selectedCard?.cardProduct.cardProductImgUrl}.png`}
           />
           <div>{selectedCard?.cardProduct.cardProductName}</div>
         </CardInfo>

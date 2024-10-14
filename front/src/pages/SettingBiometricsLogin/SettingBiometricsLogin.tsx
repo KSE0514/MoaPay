@@ -19,7 +19,7 @@ import { useAuthStore } from "../../store/AuthStore";
 const SettingBiometricsLogin = () => {
   const baseUrl = import.meta.env.VITE_BASE_URL;
   const baseUrl1 = `http://localhost:18040/`;
-  const { name, accessToken, mode } = useAuthStore();
+  const { name, accessToken, mode, setMode } = useAuthStore();
   const { Login, setBioLogin } = useAuthStore();
   const [settingFinish, setSettingFinish] = useState<boolean>(false);
   const navigate = useNavigate();
@@ -104,6 +104,7 @@ const SettingBiometricsLogin = () => {
     }
     //그 외에는 home으로 이동
     else {
+      setMode("");
       navigate(PATH.HOME);
     }
   };

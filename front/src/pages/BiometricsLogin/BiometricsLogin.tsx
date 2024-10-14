@@ -65,7 +65,11 @@ const BiometricsLogin = () => {
       console.log(credential);
 
       if (credential) {
-        navigate(PATH.HOME);
+        if (mode == "SettingPasswords") {
+          navigate(PATH.SETTING_BIOMETRICS_LOGIN);
+        } else {
+          navigate(PATH.HOME);
+        }
       } else {
         setError(true);
       }
@@ -78,7 +82,17 @@ const BiometricsLogin = () => {
     <Wrapper>
       <div className="area">
         <Header>
-          <h1>생체 로그인</h1>
+          {mode === "SettingPassword" ? (
+            <>
+              <h1>생체 인증</h1>
+            </>
+          ) : (
+            <>
+              {" "}
+              <h1>생체 로그인</h1>
+            </>
+          )}
+
           <p style={{ whiteSpace: "pre-wrap", textAlign: "center" }}>
             {error
               ? "잘못된 인증입니다.\n다시 시도하세요"
