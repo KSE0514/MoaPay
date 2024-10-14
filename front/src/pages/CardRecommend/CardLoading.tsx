@@ -21,6 +21,9 @@ import {
 } from "./CardLoading.styles";
 import { useAuthStore } from "../../store/AuthStore";
 
+// import cardRecommendImg from "./../../../public/assets/gif/cardrecommend.gif"
+import cardRecommendImg from "./../../../public/assets/gif/cardrecommendpurple.gif"
+
 const CardLoading: React.FC = () => {
   const { name } = useAuthStore();
 
@@ -32,7 +35,8 @@ const CardLoading: React.FC = () => {
         카드를 추천해드릴게요
       </Ment>
       <AniView>
-        <div className="CardList">
+        <img src={cardRecommendImg} alt="" style={{width: "75%"}}/>
+        {/* <div className="CardList">
           <div
             className="card card1 magictime spaceInDown"
             style={{
@@ -63,7 +67,7 @@ const CardLoading: React.FC = () => {
           >
             <img src="/assets/image/slide-card3.png" />
           </div>
-        </div>
+        </div> */}
       </AniView>
     </Wrapper>
   );
