@@ -6,11 +6,12 @@ import SquareBtn from "../../components/dutch/SquareBtn/SquareBtn";
 
 import Product from "../../components/dutch/Product/Product";
 import backImg from "./../../assets/image/dutchheader.png";
-import { useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 import axios from "axios";
 import apiClient from "../../axios";
 import DutchComplite from "../../pages/DutchComplite/DutchComplite";
+
+import { useNavigate } from "react-router-dom";
 
 apiClient.get("/endpoint"); // https://your-api-base-url.com/endpoint
 
@@ -88,6 +89,7 @@ const DutchInvite = () => {
   const [confirmAmount, setConfirmAmount] = useState<number>(0); // 참가자 확정 금액
 
   const [stop, setStop] = useState(false);
+  const navigate = useNavigate();
 
   // 더치페이 방 입장 관련
   const [roomId, setRoomId] = useState<string>(
@@ -342,6 +344,12 @@ const DutchInvite = () => {
 
     console.log("confirm room:", roomId);
   };
+
+  useEffect(() => {
+    if (process === 6) {
+      navigate("/dutch-result", { state: { roomId } });
+    }
+  }, [process, navigate, roomId]); // process와 roomId가 변경될 때마다 effect가 실행됩니다.
 
   const confirm = () => {
     console.log("confirm Room");
@@ -728,9 +736,6 @@ const DutchInvite = () => {
               </DutchFin>
             ) : null}
             {/* //TODO: 여기 바꾸기 */}
-            {process === 6 ? (
-              <DutchComplite roomId={roomId}></DutchComplite>
-            ) : null}
           </Main>
 
           {/* <Bottom>
