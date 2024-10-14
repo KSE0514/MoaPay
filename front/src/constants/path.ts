@@ -14,6 +14,7 @@ const PATH = {
   STATISTICS_BENEFITS: "benefits",
   STATISTICS_CONSUMPTION: "consumption",
   USER_CARD_LIST: "/card-list", //nonav
+  // USER_CARD_DETAIL: "/card", //nonav
   USER_CARD_DETAIL: "/card/:id", //nonav
   DUTCHPAY: "/dutchpay", //nonav
   DUTCHINVITE:
