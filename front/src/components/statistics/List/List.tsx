@@ -36,7 +36,7 @@ const List = ({ consumptionList }: Props) => {
           <div className="Col">
             <div>
               {consumption.categoryId === "ALL" ? (
-                <p style={{ color: "white", fontWeight: "600" }}>ALL</p>
+                <p style={{ color: "pink", fontWeight: "600" }}>ALL</p>
               ) : (
                 <img
                   ref={(el) => (imgRefs.current[index] = el)} // 각 이미지를 참조 배열에 저장
@@ -53,7 +53,7 @@ const List = ({ consumptionList }: Props) => {
                 .slice(0, -4)}
             </p>
             <p>
-              {`${consumption.per}%`} | {consumption.money.toLocaleString()}원
+              {`${consumption.per}%`} | {consumption.money.toLocaleString()}{" "}
             </p>
           </div>
         </ListItem>
