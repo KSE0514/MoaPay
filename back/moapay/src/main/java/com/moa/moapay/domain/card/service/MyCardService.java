@@ -24,4 +24,6 @@ public interface MyCardService {
 
     CardHistoryResponseDto getCardHistory(CardHistoryRequestDto cardHistoryRequestDto);
     GetMyCardIdsResponseDto getMyCardIds(UUID memberId);
+
+    void initialize();
 }

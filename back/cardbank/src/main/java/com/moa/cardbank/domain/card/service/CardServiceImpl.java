@@ -41,6 +41,7 @@ public class CardServiceImpl implements CardService {
     private final CardProductQueryRepository cardProductQueryRepository;
     private final CardBenefitRepository cardBenefitRepository;
     private final PaymentQueryRepository paymentQueryRepository;
+    private final MyCardQueryRepository myCardQueryRepository;
 
     @Override
     @Transactional
@@ -469,5 +470,11 @@ public class CardServiceImpl implements CardService {
                 .build();
 
         return cardRestResponseDto;
+    }
+
+    @Override
+    @Transactional
+    public void initialize() {
+        myCardQueryRepository.initialize();
     }
 }
