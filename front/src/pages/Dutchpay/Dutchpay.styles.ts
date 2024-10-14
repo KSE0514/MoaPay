@@ -151,6 +151,7 @@ export const ProcessContainer = styled.div`
   align-items: center;
   padding-left: 70px;
   position: relative;
+  height: 100px;
 `;
 
 export const ProcessLine = styled.div`
