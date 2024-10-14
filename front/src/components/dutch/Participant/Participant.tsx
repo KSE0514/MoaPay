@@ -340,8 +340,9 @@ const Participant = ({
           <Product
             productName={merchantName}
             productUrl={
-              merchantThumbnailUrl
+              "https://www.ssg.com/item/itemView.ssg?itemId=1000566517100"
             }
+            productImg={merchantThumbnailUrl}
           />
 
           {/* <div>총 금액: {prduct_price}원</div> */}

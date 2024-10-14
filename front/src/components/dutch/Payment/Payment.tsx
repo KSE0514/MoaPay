@@ -272,8 +272,9 @@ const Payment = ({ onClick, confirmAmount, onFinish, merchantName, merchantThumb
       <Product
         productName={merchantName}
         productUrl={
-          merchantThumbnailUrl
+          "https://www.ssg.com/item/itemView.ssg?itemId=1000566517100"
         }
+        productImg={merchantThumbnailUrl}
       />
 
       {/* <div>총 금액: {prduct_price}원</div> */}
@@ -293,7 +294,7 @@ const Payment = ({ onClick, confirmAmount, onFinish, merchantName, merchantThumb
               transform: rotate ? "rotate(-90deg)" : "none", // 회전시키기
               marginLeft: rotate ? "17.5px" : "0",
             }}
-            src={selectedCard?.cardProduct.cardProductImgUrl}
+            src={`/assets/image/longWidth/신용카드이미지/${selectedCard?.cardProduct.cardProductImgUrl}.png`}
           />
           <div>{selectedCard?.cardProduct.cardProductName}</div>
         </CardInfo>
