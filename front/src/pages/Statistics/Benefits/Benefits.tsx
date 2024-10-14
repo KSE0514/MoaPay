@@ -4,6 +4,7 @@ import List from "../../../components/statistics/List/List";
 import { categoryData } from "../../../store/CardStore";
 import axios from "axios";
 import { useAuthStore } from "../../../store/AuthStore";
+import apiClient from "../../../axios";
 
 const Benefits = () => {
   const { id, accessToken } = useAuthStore();
@@ -16,7 +17,7 @@ const Benefits = () => {
 
   const getBenefitData = async () => {
     try {
-      const response = await axios.post(
+      const response = await apiClient.post(
         `/api/moapay/pay/statistics/benefit/${new Date().getFullYear()}/${
           new Date().getMonth() + 1
         }`,

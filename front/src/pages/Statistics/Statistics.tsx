@@ -26,6 +26,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import axios from "axios";
 import { categoryData } from "../../store/CardStore";
 import { useAuthStore } from "../../store/AuthStore";
+import apiClient from "../../axios";
 const Statistics = () => {
   const { id, accessToken, name } = useAuthStore();
 
@@ -93,7 +94,7 @@ const Statistics = () => {
     console.log(selectedYear, selectedMonth);
     console.log("=======================================");
     try {
-      const response = await axios.post(
+      const response = await apiClient.post(
         // `https://j11c201.p.ssafy.io/api/moapay/pay/statistics/consumption/${selectedYear}/${selectedMonth}`,
         `/api/moapay/pay/statistics/consumption/${selectedYear}/${selectedMonth}`,
         {
@@ -123,7 +124,7 @@ const Statistics = () => {
     console.log(selectedYear, selectedMonth);
     console.log("=======================================");
     try {
-      const response = await axios.post(
+      const response = await apiClient.post(
         // `https://j11c201.p.ssafy.io/api/moapay/pay/statistics/benefit/${selectedYear}/${selectedMonth}`,
         `/api/moapay/pay/statistics/benefit/${selectedYear}/${selectedMonth}`,
         {
@@ -188,7 +189,7 @@ const Statistics = () => {
       );
       getConsumptionData();
       //또래 비교금액 가져오기
-      const response = await axios.post(
+      const response = await apiClient.post(
         // `https://j11c201.p.ssafy.io/api/moapay/pay/analysis/getAverage`,
         `/api/moapay/pay/analysis/getAverage`,
         { memberId: id },
@@ -225,7 +226,7 @@ const Statistics = () => {
       //saving-storage에서 saving-mode가 true일때
       if (localStorage.getItem("saving-storage")) {
         try {
-          const response = await axios.post(
+          const response = await apiClient.post(
             // `https://j11c201.p.ssafy.io/api/moapay/pay/saving/getSaving`,
             `/api/moapay/pay/saving/getSaving`,
             { memberId: id },
@@ -387,8 +388,10 @@ const Statistics = () => {
                         <br />
                         앞으로 하루{" "}
                         <span style={{ color: "#4258ff " }}>
-                          {(savingGoal - savingUse) /
-                            (daysLeft === 0 ? 1 : daysLeft)}
+                          {Math.round(
+                            (savingGoal - savingUse) /
+                              (daysLeft === 0 ? 1 : daysLeft)
+                          )}
                           원
                         </span>
                         만 쓰면 돼요.

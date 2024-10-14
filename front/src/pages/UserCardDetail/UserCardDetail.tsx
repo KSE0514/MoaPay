@@ -20,6 +20,7 @@ import {
 import { useAuthStore } from "../../store/AuthStore";
 import { useParams } from "react-router-dom";
 import { Card, payLog, useCardStore } from "../../store/CardStore";
+import apiClient from "../../axios";
 
 const UserCardDetail = () => {
   const { id } = useParams();
@@ -59,7 +60,7 @@ const UserCardDetail = () => {
   const getCardHistory = async () => {
     console.log(year, month, id);
     try {
-      const response = await axios.post(
+      const response = await apiClient.post(
         // `https://j11c201.p.ssafy.io/api/moapay/core/card/history`,
         `/api/moapay/core/card/history`,
         // `http://localhost:8765/moapay/core/card/history`,
