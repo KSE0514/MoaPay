@@ -633,6 +633,7 @@ const DutchInvite = () => {
                 roomInfo={roomInfo}
                 setConfirmAmount={setConfirmAmount}
                 totalPrice={totalPrice}
+                isHostProp = {false}
               />
             ) : null}
             {/* //TODO : 바꾸기 */}

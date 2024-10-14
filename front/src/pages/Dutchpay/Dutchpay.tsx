@@ -629,6 +629,7 @@ const Dutchpay = () => {
                 process={process}
                 setConfirmAmount={setConfirmAmount}
                 totalPrice={totalPrice}
+                isHostProp = {true}
               />
             }
           </Main>
