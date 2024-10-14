@@ -29,6 +29,7 @@ import { useAuthStore } from "../../store/AuthStore";
 import { PATH } from "../../constants/path";
 import { requestPermission, messaging } from "../../FCM.ts";
 import { onMessage } from "firebase/messaging";
+import apiClient from "../../axios.ts";
 
 const Home = () => {
   const navigate = useNavigate();
@@ -82,7 +83,7 @@ const Home = () => {
   ) => {
     if (barcodeCardNumber === undefined) return;
     try {
-      const response = await axios.post(
+      const response = await apiClient.post(
         // `https://j11c201.p.ssafy.io/api/moapay/core/code/barcode`,
 
         `/api/moapay/core/code/barcode`,
@@ -228,13 +229,16 @@ const Home = () => {
   };
   const getUserCard = async () => {
     try {
-      const response = await axios.get(`/api/moapay/core/card/mycard/${id}`, {
-        withCredentials: true,
-        headers: {
-          Authorization: `Bearer ${accessToken}`,
-          "Content-Type": "application/json",
-        },
-      });
+      const response = await apiClient.get(
+        `/api/moapay/core/card/mycard/${id}`,
+        {
+          withCredentials: true,
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+            "Content-Type": "application/json",
+          },
+        }
+      );
       setCardList(response.data.data);
     } catch (e) {
       console.log(e);

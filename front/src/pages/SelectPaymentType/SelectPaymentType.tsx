@@ -28,6 +28,7 @@ import "../../../node_modules/swiper/swiper-bundle.min.css";
 import ParticleCanvas from "../../components/ParticleCanvas";
 import { useCardStore } from "../../store/CardStore";
 import BiometricsAuthModal from "../BiometricsAuthModal/BiometricsAuthModal";
+import apiClient from "../../axios";
 interface BenefitDetail {
   discount: number; // long, 할인 금액
   point: number; // long, 적립 포인트
@@ -257,7 +258,7 @@ const SelectPaymentType = () => {
     );
     try {
       setIsLoading(true);
-      const response = await axios.post(
+      const response = await apiClient.post(
         // `https://j11c201.p.ssafy.io/api/moapay/core/generalpay/pay`,
         `/api/moapay/core/generalpay/pay`,
         // `http://localhost:8765/moapay/core/generalpay/pay`,
@@ -317,7 +318,7 @@ const SelectPaymentType = () => {
     console.log("=======================single payment gogo=================");
     try {
       setIsLoading(true);
-      const response = await axios.post(
+      const response = await apiClient.post(
         // `https://j11c201.p.ssafy.io/api/moapay/core/generalpay/pay`,
         `/api/moapay/core/generalpay/pay`,
         // `http://localhost:8765/moapay/core/generalpay/pay`,

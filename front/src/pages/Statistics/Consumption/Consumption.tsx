@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { categoryData } from "../../../store/CardStore";
 import { useAuthStore } from "../../../store/AuthStore";
 import axios from "axios";
+import apiClient from "../../../axios";
 
 const Consumption = () => {
   const { id, accessToken } = useAuthStore();
@@ -16,7 +17,7 @@ const Consumption = () => {
   const getConsumptionData = async () => {
     console.log("first get Data");
     try {
-      const response = await axios.post(
+      const response = await apiClient.post(
         `/api/moapay/pay/statistics/consumption/${new Date().getFullYear()}/${
           new Date().getMonth() + 1
         }`,

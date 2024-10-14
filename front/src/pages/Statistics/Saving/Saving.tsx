@@ -20,6 +20,7 @@ import { useLocation, useNavigate } from "react-router-dom";
 import { PATH } from "../../../constants/path";
 import SmallBarGraph from "../../../components/statistics/Chart/BarGraph/SmallBarGraph";
 import axios from "axios";
+import apiClient from "../../../axios";
 
 interface savingDataType {
   memberId: string;
@@ -70,7 +71,7 @@ const Saving = () => {
   // 목표 설정 API 호출
   const settingGoal = async () => {
     try {
-      const response = await axios.post(
+      const response = await apiClient.post(
         `/api/moapay/pay/saving/setLimit`,
         { memberId: id, limitAmount: goal * 10000 },
         {
@@ -117,7 +118,7 @@ const Saving = () => {
   // 데이터 긁어오기 + 데이터 정제
   const getSavingData = async () => {
     try {
-      const response = await axios.post(
+      const response = await apiClient.post(
         // `https://j11c201.p.ssafy.io/api/moapay/pay/saving/getSaving`,
         `/api/moapay/pay/saving/getSaving`,
         { memberId: id },
