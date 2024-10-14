@@ -30,6 +30,7 @@ const PasswordLogin: React.FC = () => {
     setAccessToken,
     setRefreshToken,
     phoneNumber,
+    setMode,
   } = useAuthStore();
   const navigate = useNavigate();
   const [password, setPassword] = useState<string>(""); // 입력한 비밀번호
@@ -56,6 +57,8 @@ const PasswordLogin: React.FC = () => {
       setMent("로그인을 위해\n비밀번호를 입력하세요.");
     } else if (mode === "Join") {
       setMent("비밀번호를 설정합니다.\n6자리를 입력하세요.");
+    } else if (mode == "SettingPassword") {
+      setMent("기존의 비밀번호를 입력해주세요");
     }
   }, []);
   /**
@@ -190,7 +193,18 @@ const PasswordLogin: React.FC = () => {
           setMent("다시 비밀번호를 입력해주세요.");
         } else if (mode === "SettingPassword") {
           if (!isChangeMode) {
-            if (true) {
+            //비밀번호 일치하는지 판단
+            const checkingPwReponse = await apiClient.post(
+              `/api/moapay/member/simple/verify`,
+              { uuid: id, simplePassword: password },
+              {
+                withCredentials: true,
+                headers: {
+                  Authorization: `Bearer ${accessToken}`, // Authorization 헤더에 Bearer 토큰 추가
+                },
+              }
+            );
+            if (checkingPwReponse) {
               setIsChangeMode(true);
               setPassword("");
               setMent("새로운 비밀번호를\n입력해주세요.");
@@ -251,6 +265,26 @@ const PasswordLogin: React.FC = () => {
             }
           } else if (mode == "SettingPassword") {
             // "SettingPassword"에 대한 비동기 처리 추가 가능
+            const response = await apiClient.post(
+              // `${baseUrl}moapay/member/simple/register`,
+              // `https://j11c201.p.ssafy.io/api/moapay/member/simple/register`,
+              `/api/moapay/member/simple/register`,
+              {
+                uuid: id,
+                simplePassword: password,
+              },
+              {
+                withCredentials: true,
+                headers: {
+                  Authorization: `Bearer ${accessToken}`, // Authorization 헤더에 Bearer 토큰 추가
+                },
+              }
+            );
+            if (response) {
+              alert("비밀번호가 변경되었습니다.");
+              setMode("");
+              navigate(PATH.HOME);
+            }
           }
         } else {
           suffleKeysPad();

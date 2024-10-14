@@ -259,7 +259,28 @@ const Saving = () => {
                 목표설정 완료 !<br />
                 {name}님은 분명 성공할거예요!
               </p>
-              <div></div>
+              <div
+                style={{
+                  width: "250px",
+                  height: "250px",
+                  marginTop: "20px",
+                  position: "relative",
+                }}
+              >
+                <img
+                  style={{ width: "100%", height: "100%" }}
+                  src="/assets/gif/coin.gif"
+                />
+                <div
+                  style={{
+                    position: "absolute",
+                    width: "100%",
+                    height: "30px",
+                    backgroundColor: "white",
+                    bottom: "0px",
+                  }}
+                ></div>
+              </div>
               <div className="bottom">
                 <button onClick={() => setSavingMode(true)}>이동하기</button>
               </div>
