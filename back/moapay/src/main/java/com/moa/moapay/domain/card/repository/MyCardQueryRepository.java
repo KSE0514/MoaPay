@@ -2,6 +2,8 @@ package com.moa.moapay.domain.card.repository;
 
 import com.moa.moapay.domain.card.entity.*;
 import com.querydsl.jpa.impl.JPAQueryFactory;
+import jakarta.persistence.EntityManager;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Repository;
 
@@ -10,12 +12,10 @@ import java.util.UUID;
 
 @Repository
 @Slf4j
+@RequiredArgsConstructor
 public class MyCardQueryRepository {
     private final JPAQueryFactory queryFactory;
-
-    public MyCardQueryRepository(JPAQueryFactory queryFactory) {
-        this.queryFactory = queryFactory;
-    }
+    private final EntityManager em;
 
     /*
     @Query("SELECT mc FROM MyCard mc " +
@@ -92,5 +92,13 @@ public class MyCardQueryRepository {
             .from(myCard)
             .where(myCard.memberId.eq(memberId))
             .fetch();
+    }
+
+    public void initialize() {
+        QMyCard myCard = QMyCard.myCard;
+        long count = queryFactory.update(myCard).set(myCard.amount, 0L).set(myCard.benefitUsage, 0L).execute();
+        log.info("initialize moapay-MyCard -> count : {}", count);
+        em.clear();
+        em.flush();
     }
 }

@@ -8,6 +8,7 @@ import com.moa.cardbank.global.response.ResultResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.logging.log4j.message.ReusableMessage;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -72,6 +73,14 @@ public class CardController {
         CardRestResponseDto cardRestResponseDto = cardService.registration(registrationRequestDto);
         log.info(cardRestResponseDto.toString());
         ResultResponse resultResponse = ResultResponse.of(HttpStatus.OK, "카드 추가 확인", cardRestResponseDto);
+        return ResponseEntity.status(resultResponse.getStatus()).body(resultResponse);
+    }
+
+    @GetMapping("/initialize")
+    public ResponseEntity<ResultResponse> initialize() {
+        log.info("initialize card amount and benefit usage");
+        cardService.initialize();
+        ResultResponse resultResponse = ResultResponse.of(HttpStatus.OK, "카드 사용량을 초기화하였습니다.");
         return ResponseEntity.status(resultResponse.getStatus()).body(resultResponse);
     }
 
