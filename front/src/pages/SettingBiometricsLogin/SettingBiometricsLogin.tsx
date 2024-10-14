@@ -49,6 +49,7 @@ const SettingBiometricsLogin = () => {
         ),
         rp: {
           name: "moapay",
+          // id: "localhost:5173",
           id: "j11c201.p.ssafy.io",
         },
         user: {

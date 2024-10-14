@@ -212,7 +212,7 @@ export const Loading = styled.div`
     animation: slide-down 1.2s 0.8s cubic-bezier(0.645, 0.045, 0.355, 1) both;
   }
   .card-fadeout {
-    animation: slide-up 1.2s 1s cubic-bezier(0.645, 0.045, 0.355, 1) both;
+    animation: slide-up 1.2s cubic-bezier(0.645, 0.045, 0.355, 1) both;
   }
 
   .card-line {
@@ -415,7 +415,7 @@ export const Result = styled.div`
   width: 100%;
   left: 0;
   transform: translateY(-100%);
-  animation: ${slideUp} 1s forwards;
+  animation: ${slideUp} 0.5s forwards;
   background: linear-gradient(120deg, #f1e5ff 6%, #dcbefc 50%, #ffc6ff);
   display: flex;
   flex-direction: column;

@@ -332,7 +332,6 @@ const Home = () => {
           console.log("QR 코드 인식 성공:", decodedText); // 디버깅 로그
           setQrResult(decodedText); // QR 코드 결과를 상태에 저장
           setIsCameraOn(false); // QR 코드 인식 후 카메라 끔
-
           // QR 코드 결과가 URL일 경우 해당 페이지로 이동
           if (isValidUrl(decodedText)) {
             window.location.href = decodedText;
@@ -579,7 +578,7 @@ const Home = () => {
         )}
 
         {/* QR 코드 인식 결과 표시 */}
-        {qrResult && <div>QR 코드 결과: {qrResult}</div>}
+        {/* qrResult && <div>QR 코드 결과: {qrResult}</div>*/}
       </Modal>
     </Wrapper>
   );

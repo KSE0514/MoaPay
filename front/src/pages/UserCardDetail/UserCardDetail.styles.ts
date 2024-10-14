@@ -1,10 +1,19 @@
 import styled from "styled-components";
 
 export const Wrapper = styled.div`
+  background: linear-gradient(120deg, #f1e5ff 6%, #dcbefc 50%, #ffc6ff);
   height: 100vh;
+  padding: 0px 20px;
+  padding-bottom: 10px;
   position: relative;
   display: flex;
   flex-direction: column;
+  overflow: auto;
+  ::-webkit-scrollbar {
+    display: none;
+  }
+  scrollbar-width: none;
+  // background: linear-gradient(135deg, #e3a8ff, #c473f6);
 `;
 
 export const BackImg = styled.div`
@@ -14,44 +23,56 @@ export const BackImg = styled.div`
 
 export const Top = styled.div`
   display: flex;
+  height: 40%;
   flex-direction: column;
   align-items: center;
-  gap: 35px;
-  padding: 7% 0px;
+  gap: 40px;
+  padding: 10% 0px;
 `;
 
 export const Month = styled.div`
   display: flex;
+  justify-content: center;
   gap: 10px;
+  width: 100%;
   align-items: center;
 
+  & > svg {
+    width: 25px;
+  }
+
   & > div {
-    font-size: 33px;
+    font-size: 32px;
     font-weight: 700;
+    // width: 80%;
   }
 
   & > button {
-    background-color: rgba(255, 255, 255, 0.62);
+    background-color: rgba(255, 255, 255, 0);
     border: 0;
     border-radius: 100%;
-    width: 30px;
-    height: 30px;
+    width: 32px;
+    height: 32px;
   }
 `;
 
 export const DateTag = styled.div`
   display: flex;
   gap: 10px;
+  width: 60%;
+  justify-content: center;
+  & > span {
+    // width: 30px;
+  }
 `;
 
 export const CardInfo = styled.div`
   display: flex;
+
   // gap: 30px;
   width: 100%;
-  padding-left: 9%;
-  padding-right: 5%;
   align-items: center;
-  // justify-content: center;
+  // justify-content: space-around;
 
   & > img {
     width: 30%;
@@ -61,22 +82,29 @@ export const CardInfo = styled.div`
   }
 
   & > div {
-    padding-left: 30px;
+    padding-left: 15px;
     display: flex;
     flex-direction: column;
     gap: 7px;
     font-size: 16px;
-    text-shadow: -1px 0 rgba(255, 255, 255, 0.5), 0 1px rgba(255, 255, 255, 0.5),
-      1px 0 rgba(255, 255, 255, 0.5), 0 -1px rgba(255, 255, 255, 0.5);
+    width: 100%;
+    // font-weight: 700;
+    // text-shadow: -1px 0 rgba(255, 255, 255, 0.5), 0 1px rgba(255, 255, 255, 0.5),
+    //   1px 0 rgba(255, 255, 255, 0.5), 0 -1px rgba(255, 255, 255, 0.5);
   }
 
   & > div > div:nth-of-type(1) {
     font-weight: 700;
-    font-size: 19px;
-    padding-bottom: 10px;
-    text-shadow: -1px 0 rgba(255, 255, 255, 0.7), 0 1px rgba(255, 255, 255, 0.7),
-      1px 0 rgba(255, 255, 255, 0.7), 0 -1px rgba(255, 255, 255, 0.7);
+    font-size: 18px;
+
+    // text-shadow: -1px 0 rgba(255, 255, 255, 0.7), 0 1px rgba(255, 255, 255, 0.7),
+    //   1px 0 rgba(255, 255, 255, 0.7), 0 -1px rgba(255, 255, 255, 0.7);
   }
+`;
+
+export const CardNameInfo = styled.div`
+  display: flex;
+  gap: 5px;
 `;
 
 export const Main = styled.div`
@@ -87,6 +115,16 @@ export const Main = styled.div`
   border: 2px solid #dbc5e9;
   border-radius: 20px;
   margin: 0px 25px;
+`;
+
+export const MainNoBorder = styled.div`
+  height: 100%;
+  // overflow: auto;
+  background-color: rgba(255, 255, 255, 0.5);
+  // border: 2px solid #dbc5e9;
+  border: 1px solid white;
+  padding: 20px 0px;
+  border-radius: 10px;
 `;
 
 export const Bottom = styled.div`
@@ -110,4 +148,25 @@ export const DateInput = styled.div`
     border-radius: 10px;
     font-size: 17px;
   }
+`;
+
+export const Benefits = styled.div`
+  display: flex;
+  // background-color: rgba(255, 255, 255, 0.7);
+  // padding: 10px 0px;
+  // border-radius: 10px;
+  // width: 100%;
+  justify-content: center;
+
+  gap: 10px;
+  & > div {
+    font-size: 24px;
+  }
+`;
+
+export const TopContainer = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 30px;
+  padding: 15px 0;
 `;

@@ -379,4 +379,5 @@ export const CardBackground = styled.div`
 export const AddBtn = styled.div`
   width: 100%;
   text-align: right;
+  padding-top: 20px;
 `;
