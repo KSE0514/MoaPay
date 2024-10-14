@@ -698,7 +698,7 @@ const DutchInvite = () => {
                 </Bottom>
               </DutchFin>
             ) : null}
-            //TODO: 여기 바꾸기
+            {/* //TODO: 여기 바꾸기 */}
             {process === 6 ? (
               <DutchComplite roomId={roomId}></DutchComplite>
             ) : null}

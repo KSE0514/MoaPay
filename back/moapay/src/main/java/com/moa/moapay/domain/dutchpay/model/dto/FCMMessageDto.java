@@ -14,4 +14,5 @@ public class FCMMessageDto {
     private UUID memberId;
     private String title;
     private String message;
+    private UUID roomId;
 }
