@@ -102,7 +102,20 @@ const CardRecommend = () => {
         }
       );
       if (response.status === 200) {
-        setRecommendCardList(response.data.data.recommend);
+        const recommendedCards = response.data.data.recommend;
+
+        // cardList에 있는 카드들의 cardProductName을 추출
+        const cardNamesInMyList = cardList.map(
+          (card: Card) => card.cardProduct.cardProductName
+        );
+
+        // recommendCardList에서 cardList에 없는 카드들만 필터링
+        const filteredRecommendCards = recommendedCards.filter(
+          (card: CardProduct) =>
+            !cardNamesInMyList.includes(card.cardProductName)
+        );
+
+        setRecommendCardList(filteredRecommendCards);
       }
     } catch (e) {
       console.log(e);
