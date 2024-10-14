@@ -886,7 +886,7 @@ const Dutchpay = () => {
                 </Bottom>
               </DutchFin>
             ) : null}
-            //TODO: 여기도 바꿔야함
+            {/* //TODO: 여기도 바꿔야함 */}
             {process === 6 ? (
               <DutchComplite roomId={roomId}></DutchComplite>
             ) : null}
