@@ -199,6 +199,9 @@ const Dutchpay = () => {
     console.log("Category ID:", localStorage.getItem("categoryId"));
     console.log("Merchant ID:", localStorage.getItem("merchantId"));
     console.log("Request ID:", localStorage.getItem("requestId"));
+
+    // 상품 정보 조회
+    loadProduct(localStorage.getItem("orderId") || "")
   }, []);
 
   const settingStoreRequestId = (): string => {
@@ -418,6 +421,22 @@ const Dutchpay = () => {
   }, [stompClient]);
 
   /////////////////////////////////////////////
+
+  const loadProduct = async (orderId: string) => {
+    try {
+      const response = await apiClient.get(
+        `/api/moapay/core/dutchpay/orderInfo/${orderId}`,
+        {
+          withCredentials: true,
+        }
+      );
+      console.log("상품 정보 조회 성공", response.data)
+    } catch (error) {
+      console.error("에러 발생", error)
+      console.log("상품조회 실패")
+    }
+  }
+
   useEffect(() => {
     console.log("hello..?");
     console.log("Dutchpay 페이지 로드");
