@@ -451,12 +451,12 @@ public class MyCardServiceImpl implements MyCardService {
             if(!response.getStatusCode().is2xxSuccessful()) {
                 log.error("cardbank initializing has been failed");
                 log.error("cancel initializing...");
-                return;
+                throw new BusinessException(HttpStatus.INTERNAL_SERVER_ERROR, "카드 사용량 초기화에 실패했습니다.");
             }
         } catch (Exception e) {
             log.error("their is some problem to initialize MyCard of cardbank : {}", e.getMessage());
             log.error("cancel initializing...");
-            return;
+            throw new BusinessException(HttpStatus.INTERNAL_SERVER_ERROR, "카드 사용량 초기화에 실패했습니다.");
         }
         log.info("cardbank initialize done");
         myCardQueryRepository.initialize();

@@ -473,6 +473,7 @@ public class CardServiceImpl implements CardService {
     }
 
     @Override
+    @Transactional
     public void initialize() {
         myCardQueryRepository.initialize();
     }
