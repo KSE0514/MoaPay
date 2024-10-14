@@ -99,10 +99,6 @@ const Dutchpay = () => {
   // 테스트용 변수... 나중에 지울 예정(host)
   const [isHost, setIsHost] = useState<boolean>(true); // 쓰진 않을 것 같음...
 
-  const goComplite = () => {
-    nav("/dutch-result", { state: { roomId } });
-  };
-
   // // 참여자 수 바인딩
   // const onChangeMember = (e: React.ChangeEvent<HTMLInputElement>) => {
   //   console.log("확인용",e.target.value)
@@ -220,6 +216,11 @@ const Dutchpay = () => {
     const newRequestId = uuidv4();
     localStorage.setItem("requestId", newRequestId);
     return newRequestId;
+  };
+
+  const goComplite = () => {
+    console.log("dutchRoom ID : ", roomId);
+    nav(`/dutch-result/${roomId}`);
   };
 
   // 방 생성 함수

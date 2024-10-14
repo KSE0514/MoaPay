@@ -159,7 +159,7 @@ const DutchInvite = () => {
   }, []);
 
   const goComplite = () => {
-    nav("/dutch-result", { state: { roomId } });
+    nav(`/dutch-result/${roomId}`);
   };
 
   // useEffect(() => {
