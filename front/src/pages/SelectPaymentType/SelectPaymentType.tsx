@@ -200,105 +200,107 @@ const SelectPaymentType = () => {
       storedCategoryId,
       storedTotalPrice
     );
-    try {
-      setIsLoading(true);
-      console.log("sse 연결시작!!!!!");
-      console.log("requestId ", requestId);
-      //페이먼트 연결
-      const eventSource = new EventSource(
-        // `http://localhost:18010/moapay/pay/notification/subscribe/${requestId}}`
-        `https://j11c201.p.ssafy.io/api/moapay/pay/notification/subscribe/${requestId}`
+    setIsLoading(true);
+    console.log("sse 연결시작!!!!!");
+    console.log("requestId ", requestId);
+    //페이먼트 연결
+    const eventSource = new EventSource(
+      // `http://localhost:18010/moapay/pay/notification/subscribe/${requestId}}`
+      `https://j11c201.p.ssafy.io/api/moapay/pay/notification/subscribe/${requestId}`
+    );
+
+    //페이 연결 열기
+    eventSource.onopen = async () => {
+      await console.log(
+        "==============pay - SSE connection opened!=============="
       );
 
-      //페이 연결 열기
-      eventSource.onopen = async () => {
-        await console.log(
-          "==============pay - SSE connection opened!=============="
-        );
-        const response = await apiClient.post(
-          // `https://j11c201.p.ssafy.io/api/moapay/core/generalpay/pay`,
-          `/api/moapay/core/generalpay/pay`,
-          // `http://localhost:8765/moapay/core/generalpay/pay`,
-          {
-            requestId: storedRequestId,
-            orderId: storedOrderId,
-            merchantId: storedMerchantId,
-            categoryId: storedCategoryId,
-            totalPrice: parseInt(storedTotalPrice, 10),
-            memberId: id,
-            cardSelectionType: "RECOMMEND",
-            recommendType: paymentType || "PERFORM", // RECOMMEND인 경우 사용, BENEFIT / PERFORM
-            cardNumber: cardList[0].cardNumber, // FIX인 경우 사용
-            cvc: cardList[0].cvc, // FIX인 경우 사용
+      console.log("이벤트 응답 : ", eventSource);
+    };
+
+    // 'payment-completed' 이벤트를 수신할 때 실행될 로직 (이벤트 이름을 'payment-completed'로 변경)
+    // 결제 완료를 보내주는 것
+    eventSource.addEventListener("payment-completed", (event) => {
+      console.log("Received 'sse' event:", event.data, "");
+      try {
+        const data = JSON.parse(event.data);
+        console.log("Parsed data: ", data);
+        setPaymentResult(data);
+
+        // 결제가 완료된 후에는 loading 을 false로 변경하고
+        setTimeout(() => {
+          setIsLoading(false);
+        }, 2300); // 2000 밀리초 = 2초
+        //결과를 보여줄 수 있도록 isEnd를 true로 변경
+
+        setTimeout(() => {
+          setIsEnd(true);
+        }, 3300);
+        // 결제 requestId 삭제하기
+        localStorage.removeItem("requestId");
+        //결과 담기
+      } catch (error) {
+        console.error("Data is not valid JSON:", event.data);
+        // 만약 데이터가 JSON이 아니라 문자열인 경우 그대로 저장
+      }
+    });
+
+    // 'sse' 이벤트를 수신할 때 실행될 로직
+    eventSource.addEventListener("sse", (event) => {
+      console.log("Received 'sse' event:", event.data);
+      try {
+        const data = JSON.parse(event.data);
+        console.log("Parsed data: ", data);
+      } catch (error) {
+        console.error("Data is not valid JSON:", event.data);
+      }
+    });
+
+    // 페이에서 에러 발생 시 실행될 로직
+    eventSource.onerror = async (e) => {
+      await console.log("Error with pay SSE", e);
+      // 에러가 발생하면 SSE를 닫음
+      eventSource.close();
+    };
+
+    try {
+      const response = await apiClient.post(
+        // `https://j11c201.p.ssafy.io/api/moapay/core/generalpay/pay`,
+        `/api/moapay/core/generalpay/pay`,
+        // `http://localhost:8765/moapay/core/generalpay/pay`,
+        {
+          requestId: storedRequestId,
+          orderId: storedOrderId,
+          merchantId: storedMerchantId,
+          categoryId: storedCategoryId,
+          totalPrice: parseInt(storedTotalPrice, 10),
+          memberId: id,
+          cardSelectionType: "RECOMMEND",
+          recommendType: paymentType || "PERFORM", // RECOMMEND인 경우 사용, BENEFIT / PERFORM
+          cardNumber: cardList[0].cardNumber, // FIX인 경우 사용
+          cvc: cardList[0].cvc, // FIX인 경우 사용
+        },
+        // {
+        //   requestId: storedRequestId,
+        //   orderId: storedOrderId,
+        //   merchantId: storedMerchantId,
+        //   categoryId: storedCategoryId,
+        //   totalPrice: parseInt(storedTotalPrice, 10),
+        //   memberId: id,
+        //   cardSelectionType: "FIX",
+        //   recommendType: "BENEFIT", // RECOMMEND인 경우 사용, BENEFIT / PERFORM
+        //   cardNumber: "3998541707334420", // FIX인 경우 사용
+        //   cvc: "123", // FIX인 경우 사용
+        // },
+        {
+          withCredentials: true,
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+            "Content-Type": "application/json",
           },
-          // {
-          //   requestId: storedRequestId,
-          //   orderId: storedOrderId,
-          //   merchantId: storedMerchantId,
-          //   categoryId: storedCategoryId,
-          //   totalPrice: parseInt(storedTotalPrice, 10),
-          //   memberId: id,
-          //   cardSelectionType: "FIX",
-          //   recommendType: "BENEFIT", // RECOMMEND인 경우 사용, BENEFIT / PERFORM
-          //   cardNumber: "3998541707334420", // FIX인 경우 사용
-          //   cvc: "123", // FIX인 경우 사용
-          // },
-          {
-            withCredentials: true,
-            headers: {
-              Authorization: `Bearer ${accessToken}`,
-              "Content-Type": "application/json",
-            },
-          }
-        );
-        console.log("결제 응답 : ", response);
-        console.log("이벤트 응답 : ", eventSource);
-      };
-
-      // 'payment-completed' 이벤트를 수신할 때 실행될 로직 (이벤트 이름을 'payment-completed'로 변경)
-      // 결제 완료를 보내주는 것
-      eventSource.addEventListener("payment-completed", (event) => {
-        console.log("Received 'sse' event:", event.data, "");
-        try {
-          const data = JSON.parse(event.data);
-          console.log("Parsed data: ", data);
-          setPaymentResult(data);
-
-          // 결제가 완료된 후에는 loading 을 false로 변경하고
-          setTimeout(() => {
-            setIsLoading(false);
-          }, 2300); // 2000 밀리초 = 2초
-          //결과를 보여줄 수 있도록 isEnd를 true로 변경
-
-          setTimeout(() => {
-            setIsEnd(true);
-          }, 3300);
-          // 결제 requestId 삭제하기
-          localStorage.removeItem("requestId");
-          //결과 담기
-        } catch (error) {
-          console.error("Data is not valid JSON:", event.data);
-          // 만약 데이터가 JSON이 아니라 문자열인 경우 그대로 저장
         }
-      });
-
-      // 'sse' 이벤트를 수신할 때 실행될 로직
-      eventSource.addEventListener("sse", (event) => {
-        console.log("Received 'sse' event:", event.data);
-        try {
-          const data = JSON.parse(event.data);
-          console.log("Parsed data: ", data);
-        } catch (error) {
-          console.error("Data is not valid JSON:", event.data);
-        }
-      });
-
-      // 페이에서 에러 발생 시 실행될 로직
-      eventSource.onerror = async (e) => {
-        await console.log("Error with pay SSE", e);
-        // 에러가 발생하면 SSE를 닫음
-        eventSource.close();
-      };
+      );
+      console.log("결제 응답 : ", response);
     } catch (e) {
       console.log(e);
     }
