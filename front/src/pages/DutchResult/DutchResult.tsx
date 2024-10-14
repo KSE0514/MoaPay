@@ -172,6 +172,7 @@ const DutchResult = () => {
                       ? orderInfo.itemNames[0]
                       : "삼성 냉장고"
                   }
+                  productImg={orderInfo.thumbnailUrl || "#"}
                   productUrl={orderInfo.url || "#"} // URL도 null 체크를 추가
                 />
               </div>
