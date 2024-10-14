@@ -123,7 +123,16 @@ const Payment = ({ onClick, confirmAmount, onFinish }: PaymentProps) => {
     setIsOpen(true);
   };
 
-  useEffect(() => {
+  const pay = async () => {
+    console.log("sse 연결시작!!!!!");
+    console.log("requestId ", requestId);
+    //페이먼트 연결
+    const dutchPayId = localStorage.getItem("dutchPayId") || "";
+    console.log(selectedCard?.cardNumber);
+    console.log(selectedCard?.cvc);
+
+    onClick();
+
     const eventSource = new EventSource(
       // `http://localhost:18010/moapay/pay/notification/subscribe/${requestId}`
       `https://j11c201.p.ssafy.io/api/moapay/pay/notification/subscribe/${requestId}`
@@ -176,17 +185,6 @@ const Payment = ({ onClick, confirmAmount, onFinish }: PaymentProps) => {
         console.error("Data is not valid JSON:", event.data);
       }
     });
-  }, [requestId, onFinish]);
-
-  const pay = async () => {
-    console.log("sse 연결시작!!!!!");
-    console.log("requestId ", requestId);
-    //페이먼트 연결
-    const dutchPayId = localStorage.getItem("dutchPayId") || "";
-    console.log(selectedCard?.cardNumber);
-    console.log(selectedCard?.cvc);
-
-    onClick();
 
     try {
       // setIsLoading(true);
