@@ -7,6 +7,7 @@ import { Client } from "@stomp/stompjs";
 import { useAuthStore } from "../../store/AuthStore";
 import Payment from "../../components/dutch/Payment/Payment";
 import apiClient from "../../axios";
+import { v4 as uuidv4 } from "uuid"; // ES Modules
 
 apiClient.get("/endpoint"); // https://your-api-base-url.com/endpoint
 
@@ -190,7 +191,8 @@ const Dutchpay = () => {
     setTotalPrice(validatedTotalPrice);
     setCategoryId(localStorage.getItem("categoryId") || "");
     setMerchantId(localStorage.getItem("merchantId") || "");
-    setRequestId(localStorage.getItem("requestId") || "");
+    setRequestId(settingStoreRequestId() || "");
+
     // 값 로그로 출력
     console.log("Order ID:", localStorage.getItem("orderId"));
     console.log("Total Price:", localStorage.getItem("totalPrice"));
@@ -201,6 +203,12 @@ const Dutchpay = () => {
     // 상품 정보 조회
     loadProduct(localStorage.getItem("orderId") || "")
   }, []);
+
+  const settingStoreRequestId = (): string => {
+    const newRequestId = uuidv4();
+    localStorage.setItem("requestId", newRequestId);
+    return newRequestId;
+  };
 
   // 방 생성 함수
   // TODO : 해결해주세요
@@ -648,7 +656,7 @@ const Dutchpay = () => {
                 process={process}
                 setConfirmAmount={setConfirmAmount}
                 totalPrice={totalPrice}
-                isHostProp = {true}
+                isHostProp={true}
               />
             }
           </Main>
