@@ -2,7 +2,6 @@
 import { createBrowserRouter } from "react-router-dom";
 import { PATH } from "../constants/path";
 import ProtectedRoute from "../pages/ProtectedRoute";
-import AuthProvider from "../pages/AuthProvider";
 import Layout from "../components/layout/Layout/Layout";
 import BiometricsLogin from "../pages/BiometricsLogin/BiometricsLogin";
 import CreateAccount from "../pages/CreateAccount/CreateAccount";
@@ -136,7 +135,6 @@ const router = createBrowserRouter([
         path: PATH.SETTING_BIOMETRICS_LOGIN,
         element: <SettingBiometricsLogin />,
       },
-      
     ],
   },
 ]);
