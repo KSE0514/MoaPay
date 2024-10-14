@@ -13,10 +13,11 @@ import {
   Month,
   DateTag,
   CardInfo,
-  Main,
-  Bottom,
+  CardNameInfo,
   DateInput,
   MainNoBorder,
+  Benefits,
+  TopContainer,
 } from "./UserCardDetail.styles";
 import { useAuthStore } from "../../store/AuthStore";
 import { useParams } from "react-router-dom";
@@ -165,55 +166,77 @@ const UserCardDetail = () => {
       </BackImg>
       <Top>
         <Month>
-          <button onClick={handlePrevMonth}>
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              fill="none"
-              viewBox="0 0 24 24"
-              strokeWidth="2.2"
-              stroke="white"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                d="m18.75 4.5-7.5 7.5 7.5 7.5m-6-15L5.25 12l7.5 7.5"
-              />
-            </svg>
-          </button>
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            fill="none"
+            viewBox="0 0 24 24"
+            strokeWidth="2.2"
+            stroke="black"
+            onClick={handlePrevMonth}
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              d="m15 4.5-7.5 7.5 7.5 7.5"
+            />
+          </svg>
+          {/* <button onClick={handlePrevMonth}>
+          </button> */}
           <DateTag onClick={handleMonthSelect}>
             {year !== currentYear && <span>{year}년 </span>}
             <span>{month < 10 ? `0${month}` : month}월</span>
           </DateTag>
-          <button onClick={handleNextMonth}>
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              fill="none"
-              viewBox="0 0 24 24"
-              strokeWidth="2.2"
-              stroke="white"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                d="m5.25 4.5 7.5 7.5-7.5 7.5m6-15 7.5 7.5-7.5 7.5"
-              />
-            </svg>
-          </button>
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            fill="none"
+            viewBox="0 0 24 24"
+            strokeWidth="2.2"
+            stroke="black"
+            onClick={handleNextMonth}
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              d="m9 4.5 7.5 7.5-7.5 7.5"
+            />
+          </svg>
+          {/* <button onClick={handleNextMonth}>
+          </button> */}
         </Month>
-        <CardInfo>
-          <img
-            src={`/assets/image/longWidth/신용카드이미지/${selectedCard?.cardProduct.cardProductImgUrl}.png`}
-          />
-          <div>
-            <div>{selectedCard?.cardProduct.cardProductName}</div>
+        <TopContainer>
+          <CardInfo>
+            {/* 이거 다시 돌려야함 */}
+            <img
+              src={`/assets/image/longWidth/신용카드이미지/${selectedCard?.cardProduct.cardProductImgUrl}.png`}
+            />
+            {/* {
+              <img src="/assets/image/longWidth/신용카드이미지/1_신한카드_Mr.Life.png" />
+            } */}
             <div>
-              실적: {payLogResult?.totalAmount.toLocaleString()} /{" "}
+              <div>{selectedCard?.cardProduct.cardProductName}</div>
+              <CardNameInfo>
+                <div>{selectedCard?.cardProduct.cardProductCompanyName}</div>
+                <div>{selectedCard?.cardNumber}</div>
+              </CardNameInfo>
+            </div>
+          </CardInfo>
+          <Benefits>
+            <div>
+              실적: {payLogResult?.totalAmount.toLocaleString()}원
               {selectedCard?.cardProduct.cardProductPerformance.toLocaleString()}
             </div>
             <div>혜택: {payLogResult?.totalBenefit?.toLocaleString()}원</div>
-          </div>
-        </CardInfo>
+          </Benefits>
+        </TopContainer>
       </Top>
+      {/* <div
+        style={{
+          height: "0px",
+          width: "100%",
+          border: "1px solid white",
+          marginBottom: "20px",
+        }}
+      ></div> */}
       <MainNoBorder>
         <DetailPayLogList payLogList={payLogList ?? []} />
       </MainNoBorder>

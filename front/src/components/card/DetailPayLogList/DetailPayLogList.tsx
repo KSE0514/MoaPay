@@ -1,5 +1,13 @@
 import { useRef, useEffect } from "react";
-import { Wrapper, Log, Content, Date, Detail } from "./DetailPayLogList.styles";
+import {
+  Wrapper,
+  Log,
+  Content,
+  Date,
+  DetailLeft,
+  Detail,
+  Price,
+} from "./DetailPayLogList.styles";
 import { payLog, useCardStore } from "../../../store/CardStore"; // payLog 인터페이스 가져오기
 
 interface DetailPayLogListProps {
@@ -43,53 +51,67 @@ const DetailPayLogList = ({ payLogList = [] }: DetailPayLogListProps) => {
     );
   };
 
-  //const groupedLogs = groupByDate(payLogList); // 그룹화된 로그
-  const groupedLogs = {
-    "2024-10-14": [
-      {
-        merchantName: "삼성전자온라인쇼핑몰",
-        amount: 15000,
-        benefitBalance: 0,
-        categoryId: "C0008",
-        createTime: "2024-10-14T07:01:11.050916",
-      },
-      {
-        merchantName: "삼성전자온라인쇼핑몰",
-        amount: 1130000,
-        benefitBalance: 0,
-        categoryId: "C0008",
-        createTime: "2024-10-14T06:59:24.738039",
-      },
-      {
-        merchantName: "삼성전자온라인쇼핑몰",
-        amount: 1130000,
-        benefitBalance: 0,
-        categoryId: "C0008",
-        createTime: "2024-10-14T05:41:16.010412",
-      },
-      {
-        merchantName: "삼성전자온라인쇼핑몰",
-        amount: 1130000,
-        benefitBalance: 0,
-        categoryId: "C0008",
-        createTime: "2024-10-14T04:56:21.876093",
-      },
-      {
-        merchantName: "삼성전자온라인쇼핑몰",
-        amount: 753333,
-        benefitBalance: 0,
-        categoryId: "C0008",
-        createTime: "2024-10-14T04:42:00.861026",
-      },
-      {
-        merchantName: "삼성전자온라인쇼핑몰",
-        amount: 1130000,
-        benefitBalance: 0,
-        categoryId: "C0008",
-        createTime: "2024-10-14T04:26:27.786181",
-      },
-    ],
-  };
+  const groupedLogs = groupByDate(payLogList); // 그룹화된 로그
+  // const groupedLogs = {
+  //   "2024-10-14": [
+  //     {
+  //       merchantName: "삼성전자온라인쇼핑몰",
+  //       amount: 15000,
+  //       benefitBalance: 0,
+  //       categoryId: "C0008",
+  //       createTime: "2024-10-14T07:01:11.050916",
+  //     },
+  //     {
+  //       merchantName: "삼성전자온라인쇼핑몰",
+  //       amount: 1130000,
+  //       benefitBalance: 0,
+  //       categoryId: "C0008",
+  //       createTime: "2024-10-14T06:59:24.738039",
+  //     },
+  //     {
+  //       merchantName: "삼성전자",
+  //       amount: 11300,
+  //       benefitBalance: 0,
+  //       categoryId: "C0008",
+  //       createTime: "2024-10-14T05:41:16.010412",
+  //     },
+  //     {
+  //       merchantName: "삼성전자온라인쇼핑몰",
+  //       amount: 11300,
+  //       benefitBalance: 0,
+  //       categoryId: "C0008",
+  //       createTime: "2024-10-14T04:56:21.876093",
+  //     },
+  //     {
+  //       merchantName: "삼성전자온라인쇼핑몰",
+  //       amount: 753333,
+  //       benefitBalance: 0,
+  //       categoryId: "C0008",
+  //       createTime: "2024-10-14T04:42:00.861026",
+  //     },
+  //     {
+  //       merchantName: "삼성전자온라인쇼핑몰",
+  //       amount: 1130000,
+  //       benefitBalance: 0,
+  //       categoryId: "C0008",
+  //       createTime: "2024-10-14T04:26:27.786181",
+  //     },
+  //     {
+  //       merchantName: "삼성전자온라인쇼핑몰",
+  //       amount: 1130000,
+  //       benefitBalance: 0,
+  //       categoryId: "C0008",
+  //       createTime: "2024-10-14T04:26:27.786181",
+  //     },
+  //     {
+  //       merchantName: "삼성전자온라인쇼핑몰",
+  //       amount: 1130000,
+  //       benefitBalance: 0,
+  //       categoryId: "C0008",
+  //       createTime: "2024-10-14T04:26:27.786181",
+  //     },
+  //   ],
+  // };
   console.log("===============", groupedLogs, "==============="); // 콘솔에서 확인
 
   return (
@@ -108,25 +130,34 @@ const DetailPayLogList = ({ payLogList = [] }: DetailPayLogListProps) => {
                   return (
                     <Content key={logIndex}>
                       <div>
-                        <div style={{ backgroundColor: "gray" }}>
-                          <img
-                            ref={(el) => (imgRefs.current[refIndex] = el)}
-                            src={getCategoryImage(logItem.categoryId)}
-                            alt=""
-                            style={{ width: "50px", height: "50px" }} // 이미지 크기 조정
-                          />
-                        </div>
-                        <Detail>
-                          <div style={{ marginBottom: 5, fontSize: 18 }}>
-                            {logItem.merchantName}
+                        <DetailLeft>
+                          <div style={{ backgroundColor: "gray" }}>
+                            <img
+                              ref={(el) => (imgRefs.current[refIndex] = el)}
+                              src={getCategoryImage(logItem.categoryId)}
+                              alt=""
+                              style={{ width: "50px", height: "50px" }} // 이미지 크기 조정
+                            />
                           </div>
-                          <div>
-                            {logItem.createTime.split("T")[1].slice(0, 5)}
-                          </div>
-                        </Detail>
-                        <div>{logItem.amount.toLocaleString()}원</div>
+                          <Detail>
+                            <div
+                              style={{
+                                marginBottom: 10,
+                                fontSize: 18,
+                                fontWeight: 700,
+                              }}
+                            >
+                              {logItem.merchantName}
+                            </div>
+                            <div>
+                              {logItem.createTime.split("T")[1].slice(0, 5)}
+                            </div>
+                          </Detail>
+                        </DetailLeft>
+                        <Price>
+                          <div>{logItem.amount.toLocaleString()}원</div>
+                        </Price>
                       </div>
-                      <hr />
                     </Content>
                   );
                 })}
