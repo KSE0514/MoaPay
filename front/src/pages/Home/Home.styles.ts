@@ -6,7 +6,8 @@ export const Wrapper = styled.div`
   display: flex;
   flex-direction: column;
   height: 100vh;
-  background-color: #db80e5;
+  // background-color: #db80e5;
+  background-color: #B97DF9;
 `;
 export const Top = styled.div`
   padding: 20px 41px;
@@ -36,6 +37,8 @@ export const BarcordArea = styled.div`
   padding: 18px 30px 10px 30px;
   background-color: white;
   border-radius: 19px;
+
+    // border: 2px solid black;
   ${MediaQuery.small} {
     padding: 10px 20px 10px 20px;
   }
@@ -57,13 +60,17 @@ export const BarcordView = styled.div`
 export const Time = styled.div`
   padding-top: 5px;
   display: flex;
-  justify-content: end;
+  justify-content: center;
   /* justify-content: center; */
   gap: 5px;
 `;
 export const ButtonArea = styled.div`
   display: flex;
   justify-content: space-between;
+  
+  // border: 2px solid black;
+  // border-radius: 10px;
+
   button {
     width: 100%;
     border-radius: 10px;
@@ -89,8 +96,8 @@ export const Bottom = styled.div`
   padding: 25px 40px var(--padding-bottom) 40px;
   /* height:100%; */
   overflow: hidden;
-  border-top-left-radius: 48px;
-  border-top-right-radius: 48px;
+  border-top-left-radius: 20px;
+  border-top-right-radius: 20px;
   flex: 1;
   background-color: white;
   display: flex;
