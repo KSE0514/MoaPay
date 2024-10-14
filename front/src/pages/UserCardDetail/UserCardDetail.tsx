@@ -16,6 +16,7 @@ import {
   Main,
   Bottom,
   DateInput,
+  MainNoBorder,
 } from "./UserCardDetail.styles";
 import { useAuthStore } from "../../store/AuthStore";
 import { useParams } from "react-router-dom";
@@ -213,9 +214,9 @@ const UserCardDetail = () => {
           </div>
         </CardInfo>
       </Top>
-      <Main>
+      <MainNoBorder>
         <DetailPayLogList payLogList={payLogList ?? []} />
-      </Main>
+      </MainNoBorder>
 
       {/* <Bottom>
         <img src={bottomGD} />

@@ -43,7 +43,53 @@ const DetailPayLogList = ({ payLogList = [] }: DetailPayLogListProps) => {
     );
   };
 
-  const groupedLogs = groupByDate(payLogList); // 그룹화된 로그
+  //const groupedLogs = groupByDate(payLogList); // 그룹화된 로그
+  const groupedLogs = {
+    "2024-10-14": [
+      {
+        merchantName: "삼성전자온라인쇼핑몰",
+        amount: 15000,
+        benefitBalance: 0,
+        categoryId: "C0008",
+        createTime: "2024-10-14T07:01:11.050916",
+      },
+      {
+        merchantName: "삼성전자온라인쇼핑몰",
+        amount: 1130000,
+        benefitBalance: 0,
+        categoryId: "C0008",
+        createTime: "2024-10-14T06:59:24.738039",
+      },
+      {
+        merchantName: "삼성전자온라인쇼핑몰",
+        amount: 1130000,
+        benefitBalance: 0,
+        categoryId: "C0008",
+        createTime: "2024-10-14T05:41:16.010412",
+      },
+      {
+        merchantName: "삼성전자온라인쇼핑몰",
+        amount: 1130000,
+        benefitBalance: 0,
+        categoryId: "C0008",
+        createTime: "2024-10-14T04:56:21.876093",
+      },
+      {
+        merchantName: "삼성전자온라인쇼핑몰",
+        amount: 753333,
+        benefitBalance: 0,
+        categoryId: "C0008",
+        createTime: "2024-10-14T04:42:00.861026",
+      },
+      {
+        merchantName: "삼성전자온라인쇼핑몰",
+        amount: 1130000,
+        benefitBalance: 0,
+        categoryId: "C0008",
+        createTime: "2024-10-14T04:26:27.786181",
+      },
+    ],
+  };
   console.log("===============", groupedLogs, "==============="); // 콘솔에서 확인
 
   return (
@@ -62,7 +108,7 @@ const DetailPayLogList = ({ payLogList = [] }: DetailPayLogListProps) => {
                   return (
                     <Content key={logIndex}>
                       <div>
-                        <div style={{ backgroundColor: "pink" }}>
+                        <div style={{ backgroundColor: "gray" }}>
                           <img
                             ref={(el) => (imgRefs.current[refIndex] = el)}
                             src={getCategoryImage(logItem.categoryId)}
@@ -71,12 +117,14 @@ const DetailPayLogList = ({ payLogList = [] }: DetailPayLogListProps) => {
                           />
                         </div>
                         <Detail>
-                          <div>{logItem.merchantName}</div>
+                          <div style={{ marginBottom: 5, fontSize: 18 }}>
+                            {logItem.merchantName}
+                          </div>
                           <div>
                             {logItem.createTime.split("T")[1].slice(0, 5)}
                           </div>
-                          <div>{logItem.amount.toLocaleString()}원</div>
                         </Detail>
+                        <div>{logItem.amount.toLocaleString()}원</div>
                       </div>
                       <hr />
                     </Content>

@@ -89,6 +89,14 @@ export const Main = styled.div`
   margin: 0px 25px;
 `;
 
+export const MainNoBorder = styled.div`
+  height: 80%;
+  overflow: auto;
+  background-color: rgba(255, 255, 255, 0.7);
+  border: 2px solid #dbc5e9;
+  margin: 0px 15px;
+`;
+
 export const Bottom = styled.div`
   position: absolute;
   bottom: 0;

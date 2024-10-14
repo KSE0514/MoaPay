@@ -12,25 +12,25 @@ export const Log = styled.div`
 `;
 
 export const Date = styled.div`
-  font-size: 21px;
-  font-weight: 700;
+  font-size: 16px;
+  //font-weight: 700;
   padding-bottom: 20px;
-  text-shadow: -1px 0 rgba(255, 255, 255, 0.8), 0 1px rgba(255, 255, 255, 0.8),
-    1px 0 rgba(255, 255, 255, 0.8), 0 -1px rgba(255, 255, 255, 0.8);
+  // text-shadow: -1px 0 rgba(255, 255, 255, 0.8), 0 1px rgba(255, 255, 255, 0.8),
+  //   1px 0 rgba(255, 255, 255, 0.8), 0 -1px rgba(255, 255, 255, 0.8);
 `;
 
 export const Content = styled.div`
   position: relative;
   & > div {
     display: flex;
-    justify-content: space-between;
-    gap: 10px;
-    padding: 10px 0;
+    // justify-content: space-around;
+    // gap: 10px;
+    padding: 20px 0px;
   }
 
   & > div > div:nth-of-type(1) {
-    width: 75px;
-    height: 75px;
+    width: 60px;
+    height: 60px;
     border-radius: 100%;
     text-align: center;
     position: relative;
@@ -50,10 +50,11 @@ export const Content = styled.div`
 `;
 
 export const Detail = styled.div`
-  width: 70%;
+  // width: 70%;
   display: flex;
   flex-direction: column;
-  gap: 4px;
+
+  // gap: 4px;
 
   & > div:nth-of-type(2) {
     font-size: 17px;
