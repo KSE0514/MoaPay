@@ -209,7 +209,7 @@ export const TopContainer = styled.div`
   display: flex;
   flex-direction: column;
   /* gap: 30px; */
-  padding: 15px 0;
+  padding: 25px 0;
   & > div:nth-child(1) {
   }
   & > div:nth-child(2) {
