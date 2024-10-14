@@ -7,6 +7,7 @@ import { Client } from "@stomp/stompjs";
 import { useAuthStore } from "../../store/AuthStore";
 import Payment from "../../components/dutch/Payment/Payment";
 import apiClient from "../../axios";
+import DutchComplite from "../../pages/DutchComplite/DutchComplite";
 import { v4 as uuidv4 } from "uuid"; // ES Modules
 
 apiClient.get("/endpoint"); // https://your-api-base-url.com/endpoint
@@ -97,6 +98,10 @@ const Dutchpay = () => {
 
   // 테스트용 변수... 나중에 지울 예정(host)
   const [isHost, setIsHost] = useState<boolean>(true); // 쓰진 않을 것 같음...
+
+  const goComplite = () => {
+    setProcess(6);
+  };
 
   // // 참여자 수 바인딩
   // const onChangeMember = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -877,51 +882,13 @@ const Dutchpay = () => {
                 </FinContent>
                 <Bottom>
                   <Btn onClick={goHome}>홈으로 돌아가기</Btn>
+                  <Btn onClick={goComplite}>더치페이 현황</Btn>
                 </Bottom>
               </DutchFin>
             ) : null}
+            //TODO: 여기도 바꿔야함
             {process === 6 ? (
-              <div>
-                {/* 다른 사람 결제 대기 화면 */}
-                {/* <div className="container">
-                  <div id="spinner"></div>
-                </div> */}
-                <ParticipantTitle>
-                  참여자({dutchParticipants.length}/{maxMember})
-                </ParticipantTitle>
-                {/* 참가자가 있을 경우에만 출력되도록 */}
-                <PartiList>
-                  {dutchParticipants.length > 0
-                    ? dutchParticipants.map((participant, index) => (
-                        <PartiInfo key={index}>
-                          {/* 랜덤 프로필_랜덤 사진 */}
-                          <div>{participant.status}</div>
-                          {participant.status == "DONE" ? (
-                            <div>완료됬어요</div>
-                          ) : (
-                            true
-                          )}
-                          <div
-                            style={{
-                              border: "2px solid black",
-                              width: "50px",
-                              height: "50px",
-                              borderRadius: "100%",
-                            }}
-                          ></div>
-
-                          <div>{participant.memberName}</div>
-
-                          {
-                            // 이름을 중앙에 오게 하기 위해 추가한 꼼수div...
-                            // (participant.index === 0 || !isHost) &&
-                            <div></div>
-                          }
-                        </PartiInfo>
-                      ))
-                    : true}
-                </PartiList>
-              </div>
+              <DutchComplite roomId={roomId}></DutchComplite>
             ) : null}
           </InviteMain>
         </>
