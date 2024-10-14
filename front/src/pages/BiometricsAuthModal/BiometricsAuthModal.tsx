@@ -31,54 +31,51 @@ const BiometricsAuthModal: React.FC<BiometricsAuthModalProps> = ({
   };
 
   const handleBiometricLogin = async () => {
-    console.log("hello");
-    // try {
-    //   // localStorage에서 WebAuthn id 가져오기
-    //   const storedId = localStorage.getItem("webauthnId");
-    //   if (!storedId) {
-    //     throw new Error("등록된 생체 인증 ID가 없습니다.");
-    //   }
+    try {
+      // localStorage에서 WebAuthn id 가져오기
+      const storedId = localStorage.getItem("webauthnId");
+      if (!storedId) {
+        throw new Error("등록된 생체 인증 ID가 없습니다.");
+      }
 
-    //   // Base64 URL로 인코딩된 storedId를 Uint8Array로 변환
-    //   const idUint8Array = base64UrlToUint8Array(storedId);
+      // Base64 URL로 인코딩된 storedId를 Uint8Array로 변환
+      const idUint8Array = base64UrlToUint8Array(storedId);
 
-    //   // 변환된 id를 publicKeyCredentialRequestOptions에 사용
-    //   const publicKeyCredentialRequestOptions: PublicKeyCredentialRequestOptions =
-    //     {
-    //       challenge: new Uint8Array([
-    //         0x8c, 0x84, 0x47, 0x7c, 0x52, 0xbc, 0x9a, 0x23, 0x45, 0x32, 0x98,
-    //         0xaf, 0xa7, 0xbc, 0x6e, 0x99,
-    //       ]),
-    //       allowCredentials: [
-    //         {
-    //           id: idUint8Array, // Base64 URL에서 Uint8Array로 변환된 id 사용
-    //           type: "public-key",
-    //           transports: ["internal" as AuthenticatorTransport], // 올바른 타입 설정
-    //         },
-    //       ],
-    //       userVerification: "preferred",
-    //       timeout: 60000, // 60초로 설정
-    //     };
+      // 변환된 id를 publicKeyCredentialRequestOptions에 사용
+      const publicKeyCredentialRequestOptions: PublicKeyCredentialRequestOptions =
+        {
+          challenge: new Uint8Array([
+            0x8c, 0x84, 0x47, 0x7c, 0x52, 0xbc, 0x9a, 0x23, 0x45, 0x32, 0x98,
+            0xaf, 0xa7, 0xbc, 0x6e, 0x99,
+          ]),
+          allowCredentials: [
+            {
+              id: idUint8Array, // Base64 URL에서 Uint8Array로 변환된 id 사용
+              type: "public-key",
+              transports: ["internal" as AuthenticatorTransport], // 올바른 타입 설정
+            },
+          ],
+          userVerification: "preferred",
+          timeout: 60000, // 60초로 설정
+        };
 
-    //   // WebAuthn API 호출
-    //   const credential = await navigator.credentials.get({
-    //     publicKey: publicKeyCredentialRequestOptions,
-    //   });
-    //   console.log("credential");
-    //   console.log(credential);
+      // WebAuthn API 호출
+      const credential = await navigator.credentials.get({
+        publicKey: publicKeyCredentialRequestOptions,
+      });
+      console.log("credential");
+      console.log(credential);
 
-    //   if (credential) {
-    //     //모달 닫힘
-    //     endAuth();
-    //   } else {
-    //     setError(true);
-    //   }
-    // } catch (err) {
-    //   console.error("인증 중 오류 발생:", err);
-    // }
-    endAuth();
+      if (credential) {
+        //모달 닫힘
+        endAuth();
+      } else {
+        setError(true);
+      }
+    } catch (err) {
+      console.error("인증 중 오류 발생:", err);
+    }
   };
-  // };
 
   return (
     <Wrapper>

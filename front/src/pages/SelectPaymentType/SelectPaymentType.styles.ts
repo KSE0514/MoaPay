@@ -415,7 +415,7 @@ export const Result = styled.div`
   width: 100%;
   left: 0;
   transform: translateY(-100%);
-  animation: ${slideUp} 1s forwards;
+  animation: ${slideUp} 0.5s forwards;
   background: linear-gradient(120deg, #f1e5ff 6%, #dcbefc 50%, #ffc6ff);
   display: flex;
   flex-direction: column;
