@@ -90,20 +90,5 @@ public class DutchRoom {
         dutchPayList.clear();
     }
 
-    @Override
-    public String toString() {
-        return "DutchRoom{" +
-                "id=" + id +
-                ", uuid=" + uuid +
-                ", orderId=" + orderId +
-                ", merchantId=" + merchantId +
-                ", merchantName='" + merchantName + '\'' +
-                ", categoryId='" + categoryId + '\'' +
-                ", totalPrice=" + totalPrice +
-                ", maxPerson=" + maxPerson +
-                ", curPerson=" + curPerson +
-                ", dutchPayList=" + dutchPayList +
-                '}';
-    }
 }
 

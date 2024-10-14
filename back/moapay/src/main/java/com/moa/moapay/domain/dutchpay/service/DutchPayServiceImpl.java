@@ -324,7 +324,8 @@ public class DutchPayServiceImpl implements DutchPayService {
             // 결제 상태 변경
             dutchPayRepository.updateByDutchUuid(dutchUuid, DutchStatus.DONE);
 
-            List<DutchPay> dutchPayList = byDutchUuid.getDutchPayList();
+//            List<DutchPay> dutchPayList = byDutchUuid.getDutchPayList();
+            List<DutchPay> dutchPayList = dutchPayRepository.findByRoomUuid(byDutchUuid.getUuid());
             DutchPay dutchPayMember = dutchPayRepository.findByUuid(dutchUuid);
 
             dutchPayRedisRepository.save(dutchUuid.toString(), dutchPayCompleteVo.getRequestId().toString());
