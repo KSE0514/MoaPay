@@ -344,7 +344,7 @@ public class DutchPayServiceImpl implements DutchPayService {
                     flag = false;
                 }
 
-                log.info("더치페이 : {}", dutchPay.toString());
+                log.info("더치페이 : {}", dutchPay.getPayStatus());
 
                 FCMMessageDto fcmMessageDto = FCMMessageDto.builder()
                         .memberId(dutchPay.getMemberId())

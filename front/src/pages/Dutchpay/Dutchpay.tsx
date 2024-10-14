@@ -190,7 +190,8 @@ const Dutchpay = () => {
     setTotalPrice(validatedTotalPrice);
     setCategoryId(localStorage.getItem("categoryId") || "");
     setMerchantId(localStorage.getItem("merchantId") || "");
-    setRequestId(localStorage.getItem("requestId") || "");
+    setRequestId(settingStoreRequestId() || "");
+
     // 값 로그로 출력
     console.log("Order ID:", localStorage.getItem("orderId"));
     console.log("Total Price:", localStorage.getItem("totalPrice"));
@@ -198,6 +199,12 @@ const Dutchpay = () => {
     console.log("Merchant ID:", localStorage.getItem("merchantId"));
     console.log("Request ID:", localStorage.getItem("requestId"));
   }, []);
+
+  const settingStoreRequestId = (): string => {
+    const newRequestId = uuidv4();
+    localStorage.setItem("requestId", newRequestId);
+    return newRequestId;
+  };
 
   // 방 생성 함수
   // TODO : 해결해주세요
