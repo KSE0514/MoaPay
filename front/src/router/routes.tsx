@@ -29,6 +29,7 @@ import RegisterCard from "../pages/RegisterCard/RegisterCard.tsx";
 import Payment from "../pages/Payment/Payment.tsx";
 import SelectPaymentType from "../pages/SelectPaymentType/SelectPaymentType.tsx";
 import DutchOpen from "../pages/DutchOpen/DutchOpen.tsx";
+import DutchResult from "../pages/DutchResult/DutchResult.tsx";
 const router = createBrowserRouter([
   {
     element: <AppAuthHandler />, // 최상위 레이아웃으로 AppAuthHandler 설정
@@ -119,6 +120,10 @@ const router = createBrowserRouter([
           {
             path: PATH.DUTCHOPEN,
             element: <DutchOpen />,
+          },
+          {
+            path: PATH.DUTCH_RESULT,
+            element: <DutchResult />,
           },
         ],
       },

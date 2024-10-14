@@ -472,6 +472,7 @@ public class DutchPayServiceImpl implements DutchPayService {
                     return DutchPayDto.builder()
                             .memberName(dutchPay.getMemberName())
                             .memberId(dutchPay.getMemberId())
+                            .amount(dutchPay.getAmount())
                             .status(dutchPay.getPayStatus())
                             .uuid(dutchPay.getUuid())
                             .build();
