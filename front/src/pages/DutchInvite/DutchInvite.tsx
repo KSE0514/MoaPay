@@ -6,11 +6,12 @@ import SquareBtn from "../../components/dutch/SquareBtn/SquareBtn";
 
 import Product from "../../components/dutch/Product/Product";
 import backImg from "./../../assets/image/dutchheader.png";
-import { useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 import axios from "axios";
 import apiClient from "../../axios";
 import DutchComplite from "../../pages/DutchComplite/DutchComplite";
+
+import { useNavigate } from "react-router-dom";
 
 apiClient.get("/endpoint"); // https://your-api-base-url.com/endpoint
 
@@ -88,6 +89,7 @@ const DutchInvite = () => {
   const [confirmAmount, setConfirmAmount] = useState<number>(0); // 참가자 확정 금액
 
   const [stop, setStop] = useState(false);
+  const navigate = useNavigate();
 
   // 더치페이 방 입장 관련
   const [roomId, setRoomId] = useState<string>(
@@ -106,7 +108,7 @@ const DutchInvite = () => {
     "01923d9f-7b3d-7a9e-a0b3-24d7970f90d4"
   ); // 상점 ID
   const [merchantName, setMerchantName] = useState<string>("Example Merchant"); // 상점 이름
-  const [merchantThumbnailUrl, setMerchantThumbnailUrl] = useState<string>('')
+  const [merchantThumbnailUrl, setMerchantThumbnailUrl] = useState<string>("");
   const [categoryId, setCategoryId] = useState<string>("category"); // 카테고리 ID
   const [totalPrice, setTotalPrice] = useState<number>(10000); // 총 가격
   const [memberName, setMemberName] = useState<string | null>("");
@@ -157,7 +159,7 @@ const DutchInvite = () => {
   }, []);
 
   const goComplite = () => {
-    setProcess(6);
+    nav(`/dutch-result/${roomId}`);
   };
 
   // useEffect(() => {
@@ -295,17 +297,17 @@ const DutchInvite = () => {
           headers: {
             Authorization: `Bearer ${accessToken}`, // Authorization 헤더에 Bearer 토큰 추가
           },
-        });
-      console.log("상품 정보 조회 성공", response.data.data)
-      const productInfo = response.data.data
-      setMerchantName(productInfo.itemNames[0])
-      setMerchantThumbnailUrl(productInfo.thumbnailUrl)
-
+        }
+      );
+      console.log("상품 정보 조회 성공", response.data.data);
+      const productInfo = response.data.data;
+      setMerchantName(productInfo.itemNames[0]);
+      setMerchantThumbnailUrl(productInfo.thumbnailUrl);
     } catch (error) {
-      console.error("에러 발생", error)
-      console.log("상품조회 실패")
+      console.error("에러 발생", error);
+      console.log("상품조회 실패");
     }
-  }
+  };
 
   // //////////////////////////////////////////////////////////////////
   const leaveRoom = () => {
@@ -342,6 +344,12 @@ const DutchInvite = () => {
 
     console.log("confirm room:", roomId);
   };
+
+  useEffect(() => {
+    if (process === 6) {
+      navigate("/dutch-result", { state: { roomId } });
+    }
+  }, [process, navigate, roomId]); // process와 roomId가 변경될 때마다 effect가 실행됩니다.
 
   const confirm = () => {
     console.log("confirm Room");
@@ -728,9 +736,6 @@ const DutchInvite = () => {
               </DutchFin>
             ) : null}
             {/* //TODO: 여기 바꾸기 */}
-            {process === 6 ? (
-              <DutchComplite roomId={roomId}></DutchComplite>
-            ) : null}
           </Main>
 
           {/* <Bottom>
@@ -780,7 +785,10 @@ const DutchInvite = () => {
                     취소
                   </button>
                 ) : (
-                  <button onClick={goHome}>홈으로</button>
+                  <div>
+                    <button onClick={goHome}>홈으로</button>
+                    <button onClick={goComplite}>더치페이 현황</button>
+                  </div>
                 )}
               </div>
             </Modal>

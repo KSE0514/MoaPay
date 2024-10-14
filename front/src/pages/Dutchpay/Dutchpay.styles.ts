@@ -127,7 +127,7 @@ export const InviteTop = styled.div`
   flex-direction: column;
   gap: 20px;
   padding: 13% 0;
-  height: 41%;
+  // height: 41%;
 `;
 
 export const InviteTitle = styled.div`
@@ -151,6 +151,7 @@ export const ProcessContainer = styled.div`
   align-items: center;
   padding-left: 70px;
   position: relative;
+  height: 100px;
 `;
 
 export const ProcessLine = styled.div`

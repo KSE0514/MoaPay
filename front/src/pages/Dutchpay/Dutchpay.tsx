@@ -99,10 +99,6 @@ const Dutchpay = () => {
   // 테스트용 변수... 나중에 지울 예정(host)
   const [isHost, setIsHost] = useState<boolean>(true); // 쓰진 않을 것 같음...
 
-  const goComplite = () => {
-    setProcess(6);
-  };
-
   // // 참여자 수 바인딩
   // const onChangeMember = (e: React.ChangeEvent<HTMLInputElement>) => {
   //   console.log("확인용",e.target.value)
@@ -174,7 +170,7 @@ const Dutchpay = () => {
     "01923d9f-7b3d-7a9e-a0b3-24d7970f90d4"
   ); // 상점 ID
   const [merchantName, setMerchantName] = useState<string>("Example Merchant"); // 상점 이름
-  const [merchantThumbnailUrl, setMerchantThumbnailUrl] = useState<string>('')
+  const [merchantThumbnailUrl, setMerchantThumbnailUrl] = useState<string>("");
   const [categoryId, setCategoryId] = useState<string>("category"); // 카테고리 ID
   const [totalPrice, setTotalPrice] = useState<number>(0); // 총 가격
   // const [memberName, setMemberName] = useState<string>("유저이름");
@@ -183,6 +179,12 @@ const Dutchpay = () => {
   const [requestId, setRequestId] = useState<string>("");
 
   // console.log("이것도뜨나?")
+
+  // useEffect(() => {
+  //   if (process === 6) {
+  //     nav("/dutch-result", { state: { roomId } });
+  //   }
+  // }, [process, nav, roomId]); // process와 roomId가 변경될 때마다 effect가 실행됩니다.
 
   useEffect(() => {
     // totalPrice는 숫자형으로 변환하되, 유효하지 않을 경우 0으로 설정
@@ -207,13 +209,18 @@ const Dutchpay = () => {
     console.log("Request ID:", localStorage.getItem("requestId"));
 
     // 상품 정보 조회
-    loadProduct(localStorage.getItem("orderId") || "")
+    loadProduct(localStorage.getItem("orderId") || "");
   }, []);
 
   const settingStoreRequestId = (): string => {
     const newRequestId = uuidv4();
     localStorage.setItem("requestId", newRequestId);
     return newRequestId;
+  };
+
+  const goComplite = () => {
+    console.log("dutchRoom ID : ", roomId);
+    nav(`/dutch-result/${roomId}`);
   };
 
   // 방 생성 함수
@@ -437,17 +444,17 @@ const Dutchpay = () => {
           headers: {
             Authorization: `Bearer ${accessToken}`, // Authorization 헤더에 Bearer 토큰 추가
           },
-        });
-      console.log("상품 정보 조회 성공", response.data.data)
-      const productInfo = response.data.data
-      setMerchantName(productInfo.itemNames[0])
-      setMerchantThumbnailUrl(productInfo.thumbnailUrl)
-
+        }
+      );
+      console.log("상품 정보 조회 성공", response.data.data);
+      const productInfo = response.data.data;
+      setMerchantName(productInfo.itemNames[0]);
+      setMerchantThumbnailUrl(productInfo.thumbnailUrl);
     } catch (error) {
-      console.error("에러 발생", error)
-      console.log("상품조회 실패")
+      console.error("에러 발생", error);
+      console.log("상품조회 실패");
     }
-  }
+  };
 
   useEffect(() => {
     console.log("hello..?");
@@ -509,7 +516,7 @@ const Dutchpay = () => {
   const onClickPaymentBtn = () => {
     // 결제하는 api 작성
 
-    setProcess(3); // 다음 화면으로 전환
+    setProcess(4); // 다음 화면으로 전환
   };
 
   const finish = () => {
@@ -895,7 +902,7 @@ const Dutchpay = () => {
                 </Bottom>
               </DutchFin>
             ) : null}
-            //TODO: 여기도 바꿔야함
+            {/* //TODO: 여기도 바꿔야함 */}
             {process === 6 ? (
               <DutchComplite roomId={roomId}></DutchComplite>
             ) : null}
