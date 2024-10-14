@@ -53,7 +53,7 @@ const List = ({ consumptionList }: Props) => {
                 .slice(0, -4)}
             </p>
             <p>
-              {`${consumption.per}%`} | {consumption.money.toLocaleString()}{" "}
+              {`${consumption.per}%`} | {consumption.money.toLocaleString()}원
             </p>
           </div>
         </ListItem>

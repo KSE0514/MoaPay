@@ -78,8 +78,7 @@ export const ListItem = styled.div`
     & > div {
       width: 55px;
       height: 55px;
-      background-color: #b97df9;
-      border-radius: 1px solid white;
+      border: 1px solid pink;
       border-radius: 50%;
       display: flex;
       justify-content: center;

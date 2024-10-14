@@ -248,7 +248,7 @@ const UserCardDetail = () => {
                   }}
                 />
               </Progress>
-              <div className="goal" style={{ marginBottom: 10 }}>
+              <div className="goal">
                 {selectedCard?.cardProduct.cardProductPerformance.toLocaleString()}
               </div>
             </div>
