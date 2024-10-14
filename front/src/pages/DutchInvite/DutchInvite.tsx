@@ -106,6 +106,7 @@ const DutchInvite = () => {
     "01923d9f-7b3d-7a9e-a0b3-24d7970f90d4"
   ); // 상점 ID
   const [merchantName, setMerchantName] = useState<string>("Example Merchant"); // 상점 이름
+  const [merchantThumbnailUrl, setMerchantThumbnailUrl] = useState<string>('')
   const [categoryId, setCategoryId] = useState<string>("category"); // 카테고리 ID
   const [totalPrice, setTotalPrice] = useState<number>(10000); // 총 가격
   const [memberName, setMemberName] = useState<string | null>("");
@@ -144,6 +145,9 @@ const DutchInvite = () => {
     console.log(totalPRICE);
     setTotalPrice(Number(totalPRICE));
     setOrderId(orderID);
+
+    //상품정보 불러오기
+    loadProduct(orderID);
 
     getRoomInfo(joinRoomId); // 방 정보 가지고 오기
   }, []);
@@ -281,6 +285,27 @@ const DutchInvite = () => {
   useEffect(() => {
     console.log(`Process changed to ${process}`);
   }, [process]);
+
+  const loadProduct = async (orderId: string) => {
+    try {
+      const response = await apiClient.get(
+        `/api/moapay/core/dutchpay/orderInfo/${orderId}`,
+        {
+          withCredentials: true,
+          headers: {
+            Authorization: `Bearer ${accessToken}`, // Authorization 헤더에 Bearer 토큰 추가
+          },
+        });
+      console.log("상품 정보 조회 성공", response.data.data)
+      const productInfo = response.data.data
+      setMerchantName(productInfo.itemNames[0])
+      setMerchantThumbnailUrl(productInfo.thumbnailUrl)
+
+    } catch (error) {
+      console.error("에러 발생", error)
+      console.log("상품조회 실패")
+    }
+  }
 
   // //////////////////////////////////////////////////////////////////
   const leaveRoom = () => {
@@ -640,6 +665,8 @@ const DutchInvite = () => {
                 setConfirmAmount={setConfirmAmount}
                 totalPrice={totalPrice}
                 isHostProp={false}
+                merchantName={merchantName}
+                merchantThumbnailUrl={merchantThumbnailUrl}
               />
             ) : null}
             {/* //TODO : 바꾸기 */}
@@ -648,6 +675,8 @@ const DutchInvite = () => {
                 onClick={onClickPaymentBtn}
                 confirmAmount={confirmAmount}
                 onFinish={handleFinish}
+                merchantName={merchantName}
+                merchantThumbnailUrl={merchantThumbnailUrl}
               />
             ) : null}
             {process === 3 ? (
@@ -764,10 +793,11 @@ const DutchInvite = () => {
             <div>
               {/* 상품 정보는 또 어떻게 들고와야하지... */}
               <Product
-                productName={"새콤달콤 티니핑 시즌4 하츄핑 꽃다발 봉제 인형"}
+                productName={merchantName}
                 productUrl={
                   "https://www.ssg.com/item/itemView.ssg?itemId=1000566517100"
                 }
+                productImg={merchantThumbnailUrl}
               />
             </div>
           </WaitingTop>

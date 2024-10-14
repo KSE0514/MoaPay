@@ -5,9 +5,10 @@ import testImg from "./../../../assets/image/image.png";
 interface ProductProps {
   productName: string;
   productUrl: string;
+  productImg: string;
 }
 
-const Product = ({ productName, productUrl }: ProductProps) => {
+const Product = ({ productName, productUrl, productImg }: ProductProps) => {
   return (
     <ProductCard
       onClick={() => {
@@ -16,7 +17,7 @@ const Product = ({ productName, productUrl }: ProductProps) => {
     >
       {/* 상품 미리보기 사진 */}
       <div>
-        <img src={testImg} />
+        <img src={productImg} />
       </div>
 
       <ProductInfo>

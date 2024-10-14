@@ -814,6 +814,8 @@ const Dutchpay = () => {
                 onClick={onClickPaymentBtn}
                 confirmAmount={confirmAmount}
                 onFinish={finish}
+                merchantName={merchantName}
+                merchantThumbnailUrl={merchantThumbnailUrl}
               />
             ) : null}
             {process === 4 ? (
@@ -893,7 +895,7 @@ const Dutchpay = () => {
                 </Bottom>
               </DutchFin>
             ) : null}
-            {/* //TODO: 여기도 바꿔야함 */}
+            //TODO: 여기도 바꿔야함
             {process === 6 ? (
               <DutchComplite roomId={roomId}></DutchComplite>
             ) : null}
