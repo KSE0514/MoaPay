@@ -7,6 +7,7 @@ import { Client } from "@stomp/stompjs";
 import { useAuthStore } from "../../store/AuthStore";
 import Payment from "../../components/dutch/Payment/Payment";
 import apiClient from "../../axios";
+import { v4 as uuidv4 } from "uuid"; // ES Modules
 
 apiClient.get("/endpoint"); // https://your-api-base-url.com/endpoint
 
@@ -636,7 +637,7 @@ const Dutchpay = () => {
                 process={process}
                 setConfirmAmount={setConfirmAmount}
                 totalPrice={totalPrice}
-                isHostProp = {true}
+                isHostProp={true}
               />
             }
           </Main>
