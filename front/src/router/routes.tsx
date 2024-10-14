@@ -98,7 +98,7 @@ const router = createBrowserRouter([
           { path: PATH.ADD_CARD, element: <RegisterCard /> },
           {
             path: PATH.SELECT_PAYMENT_TYPE,
-            element: <SelectPaymentType></SelectPaymentType>,
+            element: <SelectPaymentType />,
           },
           {
             path: PATH.DUTCHPAY,
