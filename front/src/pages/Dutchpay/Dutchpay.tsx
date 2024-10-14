@@ -100,7 +100,7 @@ const Dutchpay = () => {
   const [isHost, setIsHost] = useState<boolean>(true); // 쓰진 않을 것 같음...
 
   const goComplite = () => {
-    setProcess(6);
+    nav("/dutch-result", { state: { roomId } });
   };
 
   // // 참여자 수 바인딩
@@ -184,11 +184,11 @@ const Dutchpay = () => {
 
   // console.log("이것도뜨나?")
 
-  useEffect(() => {
-    if (process === 6) {
-      nav("/dutch-result", { state: { roomId } });
-    }
-  }, [process, nav, roomId]); // process와 roomId가 변경될 때마다 effect가 실행됩니다.
+  // useEffect(() => {
+  //   if (process === 6) {
+  //     nav("/dutch-result", { state: { roomId } });
+  //   }
+  // }, [process, nav, roomId]); // process와 roomId가 변경될 때마다 effect가 실행됩니다.
 
   useEffect(() => {
     // totalPrice는 숫자형으로 변환하되, 유효하지 않을 경우 0으로 설정
@@ -519,7 +519,7 @@ const Dutchpay = () => {
   };
 
   const finish = () => {
-    setProcess(5);
+    setProcess(4);
   };
 
   const onClickRequestUrl = () => {
