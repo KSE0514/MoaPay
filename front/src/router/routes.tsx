@@ -101,6 +101,26 @@ const router = createBrowserRouter([
             path: PATH.SELECT_PAYMENT_TYPE,
             element: <SelectPaymentType></SelectPaymentType>,
           },
+          {
+            path: PATH.DUTCHPAY,
+            element: <Dutchpay />,
+          },
+          {
+            path: PATH.DUTCHINVITE,
+            element: <DutchInvite />,
+          },
+          {
+            path: PATH.DUTCHPARTICIPATION,
+            element: <DutchParticipation />,
+          },
+          {
+            path: PATH.PAYMENT,
+            element: <Payment />,
+          },
+          {
+            path: PATH.DUTCHOPEN,
+            element: <DutchOpen />,
+          },
         ],
       },
       {
@@ -116,26 +136,7 @@ const router = createBrowserRouter([
         path: PATH.SETTING_BIOMETRICS_LOGIN,
         element: <SettingBiometricsLogin />,
       },
-      {
-        path: PATH.DUTCHPAY,
-        element: <Dutchpay />,
-      },
-      {
-        path: PATH.DUTCHINVITE,
-        element: <DutchInvite />,
-      },
-      {
-        path: PATH.DUTCHPARTICIPATION,
-        element: <DutchParticipation />,
-      },
-      {
-        path: PATH.PAYMENT,
-        element: <Payment />,
-      },
-      {
-        path: PATH.DUTCHOPEN,
-        element: <DutchOpen />,
-      },
+      
     ],
   },
 ]);
