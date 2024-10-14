@@ -58,10 +58,6 @@ interface ParticipantInfo {
 //   price: number
 // }
 
-const goComplite = () => {
-  setProcess(6);
-};
-
 const Dutchpay = () => {
   const nav = useNavigate();
   // const location = useLocation();
@@ -102,6 +98,10 @@ const Dutchpay = () => {
 
   // 테스트용 변수... 나중에 지울 예정(host)
   const [isHost, setIsHost] = useState<boolean>(true); // 쓰진 않을 것 같음...
+
+  const goComplite = () => {
+    setProcess(6);
+  };
 
   // // 참여자 수 바인딩
   // const onChangeMember = (e: React.ChangeEvent<HTMLInputElement>) => {
