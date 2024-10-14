@@ -50,10 +50,10 @@ export const Wrapper = styled.div`
   }
 `;
 export const Benefits = styled.div`
+  list-style: none;
   header {
   }
   ul {
-    list-style: none;
     div {
       height: 100%;
       width: 100%;
