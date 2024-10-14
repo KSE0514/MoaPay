@@ -61,6 +61,7 @@ interface ParticipantProps {
   roomInfo?: DutchPayInfo;
   setConfirmAmount: (amount: number) => void;
   totalPrice: number;
+  isHostProp: boolean;
 }
 
 type UUID = string; // UUID를 문자열로 간주
@@ -113,6 +114,7 @@ const Participant = ({
   roomInfo,
   totalPrice,
   setConfirmAmount,
+  isHostProp,
 }: ParticipantProps) => {
   const convertDutchPayItemsToParticipantInfo = (
     items: DutchPayItem[]
@@ -318,7 +320,8 @@ const Participant = ({
 
   useEffect(() => {
     setDutchStart(false);
-    setIsHost(JSON.parse(localStorage.getItem("isHost") || "false")); // localStorage에서 가져오는 코드
+    setIsHost(isHostProp);
+    // setIsHost(JSON.parse(localStorage.getItem("isHost") || "false")); // localStorage에서 가져오는 코드
 
     console.log(roomInfo);
   }, []);
