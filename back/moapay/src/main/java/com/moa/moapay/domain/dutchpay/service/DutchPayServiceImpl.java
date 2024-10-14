@@ -239,9 +239,11 @@ public class DutchPayServiceImpl implements DutchPayService {
 
         DutchPay dutchPay = dutchPayRepository.findByUuid(dutchPayPaymentRequsetDto.getDutchPayId());
 
+        log.info("dutchPayID : {}", dutchPayPaymentRequsetDto.getDutchPayId());
+
         if(dutchPay.getPayStatus().equals(DutchStatus.READY)) {
             ExecuteDutchPayRequestDto executeGeneralPayRequestDto = ExecuteDutchPayRequestDto.builder()
-                    .dutchPayId(dutchPay.getUuid())
+                    .dutchPayId(dutchPayPaymentRequsetDto.getDutchPayId())
                     .requestId(dutchPayPaymentRequsetDto.getRequestId())
                     .cvc(dutchPayPaymentRequsetDto.getCvc())
                     .cardNumber(dutchPayPaymentRequsetDto.getCardNumber())
@@ -308,12 +310,12 @@ public class DutchPayServiceImpl implements DutchPayService {
         }
         else if(status.equals("PROGRESS")){
             // 결제 요청 다시
-//            FCMMessageDto fcm = FCMMessageDto.builder()
-//                    .memberId(byUuid.getMemberId())
-//                    .title("MoaPay")
-//                    .message("결제 실패")
-//                    .build();
-//            fcmService.pushNotification(fcm);
+            FCMMessageDto fcm = FCMMessageDto.builder()
+                    .memberId(byUuid.getMemberId())
+                    .title("MoaPay")
+                    .message("결제 실패")
+                    .build();
+            fcmService.pushNotification(fcm);
 
             log.info("결제 실패");
             dutchPayRepository.updateByDutchUuid(dutchUuid, DutchStatus.READY);
@@ -331,30 +333,34 @@ public class DutchPayServiceImpl implements DutchPayService {
             for (DutchPay dutchPay : dutchPayList) { // 해당 더치 내역 다돌면서
                 DutchStatus dutchStatus = dutchPay.getPayStatus();
                 if(!dutchStatus.equals(DutchStatus.DONE)) {
+                    log.info("더치 완료 ?? {}, {}", dutchPay.getMemberName(), dutchPay.getPayStatus());
                     if(dutchPay.getUuid().equals(dutchPayCompleteVo.getDutchUuid())){
                         continue;
                     }
                     flag = false;
                 }
-//                FCMMessageDto fcmMessageDto = FCMMessageDto.builder()
-//                        .memberId(dutchPay.getMemberId())
-//                        .title("MoaPay")
-//                        .message(dutchPayMember.getMemberName() + " 님의 더치페이 결제가 완료되었습니다.")
-//                        .build();
-//                fcmService.pushNotification(fcmMessageDto);
+
+                log.info("더치페이 : {}", dutchPay.toString());
+
+                FCMMessageDto fcmMessageDto = FCMMessageDto.builder()
+                        .memberId(dutchPay.getMemberId())
+                        .title("MoaPay")
+                        .message(dutchPayMember.getMemberName() + " 님의 더치페이 결제가 완료되었습니다.")
+                        .build();
+                fcmService.pushNotification(fcmMessageDto);
             }
 
             if(flag) {
                 log.info("더치페이 완료");
                 // 일단 오류 때문에 넣어둠
-//                for(DutchPay dutchPay : dutchPayList) {
-//                    FCMMessageDto fcmMessageDto = FCMMessageDto.builder()
-//                            .memberId(dutchPay.getMemberId())
-//                            .title("MoaPay")
-//                            .message("더치페이가 완료되었습니다.")
-//                            .build();
-//                    fcmService.pushNotification(fcmMessageDto);
-//                }
+                for(DutchPay dutchPay : dutchPayList) {
+                    FCMMessageDto fcmMessageDto = FCMMessageDto.builder()
+                            .memberId(dutchPay.getMemberId())
+                            .title("MoaPay")
+                            .message("더치페이가 완료되었습니다.")
+                            .build();
+                    fcmService.pushNotification(fcmMessageDto);
+                }
                 dutchRoomRepository.updateDutchRoomConfirm(byDutchUuid.getCurPerson(), DutchStatus.DONE, byDutchUuid.getUuid());
             }
 

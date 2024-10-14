@@ -91,6 +91,9 @@ public class CardServiceImpl implements CardService {
             throw new BusinessException(HttpStatus.BAD_REQUEST, "유효하지 않은 카드 정보입니다.2");
         }
         CardProduct product = myCard.getProduct();
+
+        log.info("merchant Id = {}", dto.getMerchantId());
+
         Merchant merchant = merchantRepository.findByUuid(dto.getMerchantId())
                 .orElseThrow(() -> new BusinessException(HttpStatus.BAD_REQUEST, "유효하지 않은 카드 정보입니다.3"));
         // [2] 결제 가능한 상태인지 확인

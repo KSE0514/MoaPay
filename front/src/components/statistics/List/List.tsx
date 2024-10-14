@@ -9,6 +9,7 @@ interface Props {
 const List = ({ consumptionList }: Props) => {
   const imgRefs = useRef<(HTMLImageElement | null)[]>([]); // 여러 이미지 요소 참조
 
+  console.log("마지막 위치", consumptionList);
   const { getCategoryImage } = useCardStore();
   useEffect(() => {
     imgRefs.current.forEach((imgElement) => {
@@ -34,19 +35,23 @@ const List = ({ consumptionList }: Props) => {
         <ListItem key={index}>
           <div className="Col">
             <div>
-              {consumption.category === "ALL" ? (
+              {consumption.categoryId === "ALL" ? (
                 <p style={{ color: "white", fontWeight: "600" }}>ALL</p>
               ) : (
                 <img
                   ref={(el) => (imgRefs.current[index] = el)} // 각 이미지를 참조 배열에 저장
-                  src={getCategoryImage(consumption.category)}
-                  alt={consumption.category}
+                  src={getCategoryImage(consumption.categoryId)}
+                  alt={consumption.categoryId}
                 />
               )}
             </div>
           </div>
           <div className="Col">
-            <p>{`${consumption.category}`}</p>
+            <p>
+              {getCategoryImage(consumption.categoryId)
+                .replace("/assets/image/category/", "")
+                .slice(0, -4)}
+            </p>
             <p>
               {`${consumption.per}%`} | {consumption.money.toLocaleString()}{" "}
             </p>

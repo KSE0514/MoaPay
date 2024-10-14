@@ -1,18 +1,19 @@
-import {
-  ProductCard,
-  ProductInfo
-} from './Product.styles'
+import { ProductCard, ProductInfo } from "./Product.styles";
 
-import testImg from './../../../assets/image/testImg.png'
+import testImg from "./../../../assets/image/image.png";
 
 interface ProductProps {
   productName: string;
   productUrl: string;
 }
 
-const Product = ({productName, productUrl}:ProductProps) => {
+const Product = ({ productName, productUrl }: ProductProps) => {
   return (
-    <ProductCard onClick={() => {window.open(productUrl)}}>
+    <ProductCard
+      onClick={() => {
+        window.open(productUrl);
+      }}
+    >
       {/* 상품 미리보기 사진 */}
       <div>
         <img src={testImg} />
@@ -26,7 +27,7 @@ const Product = ({productName, productUrl}:ProductProps) => {
         <div>{productUrl}</div>
       </ProductInfo>
     </ProductCard>
-  )
-}
+  );
+};
 
-export default Product
+export default Product;

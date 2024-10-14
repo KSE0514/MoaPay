@@ -209,7 +209,7 @@ export const Loading = styled.div`
     -moz-box-shadow: 9px 9px 9px -2px rgba(135, 58, 224, 0.52);
     -webkit-box-shadow: 9px 9px 9px -2px rgba(135, 58, 224, 0.52);
     transform: rotate(90deg);
-    animation: slide-down 1.2s 0.6s cubic-bezier(0.645, 0.045, 0.355, 1) both;
+    animation: slide-down 1.2s 0.8s cubic-bezier(0.645, 0.045, 0.355, 1) both;
   }
   .card-fadeout {
     animation: slide-up 1.2s 1s cubic-bezier(0.645, 0.045, 0.355, 1) both;
@@ -415,7 +415,7 @@ export const Result = styled.div`
   width: 100%;
   left: 0;
   transform: translateY(-100%);
-  animation: ${slideUp} 1s 2.5s forwards;
+  animation: ${slideUp} 1s forwards;
   background: linear-gradient(120deg, #f1e5ff 6%, #dcbefc 50%, #ffc6ff);
   display: flex;
   flex-direction: column;

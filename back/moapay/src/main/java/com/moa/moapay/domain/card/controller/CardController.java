@@ -33,7 +33,7 @@ public class CardController {
 
     @GetMapping("/mycard/{memberId}")
     public ResponseEntity<ResultResponse> mycard(@PathVariable UUID memberId) {
-        List<MyCardInfoDto> myCardInfo = myCardService.getMyCardInfo(memberId);
+        List<GetMyCardsResponseDto> myCardInfo = myCardService.getMyCardInfo(memberId);
         ResultResponse resultResponse = ResultResponse.of(HttpStatus.OK, "나의 카드 조회", myCardInfo);
         return ResponseEntity.status(resultResponse.getStatus()).body(resultResponse);
     }

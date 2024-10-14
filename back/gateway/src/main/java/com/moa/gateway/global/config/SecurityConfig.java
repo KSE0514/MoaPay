@@ -1,41 +1,23 @@
 package com.moa.gateway.global.config;
 
-import java.util.Arrays;
-import java.util.List;
-import java.util.Objects;
-
+import com.moa.gateway.global.exception.BusinessException;
+import com.moa.gateway.security.JwtUtil;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.ReactiveAuthenticationManager;
 import org.springframework.security.config.Customizer;
-import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
-import org.springframework.security.config.annotation.web.builders.HttpSecurity;
-import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
-import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.annotation.web.reactive.EnableWebFluxSecurity;
-import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.config.web.server.SecurityWebFiltersOrder;
 import org.springframework.security.config.web.server.ServerHttpSecurity;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.server.SecurityWebFilterChain;
 import org.springframework.security.web.server.authentication.AuthenticationWebFilter;
 import org.springframework.security.web.server.authentication.ServerAuthenticationConverter;
 import org.springframework.security.web.server.context.NoOpServerSecurityContextRepository;
-import org.springframework.web.cors.CorsConfiguration;
-import org.springframework.web.cors.CorsConfigurationSource;
-import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
-import org.springframework.web.cors.reactive.CorsWebFilter;
-import org.springframework.web.server.WebFilter;
-
-import com.moa.gateway.global.exception.BusinessException;
-import com.moa.gateway.security.JwtUtil;
-
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import reactor.core.publisher.Mono;
+
+import java.util.Objects;
 
 @Configuration
 @EnableWebFluxSecurity
@@ -86,7 +68,15 @@ public class SecurityConfig {
                                         "/api/moapay/core/generalpay/offline", "/moapay/core/generalpay/offline",
                                         "/api/moapay/pay/notification/subscribe/**", "/moapay/pay/notification/subscribe/**",
                                         "/api/moapay/core/card/getMyCardIds", "/moapay/core/card/getMyCardIds",
-                                        "/api/moapay/pay/charge/getPaymentLog", "/moapay/pay/charge/getPaymentLog"
+                                        "/api/moapay/pay/charge/getPaymentLog", "/moapay/pay/charge/getPaymentLog",
+                                        "/api/moapay/member/getMember", "/moapay/member/getMember",
+                                        "/api/moapay/pay/analysis/saveAverage", "/moapay/pay/analysis/saveAverage",
+                                        "/api/moapay/member/getMember", "/api/moapay/core/card/getMemberId",
+                                        "/api/moapay/core/card/getMemberCard", "/moapay/member/getMember",
+                                        "/moapay/core/card/getMemberId", "/moapay/core/card/getMemberCard",
+                                        "/moapay/core/ws/dutchpay", "/moapay/core/dutchpay/createRoom",
+                                        "/api/moapay/core/ws/dutchpay", "/api/moapay/core/dutchpay/createRoom",
+                                        "/ws/**"
                                 )
                                 .permitAll()
                                 .anyExchange()

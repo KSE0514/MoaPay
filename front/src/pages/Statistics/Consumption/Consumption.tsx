@@ -11,11 +11,13 @@ const Consumption = () => {
   const [consumptionList, setConsumptionList] = useState<categoryData[]>(
     location.state || [] // location.state가 없을 때 빈 배열로 초기화
   );
+  console.log("소비 location은 있을까용 >? ", location.state);
+
   const getConsumptionData = async () => {
+    console.log("first get Data");
     try {
       const response = await axios.post(
-        // `https://j11c201.p.ssafy.io/api/moapay/pay/statistics/consumption/${selectedYear}/${selectedMonth}`,
-        `/api/moapay/pay/statistics/consumption/${new Date().getFullYear}/${
+        `/api/moapay/pay/statistics/consumption/${new Date().getFullYear()}/${
           new Date().getMonth() + 1
         }`,
         {
@@ -34,13 +36,18 @@ const Consumption = () => {
       console.log(e);
     }
   };
-  // 처음 렌더링되는 경우 = 데이터가 없음 그렇기에 받아와야함
+
+  // 처음 렌더링될 때 데이터를 가져오고, location.state가 변경될 때 consumptionList를 업데이트
   useEffect(() => {
-    if (consumptionList.length === 0) {
-      console.log("첫 렌더링 후 소비 내역 불러오기 ");
-      getConsumptionData();
+    if (location.state) {
+      // location.state가 있을 때는 해당 데이터를 사용
+      console.log("location.state를 기반으로 리스트 업데이트");
+      setConsumptionList(location.state);
+    } else {
+      console.log("데이터 가져올 거에옹");
+      getConsumptionData(); // location.state가 없을 때는 API 호출
     }
-  }, [consumptionList]);
+  }, [location.state]); // location.state가 변경될 때 호출
 
   return (
     <>

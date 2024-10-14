@@ -72,6 +72,9 @@ const Home = () => {
     }
   };
 
+  /**
+   *
+   */
   const getCardBarcodeValue = async (
     barcodeCardNumber: string,
     barcodeCvc: string,
@@ -225,7 +228,7 @@ const Home = () => {
   };
   const getUserCard = async () => {
     try {
-      const response = await axios.get(`moapay/core/card/mycard/${id}`, {
+      const response = await axios.get(`/api/moapay/core/card/mycard/${id}`, {
         withCredentials: true,
         headers: {
           Authorization: `Bearer ${accessToken}`,

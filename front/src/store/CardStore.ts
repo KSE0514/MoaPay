@@ -10,7 +10,7 @@ export interface payLog {
 }
 
 export interface categoryData {
-  category: string;
+  categoryId: string;
   money: number;
   per: number;
 }
@@ -60,7 +60,7 @@ export interface CardProduct {
   cardProductAnnualFeeForeign: number; // 해외 연회비
   cardProductPerformance: number; // 전월 실적
   cardProductImgUrl: string; // 이미지 url
-  benefits: Benefit[] | null; // 혜택 목록
+  cardBenefits: Benefit[] | null; // 혜택 목록
 }
 
 export interface Accounts {
@@ -118,7 +118,7 @@ export const useCardStore = create<CardState>()(
           cardProductAnnualFeeForeign: 0, // 해외 연회비 0
           cardProductPerformance: 0, // 전월 실적 0
           cardProductImgUrl: "", // 이미지 URL 빈 문자열
-          benefits: [], // 혜택 목록 빈 배열
+          cardBenefits: [], // 혜택 목록 빈 배열
         },
         accounts: {
           accountUuid: "", // 빈 문자열
@@ -144,7 +144,7 @@ export const useCardStore = create<CardState>()(
           cardProductAnnualFeeForeign: 0, // 해외 연회비 10,000
           cardProductPerformance: 0, // 전월 실적 30
           cardProductImgUrl: "card.png", // 이미지 URL card.png
-          benefits: [], // 혜택 목록 빈 배열
+          cardBenefits: [], // 혜택 목록 빈 배열
         },
         accounts: {
           accountUuid: "", // 예시 계좌 UUID

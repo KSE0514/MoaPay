@@ -27,6 +27,7 @@ import { Swiper, SwiperSlide } from "swiper/react";
 import "../../../node_modules/swiper/swiper-bundle.min.css";
 import ParticleCanvas from "../../components/ParticleCanvas";
 import { useCardStore } from "../../store/CardStore";
+import BiometricsAuthModal from "../BiometricsAuthModal/BiometricsAuthModal";
 interface BenefitDetail {
   discount: number; // long, 할인 금액
   point: number; // long, 적립 포인트
@@ -74,21 +75,25 @@ interface AppClientResponse {
  * false true => 결제 완료  창
  */
 const SelectPaymentType = () => {
+  const [showModal, setShowModal] = useState<boolean>(false);
+  const [isAuth, setIsAuth] = useState<boolean>(false);
   const { accessToken, id, paymentType } = useAuthStore();
   const { cardList } = useCardStore();
   const navigate = useNavigate();
 
+  //인증이 끝났을때
+  const endAuth = () => {
+    setIsAuth(true);
+    setShowModal(false);
+  };
+
   // 쿼리 파라미터 값 읽기
   const [searchParams] = useSearchParams();
-  // const orderId = searchParams.get("orderId");
-  // const totalPrice = searchParams.get("totalPrice");
-  // const categoryId = searchParams.get("categoryId");
-  // const merchantId = searchParams.get("merchantId");
-  // const QRCode = searchParams.get("QRCode");
-  const orderId = '0192719d-1efd-7f62-a92d-5c45c1935e6c'
-  const totalPrice = '1234'
-  const categoryId = 'C0001'
-  const merchantId = '0192719d-1efd-7dff-8265-79918bf46041'
+  const orderId = searchParams.get("orderId");
+  const totalPrice = searchParams.get("totalPrice");
+  const categoryId = searchParams.get("categoryId");
+  const merchantId = searchParams.get("merchantId");
+  const QRCode = searchParams.get("QRCode");
 
   // 단일결제 = single , 분할결제 = multi , 분할결제 = dutch
   const [selectedPayType, setSelectedPayType] = useState<string | null>(null);
@@ -170,12 +175,11 @@ const SelectPaymentType = () => {
           setPaymentResult(data);
 
           // 결제가 완료된 후에는 loading 을 false로 변경하고
-          setIsLoading(false);
-
-          //결과를 보여줄 수 있도록 isEnd를 true로 변경
           setTimeout(() => {
-            setIsEnd(true);
+            setIsLoading(false);
           }, 2000); // 2000 밀리초 = 2초
+          //결과를 보여줄 수 있도록 isEnd를 true로 변경
+          setIsEnd(true);
           // 결제 requestId 삭제하기
           localStorage.removeItem("requestId");
           //결과 담기
@@ -206,7 +210,7 @@ const SelectPaymentType = () => {
   }, [requestId]);
 
   /**
-   * 결제 진행 함수
+   * 결제 시작 함수 - 모달을 연다. setShowModal(true)
    */
   const startPay = async () => {
     const storedRequestId = localStorage.getItem("requestId");
@@ -223,109 +227,161 @@ const SelectPaymentType = () => {
       storedTotalPrice
     );
     if (selectedPayType == "single") {
-      //카드 선택할 수 있도록 함
-      console.log(
-        "=======================single payment gogo================="
-      );
-      try {
-        setIsLoading(true);
-        const response = await axios.post(
-          // `https://j11c201.p.ssafy.io/api/moapay/core/generalpay/pay`,
-          `/api/moapay/core/generalpay/pay`,
-          // `http://localhost:8765/moapay/core/generalpay/pay`,
-          {
-            requestId: storedRequestId,
-            orderId: storedOrderId,
-            merchantId: storedMerchantId,
-            categoryId: storedCategoryId,
-            totalPrice: parseInt(storedTotalPrice, 10),
-            memberId: id,
-            cardSelectionType: "FIX",
-            recommendType: paymentType || "PERFORM", // RECOMMEND인 경우 사용, BENEFIT / PERFORM
-            cardNumber: cardList[0].cardNumber, // FIX인 경우 사용
-            cvc: cardList[0].cvc, // FIX인 경우 사용
-          },
-          // {
-          //   requestId: storedRequestId,
-          //   orderId: storedOrderId,
-          //   merchantId: storedMerchantId,
-          //   categoryId: storedCategoryId,
-          //   totalPrice: parseInt(storedTotalPrice, 10),
-          //   memberId: id,
-          //   cardSelectionType: "FIX",
-          //   recommendType: "BENEFIT", // RECOMMEND인 경우 사용, BENEFIT / PERFORM
-          //   cardNumber: "3998541707334420", // FIX인 경우 사용
-          //   cvc: "123", // FIX인 경우 사용
-          // },
-          {
-            withCredentials: true,
-            headers: {
-              Authorization: `Bearer ${accessToken}`,
-              "Content-Type": "application/json",
-            },
-          }
-        );
-        console.log(response);
-      } catch (e) {
-        console.log(e);
-      }
+      setShowModal(true);
+      // setIsAuth(true);
     } else if (selectedPayType == "multi") {
-      console.log("=======================multi payment gogo=================");
-      try {
-        setIsLoading(true);
-        const response = await axios.post(
-          // `https://j11c201.p.ssafy.io/api/moapay/core/generalpay/pay`,
-          `/api/moapay/core/generalpay/pay`,
-          // `http://localhost:8765/moapay/core/generalpay/pay`,
-          {
-            requestId: storedRequestId,
-            orderId: storedOrderId,
-            merchantId: storedMerchantId,
-            categoryId: storedCategoryId,
-            totalPrice: parseInt(storedTotalPrice, 10),
-            memberId: id,
-            cardSelectionType: "RECOMMEND",
-            recommendType: paymentType || "PERFORM", // RECOMMEND인 경우 사용, BENEFIT / PERFORM
-            cardNumber: cardList[0].cardNumber, // FIX인 경우 사용
-            cvc: cardList[0].cvc, // FIX인 경우 사용
-          },
-          // {
-          //   requestId: storedRequestId,
-          //   orderId: storedOrderId,
-          //   merchantId: storedMerchantId,
-          //   categoryId: storedCategoryId,
-          //   totalPrice: parseInt(storedTotalPrice, 10),
-          //   memberId: id,
-          //   cardSelectionType: "FIX",
-          //   recommendType: "BENEFIT", // RECOMMEND인 경우 사용, BENEFIT / PERFORM
-          //   cardNumber: "3998541707334420", // FIX인 경우 사용
-          //   cvc: "123", // FIX인 경우 사용
-          // },
-          {
-            withCredentials: true,
-            headers: {
-              Authorization: `Bearer ${accessToken}`,
-              "Content-Type": "application/json",
-            },
-          }
-        );
-        console.log(response);
-      } catch (e) {
-        console.log(e);
-      }
-
-      // 요청보내기
+      setShowModal(true);
+      // setIsAuth(true);
     } else if (selectedPayType == "dutch") {
       //더치페이지로 이동할때 필요한 정보 들고 가세용
-      // console.log(orderId)
-      localStorage.setItem("orderId", orderId);
-      localStorage.setItem("totalPrice", totalPrice);
-      localStorage.setItem("categoryId", categoryId);
-      localStorage.setItem("merchantId", merchantId);
-      localStorage.setItem("requestId", requestId);
-      navigate(PATH.DUTCHOPEN)
+      navigate(PATH.DUTCHOPEN);
     }
   };
+
+  /**
+   * 결제 진행함수
+   */
+  const multiPaying = async () => {
+    const storedRequestId = localStorage.getItem("requestId");
+    const storedOrderId = localStorage.getItem("orderId");
+    const storedMerchantId = localStorage.getItem("merchantId");
+    const storedCategoryId = localStorage.getItem("categoryId");
+    const storedTotalPrice = localStorage.getItem("totalPrice") || "0";
+    const storedQRCode = localStorage.getItem("QRCode");
+    console.log(
+      storedRequestId,
+      storedOrderId,
+      storedMerchantId,
+      storedCategoryId,
+      storedTotalPrice
+    );
+    try {
+      setIsLoading(true);
+      const response = await axios.post(
+        // `https://j11c201.p.ssafy.io/api/moapay/core/generalpay/pay`,
+        `/api/moapay/core/generalpay/pay`,
+        // `http://localhost:8765/moapay/core/generalpay/pay`,
+        {
+          requestId: storedRequestId,
+          orderId: storedOrderId,
+          merchantId: storedMerchantId,
+          categoryId: storedCategoryId,
+          totalPrice: parseInt(storedTotalPrice, 10),
+          memberId: id,
+          cardSelectionType: "RECOMMEND",
+          recommendType: paymentType || "PERFORM", // RECOMMEND인 경우 사용, BENEFIT / PERFORM
+          cardNumber: cardList[0].cardNumber, // FIX인 경우 사용
+          cvc: cardList[0].cvc, // FIX인 경우 사용
+        },
+        // {
+        //   requestId: storedRequestId,
+        //   orderId: storedOrderId,
+        //   merchantId: storedMerchantId,
+        //   categoryId: storedCategoryId,
+        //   totalPrice: parseInt(storedTotalPrice, 10),
+        //   memberId: id,
+        //   cardSelectionType: "FIX",
+        //   recommendType: "BENEFIT", // RECOMMEND인 경우 사용, BENEFIT / PERFORM
+        //   cardNumber: "3998541707334420", // FIX인 경우 사용
+        //   cvc: "123", // FIX인 경우 사용
+        // },
+        {
+          withCredentials: true,
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+            "Content-Type": "application/json",
+          },
+        }
+      );
+      console.log(response);
+    } catch (e) {
+      console.log(e);
+    }
+  };
+
+  const singlePaying = async () => {
+    const storedRequestId = localStorage.getItem("requestId");
+    const storedOrderId = localStorage.getItem("orderId");
+    const storedMerchantId = localStorage.getItem("merchantId");
+    const storedCategoryId = localStorage.getItem("categoryId");
+    const storedTotalPrice = localStorage.getItem("totalPrice") || "0";
+    const storedQRCode = localStorage.getItem("QRCode");
+    console.log(
+      storedRequestId,
+      storedOrderId,
+      storedMerchantId,
+      storedCategoryId,
+      storedTotalPrice
+    );
+    //카드 선택할 수 있도록 함
+    console.log("=======================single payment gogo=================");
+    try {
+      setIsLoading(true);
+      const response = await axios.post(
+        // `https://j11c201.p.ssafy.io/api/moapay/core/generalpay/pay`,
+        `/api/moapay/core/generalpay/pay`,
+        // `http://localhost:8765/moapay/core/generalpay/pay`,
+        {
+          requestId: storedRequestId,
+          orderId: storedOrderId,
+          merchantId: storedMerchantId,
+          categoryId: storedCategoryId,
+          totalPrice: parseInt(storedTotalPrice, 10),
+          memberId: id,
+          cardSelectionType: "FIX",
+          recommendType: paymentType || "PERFORM", // RECOMMEND인 경우 사용, BENEFIT / PERFORM
+          cardNumber: cardList[0].cardNumber, // FIX인 경우 사용
+          cvc: cardList[0].cvc, // FIX인 경우 사용
+        },
+        // {
+        //   requestId: storedRequestId,
+        //   orderId: storedOrderId,
+        //   merchantId: storedMerchantId,
+        //   categoryId: storedCategoryId,
+        //   totalPrice: parseInt(storedTotalPrice, 10),
+        //   memberId: id,
+        //   cardSelectionType: "FIX",
+        //   recommendType: "BENEFIT", // RECOMMEND인 경우 사용, BENEFIT / PERFORM
+        //   cardNumber: "3998541707334420", // FIX인 경우 사용
+        //   cvc: "123", // FIX인 경우 사용
+        // },
+        {
+          withCredentials: true,
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+            "Content-Type": "application/json",
+          },
+        }
+      );
+      console.log(response);
+    } catch (e) {
+      console.log(e);
+    }
+  };
+  //인증이 true면 진행 모달을 닫고
+  useEffect(() => {
+    const storedRequestId = localStorage.getItem("requestId");
+    const storedOrderId = localStorage.getItem("orderId");
+    const storedMerchantId = localStorage.getItem("merchantId");
+    const storedCategoryId = localStorage.getItem("categoryId");
+    const storedTotalPrice = localStorage.getItem("totalPrice") || "0";
+    const storedQRCode = localStorage.getItem("QRCode");
+    console.log(
+      storedRequestId,
+      storedOrderId,
+      storedMerchantId,
+      storedCategoryId,
+      storedTotalPrice
+    );
+    //분할
+    if (selectedPayType == "multi" && isAuth) {
+      console.log("=======================multi payment gogo=================");
+      multiPaying();
+    } else if (selectedPayType == "single" && isAuth) {
+      singlePaying();
+    }
+    //단일
+  }, [isAuth]);
 
   // DotNav를 위한 변수들
   const [swiperInstance, setSwiperInstance] = useState<SwiperInstance>(); // 초기값을 undefined로 설정
@@ -510,6 +566,7 @@ const SelectPaymentType = () => {
           </Result>
         </>
       )}
+      {showModal && <BiometricsAuthModal endAuth={endAuth} />}
     </Wrapper>
   );
 };

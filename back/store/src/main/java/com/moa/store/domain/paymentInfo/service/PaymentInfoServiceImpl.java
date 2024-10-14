@@ -48,14 +48,15 @@ public class PaymentInfoServiceImpl implements PaymentInfoService {
 	@Transactional
 	public GetQRCodeResponseDto getQRCode(CreateOrderRequestDto createOrderRequestDto) {
 //		try {
+		log.info("create order and get qrcode...");
+		log.info("order request dto : {}", createOrderRequestDto.toString());
 			CreateOrderResponseDto createOrderResponseDto = orderService.createOrder(createOrderRequestDto);
 			ResponseEntity<ResultResponse> getQRcode = moaPayClient.getQRCode(createOrderResponseDto);
 			if(getQRcode.getStatusCode() != HttpStatus.OK){
 				throw new BusinessException(HttpStatus.BAD_REQUEST, "QR 발급 중 문제가 발생했습니다.");
 			}
-			getQRCodeFromMoaPayDto getQRCodeFromMoaPayDto = objectMapper.convertValue(getQRcode.getBody().getData(), getQRCodeFromMoaPayDto.class);
-			log.info(getQRCodeFromMoaPayDto.toString());
-
+			getQRCodeFromMoaPayDto getQRCodeFromMoaPayDto = objectMapper.convertValue((getQRcode.getBody().getData()), getQRCodeFromMoaPayDto.class);
+			log.info("getQRCodeFromMoaPayDto:{}", getQRCodeFromMoaPayDto);
             return GetQRCodeResponseDto.builder()
 					.orderId(createOrderResponseDto.getOrderId())
 					.QRCode(getQRCodeFromMoaPayDto.getQRCode())

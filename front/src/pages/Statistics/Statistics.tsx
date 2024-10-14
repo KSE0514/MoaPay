@@ -29,6 +29,7 @@ import { useAuthStore } from "../../store/AuthStore";
 const Statistics = () => {
   const { id, accessToken, name } = useAuthStore();
 
+  const [gender, setGender] = useState<string>("");
   const navigator = useNavigate();
   const location = useLocation();
   const paths = [
@@ -60,21 +61,17 @@ const Statistics = () => {
   const [daysLeft, setDaysLeft] = useState<number>(0);
 
   const handlePrevMonth = () => {
+    console.log("날짜변경 - 줄어듬");
     if (selectedMonth === 1) {
       setSelectedYear((prevYear) => prevYear - 1);
       setSelectedMonth(12);
     } else {
       setSelectedMonth((prevMonth) => prevMonth - 1);
     }
-    // 현재페이지에 따라 데이터 새로 가져오기
-    if (window.location.pathname == paths[0]) {
-      getConsumptionData();
-    } else if (window.location.pathname == paths[1]) {
-      getBenefitData();
-    }
   };
 
   const handleNextMonth = () => {
+    console.log("날짜변경 - 늘어남");
     if (
       selectedYear == new Date().getFullYear() &&
       selectedMonth > new Date().getMonth()
@@ -86,21 +83,13 @@ const Statistics = () => {
     } else {
       setSelectedMonth((prevMonth) => prevMonth + 1);
     }
-    //현재페이지에 따라 데이터 새로 가져오기
-    if (window.location.pathname == paths[0]) {
-      console.log("load consumptionData");
-      getConsumptionData();
-    } else if (window.location.pathname == paths[1]) {
-      console.log("load benefitData");
-      getBenefitData();
-    }
   };
 
   /**
    * 특정 달에 대한 소비 데이터 가져오기 - 년도와 월을 보내야함(selectedYear selectedMonth)
    */
   const getConsumptionData = async () => {
-    console.log("getConsumtionData");
+    console.log("getConsumtionData 함수 실행");
     console.log(selectedYear, selectedMonth);
     console.log("=======================================");
     try {
@@ -130,7 +119,7 @@ const Statistics = () => {
    * 특정 달에 대한 혜택 데이터 가져오기 - 년도와 월을 보내야함
    */
   const getBenefitData = async () => {
-    console.log("getBenefitData");
+    console.log("getBenefitData 함수 실행");
     console.log(selectedYear, selectedMonth);
     console.log("=======================================");
     try {
@@ -149,10 +138,8 @@ const Statistics = () => {
         }
       );
       setDataList(response.data.data.paymentStatistics);
-      //받은 소비량 더하기
       const totalPrice = response.data.data.totalBenefits;
       setCalculatedPrice(totalPrice);
-      //받은 소비량 더하기
     } catch (e) {
       console.log(e);
     }
@@ -172,6 +159,7 @@ const Statistics = () => {
       setMode("Donut");
       try {
         await getConsumptionData();
+        console.log("소비 데이터 가져옴 ", dataList);
         navigator(paths[index], { state: dataList });
       } catch (e) {
         console.log(e);
@@ -182,14 +170,22 @@ const Statistics = () => {
       setMode("Donut");
       try {
         await getBenefitData();
+        console.log("혜택 데이터 가져옴 ", dataList);
         navigator(paths[index], { state: dataList });
       } catch (e) {
         console.log(e);
       }
     } else if (index == 2) {
       //나의 해당 월 사용량 가져오기
-      setSelectedYear(new Date().getFullYear());
-      setSelectedMonth(new Date().getMonth() + 1);
+      setSelectedYear(
+        new Date().getMonth() + 1 === 1
+          ? new Date().getFullYear() - 1
+          : new Date().getFullYear()
+      );
+      //저번달 소비로 가져오기
+      setSelectedMonth(
+        new Date().getMonth() + 1 === 1 ? 12 : new Date().getMonth()
+      );
       getConsumptionData();
       //또래 비교금액 가져오기
       const response = await axios.post(
@@ -204,8 +200,12 @@ const Statistics = () => {
           },
         }
       );
+      console.log(
+        "비교 금액 구하기",
+        calculatedPrice - response.data.data.average
+      );
       setComparisonAmount(calculatedPrice - response.data.data.average);
-
+      setGender(response.data.data.gender == "F" ? "여" : "남");
       setMode("BarGraph");
       navigator(paths[index]);
     } else {
@@ -266,20 +266,31 @@ const Statistics = () => {
     const currentPath = location.pathname;
     // URL 경로에 맞게 index 값을 설정
     const index = paths.findIndex((path) => path === currentPath);
-    console.log("index: " + index);
+    console.log("useEffect index: " + index);
     if (index !== -1) {
       changeComponent(index); // URL에 맞는 컴포넌트를 렌더링
     }
   }, []);
+
   useEffect(() => {
-    if (window.location.pathname == paths[0]) {
-      console.log("load consumptionData");
+    if (window.location.pathname === paths[0]) {
       getConsumptionData();
-    } else if (window.location.pathname == paths[1]) {
-      console.log("load benefitData");
+    } else if (window.location.pathname === paths[1]) {
       getBenefitData();
     }
   }, [selectedMonth, selectedYear]);
+
+  useEffect(() => {
+    if (window.location.pathname === paths[0]) {
+      if (dataList) {
+        navigator(paths[0], { state: dataList });
+      }
+    } else if (window.location.pathname === paths[1]) {
+      if (dataList) {
+        navigator(paths[1], { state: dataList });
+      }
+    }
+  }, [dataList]);
 
   return (
     <>
@@ -305,16 +316,20 @@ const Statistics = () => {
               <Info>
                 <DonutChart dataList={dataList} />
                 <StatisticDonutChartText
-                  text={`${selectedMonth}월에는\n${calculatedPrice}원\n소비했어요!`}
+                  text={`${selectedMonth}월에는\n${calculatedPrice}원\n${
+                    location.pathname.includes("consumption")
+                      ? "소비했어요!"
+                      : location.pathname.includes("benefits")
+                      ? "혜택을 받았어요!"
+                      : ""
+                  }`}
                 />
               </Info>
             </>
           )}
           {mode === "BarGraph" && (
             <TopWrapper>
-              <NowDate>{`${new Date().getFullYear()}년 ${String(
-                new Date().getMonth() + 1
-              )}월엔...`}</NowDate>
+              <NowDate>{`2024년 9월엔...`}</NowDate>
               <ImageBox>
                 <img
                   src={
@@ -325,7 +340,7 @@ const Statistics = () => {
                 ></img>
               </ImageBox>
               <TextBox>
-                {`${name}님은 또래 남성에 비해\n${Math.abs(
+                {`${name}님은 또래 ${gender}성에 비해\n${Math.abs(
                   comparisonAmount
                 ).toLocaleString()}원 ${
                   comparisonAmount > 0 ? "더 사용했어요" : "덜 사용했어요"
@@ -346,28 +361,40 @@ const Statistics = () => {
                 {new Date().getMonth() + 1}월 목표 중 남은 금액
               </p>
               <div className="price">
-                <p>{savingUse}</p>
+                <p>{savingUse.toLocaleString()}</p>
                 <p>/</p>
                 <p>{savingGoal.toLocaleString()}원</p>
               </div>
               <div className="sub">
                 <div>
                   <img src="/assets/image/prinrefacezoom.png" />
-                  <p>
-                    목표 금액의{" "}
-                    <span style={{ color: "red " }}>
-                      {Math.round((savingUse / savingGoal) * 100)}%
-                    </span>
-                    를 썼어요.
-                    <br />
-                    앞으로 하루{" "}
-                    <span style={{ color: "#4258ff " }}>
-                      {(savingGoal - savingUse) /
-                        (daysLeft === 0 ? 1 : daysLeft)}
-                      원
-                    </span>
-                    만 쓰면 돼요.
-                  </p>
+                  {Math.round((savingUse / savingGoal) * 100) > 100 ? (
+                    <>
+                      <p>
+                        목표 금액보다 더 사용했어요
+                        <br />
+                        불필요한 지출을 줄여보는게 어떨까요?
+                      </p>
+                    </>
+                  ) : (
+                    <>
+                      <p>
+                        목표 금액의{" "}
+                        <span style={{ color: "red " }}>
+                          {Math.round((savingUse / savingGoal) * 100)}%
+                        </span>
+                        를 썼어요.
+                        <br />
+                        앞으로 하루{" "}
+                        <span style={{ color: "#4258ff " }}>
+                          {(savingGoal - savingUse) /
+                            (daysLeft === 0 ? 1 : daysLeft)}
+                          원
+                        </span>
+                        만 쓰면 돼요.
+                      </p>
+                    </>
+                  )}
                 </div>
               </div>
             </div>

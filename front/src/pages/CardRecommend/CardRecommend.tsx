@@ -259,7 +259,7 @@ const CardRecommend = () => {
                           <p>
                             {comparisonCard[0]
                               ? comparisonCard[0].cardProductPerformance !== 0
-                                ? `${comparisonCard[0].cardProductPerformance}만원`
+                                ? `${comparisonCard[0].cardProductPerformance.toLocaleString()}원`
                                 : "전월실적 없음"
                               : ""}
                           </p>
@@ -267,7 +267,7 @@ const CardRecommend = () => {
                           <p>
                             {comparisonCard[1]
                               ? comparisonCard[1].cardProductPerformance !== 0
-                                ? `${comparisonCard[1].cardProductPerformance}만원`
+                                ? `${comparisonCard[1].cardProductPerformance.toLocaleString()}원`
                                 : "전월실적 없음"
                               : ""}
                           </p>
@@ -276,7 +276,7 @@ const CardRecommend = () => {
                         <div className="row benefit">
                           <p className="benefit-row">
                             {comparisonCard[0]
-                              ? comparisonCard[0].benefits?.map(
+                              ? comparisonCard[0].cardBenefits?.map(
                                   (benefit, index) => (
                                     <>
                                       <p
@@ -301,7 +301,7 @@ const CardRecommend = () => {
                           ></div>
                           <p className="benefit-row">
                             {comparisonCard[1]
-                              ? comparisonCard[1].benefits?.map(
+                              ? comparisonCard[1].cardBenefits?.map(
                                   (benefit, index) => (
                                     <>
                                       <p

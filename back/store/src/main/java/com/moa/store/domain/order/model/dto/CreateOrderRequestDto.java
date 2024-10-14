@@ -8,7 +8,6 @@ import java.util.List;
 import java.util.UUID;
 import org.springframework.web.bind.annotation.CrossOrigin;
 
-@CrossOrigin(origins = "http://localhost:5173") // 프론트엔드 도메인
 @Data
 @Builder
 public class CreateOrderRequestDto {

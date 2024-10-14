@@ -60,7 +60,6 @@ const Saving = () => {
     limitAmount: 0,
     amount: 0,
     daily: [],
-    // daily: [15000, 23000, 12000, 8000, 16000, 30000, 45000, 17000, 22000],
   });
 
   // 해당 주차의 총 금액
@@ -72,8 +71,8 @@ const Saving = () => {
   const settingGoal = async () => {
     try {
       const response = await axios.post(
-        `/moapay/pay/saving/setLimit`,
-        { memberId: id, limitAmount: goal * 1000 },
+        `/api/moapay/pay/saving/setLimit`,
+        { memberId: id, limitAmount: goal * 10000 },
         {
           withCredentials: true,
           headers: {
@@ -83,7 +82,7 @@ const Saving = () => {
         }
       );
       if (response.status == 200) {
-        // setSettingStep(3);
+        setSettingStep(3);
       }
     } catch (e) {
       console.log(e);
@@ -134,12 +133,28 @@ const Saving = () => {
         //daily값은 ,를 기준으로 분리해서 넣기
         const dailyData = response.data.data.daily; // 데이터 가져오기
         const separatedData = dailyData.split(",").map(Number); // ','로 문자열 분리 후 숫자 배열로 변환
+
+        // 오늘 날짜 정보
+        const today = new Date();
+        const currentMonth = today.getMonth(); // 0이 1월을 나타냄
+        const currentYear = today.getFullYear();
+
+        // 이번 달의 첫 번째 날 정보
+        const firstDayOfMonth = new Date(currentYear, currentMonth, 1);
+
+        // 이번 달 1일의 요일 (0: 일요일, 1: 월요일, ..., 6: 토요일)
+        const startDayOfMonth = firstDayOfMonth.getDay();
+
+        // 앞에 추가할 0의 개수는 첫 번째 요일의 인덱스와 같음
+        const filledData = Array(startDayOfMonth).fill(0).concat(separatedData);
+        console.log(filledData);
+
         setSavingData({
           memberId: response.data.data.memberId,
           todayAmount: response.data.data.todayAmount,
           limitAmount: response.data.data.limitAmount,
           amount: response.data.data.amount,
-          daily: separatedData,
+          daily: filledData,
         });
       }
     } catch (e) {
@@ -161,7 +176,7 @@ const Saving = () => {
   useEffect(() => {
     // 주차와 데이터 설정
     setSelectedWeek(getWeekOfMonth());
-    // getSavingData();
+    getSavingData();
   }, []);
 
   useEffect(() => {
@@ -286,11 +301,13 @@ const Saving = () => {
           </div>
           <div className="total">
             <p>한 주 동안</p>
-            <p>{weekTotalAmount}원 썼어요</p>
+            <p>{weekTotalAmount.toLocaleString()}원 썼어요</p>
           </div>
           <div className="avg">
             <p>하루 평균 결제💸</p>
-            <p>{(weekTotalAmount! / 7).toFixed(0)}원</p>
+            <p>
+              {Number((weekTotalAmount! / 7).toFixed(0)).toLocaleString()}원
+            </p>
           </div>
           <SmallBarGraph consumptionList={weekAmountList} />
         </Wrapper>
