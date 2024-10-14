@@ -39,6 +39,31 @@ export const SelectView = styled.div`
   }
   div {
   }
+
+  & > button {
+    position: relative;
+  }
+
+  & > button > img{
+    position: absolute;
+    z-index: 2;
+    top: 0;
+    // left: 10px;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+  }
+
+  & > button > div {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+  z-index: 100;
+  font-size: 27px;
+  text-shadow: -1px 0 rgba(255, 255, 255, 0.5), 0 1px rgba(255, 255, 255, 0.5),
+      1px 0 rgba(255, 255, 255, 0.5), 0 -1px rgba(255, 255, 255, 0.5);
+  }
 `;
 
 export const EndButton = styled.div`

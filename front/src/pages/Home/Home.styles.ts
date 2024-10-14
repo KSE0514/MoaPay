@@ -11,6 +11,7 @@ export const Wrapper = styled.div`
 `;
 export const Top = styled.div`
   padding: 20px 41px;
+  padding-top: 35px;
   & button {
     border: none;
     background-color: white;
@@ -73,6 +74,7 @@ export const ButtonArea = styled.div`
 
   button {
     width: 100%;
+    font-weight: 700;
     border-radius: 10px;
     padding: 10px 15px;
   }

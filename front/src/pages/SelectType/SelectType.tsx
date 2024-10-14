@@ -6,6 +6,9 @@ import { PATH } from "../../constants/path";
 import { useAuthStore } from "../../store/AuthStore";
 import apiClient from "../../axios";
 
+import performImg from "./../../../public/assets/image/perform.png"
+import benefitImg from "./../../../public/assets/image/benefit.png"
+
 const SelectType = () => {
   // const baseUrl = import.meta.env.VITE_BASE_URL;
   const baseUrl = `http://localhost:18040/`;
@@ -60,16 +63,25 @@ const SelectType = () => {
         <button
           onClick={() => {
             SettingType("benefit");
+            
+          }}
+          style={{
+            border: selectType === "benefit" ? "2px solid #7D19FF " : "transparent",
           }}
         >
-          혜택형
+          <img src={benefitImg} alt="" style={{height: '110%'}}/>
+          <div>혜택형</div>
         </button>
         <button
           onClick={() => {
             SettingType("perform");
           }}
+          style={{
+            border: selectType === "perform" ? "2px solid #7D19FF " : "transparent",
+          }}
         >
-          실적형
+          <img src={performImg} alt="" style={{height: '80%'}}/>
+          <div>실적형</div>
         </button>
       </SelectView>
 

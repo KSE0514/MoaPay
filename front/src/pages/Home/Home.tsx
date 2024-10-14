@@ -558,7 +558,11 @@ const Home = () => {
           </div>
         </CardList>
 
-        <div className="remaining-performance">
+        <div className="remaining-performance"
+          style={{
+            whiteSpace: "nowrap",
+          }}
+        >
           {remainder !== null
             ? remainder <= 0
               ? `실적달성🎉`
