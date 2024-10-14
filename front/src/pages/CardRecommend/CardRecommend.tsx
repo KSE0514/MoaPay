@@ -26,6 +26,7 @@ import axios from "axios";
 import { useAuthStore } from "../../store/AuthStore";
 import ParticleCanvas from "../../components/ParticleCanvas";
 import CardLoading from "./CardLoading";
+import apiClient from "../../axios";
 
 /**
  * 전부  CardProduct 데이터 형식을 가진 list로 사용
@@ -88,7 +89,7 @@ const CardRecommend = () => {
 
   const getRecommendCards = async () => {
     try {
-      const response = await axios.get(
+      const response = await apiClient.get(
         // `https://j11c201.p.ssafy.io/api/moapay/core/card/recommend/${id}`,
         `/api/moapay/core/card/recommend/${id}`,
         // `http://localhost:8765/moapay/core/card/recommend/${id}``,

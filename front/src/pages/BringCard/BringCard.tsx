@@ -22,6 +22,7 @@ import { useAuthStore } from "../../store/AuthStore";
 import { Card, useCardStore } from "../../store/CardStore";
 import Modal from "../../components/dutch/Modal/Modal";
 import { MyCardList } from "../../constants/card";
+import apiClient from "../../axios";
 
 const BringCard = () => {
   const navigate = useNavigate();
@@ -40,7 +41,7 @@ const BringCard = () => {
     setIsLoading(true);
     //카드 데이터 가져오기
     try {
-      const response = await axios.post(
+      const response = await apiClient.post(
         // `http://localhost:18100/cardbank/card/getMyCards`,
         // `https://j11c201.p.ssafy.io/cardapi/cardbank/card/getMyCards`,
         `/api/moapay/core/card/getMyCards`,
@@ -96,7 +97,7 @@ const BringCard = () => {
     setBefore(true);
     // disAbleCards 배열의 각 카드에 대해 비활성화 요청을 보냄
     for (const card of disAbleCards) {
-      const response = await axios.post(
+      const response = await apiClient.post(
         // `http://localhost:18020/moapay/core/card/disable`,
         // `http://localhost:8765/moapay/core/card/disable`,
         // `https://j11c201.p.ssafy.io/api/moapay/core/card/disable`,

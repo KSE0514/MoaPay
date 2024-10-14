@@ -31,16 +31,19 @@ const fadeInAndOut = keyframes`
 `;
 
 export const Wrapper = styled.div`
-  background-color: var(--light-purple);
-  padding: 30% 0% 0% 0%;
+  /* background-color: var(--light-purple); */
+  background: linear-gradient(120deg, #f1e5ff 6%, #dcbefc 50%, #ffc6ff);
+  padding: 30% 0% 30% 0%;
   width: 100%;
   height: 100vh;
   display: flex;
   justify-content: center;
   .area {
-    background-color: white;
+    /* background-color: white; */
+    background-color: rgba(255, 255, 255, 0.85);
     border-top-right-radius: 50px;
     border-top-left-radius: 50px;
+    border-radius: 50px;
     height: 100%;
     width: 100%;
     display: flex;
@@ -57,18 +60,18 @@ export const Header = styled.div`
   align-items: center;
   h1 {
     text-align: center;
-    font-size: 40px;
+    font-size: 30px;
     font-weight: 800;
     margin-bottom: 20px;
   }
   p {
-    font-size: 20px;
+    font-size: 19px;
     margin-bottom: 30px;
   }
   div {
     position: relative;
-    width: 100px;
-    height: 100px;
+    width: 90px;
+    height: 90px;
     & > svg,
     & > img {
       position: absolute;
@@ -84,14 +87,17 @@ export const Header = styled.div`
   }
 `;
 export const Button = styled.button`
-  width: 70%;
+  width: 80%;
   height: 50px;
   background-color: #c473f6;
+  background-color: #dec1fd;
+  /* background: linear-gradient(120deg, #f1e5ff 6%, #dcbefc 50%, #ffc6ff); */
   border: none;
   border-radius: 10px;
   margin-top: 30px;
   font-size: 20px;
   color: white;
+  color: black;
 `;
 
 export const Modal = styled.div`
