@@ -259,6 +259,7 @@ const Saving = () => {
                 목표설정 완료 !<br />
                 {name}님은 분명 성공할거예요!
               </p>
+              <div></div>
               <div className="bottom">
                 <button onClick={() => setSavingMode(true)}>이동하기</button>
               </div>

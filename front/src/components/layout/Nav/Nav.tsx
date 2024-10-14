@@ -14,7 +14,10 @@ const Nav = () => {
   const matchBringCard = useMatch(`${PATH.BRING_CARD}/*`);
   const matchSelectType = useMatch(`${PATH.SELECT_TYPE}/*`);
   const matchSelectPayMentType = useMatch(`${PATH.SELECT_PAYMENT_TYPE}/*`);
-  const match = matchBringCard || matchSelectType || matchSelectPayMentType;
+  const matchDutchpay = useMatch(`${PATH.DUTCHPAY}`)
+  const matchDutchOpen = useMatch(`${PATH.DUTCHOPEN}`)
+  const matchDutchInvite = useMatch(`${PATH.DUTCHINVITE}`)
+  const match = matchBringCard || matchSelectType || matchSelectPayMentType || matchDutchpay || matchDutchOpen || matchDutchInvite
   const statisticsmatch = useMatch(`${PATH.STATISTICS}/*`);
   const movePage = (page: string) => {
     navigate(page);
