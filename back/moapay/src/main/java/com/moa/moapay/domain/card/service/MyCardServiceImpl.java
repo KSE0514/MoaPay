@@ -13,6 +13,7 @@ import com.moa.moapay.domain.card.repository.CardProductRepository;
 import com.moa.moapay.domain.card.repository.MyCardQueryRepository;
 import com.moa.moapay.domain.card.repository.MyCardRepository;
 import com.moa.moapay.global.exception.BusinessException;
+import com.moa.moapay.global.response.ResultResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -437,6 +438,28 @@ public class MyCardServiceImpl implements MyCardService {
                 .myCardIds(cardsIds)
                 .memberId(memberId)
                 .build();
+    }
+
+    @Override
+    @Transactional
+    public void initialize() {
+        try {
+            ResponseEntity<ResultResponse> response = restClient.get()
+                    .uri(cardbankUrl + "/card/initialize")
+                    .retrieve()
+                    .toEntity(ResultResponse.class);
+            if(!response.getStatusCode().is2xxSuccessful()) {
+                log.error("cardbank initializing has been failed");
+                log.error("cancel initializing...");
+                throw new BusinessException(HttpStatus.INTERNAL_SERVER_ERROR, "카드 사용량 초기화에 실패했습니다.");
+            }
+        } catch (Exception e) {
+            log.error("their is some problem to initialize MyCard of cardbank : {}", e.getMessage());
+            log.error("cancel initializing...");
+            throw new BusinessException(HttpStatus.INTERNAL_SERVER_ERROR, "카드 사용량 초기화에 실패했습니다.");
+        }
+        log.info("cardbank initialize done");
+        myCardQueryRepository.initialize();
     }
 
     @Override
