@@ -49,15 +49,4 @@ public class DutchPay {
     @JoinColumn(name = "room_id", referencedColumnName = "id")
     private DutchRoom roomEntity;
 
-    @Override
-    public String toString() {
-        return "DutchPay{" +
-                "id=" + id +
-                ", uuid=" + uuid +
-                ", memberId=" + memberId +
-                ", amount=" + amount +
-                ", status=" + payStatus +
-                ", roomEntity=" + roomEntity +
-                '}';
-    }
 }
