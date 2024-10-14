@@ -222,10 +222,13 @@ const UserCardDetail = () => {
           </CardInfo>
           <Benefits>
             <div>
-              실적: {payLogResult?.totalAmount.toLocaleString()}원
+              실적: {payLogResult?.totalAmount.toLocaleString()} /&nbsp;
               {selectedCard?.cardProduct.cardProductPerformance.toLocaleString()}
+              원
             </div>
-            <div>혜택: {payLogResult?.totalBenefit?.toLocaleString()}원</div>
+            <div style={{ marginLeft: 10 }}>
+              혜택: {payLogResult?.totalBenefit?.toLocaleString()}원
+            </div>
           </Benefits>
         </TopContainer>
       </Top>
