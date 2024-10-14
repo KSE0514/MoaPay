@@ -108,7 +108,7 @@ const DutchInvite = () => {
     "01923d9f-7b3d-7a9e-a0b3-24d7970f90d4"
   ); // 상점 ID
   const [merchantName, setMerchantName] = useState<string>("Example Merchant"); // 상점 이름
-  const [merchantThumbnailUrl, setMerchantThumbnailUrl] = useState<string>('')
+  const [merchantThumbnailUrl, setMerchantThumbnailUrl] = useState<string>("");
   const [categoryId, setCategoryId] = useState<string>("category"); // 카테고리 ID
   const [totalPrice, setTotalPrice] = useState<number>(10000); // 총 가격
   const [memberName, setMemberName] = useState<string | null>("");
@@ -159,7 +159,7 @@ const DutchInvite = () => {
   }, []);
 
   const goComplite = () => {
-    setProcess(6);
+    nav("/dutch-result", { state: { roomId } });
   };
 
   // useEffect(() => {
@@ -297,17 +297,17 @@ const DutchInvite = () => {
           headers: {
             Authorization: `Bearer ${accessToken}`, // Authorization 헤더에 Bearer 토큰 추가
           },
-        });
-      console.log("상품 정보 조회 성공", response.data.data)
-      const productInfo = response.data.data
-      setMerchantName(productInfo.itemNames[0])
-      setMerchantThumbnailUrl(productInfo.thumbnailUrl)
-
+        }
+      );
+      console.log("상품 정보 조회 성공", response.data.data);
+      const productInfo = response.data.data;
+      setMerchantName(productInfo.itemNames[0]);
+      setMerchantThumbnailUrl(productInfo.thumbnailUrl);
     } catch (error) {
-      console.error("에러 발생", error)
-      console.log("상품조회 실패")
+      console.error("에러 발생", error);
+      console.log("상품조회 실패");
     }
-  }
+  };
 
   // //////////////////////////////////////////////////////////////////
   const leaveRoom = () => {
@@ -785,7 +785,10 @@ const DutchInvite = () => {
                     취소
                   </button>
                 ) : (
-                  <button onClick={goHome}>홈으로</button>
+                  <div>
+                    <button onClick={goHome}>홈으로</button>
+                    <button onClick={goComplite}>더치페이 현황</button>
+                  </div>
                 )}
               </div>
             </Modal>
