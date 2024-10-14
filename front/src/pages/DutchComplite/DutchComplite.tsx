@@ -5,13 +5,39 @@ import { useAuthStore } from "../../store/AuthStore";
 import apiClient from "../../axios";
 import { AxiosError } from "axios";
 
+interface DutchPayMember {
+  uuid: string;
+  memberId: string;
+  memberName: string;
+  amount: number | null;
+  status: "DONE" | "READY" | "PROGRESS" | "CANCEL";
+}
+
+interface DutchRoomInfo {
+  dutchUuid: string;
+  memberCnt: number;
+  statusRoom: string;
+  orderId: string;
+  merchantId: string;
+  merchantName: string;
+  categoryId: string;
+  totalPrice: number;
+  dutchPayList: DutchPayMember[];
+}
+
+interface DutchCompliteResponse {
+  status: string;
+  message: string;
+  data: DutchRoomInfo;
+}
+
 interface DutchCompliteProps {
   roomId: string; // roomId를 props로 받음
 }
 
 const DutchComplite = ({ roomId }: DutchCompliteProps) => {
   const navigate = useNavigate();
-  const [roomInfo, setRoomInfo] = useState<any | null>(null); // 방 정보를 저장하는 state (타입을 any로 설정)
+  const [roomInfo, setRoomInfo] = useState<DutchCompliteResponse | null>(null); // 방 정보를 저장하는 state
   const { accessToken, mode, setPaymentType } = useAuthStore();
 
   // 컴포넌트가 처음 마운트될 때 실행
@@ -31,7 +57,6 @@ const DutchComplite = ({ roomId }: DutchCompliteProps) => {
         }
       );
       if (response?.status === 200) {
-        // JSON 데이터 그대로 저장
         const roomData = response.data;
         setRoomInfo(roomData);
       }
@@ -49,14 +74,26 @@ const DutchComplite = ({ roomId }: DutchCompliteProps) => {
   return (
     <div>
       {/* 방 정보를 JSON으로 그대로 출력 */}
+      {/* 버튼 클릭 시 getRoomInfo 실행 */}
+      <button onClick={handleButtonClick}>Get Room Info Again</button>
       {roomInfo ? (
-        <pre>{JSON.stringify(roomInfo, null, 2)}</pre> // JSON 데이터를 포맷팅하여 출력
+        <div>
+          <h2>Room Info</h2>
+          <pre>{JSON.stringify(roomInfo, null, 2)}</pre>
+
+          <h3>Members</h3>
+          <ul>
+            {roomInfo.data.dutchPayList.map((member) => (
+              <li key={member.uuid}>
+                {member.memberName} - {member.amount ?? "No Amount"}
+                {member.status === "DONE" && <h1>완료</h1>}
+              </li>
+            ))}
+          </ul>
+        </div>
       ) : (
         <p>Loading room info...</p>
       )}
-
-      {/* 버튼 클릭 시 getRoomInfo 실행 */}
-      <button onClick={handleButtonClick}>Get Room Info Again</button>
     </div>
   );
 };

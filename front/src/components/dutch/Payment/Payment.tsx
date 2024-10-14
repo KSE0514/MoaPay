@@ -41,9 +41,11 @@ interface PaymentProps {
   onClick: () => void;
   confirmAmount: number;
   onFinish: () => void;
+  merchantName: string;
+  merchantThumbnailUrl: string;
 }
 
-const Payment = ({ onClick, confirmAmount, onFinish }: PaymentProps) => {
+const Payment = ({ onClick, confirmAmount, onFinish, merchantName, merchantThumbnailUrl }: PaymentProps) => {
   const { accessToken, id, paymentType } = useAuthStore();
   const cardList = useCardStore((state) => state.cardList);
 
@@ -268,9 +270,9 @@ const Payment = ({ onClick, confirmAmount, onFinish }: PaymentProps) => {
     <Wrapper>
       {/* 상품 이름 및 경로를 어떻게 가져올 것인지에 대해서 생각해봐야 함 */}
       <Product
-        productName={"새콤달콤 티니핑 시즌4 하츄핑 꽃다발 봉제 인형"}
+        productName={merchantName}
         productUrl={
-          "https://www.ssg.com/item/itemView.ssg?itemId=1000566517100"
+          merchantThumbnailUrl
         }
       />
 
