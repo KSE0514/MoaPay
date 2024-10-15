@@ -207,7 +207,7 @@ const Dutchpay = () => {
       10
     );
     const validatedTotalPrice = isNaN(storedTotalPrice) ? 0 : storedTotalPrice;
-
+    const orderIdInput = localStorage.getItem(localStorage.getItem("orderId") || "")
     // localStorage에서 값 가져오기
     setOrderId(localStorage.getItem("orderId") || "");
     setTotalPrice(validatedTotalPrice);
@@ -223,7 +223,8 @@ const Dutchpay = () => {
     console.log("Request ID:", localStorage.getItem("requestId"));
 
     // 상품 정보 조회
-    loadProduct(localStorage.getItem("orderId") || "");
+    // loadProduct(localStorage.getItem("orderId") || "");
+    loadProduct(orderIdInput);
   }, []);
 
   const settingStoreRequestId = (): string => {
@@ -450,6 +451,7 @@ const Dutchpay = () => {
   /////////////////////////////////////////////
 
   const loadProduct = async (orderId: string) => {
+    console.log("불러올 상품 정보 아이디:", orderId)
     try {
       const response = await apiClient.get(
         `api/moapay/core/dutchpay/orderInfo/${orderId}`,
