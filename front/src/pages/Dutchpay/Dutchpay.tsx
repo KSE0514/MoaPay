@@ -178,6 +178,9 @@ const Dutchpay = () => {
 
   const [requestId, setRequestId] = useState<string>("");
 
+  const [orderInfo, setOrderInfo] = useState<OrderInfo | null>(null); // orderInfo 데이터를 저장하는 state
+
+
   // console.log("이것도뜨나?")
 
   // useEffect(() => {
@@ -438,7 +441,7 @@ const Dutchpay = () => {
   const loadProduct = async (orderId: string) => {
     try {
       const response = await apiClient.get(
-        `/api/moapay/core/dutchpay/orderInfo/${orderId}`,
+        `api/moapay/core/dutchpay/orderInfo/${orderId}`,
         {
           withCredentials: true,
           headers: {
@@ -446,10 +449,15 @@ const Dutchpay = () => {
           },
         }
       );
-      console.log("상품 정보 조회 성공", response.data.data);
-      const productInfo = response.data.data;
-      setMerchantName(productInfo.itemNames[0]);
-      setMerchantThumbnailUrl(productInfo.thumbnailUrl);
+      if (response?.status === 200){
+        console.log("상품 정보 조회 성공", response.data.data);
+        const productInfo = response.data.data;
+        setMerchantName(productInfo.itemNames[0]);
+        setMerchantThumbnailUrl(productInfo.thumbnailUrl);
+        // 
+        const orderData = response.data;
+        setOrderInfo(orderData)
+      }
     } catch (error) {
       console.error("에러 발생", error);
       console.log("상품조회 실패");
