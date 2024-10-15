@@ -109,10 +109,10 @@ export const EmptyLogs = styled.div`
   flex-direction: column;
   align-items: center;
   justify-items: center;
+  padding: 30px 0px;
 
   & > div {
-    font-size: 32px;
-    font-weight: 700;
+    font-size: 24px;
     margin-top: 24px;
   }
 `;
