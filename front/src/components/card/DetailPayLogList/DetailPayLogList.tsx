@@ -168,7 +168,7 @@ const DetailPayLogList = ({ payLogList = [] }: DetailPayLogListProps) => {
         </>
       ) : (
         <EmptyLogs>
-          <img src="/assets/image/nopay.png" />
+          <img src="/assets/image/nopaycolor.png" />
           <div>결제 내역이 없어요.</div>
         </EmptyLogs>
       )}
