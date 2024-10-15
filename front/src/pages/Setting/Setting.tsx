@@ -56,6 +56,14 @@ const Setting = () => {
           >
             생체정보 등록/재등록
           </div>
+          <div
+            onClick={() => {
+              localStorage.clear();
+              navigate(PATH.HOME);
+            }}
+          >
+            로그아웃
+          </div>
         </List>
       </div>
     </Wrapper>
