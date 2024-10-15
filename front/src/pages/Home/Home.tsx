@@ -281,34 +281,34 @@ const Home = () => {
 
     requestPermission(id, accessToken); // 컴포넌트가 마운트될 때 requestPermission 호출
 
-    const unsubscribe = onMessage(messaging, (payload) => {
-      console.log("Message received : ", payload);
+    // const unsubscribe = onMessage(messaging, (payload) => {
+    //   console.log("Message received : ", payload);
 
-      // 알림 표시
-      const notification = new Notification(
-        payload.notification?.title ?? "Title",
-        {
-          body: payload.notification?.body ?? "Body",
-          icon: "../../assets/image/favicon.jpg",
-        }
-      );
+    // 알림 표시
+    //   const notification = new Notification(
+    //     payload.notification?.title ?? "Title",
+    //     {
+    //       body: payload.notification?.body ?? "Body",
+    //       icon: "../../assets/image/favicon.jpg",
+    //     }
+    //   );
 
-      console.log("룸 아이디 : ", payload.data?.roomId);
+    //   console.log("룸 아이디 : ", payload.data?.roomId);
 
-      notification.onclick = (event) => {
-        // 더치페이 결과 화면으로 이동 (예: /dutch-pay/result/{dutchUuid})
-        const dutchUuid = payload.data?.roomId; // 더치페이 UUID가 payload 데이터에 있다고 가정
-        if (dutchUuid) {
-          window.location.href = `/dutch-result/${dutchUuid}`;
-        } else {
-          console.error("DutchPay UUID not found in payload.");
-        }
-      };
-    });
+    //   notification.onclick = (event) => {
+    //     // 더치페이 결과 화면으로 이동 (예: /dutch-pay/result/{dutchUuid})
+    //     const dutchUuid = payload.data?.roomId; // 더치페이 UUID가 payload 데이터에 있다고 가정
+    //     if (dutchUuid) {
+    //       window.location.href = `/dutch-result/${dutchUuid}`;
+    //     } else {
+    //       console.error("DutchPay UUID not found in payload.");
+    //     }
+    //   };
+    // });
 
-    return () => {
-      unsubscribe();
-    };
+    // return () => {
+    //   unsubscribe();
+    // };
   }, []);
 
   useEffect(() => {}, [showCards]); // showCards가 변경될 때마다 실행
