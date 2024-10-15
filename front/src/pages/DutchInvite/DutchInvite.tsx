@@ -785,11 +785,11 @@ const DutchInvite = () => {
                     취소
                   </button>
                 ) : (
-                  <div style={{ display: "flex", gap: "10px" }}>
-                    <button onClick={goHome} style={{ fontSize: "25px" }}>
+                  <div style={{ display: "flex", gap: "10px", margin: "10px" }}>
+                    <button onClick={goHome} style={{ fontSize: "15px" }}>
                       홈으로 돌아가기
                     </button>
-                    <button onClick={goComplite} style={{ fontSize: "25px" }}>
+                    <button onClick={goComplite} style={{ fontSize: "15px" }}>
                       더치페이 현황
                     </button>
                   </div>

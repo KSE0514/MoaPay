@@ -7,6 +7,7 @@ import { AxiosError } from "axios";
 import { useParams } from "react-router-dom";
 import triangle from "./../../assets/image/triangle.png";
 import DutchPayImg from "../../assets/image/DutchPay.gif";
+import Comfirm from "../../assets/image/confirm.webp";
 
 import Product from "../../components/dutch/Product/Product";
 
@@ -147,9 +148,15 @@ const DutchResult = () => {
   return (
     <Wrapper>
       <Header>
-        <img src={DutchPayImg} alt="" style={{ width: "150px" }} />
+        <img
+          src={completedMembers === totalMembers ? Comfirm : DutchPayImg}
+          alt=""
+          style={{ width: "150px" }} // 완료된 이미지의 URL로 바꿉니다.
+        />
         <br />
-        더치페이
+        {completedMembers === totalMembers
+          ? "더치페이 완료"
+          : "더치페이 진행 중"}
         <Reload>
           <Button onClick={handleButtonClick}>
             <FontAwesomeIcon icon={faRotateLeft} />
