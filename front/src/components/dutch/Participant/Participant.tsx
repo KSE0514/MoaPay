@@ -341,11 +341,11 @@ const Participant = ({
           {/* 더치페이 하여 구매할 상품 정보 */}
           {loading? <p>주문 정보를 불러오는 중...</p> : (
             <Product
-              productName={merchantName}
+              productName={merchantName || "BESPOKE 냉장 4도어 키친핏 615L (UV탈취)"}
               productUrl={
                 "https://www.ssg.com/item/itemView.ssg?itemId=1000566517100"
               }
-              productImg={merchantThumbnailUrl}
+              productImg={merchantThumbnailUrl || "/assets/image/ref1.png"}
             />
           )}
 
