@@ -730,8 +730,14 @@ const DutchInvite = () => {
                   <div>결제 완료!</div>
                 </FinContent>
                 <Bottom>
-                  <Btn onClick={goHome}>홈으로 돌아가기</Btn>
-                  <Btn onClick={goComplite}>더치페이 현황</Btn>
+                  <div style={{ display: "flex", gap: "10px", margin: "10px" }}>
+                    <Btn onClick={goHome} style={{ fontSize: "15px" }}>
+                      홈으로 돌아가기
+                    </Btn>
+                    <Btn onClick={goComplite} style={{ fontSize: "15px" }}>
+                      더치페이 현황
+                    </Btn>
+                  </div>
                 </Bottom>
               </DutchFin>
             ) : null}

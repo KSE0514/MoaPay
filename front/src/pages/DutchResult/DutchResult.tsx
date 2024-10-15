@@ -156,12 +156,16 @@ const DutchResult = () => {
     <Wrapper>
       <Header>
         <img
-          src={completedMembers === totalMembers ? Comfirm : DutchPayImg}
+          src={
+            completedMembers === totalMembers && totalMembers > 0
+              ? Comfirm
+              : DutchPayImg
+          }
           alt=""
           style={{ width: "150px" }} // 완료된 이미지의 URL로 바꿉니다.
         />
         <br />
-        {completedMembers === totalMembers
+        {completedMembers === totalMembers && totalMembers > 0
           ? "더치페이 완료"
           : "더치페이 진행 중"}
         <Reload>
