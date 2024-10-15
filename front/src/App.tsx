@@ -58,21 +58,29 @@ function App() {
     const unsubscribe = onMessage(messaging, (payload) => {
       console.log("Message received: ", payload);
 
+      console.log("더치룸 정보 메시지 수신 : ", payload.data?.roomId);
+
       // 알림 표시 함수 (내용을 고정)
       const showNotification = () => {
         const notification = new Notification(
           payload.notification?.title ?? "Title", // 알림 제목 고정
           {
             body: payload.notification?.body ?? "Body", // 알림 본문 고정
-            icon: payload.notification?.icon ?? "/default-icon.png", // 알림 아이콘 고정
+            icon: "../../assets/image/favicon.jpg", // 알림 아이콘 고정
           }
         );
+        notification.onclick = (event) => {
+          // 더치페이 결과 화면으로 이동 (예: /dutch-pay/result/{dutchUuid})
+          const dutchUuid = payload.data?.roomId; // 더치페이 UUID가 payload 데이터에 있다고 가정
+          if (dutchUuid) {
+            window.location.href = `/dutch-result/${dutchUuid}`;
+          } else {
+            console.error("DutchPay UUID not found in payload.");
+          }
+        };
       };
 
-      // 첫 번째 알림을 2초 뒤에 표시
-      setTimeout(() => {
-        showNotification();
-      }, 2000); // 2초 후에 첫 알림 표시
+      showNotification();
     });
 
     return () => {
