@@ -7,6 +7,7 @@ import {
   DetailLeft,
   Detail,
   Price,
+  EmptyLogs,
 } from "./DetailPayLogList.styles";
 import { payLog, useCardStore } from "../../../store/CardStore"; // payLog 인터페이스 가져오기
 
@@ -166,7 +167,10 @@ const DetailPayLogList = ({ payLogList = [] }: DetailPayLogListProps) => {
           })}
         </>
       ) : (
-        <div>결제 내역이 없습니다.</div>
+        <EmptyLogs>
+          <img src="/assets/image/nopay.png" />
+          <div>결제 내역이 없어요.</div>
+        </EmptyLogs>
       )}
     </Wrapper>
   );

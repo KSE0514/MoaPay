@@ -103,3 +103,16 @@ export const Price = styled.div`
   font-size: 16px;
   align-items: center;
 `;
+
+export const EmptyLogs = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-items: center;
+
+  & > div {
+    font-size: 32px;
+    font-weight: 700;
+    margin-top: 24px;
+  }
+`;

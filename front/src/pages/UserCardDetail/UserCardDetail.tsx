@@ -85,7 +85,9 @@ const UserCardDetail = () => {
         setPayLogList(response.data.data.paymentLogs);
         setPayLogResult(response.data.data);
         // ProgressBar의 너비 계산
-        const selectedCardPerformance = response.data.data.totalBenefit || 0;
+        //const selectedCardPerformance = response.data.data.totalBenefit || 0;
+        const selectedCardPerformance =
+          selectedCard?.cardProduct.cardProductPerformance || 0;
         const totalAmount = response.data.data.totalAmount || 1;
         console.log(selectedCardPerformance, totalAmount);
         const calculatedWidth = (totalAmount / selectedCardPerformance) * 100;
@@ -238,7 +240,7 @@ const UserCardDetail = () => {
           </CardInfo>
           <Benefits>
             <div>
-              <p> 실적 : {payLogResult?.totalAmount.toLocaleString()} </p>
+              <p> 실적 : {payLogResult?.totalAmount.toLocaleString()}원 </p>
               <Progress>
                 <Bar
                   style={{
@@ -250,6 +252,7 @@ const UserCardDetail = () => {
               </Progress>
               <div className="goal">
                 {selectedCard?.cardProduct.cardProductPerformance.toLocaleString()}
+                원
               </div>
             </div>
           </Benefits>

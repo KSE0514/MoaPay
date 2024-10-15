@@ -144,8 +144,7 @@ export const MainNoBorder = styled.div`
   background-color: rgba(255, 255, 255, 0.5);
   // border: 2px solid #dbc5e9;
   border: 1px solid white;
-  padding: 20px 0px;
-  margin: 25px 0px;
+  margin: 35px 0px 15px 0px;
   border-radius: 10px;
 `;
 
