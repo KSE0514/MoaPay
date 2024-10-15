@@ -115,6 +115,9 @@ const DutchInvite = () => {
 
   const [requestId, setRequestId] = useState<string>("");
 
+  const [loading, setLoading] = useState(true); // 로딩 상태 관리
+
+
   useEffect(() => {
     console.log(testUser);
     setMemberName(testUser.name);
@@ -306,6 +309,8 @@ const DutchInvite = () => {
     } catch (error) {
       console.error("에러 발생", error);
       console.log("상품조회 실패");
+    } finally {
+      setLoading(false); // 로딩 완료
     }
   };
 
@@ -675,6 +680,7 @@ const DutchInvite = () => {
                 isHostProp={false}
                 merchantName={merchantName}
                 merchantThumbnailUrl={merchantThumbnailUrl}
+                loading={loading}
               />
             ) : null}
             {/* //TODO : 바꾸기 */}
