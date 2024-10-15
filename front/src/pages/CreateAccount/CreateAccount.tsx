@@ -47,12 +47,12 @@ const CreateAccount = () => {
   const [SMSAuthSent, setSMSAuthSent] = useState<boolean>(false); // 인증번호가 발급되었는지 여부
   const [endSMSAuth, setEndSMSAuth] = useState<boolean>(false); // 인증번호 인증 완료 여부
   const [joinUserInfo, setjoinUserInfo] = useState<JoinUserInfo>({
-    name: "",
-    phone_number: "",
-    birth_date: "",
-    gender: "",
+    name: "이예빈",
+    phone_number: "01030170356",
+    birth_date: "20000511",
+    gender: "4",
     telecom: "",
-    email: "",
+    email: "dpqls0356@gmail.com",
     address: "",
     verification_code: "",
   });
