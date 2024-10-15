@@ -398,7 +398,7 @@ const Participant = ({
                 {/* 자동으로 n등분 해서 분배해줘야 함_안 나눠 떨어질 경우: 주최자를 제외한 모두에게 (전체 값//사람 수)값 적용. 주최자는 (전체 값-(참가자)*(n-1)) */}
                 {dutchStart && isHost && (
                   <input
-                    value={Number(participant.amount).toLocaleString()}
+                    value={Number(participant.amount)}
                     onChange={(e) => {
                       changeAmount(index, Number(e.target.value));
                     }}
