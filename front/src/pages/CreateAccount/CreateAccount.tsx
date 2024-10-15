@@ -49,7 +49,7 @@ const CreateAccount = () => {
   const [joinUserInfo, setjoinUserInfo] = useState<JoinUserInfo>({
     name: "이예빈",
     phone_number: "01030170356",
-    birth_date: "20000511",
+    birth_date: "000511",
     gender: "4",
     telecom: "",
     email: "dpqls0356@gmail.com",
