@@ -224,7 +224,7 @@ const Dutchpay = () => {
 
     // 상품 정보 조회
     // loadProduct(localStorage.getItem("orderId") || "");
-    loadProduct(orderIdInput);
+    loadProduct(orderIdInput || "");
   }, []);
 
   const settingStoreRequestId = (): string => {
