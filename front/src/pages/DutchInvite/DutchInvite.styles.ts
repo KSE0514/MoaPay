@@ -74,7 +74,7 @@ export const Top = styled.div`
   flex-direction: column;
   gap: 20px;
   padding: 13% 0;
-  height: 41%;
+  height: 44%;
 
 `
 

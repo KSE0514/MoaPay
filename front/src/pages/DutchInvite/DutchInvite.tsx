@@ -813,7 +813,7 @@ const DutchInvite = () => {
             {/* 주최자 이름을 어떻게 들고와야 하는가... */}
             {dutchPayListInfo[0] ? (
               <div>'{dutchPayListInfo[0].memberName}'님이</div>
-            ) : null}
+            ) : <div></div>}
             {/* <div>'' 님이</div> */}
             <div>더치페이를</div>
             <div>신청했습니다.</div>
