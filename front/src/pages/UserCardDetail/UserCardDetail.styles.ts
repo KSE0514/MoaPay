@@ -9,6 +9,7 @@ export const Wrapper = styled.div`
   display: flex;
   flex-direction: column;
   overflow: auto;
+  overflow-x: hidden;
   ::-webkit-scrollbar {
     display: none;
   }
@@ -23,7 +24,7 @@ export const BackImg = styled.div`
 
 export const Top = styled.div`
   display: flex;
-  height: 40%;
+  height: 41%;
   flex-direction: column;
   align-items: center;
   /* gap: 40px; */
@@ -146,6 +147,7 @@ export const MainNoBorder = styled.div`
   border: 1px solid white;
   margin: 35px 0px 15px 0px;
   border-radius: 10px;
+  padding: 10px 0px;
 `;
 
 export const Bottom = styled.div`

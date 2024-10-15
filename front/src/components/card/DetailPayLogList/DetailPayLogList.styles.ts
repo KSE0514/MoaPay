@@ -13,8 +13,9 @@ export const Log = styled.div`
 
 export const Date = styled.div`
   font-size: 16px;
+  font-size: 16px;
   margin-left: 15px;
-  //font-weight: 700;
+  font-weight: 700;
   // text-shadow: -1px 0 rgba(255, 255, 255, 0.8), 0 1px rgba(255, 255, 255, 0.8),
   //   1px 0 rgba(255, 255, 255, 0.8), 0 -1px rgba(255, 255, 255, 0.8);
 `;
@@ -102,17 +103,26 @@ export const Detail = styled.div`
 export const Price = styled.div`
   font-size: 16px;
   align-items: center;
+  width: 25%;
+  white-space: nowrap;
 `;
 
 export const EmptyLogs = styled.div`
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-items: center;
+  justify-content: center;
+  height: 100%;
+  // margin: 0 auto;
 
   & > div {
     font-size: 32px;
+    font-size: 29px;
     font-weight: 700;
     margin-top: 24px;
+  }
+
+  & > img{
+    width: 60%;
   }
 `;

@@ -60,6 +60,7 @@ const UserCardDetail = () => {
     if (id) {
       setSelectedCard(getCardByUuid(id));
     }
+    // getCardHistory()
   }, [id]); // id가 변경될 때만 useEffect 재실행
 
   // 카드별 결제 내역 조회(년, 월)
@@ -88,8 +89,8 @@ const UserCardDetail = () => {
         //const selectedCardPerformance = response.data.data.totalBenefit || 0;
         const selectedCardPerformance =
           selectedCard?.cardProduct.cardProductPerformance || 0;
-        const totalAmount = response.data.data.totalAmount || 1;
-        console.log(selectedCardPerformance, totalAmount);
+        const totalAmount = response.data.data.totalAmount || 0;
+        console.log("분자", totalAmount, "분모", selectedCardPerformance);
         const calculatedWidth = (totalAmount / selectedCardPerformance) * 100;
         setProgressWidth(calculatedWidth > 100 ? 100 : calculatedWidth);
       }
@@ -102,6 +103,7 @@ const UserCardDetail = () => {
   useEffect(() => {
     getCardHistory();
   }, [year, month]);
+  
 
   // 월 선택 핸들러 (이전 달)
   const handlePrevMonth = () => {
