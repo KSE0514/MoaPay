@@ -63,9 +63,13 @@ interface DutchCompliteProps {
 }
 
 interface OrderInfo {
-  thumbnailUrl: string;
-  itemNames: string[];
-  url: string;
+  status: string;
+  message: string;
+  data: {
+    thumbnailUrl: string;
+    itemNames: string[];
+    url: string | null;
+  };
 }
 
 const DutchResult = () => {
@@ -177,13 +181,15 @@ const DutchResult = () => {
               <div>
                 <Product
                   productName={
-                    Array.isArray(orderInfo.itemNames) &&
-                    orderInfo.itemNames.length > 0
-                      ? orderInfo.itemNames[0]
-                      : "삼성 냉장고"
+                    Array.isArray(orderInfo.data.itemNames) &&
+                    orderInfo.data.itemNames.length > 0
+                      ? orderInfo.data.itemNames[0]
+                      : "BESPOKE 냉장 4도어 키친핏 615L (UV탈취)"
                   }
-                  productImg={orderInfo.thumbnailUrl || "#"}
-                  productUrl={orderInfo.url || "#"} // URL도 null 체크를 추가
+                  productImg={
+                    orderInfo.data.thumbnailUrl || "/assets/image/ref2.png"
+                  }
+                  productUrl={orderInfo.data.url || "#"} // URL도 null 체크를 추가
                 />
               </div>
             ) : (
