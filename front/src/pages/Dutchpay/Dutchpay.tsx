@@ -897,11 +897,11 @@ const Dutchpay = () => {
                   <div>결제 완료!</div>
                 </FinContent>
                 <Bottom>
-                  <div style={{ display: "flex", gap: "10px" }}>
-                    <Btn onClick={goHome} style={{ fontSize: "25px" }}>
+                  <div style={{ display: "flex", gap: "10px", margin: "10px" }}>
+                    <Btn onClick={goHome} style={{ fontSize: "15px" }}>
                       홈으로 돌아가기
                     </Btn>
-                    <Btn onClick={goComplite} style={{ fontSize: "25px" }}>
+                    <Btn onClick={goComplite} style={{ fontSize: "15px" }}>
                       더치페이 현황
                     </Btn>
                   </div>
