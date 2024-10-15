@@ -301,7 +301,7 @@ const Payment = ({ onClick, confirmAmount, onFinish, merchantName, merchantThumb
         <div onClick={onClickChangeCard}>다른카드 선택하기</div>
         <Bottom>
           {/* 결제 금액 넘겨 받아야 함 */}
-          <Btn onClick={pay}>{confirmAmount}원 결제하기</Btn>
+          <Btn onClick={pay}>{confirmAmount.toLocaleString()}원 결제하기</Btn>
           {/* text={'7,000원 결제하기'} color={'white'} onClick={onClick} /> */}
         </Bottom>
       </CardView>
