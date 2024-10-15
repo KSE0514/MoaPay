@@ -154,6 +154,16 @@ const Dutchpay = () => {
     dutchPayList: DutchPayItem[]; // DutchPayItem 배열
   }
 
+  interface OrderInfo {
+    status: string;
+    message: string;
+    data: {
+      thumbnailUrl: string;
+      itemNames: string[];
+      url: string | null;
+    };
+  }
+
   //////////////////////////////////////////////////////////////////////////////////////////
   const [roomId, setRoomId] = useState<string>(""); // 방 ID
   const [memberId, setMemberId] = useState<string>(id || ""); // 멤버 ID
