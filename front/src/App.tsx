@@ -61,7 +61,7 @@ function App() {
           payload.notification?.title ?? "Title", // 알림 제목 고정
           {
             body: payload.notification?.body ?? "Body", // 알림 본문 고정
-            icon: "../../assets/image/favicon.jpg", // 알림 아이콘 고정
+            icon: "/../assets/image/favicon.jpg", // 알림 아이콘 고정
           }
         );
         notification.onclick = (event) => {
