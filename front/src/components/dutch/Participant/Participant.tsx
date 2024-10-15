@@ -64,6 +64,7 @@ interface ParticipantProps {
   isHostProp: boolean;
   merchantName: string;
   merchantThumbnailUrl: string;
+  loading: boolean;
 }
 
 type UUID = string; // UUID를 문자열로 간주
@@ -119,6 +120,7 @@ const Participant = ({
   isHostProp,
   merchantName,
   merchantThumbnailUrl,
+  loading,
 }: ParticipantProps) => {
   const convertDutchPayItemsToParticipantInfo = (
     items: DutchPayItem[]
@@ -337,13 +339,15 @@ const Participant = ({
       {dutchStart ? (
         <>
           {/* 더치페이 하여 구매할 상품 정보 */}
-          <Product
-            productName={merchantName}
-            productUrl={
-              "https://www.ssg.com/item/itemView.ssg?itemId=1000566517100"
-            }
-            productImg={merchantThumbnailUrl}
-          />
+          {loading? <p>주문 정보를 불러오는 중...</p> : (
+            <Product
+              productName={merchantName}
+              productUrl={
+                "https://www.ssg.com/item/itemView.ssg?itemId=1000566517100"
+              }
+              productImg={merchantThumbnailUrl}
+            />
+          )}
 
           {/* <div>총 금액: {prduct_price}원</div> */}
           <Price>총 금액: {price.toLocaleString()} 원</Price>
