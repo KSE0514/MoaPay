@@ -11,9 +11,9 @@ interface ProductProps {
 const Product = ({ productName, productUrl, productImg }: ProductProps) => {
   return (
     <ProductCard
-      onClick={() => {
-        window.open(productUrl);
-      }}
+      // onClick={() => {
+      //   window.open(productUrl);
+      // }}
     >
       {/* 상품 미리보기 사진 */}
       <div>
@@ -25,7 +25,7 @@ const Product = ({ productName, productUrl, productImg }: ProductProps) => {
         <div>{productName}</div>
 
         {/* 상품 url */}
-        <div>{productUrl}</div>
+        {/* <div>{productUrl}</div> */}
       </ProductInfo>
     </ProductCard>
   );
