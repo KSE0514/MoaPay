@@ -189,6 +189,7 @@ const Dutchpay = () => {
   const [requestId, setRequestId] = useState<string>("");
 
   const [orderInfo, setOrderInfo] = useState<OrderInfo | null>(null); // orderInfo 데이터를 저장하는 state
+  const [loading, setLoading] = useState<boolean>(true); // 로딩 상태 관리
 
 
   // console.log("이것도뜨나?")
@@ -471,8 +472,15 @@ const Dutchpay = () => {
     } catch (error) {
       console.error("에러 발생", error);
       console.log("상품조회 실패");
+    } finally {
+      setLoading(false); // 로딩 완료
     }
   };
+
+  useEffect(() => {
+    loadProduct(orderId);
+  }, [orderId]);
+  
 
   useEffect(() => {
     console.log("hello..?");
@@ -696,6 +704,7 @@ const Dutchpay = () => {
                 isHostProp={true}
                 merchantName={merchantName}
                 merchantThumbnailUrl={merchantThumbnailUrl}
+                loading={loading}
               />
             }
           </Main>
