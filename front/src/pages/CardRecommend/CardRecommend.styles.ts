@@ -2,6 +2,7 @@ import styled from "styled-components";
 import MediaQuery from "../../constants/styles";
 import CardList from "../../components/CardRecommend/CardList/CardList";
 export const Wrapper = styled.div`
+// background: linear-gradient(120deg, #f1e5ff 6%, #dcbefc 50%, #ffc6ff);
   /* padding: 80px 45px var(--padding-bottom) 45px; */
   height: 100vh;
   overflow-y: scroll;
@@ -43,6 +44,12 @@ export const Wrapper = styled.div`
 export const Loading = styled.div``;
 
 export const Layout = styled.div``;
+
+export const CardViewContainer = styled.div`
+  // background-color: white;
+  // height: 140px;
+  // width: 300px;
+`
 
 export const CardView = styled.div`
   display: flex;
@@ -186,7 +193,9 @@ export const ComparisonList = styled.div`
 `;
 
 export const Toggle = styled.div`
+  background-color: white;
   border: 3px solid #ddc1fc;
+  // border: 3px solid white;
   border-radius: 24px;
   width: 100%;
   display: flex;

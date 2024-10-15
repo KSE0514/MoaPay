@@ -3,6 +3,7 @@ import {
   Wrapper,
   Loading,
   Layout,
+  CardViewContainer,
   CardView,
   ComparisonView,
   ComparisonList,
@@ -165,55 +166,57 @@ const CardRecommend = () => {
         <>
           <div className="view">
             <div className="top">
-              <CardView>
-                <div className="cardimg">
-                  {comparisonCard[0] ? (
-                    <>
+              <CardViewContainer>
+                <CardView>
+                  <div className="cardimg">
+                    {comparisonCard[0] ? (
+                      <>
+                        <img
+                          src={`/assets/image/longWidth/신용카드이미지/${comparisonCard[0].cardProductImgUrl}.png`}
+                          alt={comparisonCard[0].cardProductName}
+                        />
+                        <div
+                          className="delete-btn"
+                          onClick={() => {
+                            deleteComparisonCard(0);
+                          }}
+                        >
+                          <FontAwesomeIcon icon={faX} />
+                        </div>
+                      </>
+                    ) : (
                       <img
-                        src={`/assets/image/longWidth/신용카드이미지/${comparisonCard[0].cardProductImgUrl}.png`}
-                        alt={comparisonCard[0].cardProductName}
+                        src="\assets\image\recommendedcard.png"
+                        style={{ height: "100%" }}
                       />
-                      <div
-                        className="delete-btn"
-                        onClick={() => {
-                          deleteComparisonCard(0);
-                        }}
-                      >
-                        <FontAwesomeIcon icon={faX} />
-                      </div>
-                    </>
-                  ) : (
-                    <img
-                      src="\assets\image\recommendedcard.png"
-                      style={{ height: "100%" }}
-                    />
-                  )}
-                </div>
-                <div>vs</div>
-                <div className="cardimg">
-                  {comparisonCard[1] ? (
-                    <>
+                    )}
+                  </div>
+                  <div>vs</div>
+                  <div className="cardimg">
+                    {comparisonCard[1] ? (
+                      <>
+                        <img
+                          src={`/assets/image/longWidth/신용카드이미지/${comparisonCard[1].cardProductImgUrl}.png`}
+                          alt={comparisonCard[1].cardProductName}
+                        />
+                        <div
+                          className="delete-btn"
+                          onClick={() => {
+                            deleteComparisonCard(1);
+                          }}
+                        >
+                          <FontAwesomeIcon icon={faX} />
+                        </div>
+                      </>
+                    ) : (
                       <img
-                        src={`/assets/image/longWidth/신용카드이미지/${comparisonCard[1].cardProductImgUrl}.png`}
-                        alt={comparisonCard[1].cardProductName}
+                        style={{ height: "100%" }}
+                        src="\assets\image\recommendedcard.png"
                       />
-                      <div
-                        className="delete-btn"
-                        onClick={() => {
-                          deleteComparisonCard(1);
-                        }}
-                      >
-                        <FontAwesomeIcon icon={faX} />
-                      </div>
-                    </>
-                  ) : (
-                    <img
-                      style={{ height: "100%" }}
-                      src="\assets\image\recommendedcard.png"
-                    />
-                  )}
-                </div>
-              </CardView>
+                    )}
+                  </div>
+                </CardView>
+              </CardViewContainer>
               <ComparisonView>
                 <div
                   onClick={changeShowComparisonViewState}
