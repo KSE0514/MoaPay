@@ -13,7 +13,7 @@ interface SelectCardListProps {
   onSelectCard: (card: Card) => void;
 }
 const SelectCardList: React.FC<SelectCardListProps> = ({ onSelectCard }) => {
-  const { cardList } = useCardStore()
+  const { cardList } = useCardStore();
   const [rotate, setRotate] = useState<{ [key: number]: boolean }>({});
 
   // 카드 가로, 세로 길이에 따른 회전 여부 판단 핸들러
@@ -34,7 +34,8 @@ const SelectCardList: React.FC<SelectCardListProps> = ({ onSelectCard }) => {
           <CardView key={index} onClick={() => onSelectCard(card)}>
             <div>
               <img
-                src={card.cardProduct.cardProductImgUrl}
+                src={`/assets/image/longWidth/신용카드이미지/${card.cardProduct.cardProductImgUrl}.png`}
+                // src={card.cardProduct.cardProductImgUrl}
                 alt={card.cardProduct.cardProductName}
                 onLoad={(event) => handleImageLoad(event, index)} // 이미지가 로드되면 handleImageLoad 호출
                 style={{
