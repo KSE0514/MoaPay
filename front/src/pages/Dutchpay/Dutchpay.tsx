@@ -553,6 +553,7 @@ const Dutchpay = () => {
 
   const onClickRequestUrl = () => {
     connectWebSocket();
+    loadProduct(orderId)
     setWebSocketJoinStep(2);
   };
 
@@ -608,6 +609,7 @@ const Dutchpay = () => {
       .catch((err) => {
         console.error("복사 실패:", err);
       });
+    loadProduct(orderId)
   };
 
   // useEffect(()=>{
