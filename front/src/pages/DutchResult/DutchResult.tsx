@@ -73,8 +73,9 @@ const DutchResult = () => {
   const navigate = useNavigate();
   const [roomInfo, setRoomInfo] = useState<DutchCompliteResponse | null>(null); // 방 정보를 저장하는 state
   const [orderInfo, setOrderInfo] = useState<OrderInfo | null>(null); // orderInfo 데이터를 저장하는 state
-  const { accessToken, mode, setPaymentType } = useAuthStore();
+  const { accessToken } = useAuthStore();
   const [orderId, setOrderId] = useState<string | null>(null);
+  const [loading, setLoading] = useState(true); // 로딩 상태 관리
 
   // 완료된 멤버 수 계산
   const completedMembers = roomInfo
@@ -96,9 +97,9 @@ const DutchResult = () => {
   }, [roomInfo]);
 
   const getOrderInfo = async (orderId: string) => {
+    console.log("order Info : ", orderId);
     try {
       const response = await apiClient.get(
-        // `http://localhost:18020/moapay/core/dutchpay/orderInfo/${orderId}`
         `api/moapay/core/dutchpay/orderInfo/${orderId}`,
         {
           withCredentials: true,
@@ -109,11 +110,14 @@ const DutchResult = () => {
       );
       if (response?.status === 200) {
         const orderData = response.data;
+        console.log(orderData);
         setOrderInfo(orderData);
       }
     } catch (e) {
       const error = e as AxiosError;
       console.log(error);
+    } finally {
+      setLoading(false); // 로딩 완료
     }
   };
 
@@ -121,7 +125,6 @@ const DutchResult = () => {
     console.log(roomId);
     try {
       const response = await apiClient.get(
-        // `http://localhost:18020/moapay/core/dutchpay/getDutchRoomInfo/${roomId}`
         `api/moapay/core/dutchpay/getDutchRoomInfo/${roomId}`,
         {
           withCredentials: true,
@@ -164,13 +167,13 @@ const DutchResult = () => {
         </Reload>
       </Header>
 
-      {roomInfo ? (
+      {loading ? ( // 로딩 상태에 따라 다른 UI 표시
+        <p>주문 정보를 불러오는 중...</p>
+      ) : roomInfo ? (
         <div>
           <Main>
-            {/* 완료된 멤버 수와 총 멤버 수 표시 */}
-
             {/* OrderInfo 데이터 렌더링 */}
-            {orderInfo && (
+            {orderInfo ? (
               <div>
                 <Product
                   productName={
@@ -183,6 +186,8 @@ const DutchResult = () => {
                   productUrl={orderInfo.url || "#"} // URL도 null 체크를 추가
                 />
               </div>
+            ) : (
+              <p>주문 정보가 없습니다.</p> // 주문 정보가 없을 경우 메시지
             )}
             <Merchant>
               <div
