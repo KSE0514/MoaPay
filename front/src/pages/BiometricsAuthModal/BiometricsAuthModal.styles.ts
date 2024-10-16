@@ -35,7 +35,7 @@ export const Wrapper = styled.div`
   position: fixed;
   left: 0;
   top: 0;
-  background: linear-gradien(120deg, #f1e5ff 6%, #dcbefc 50%, #ffc6ff);
+  background: linear-gradient(120deg, #f1e5ff 6%, #dcbefc 50%, #ffc6ff);
   padding: 30% 0% 30% 0%;
   width: 100vw;
   height: 100vh;
