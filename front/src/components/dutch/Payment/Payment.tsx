@@ -60,11 +60,11 @@ const Payment = ({
   const endAuth = () => {
     setIsAuth(true);
     setShowModal(false);
+    pay();
   };
 
   const authStep = () => {
     setShowModal(true);
-    pay();
   };
 
   const { accessToken, id, paymentType } = useAuthStore();
