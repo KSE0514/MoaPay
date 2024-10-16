@@ -163,7 +163,7 @@ const DutchResult = () => {
               : DutchPayImg
           }
           alt=""
-          style={{ width: "120px" }} // 완료된 이미지의 URL로 바꿉니다.
+          style={{ width: "100px" }} // 완료된 이미지의 URL로 바꿉니다.
         />
         <br />
         {completedMembers === totalMembers && totalMembers > 0
