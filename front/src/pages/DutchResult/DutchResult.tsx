@@ -31,6 +31,7 @@ import {
   BackImg,
   Merchant,
 } from "./DutchResult.styles"; // 스타일을 임포트
+import SquareBtn from "../../components/dutch/SquareBtn/SquareBtn";
 
 interface DutchPayMember {
   uuid: string;
@@ -162,7 +163,7 @@ const DutchResult = () => {
               : DutchPayImg
           }
           alt=""
-          style={{ width: "150px" }} // 완료된 이미지의 URL로 바꿉니다.
+          style={{ width: "120px" }} // 완료된 이미지의 URL로 바꿉니다.
         />
         <br />
         {completedMembers === totalMembers && totalMembers > 0
@@ -211,7 +212,7 @@ const DutchResult = () => {
               </div>
               {/* 총 금액 표시 */}
               <div style={{ fontSize: "25px" }}>
-                {roomInfo.data.totalPrice} 원
+                {roomInfo.data.totalPrice.toLocaleString()} 원
               </div>
             </Merchant>
 
@@ -237,6 +238,17 @@ const DutchResult = () => {
                 </MemberItem>
               ))}
             </MemberList>
+            {completedMembers === totalMembers && totalMembers > 0 ? (
+              <SquareBtn
+                text={`홈으로 이동`}
+                color="rgba(255, 255, 255)"
+                onClick={() => {
+                  navigate(PATH.HOME);
+                }}
+              />
+            ) : (
+              <></>
+            )}
           </Main>
         </div>
       ) : (

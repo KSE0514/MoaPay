@@ -49,7 +49,14 @@ const SelectCardList: React.FC<SelectCardListProps> = ({ onSelectCard }) => {
                 }}
                 draggable="false" // 이미지 드래그 방지
               />
-              <div>{card.cardProduct.cardProductName}</div>
+              <div>
+                <div>{card.cardProduct.cardProductName}</div>
+                <div>
+                  {`남은 실적 금액 : ${(
+                    card.cardProduct.cardProductPerformance - card.amount
+                  ).toLocaleString()}원`}
+                </div>
+              </div>
             </div>
           </CardView>
         </div>

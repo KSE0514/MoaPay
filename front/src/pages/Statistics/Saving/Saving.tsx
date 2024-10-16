@@ -238,8 +238,9 @@ const Saving = () => {
                 <img src="/assets/image/prinreface.png" />
                 <p className="name">모아 공주</p>
                 <p>
-                  목표금액을 설정해볼까요? <br />
-                  저번 달엔 {calculatedPrice}원 사용했어요.
+                  목표금액을 설정해볼까요?
+                  {/* <br /> */}
+                  {/* 저번 달엔 {calculatedPrice}원 사용했어요. */}
                 </p>
               </div>
               <div className="setting-price">
