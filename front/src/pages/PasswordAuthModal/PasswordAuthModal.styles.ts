@@ -12,6 +12,8 @@ export const Wrapper = styled.div`
   /* background-color: var(--light-purple); */
   background: linear-gradient(120deg, #f1e5ff 6%, #dcbefc 50%, #ffc6ff);
   padding: 20% 10% 20% 10%;
+  position: absolute;
+  left: 0;
   width: 100%;
   height: 100vh;
   display: flex;

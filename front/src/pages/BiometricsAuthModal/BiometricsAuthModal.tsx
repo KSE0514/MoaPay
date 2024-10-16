@@ -120,13 +120,7 @@ const BiometricsAuthModal: React.FC<BiometricsAuthModalProps> = ({
         <div
           style={{ marginTop: "20px" }}
           onClick={() => {
-            navigate(PATH.PASSWORD_LOGIN, {
-              state: {
-                ment: `로그인을 위해.\n비밀번호를 입력해주세요`,
-                back: false,
-                mode: "Login",
-              },
-            });
+            setModal(true);
           }}
         >
           간편 비밀번호로 로그인
