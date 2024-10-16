@@ -7,7 +7,7 @@ export const Wrapper = styled.div`
   flex-direction: column;
   height: 100vh;
   // background-color: #db80e5;
-  background-color: #B97DF9;
+  background-color: #b97df9;
 `;
 export const Top = styled.div`
   padding: 20px 41px;
@@ -39,7 +39,7 @@ export const BarcordArea = styled.div`
   background-color: white;
   border-radius: 19px;
 
-    // border: 2px solid black;
+  // border: 2px solid black;
   ${MediaQuery.small} {
     padding: 10px 20px 10px 20px;
   }
@@ -68,7 +68,7 @@ export const Time = styled.div`
 export const ButtonArea = styled.div`
   display: flex;
   justify-content: space-between;
-  
+
   // border: 2px solid black;
   // border-radius: 10px;
 
@@ -348,6 +348,17 @@ export const QrContainer = styled.div`
   }
   #qr-reader__dashboard_section > div > div:nth-of-type(2) > div {
     display: none;
+  }
+  #qr-reader__dashboard_section_csr {
+    display: flex;
+    flex-direction: column;
+  }
+  #qr-reader__dashboard_section_csr > span:nth-child(2) {
+    color: white;
+  }
+  #qr-reader__dashboard_section_csr > span:nth-child(2) > select {
+    color: white;
+    border: none;
   }
 
   & button {
