@@ -7,7 +7,7 @@ import { PATH } from "./../../../constants/path";
 import { useAuthStore } from "../../../store/AuthStore";
 import apiClient from "../../../axios";
 
-apiClient.get('/endpoint') // https://your-api-base-url.com/endpoint
+apiClient.get("/endpoint"); // https://your-api-base-url.com/endpoint
 
 import line from "./../../../assets/image/dutch_line.png";
 // import { useEffect } from 'react';
@@ -20,6 +20,15 @@ import {
   Btn,
   WarningMessage,
 } from "./Participant.styles";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import {
+  faFaceGrinHearts,
+  faFaceLaugh,
+  faFaceLaughSquint,
+  faFaceSmile,
+  faFaceSmileWink,
+} from "@fortawesome/free-solid-svg-icons";
+import BiometricsAuthModal from "../../../pages/BiometricsAuthModal/BiometricsAuthModal";
 
 // useEffect(() => {
 //   // 참가자 목록 불러오기_참가자가 새로 들어올 때마다 리스트 조회가 이루어져야함?
@@ -134,6 +143,26 @@ const Participant = ({
       status: item.status,
     }));
   };
+  const [showModal, setShowModal] = useState<boolean>(false);
+  const [isAuth, setIsAuth] = useState<boolean>(false);
+
+  //인증이 끝났을때
+  const endAuth = () => {
+    setIsAuth(true);
+    setShowModal(false);
+  };
+
+  const authStep = () => {
+    setShowModal(true);
+    onPaymentStart();
+  };
+
+  const icons = [
+    faFaceLaugh,
+    faFaceSmileWink,
+    faFaceLaughSquint,
+    faFaceGrinHearts,
+  ];
 
   console.log("totalPrice : ", totalPrice);
   const [confirmPrice, setConfirmPrice] = useState<number>();
@@ -339,9 +368,13 @@ const Participant = ({
       {dutchStart ? (
         <>
           {/* 더치페이 하여 구매할 상품 정보 */}
-          {loading? <p>주문 정보를 불러오는 중...</p> : (
+          {loading ? (
+            <p>주문 정보를 불러오는 중...</p>
+          ) : (
             <Product
-              productName={merchantName || "BESPOKE 냉장 4도어 키친핏 615L (UV탈취)"}
+              productName={
+                merchantName || "BESPOKE 냉장 4도어 키친핏 615L (UV탈취)"
+              }
               productUrl={
                 "https://www.ssg.com/item/itemView.ssg?itemId=1000566517100"
               }
@@ -374,7 +407,11 @@ const Participant = ({
                     height: "50px",
                     borderRadius: "100%",
                   }}
-                ></div>
+                >
+                  <FontAwesomeIcon
+                    icon={icons[Math.floor(Math.random() * icons.length)]}
+                  />
+                </div>
 
                 <div>{participant.memberName}</div>
                 {/* <div>삭제 아이콘</div> */}
@@ -445,7 +482,7 @@ const Participant = ({
           <SquareBtn
             text={`결제하기`}
             color="rgba(135, 72, 243, 0.74)"
-            onClick={onPaymentStart}
+            onClick={authStep}
           />
         ) : null}
         {/* 경고 메시지 출력 */}
@@ -453,6 +490,7 @@ const Participant = ({
       {showWarning && (
         <WarningMessage>결제 금액을 다시 확인해주세요.</WarningMessage>
       )}
+      {showModal && <BiometricsAuthModal endAuth={endAuth} />}
     </Wrapper>
   );
 };
