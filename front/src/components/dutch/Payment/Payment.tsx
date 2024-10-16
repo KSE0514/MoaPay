@@ -23,6 +23,7 @@ import {
 } from "./Payment.styles";
 import axios from "axios";
 import apiClient from "../../../axios";
+import BiometricsAuthModal from "../../../pages/BiometricsAuthModal/BiometricsAuthModal";
 
 apiClient.get("/endpoint"); // https://your-api-base-url.com/endpoint
 
@@ -45,7 +46,27 @@ interface PaymentProps {
   merchantThumbnailUrl: string;
 }
 
-const Payment = ({ onClick, confirmAmount, onFinish, merchantName, merchantThumbnailUrl }: PaymentProps) => {
+const Payment = ({
+  onClick,
+  confirmAmount,
+  onFinish,
+  merchantName,
+  merchantThumbnailUrl,
+}: PaymentProps) => {
+  const [showModal, setShowModal] = useState<boolean>(false);
+  const [isAuth, setIsAuth] = useState<boolean>(false);
+
+  //인증이 끝났을때
+  const endAuth = () => {
+    setIsAuth(true);
+    setShowModal(false);
+  };
+
+  const authStep = () => {
+    setShowModal(true);
+    pay();
+  };
+
   const { accessToken, id, paymentType } = useAuthStore();
   const cardList = useCardStore((state) => state.cardList);
 
@@ -301,7 +322,13 @@ const Payment = ({ onClick, confirmAmount, onFinish, merchantName, merchantThumb
         <div onClick={onClickChangeCard}>다른카드 선택하기</div>
         <Bottom>
           {/* 결제 금액 넘겨 받아야 함 */}
-          <Btn onClick={pay}>{confirmAmount.toLocaleString()}원 결제하기</Btn>
+          <Btn
+            onClick={() => {
+              authStep();
+            }}
+          >
+            {confirmAmount.toLocaleString()}원 결제하기
+          </Btn>
           {/* text={'7,000원 결제하기'} color={'white'} onClick={onClick} /> */}
         </Bottom>
       </CardView>
@@ -312,6 +339,7 @@ const Payment = ({ onClick, confirmAmount, onFinish, merchantName, merchantThumb
           <SelectCardList onSelectCard={onSelectCard} />
         </SelectModal>
       </Modal>
+      {showModal && <BiometricsAuthModal endAuth={endAuth} />}
     </Wrapper>
   );
 };

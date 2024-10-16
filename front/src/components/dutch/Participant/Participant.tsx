@@ -406,9 +406,13 @@ const Participant = ({
                     width: "50px",
                     height: "50px",
                     borderRadius: "100%",
+                    display: "flex",
+                    justifyContent: "center",
+                    alignItems: "center",
                   }}
                 >
                   <FontAwesomeIcon
+                    style={{ fontSize: "100%", width: "100%", height: "100%" }} // 꽉 차도록 크기 설정
                     icon={icons[Math.floor(Math.random() * icons.length)]}
                   />
                 </div>
