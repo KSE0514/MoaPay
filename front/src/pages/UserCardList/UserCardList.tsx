@@ -202,6 +202,44 @@ const UserCardList = () => {
       setSelectedCards((prev) => [...prev, index]);
     }
   };
+  const gettingCard = async () => {
+    try {
+      setIsLoading(true);
+      const response = await apiClient.post(
+        // `http://localhost:18100/cardbank/card/getMyCards`,
+        // `https://j11c201.p.ssafy.io/cardapi/cardbank/card/getMyCards`,
+        `/api/moapay/core/card/getMyCards`,
+        {
+          memberId: id,
+          phoneNumber: phoneNumber,
+        },
+        {
+          withCredentials: true,
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+            "Content-Type": "application/json",
+          },
+        }
+      );
+      setShowCards((prevCards) => {
+        const newCards = response.data.data;
+        const filteredNewCards = newCards.filter(
+          (newCard: Card) =>
+            !prevCards.some(
+              (prevCard) => prevCard.cardNumber === newCard.cardNumber
+            )
+        );
+        return [...prevCards, ...filteredNewCards];
+      });
+      setTimeout(() => {
+        //추가
+        setIsLoading(false);
+      }, 1500);
+      //
+    } catch (e) {
+      console.log(e);
+    }
+  };
 
   return (
     <Wrapper style={{ padding: !isLoading && !before ? "0% 0%" : undefined }}>
@@ -261,7 +299,7 @@ const UserCardList = () => {
             />
             <div
               onClick={() => {
-                settingCard();
+                gettingCard();
               }}
             >
               자산 연결하기
