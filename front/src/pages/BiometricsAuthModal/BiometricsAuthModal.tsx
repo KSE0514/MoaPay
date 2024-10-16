@@ -4,6 +4,7 @@ import { useNavigate } from "react-router-dom";
 import { PATH } from "../../constants/path";
 import { useState } from "react";
 import { useAuthStore } from "../../store/AuthStore";
+import PasswordAuthModal from "../PasswordAuthModal/PasswordAuthModal";
 interface BiometricsAuthModalProps {
   endAuth: () => void; // endAuth는 반환값이 없는 함수임을 명시
 }
@@ -13,6 +14,11 @@ const BiometricsAuthModal: React.FC<BiometricsAuthModalProps> = ({
   const navigate = useNavigate();
   const { name, accessToken, mode } = useAuthStore();
   const [error, setError] = useState<boolean>(false);
+  const [modal, setModal] = useState<boolean>(false);
+
+  const changeAuthMethod = () => {
+    setModal(false);
+  };
 
   // Base64 URL로 인코딩된 문자열을 Uint8Array로 변환하는 함수
   const base64UrlToUint8Array = (base64Url: string): Uint8Array => {
@@ -126,6 +132,12 @@ const BiometricsAuthModal: React.FC<BiometricsAuthModalProps> = ({
           간편 비밀번호로 로그인
         </div>
       </div>
+      {modal && (
+        <PasswordAuthModal
+          endAuth={endAuth}
+          changeAuthMethod={changeAuthMethod}
+        />
+      )}
     </Wrapper>
   );
 };

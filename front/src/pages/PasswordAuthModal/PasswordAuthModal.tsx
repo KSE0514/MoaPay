@@ -13,13 +13,19 @@ import {
   Wrapper,
   Nav,
   Container,
-} from "./PasswordLogin.styles";
+} from "./PasswordAuthModal.styles";
 import { PATH } from "../../constants/path";
 import axios from "axios";
 import { useAuthStore } from "../../store/AuthStore";
 import apiClient from "../../axios";
-
-const PasswordLogin: React.FC = () => {
+interface PasswordAuthModalProps {
+  endAuth: () => void; // endAuth는 반환값이 없는 함수임을 명시
+  changeAuthMethod: () => void;
+}
+const PasswordAuthModal: React.FC<PasswordAuthModalProps> = ({
+  endAuth,
+  changeAuthMethod,
+}) => {
   // const baseUrl = import.meta.env.VITE_BASE_URL;
   const {
     id,
@@ -51,26 +57,16 @@ const PasswordLogin: React.FC = () => {
     "-",
     "+",
   ]);
-  const [ment, setMent] = useState<string>("");
-  useEffect(() => {
-    if (mode === "" || mode === "NewLogin") {
-      setMent("로그인을 위해\n비밀번호를 입력하세요.");
-    } else if (mode === "Join") {
-      setMent("비밀번호를 설정합니다.\n6자리를 입력하세요.");
-    } else if (mode == "SettingPassword") {
-      setMent("기존의 비밀번호를 입력해주세요");
-    }
-  }, []);
+  const [ment, setMent] = useState<string>(
+    "결제를 위해\n비밀번호를 입력하세요."
+  );
+
   /**
    * 비밀번호 입력
    */
   const handleKeypadClick = (value: string) => {
     if (value === "+") {
-      if (mode !== "Join" && mode !== "NewLogin") {
-        navigate(PATH.BIOMETRICS_LOGIN);
-      } else {
-        return;
-      }
+      changeAuthMethod();
     }
 
     if (value === "-") {
@@ -169,7 +165,8 @@ const PasswordLogin: React.FC = () => {
             console.log(response);
             // 요청 성공 시 홈으로 이동
             if (response.status === 200) {
-              navigate(PATH.HOME);
+              changeAuthMethod();
+              endAuth();
             }
           } catch (error) {
             // 비밀번호가 일치하지 않는 경우
@@ -178,69 +175,6 @@ const PasswordLogin: React.FC = () => {
               "일치하지 않는 비밀번호입니다.\n다시 비밀번호를 입력해주세요."
             );
             setPassword("");
-          }
-        } else if (mode === "NewLogin") {
-          console.log("login password");
-          console.log(password);
-          try {
-            const response = await apiClient.post(
-              // `${baseUrl}moapay/member/login`,
-              // `https://j11c201.p.ssafy.io/api/moapay/member/login`,
-              `/api/moapay/member/login`,
-              {
-                uuid: id,
-                phoneNumber: phoneNumber,
-                simplePassword: password,
-              },
-              {
-                withCredentials: true,
-              }
-            );
-            if (response.status == 200) {
-              setAccessToken(response.data.data.token.accessToken);
-              setRefreshToken(response.data.data.token.refreshToken);
-              setIsLoggedIn(true);
-              navigate(PATH.SETTING_BIOMETRICS_LOGIN);
-            }
-          } catch (e) {
-            suffleKeysPad();
-            setMent(
-              "일치하지 않는 비밀번호입니다.\n다시 비밀번호를 입력해주세요."
-            );
-            setPassword("");
-          }
-        } else if (mode === "Join") {
-          suffleKeysPad();
-          setIsDoubleCheck(true);
-          setMent("다시 비밀번호를 입력해주세요.");
-        } else if (mode === "SettingPassword") {
-          if (!isChangeMode) {
-            //비밀번호 일치하는지 판단
-            const checkingPwReponse = await apiClient.post(
-              `/api/moapay/member/simple/verify`,
-              { uuid: id, simplePassword: password },
-              {
-                withCredentials: true,
-                headers: {
-                  Authorization: `Bearer ${accessToken}`, // Authorization 헤더에 Bearer 토큰 추가
-                },
-              }
-            );
-            if (checkingPwReponse) {
-              setIsChangeMode(true);
-              setPassword("");
-              setMent("새로운 비밀번호를\n입력해주세요.");
-            } else {
-              suffleKeysPad();
-              setMent(
-                "일치하지 않는 비밀번호입니다.\n다시 비밀번호를 입력해주세요."
-              );
-              setPassword("");
-            }
-          } else {
-            suffleKeysPad();
-            setIsDoubleCheck(true);
-            setMent("다시 비밀번호를 입력해주세요.");
           }
         }
       }
@@ -253,73 +187,6 @@ const PasswordLogin: React.FC = () => {
   /**
    * 비밀번호 2차 검증 - 비밀번호 변경과 비밀번호 첫 설정
    */
-  useEffect(() => {
-    const handlePasswordCheck = async () => {
-      if (isDoubleCheck && doubleCheckPassword.length === 6) {
-        if (String(doubleCheckPassword).trim() === String(password).trim()) {
-          //비밀번호 설정 후 저장 요청보내기
-          //단 Join일때와 SettingPassword일때는 다른 요청을 보내야한다.
-          if (mode == "Join") {
-            try {
-              console.log("here join password");
-              console.log(password);
-              //생체정보 설정을 위해 이동 - 선택 가능
-              const response = await apiClient.post(
-                // `${baseUrl}moapay/member/simple/register`,
-                // `https://j11c201.p.ssafy.io/api/moapay/member/simple/register`,
-                `/api/moapay/member/simple/register`,
-                {
-                  uuid: id,
-                  simplePassword: password,
-                },
-                {
-                  withCredentials: true,
-                  headers: {
-                    Authorization: `Bearer ${accessToken}`, // Authorization 헤더에 Bearer 토큰 추가
-                  },
-                }
-              );
-              if (response.status == 200) {
-                navigate(PATH.SETTING_BIOMETRICS_LOGIN);
-              }
-            } catch (error) {
-              console.error("Error during password setting:", error);
-            }
-          } else if (mode == "SettingPassword") {
-            // "SettingPassword"에 대한 비동기 처리 추가 가능
-            const response = await apiClient.post(
-              // `${baseUrl}moapay/member/simple/register`,
-              // `https://j11c201.p.ssafy.io/api/moapay/member/simple/register`,
-              `/api/moapay/member/simple/register`,
-              {
-                uuid: id,
-                simplePassword: password,
-              },
-              {
-                withCredentials: true,
-                headers: {
-                  Authorization: `Bearer ${accessToken}`, // Authorization 헤더에 Bearer 토큰 추가
-                },
-              }
-            );
-            if (response) {
-              alert("비밀번호가 변경되었습니다.");
-              setMode("");
-              navigate(PATH.HOME);
-            }
-          }
-        } else {
-          suffleKeysPad();
-          setMent(
-            "일치하지 않는 비밀번호입니다.\n다시 비밀번호를 입력해주세요."
-          );
-          setDoubleCheckPassword("");
-        }
-      }
-    };
-
-    handlePasswordCheck();
-  }, [doubleCheckPassword]);
 
   // state 업데이트
   useEffect(() => {
@@ -380,4 +247,4 @@ const PasswordLogin: React.FC = () => {
   );
 };
 
-export default PasswordLogin;
+export default PasswordAuthModal;

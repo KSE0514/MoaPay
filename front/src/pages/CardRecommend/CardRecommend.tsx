@@ -240,16 +240,16 @@ const CardRecommend = () => {
                           <p>
                             {comparisonCard[0]
                               ? comparisonCard[0].cardProductType == "cred"
-                                ? "신용카드"
-                                : "체크카드"
+                                ? "체크카드"
+                                : "신용카드"
                               : ""}
                           </p>
                           <div className="line"></div>
                           <p>
                             {comparisonCard[1]
                               ? comparisonCard[1].cardProductType == "cred"
-                                ? "신용카드"
-                                : "체크카드"
+                                ? "체크카드"
+                                : "신용카드"
                               : ""}
                           </p>
                         </div>
