@@ -140,14 +140,14 @@ export const Main = styled.div`
 `;
 
 export const MainNoBorder = styled.div`
-  height: 100%;
-  // overflow: auto;
+  // min-height: 50%;
+  // height: 1000%;
   background-color: rgba(255, 255, 255, 0.5);
   // border: 2px solid #dbc5e9;
   border: 1px solid white;
   margin: 35px 0px 15px 0px;
   border-radius: 10px;
-  padding: 10px 0px;
+  padding: 10px 7px;
 `;
 
 export const Bottom = styled.div`
