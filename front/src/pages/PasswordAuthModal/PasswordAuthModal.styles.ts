@@ -14,7 +14,7 @@ export const Wrapper = styled.div`
   padding: 20% 10% 20% 10%;
   position: absolute;
   left: 0;
-  top: -30%;
+  top: 0%;
   width: 100%;
   height: 100vh;
   display: flex;
