@@ -2,23 +2,23 @@
 
 ## 🏆삼성 청년 SW아카데미(SSAFY) 11th 특화프로젝트 🏆
 
-## ✅ 프로젝트 진행 기간
+## 📆 프로젝트 진행 기간
 
 2023.08.19 ~ 2023.10.11
 
-## ✅ 팀 모토 및 그라운드룰 사진
+## 🗿 팀 모토 및 그라운드룰 사진
 
 <div align="center">
   <img src="./front/public/assets/readme/ground.jpg" alt="그라운드룰" width="400">
 </div>
 
-## ✅ 멤버소개
+## 🫂 멤버소개
 
 <div align="center">
   <img src="./front/public/assets/readme/photo.jpg" alt="팀원사진" width="400">
 </div>
 
-## ✅ 기술스택
+## 🤸‍♂️ 기술스택
 
 ## :pushpin: 기술 스택
 
@@ -74,11 +74,22 @@
     </tr>
 </table>
 
-## ✅ 시스템 아키텍쳐
+## 🛠️ 시스템 아키텍쳐
 
-![시스템 아키텍처]()
+<div style="text-align:center">
 
-## ✅ 프로젝트 소개
+### MoA PaY
+
+<img src="./image/아키텍처1.png"/>
+
+### CARDBANK, STORE
+
+<img src="./image/아키텍처2.png"
+style="width:50%"/>
+
+</div>
+
+## 💳 프로젝트 소개
 
 ### 🚩 서비스 한줄 소개
 
@@ -325,14 +336,16 @@
         </td>
 </table>
 
-## ✅ 활용기술, 기술 설명
+## ⚒️ 활용기술, 기술 설명
 
-### 생체인증
+- 생체인증
 
-## ✅ 산출물(ERD, 명세서, 파일구조)
+## 📕 산출물(ERD, 명세서, 파일구조)
 
-### ERD 
+### ERD
+
 - moapay
+<<<<<<< HEAD
 <img src= "./ERD_모아페이.png" height="450">
 - payment
 <img src= "./ERD_페이먼트.png" height="450">
@@ -344,6 +357,19 @@
 <img src= "./ERD_가맹점.png" height="450">
 - 전체
 <img src= "./전체ERD.png" height="450">
+=======
+  ![ERD_모아페이.png](./ERD_모아페이.png)
+- payment
+  ![ERD_페이먼트.png](./ERD_페이먼트.png)
+- member
+  ![ERD_멤버.png](./ERD_멤버.png)
+- cardbank
+  ![ERD_카드사.png](./ERD_카드사.png)
+- store
+  ![ERD_가맹점.png](./ERD_가맹점.png)
+
+![전체ERD.png](./전체ERD.png)
+>>>>>>> 74abc38c293ce3d36f7fb9b491adafcd6521dfcc
 
 ### 명세서
 
@@ -351,20 +377,6 @@
 
 - **API 명세서**
 
-## ✅ 결과공유, 느낀점(모두작성)
+## 💸 결과공유, 느낀점(모두작성)
 
-#### 이예빈
-
-#### 정유진
-
-#### 김성은
-
-#### 최현석
-
-#### 이대현
-
-#### 주수아
-
-## ✅ UCC링크
-
-[MoA Pay Ucc](https://youtu.be/GBB3lD6g-10?feature=shared)
+## 🎬 UCC링크
