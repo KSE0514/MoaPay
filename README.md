@@ -344,7 +344,7 @@ style="width:50%"/>
 
 ### ERD
 
-
+<div>
 <img src= "./ERD_모아페이.png" height="300">
 
 <img src= "./ERD_페이먼트.png" height="300">
@@ -356,6 +356,7 @@ style="width:50%"/>
 <img src= "./ERD_가맹점.png" height="300">
 
 <img src= "./전체ERD.png" height="450">
+</div>
 
 ### 명세서
 
