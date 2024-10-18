@@ -320,8 +320,69 @@ const SelectPaymentType = () => {
       storedCategoryId,
       storedTotalPrice
     );
-    //카드 선택할 수 있도록 함
-    console.log("=======================single payment gogo=================");
+    setIsLoading(true);
+    console.log("sse 연결시작!!!!!");
+    console.log("requestId ", requestId);
+    //페이먼트 연결
+    const eventSource = new EventSource(
+      // `http://localhost:18010/moapay/pay/notification/subscribe/${requestId}}`
+      `https://j11c201.p.ssafy.io/api/moapay/pay/notification/subscribe/${requestId}`
+    );
+
+    //페이 연결 열기
+    eventSource.onopen = async () => {
+      await console.log(
+        "==============pay - SSE connection opened!=============="
+      );
+
+      console.log("이벤트 응답 : ", eventSource);
+    };
+
+    // 'payment-completed' 이벤트를 수신할 때 실행될 로직 (이벤트 이름을 'payment-completed'로 변경)
+    // 결제 완료를 보내주는 것
+    eventSource.addEventListener("payment-completed", (event) => {
+      console.log("Received 'sse' event:", event.data, "");
+      try {
+        const data = JSON.parse(event.data);
+        console.log("Parsed data: ", data);
+        setPaymentResult(data);
+
+        // 결제가 완료된 후에는 loading 을 false로 변경하고
+        setTimeout(() => {
+          setIsEnd(true);
+        }, 2300); // 2000 밀리초 = 2초
+        //결과를 보여줄 수 있도록 isEnd를 true로 변경
+
+        setTimeout(() => {
+          setIsLoading(false);
+        }, 3300);
+        // 결제 requestId 삭제하기
+        localStorage.removeItem("requestId");
+        //결과 담기
+      } catch (error) {
+        console.error("Data is not valid JSON:", event.data);
+        // 만약 데이터가 JSON이 아니라 문자열인 경우 그대로 저장
+      }
+    });
+
+    // 'sse' 이벤트를 수신할 때 실행될 로직
+    eventSource.addEventListener("sse", (event) => {
+      console.log("Received 'sse' event:", event.data);
+      try {
+        const data = JSON.parse(event.data);
+        console.log("Parsed data: ", data);
+      } catch (error) {
+        console.error("Data is not valid JSON:", event.data);
+      }
+    });
+
+    // 페이에서 에러 발생 시 실행될 로직
+    eventSource.onerror = async (e) => {
+      await console.log("Error with pay SSE", e);
+      // 에러가 발생하면 SSE를 닫음
+      eventSource.close();
+    };
+
     try {
       setIsLoading(true);
       const response = await apiClient.post(
@@ -406,8 +467,7 @@ const SelectPaymentType = () => {
           className="type-btn"
           onClick={() => {
             setSelectedPayType("single");
-          }}
-        >
+          }}>
           <label className="container">
             <input checked={selectedPayType === "single"} type="checkbox" />
             <div className="checkmark"></div>
@@ -418,8 +478,7 @@ const SelectPaymentType = () => {
           className="type-btn"
           onClick={() => {
             setSelectedPayType("multi");
-          }}
-        >
+          }}>
           <label className="container">
             <input checked={selectedPayType === "multi"} type="checkbox" />
             <div className="checkmark"></div>
@@ -430,8 +489,7 @@ const SelectPaymentType = () => {
           className="type-btn"
           onClick={() => {
             setSelectedPayType("dutch");
-          }}
-        >
+          }}>
           <label className="container">
             <input checked={selectedPayType === "dutch"} type="checkbox" />
             <div className="checkmark"></div>
@@ -441,8 +499,7 @@ const SelectPaymentType = () => {
         <Button
           onClick={() => {
             startPay();
-          }}
-        >
+          }}>
           결제하기
         </Button>
       </SelectView>
@@ -451,8 +508,7 @@ const SelectPaymentType = () => {
           <div className="container">
             <div className="left-side">
               <div
-                className={isLoading && isEnd ? "card card-fadeout" : "card "}
-              >
+                className={isLoading && isEnd ? "card card-fadeout" : "card "}>
                 <div className="card-line"></div>
                 <div className="buttons"></div>
               </div>
@@ -497,8 +553,7 @@ const SelectPaymentType = () => {
                 onSwiper={(swiper) => setSwiperInstance(swiper)} // Swiper 인스턴스 저장
                 onSlideChange={(swiper) => setActiveIndex(swiper.activeIndex)} // 슬라이드 변경 시 인덱스 업데이트
                 spaceBetween={50}
-                slidesPerView={1}
-              >
+                slidesPerView={1}>
                 {paymentResult?.paymentResultCardInfoList?.map(
                   (result, index) => (
                     <SwiperSlide key={index}>
@@ -559,15 +614,13 @@ const SelectPaymentType = () => {
                   onClick={() => handleNavClick(index)}
                   style={{
                     backgroundColor: activeIndex === index ? "purple" : "white",
-                  }}
-                ></span>
+                  }}></span>
               ))}
             </DotNav>
             <HomeBtn
               onClick={() => {
                 navigate(PATH.HOME);
-              }}
-            >
+              }}>
               <div>홈으로</div>
             </HomeBtn>
           </Result>
