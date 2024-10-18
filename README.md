@@ -331,13 +331,20 @@
 
 ## ✅ 산출물(ERD, 명세서, 파일구조)
 
-### ERD
+### ERD 
+- moapay
+![ERD_모아페이.png](./ERD_모아페이.png)
+- payment
+![ERD_페이먼트.png](./ERD_페이먼트.png)
+- member
+![ERD_멤버.png](./ERD_멤버.png)
+- cardbank
+![ERD_카드사.png](./ERD_카드사.png)
+- store
+![ERD_가맹점.png](./ERD_가맹점.png)
 
-<img src="./ERD_카드뱅크.png">
-<img src="./ERD_카드사.png" alt="카드사 ERD">
-<img src="./ERD_가맹점.png" alt="가맹점 ERD">
-<img src="./ERD_모아페이.png" alt="모아페이 ERD">
-<img src="./전체ERD.png" alt="전체 ERD">
+
+![전체ERD.png](./전체ERD.png)
 
 ### 명세서
 
