@@ -344,32 +344,18 @@ style="width:50%"/>
 
 ### ERD
 
-- moapay
-<<<<<<< HEAD
-<img src= "./ERD_모아페이.png" height="450">
-- payment
-<img src= "./ERD_페이먼트.png" height="450">
-- member
-<img src= "./ERD_멤버.png" height="450">
-- cardbank
-<img src= "./ERD_카드사.png" height="450">
-- store
-<img src= "./ERD_가맹점.png" height="450">
-- 전체
-<img src= "./전체ERD.png" height="450">
-=======
-  ![ERD_모아페이.png](./ERD_모아페이.png)
-- payment
-  ![ERD_페이먼트.png](./ERD_페이먼트.png)
-- member
-  ![ERD_멤버.png](./ERD_멤버.png)
-- cardbank
-  ![ERD_카드사.png](./ERD_카드사.png)
-- store
-  ![ERD_가맹점.png](./ERD_가맹점.png)
 
-![전체ERD.png](./전체ERD.png)
->>>>>>> 74abc38c293ce3d36f7fb9b491adafcd6521dfcc
+<img src= "./ERD_모아페이.png" height="300">
+
+<img src= "./ERD_페이먼트.png" height="300">
+
+<img src= "./ERD_멤버.png" height="300">
+
+<img src= "./ERD_카드사.png" height="300">
+
+<img src= "./ERD_가맹점.png" height="300">
+
+<img src= "./전체ERD.png" height="450">
 
 ### 명세서
 
