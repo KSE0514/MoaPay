@@ -1,16 +1,16 @@
 import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react-swc";
 import { VitePWA } from "vite-plugin-pwa";
+import path from "path";
 
-// https://vitejs.dev/config/
 export default defineConfig({
   plugins: [
     react(),
     VitePWA({
       registerType: "autoUpdate",
       manifest: {
-        name: "onDo",
-        short_name: "onDo",
+        name: "MoAPay",
+        short_name: "MoAPay",
         description: "My awesome Vite-powered PWA!",
         theme_color: "#ffffff",
         icons: [
@@ -44,7 +44,6 @@ export default defineConfig({
             sizes: "120x120",
             type: "image/png",
           },
-
           {
             src: "./icons/apple-touch-icon-144x144.png",
             sizes: "144x144",
@@ -59,4 +58,13 @@ export default defineConfig({
       },
     }),
   ],
+  resolve: {
+    alias: {
+      "@": path.resolve(__dirname, "/src"), // src 디렉토리 경로 별칭
+    },
+  },
+  base: "/", // 빌드 시 루트 경로에서 리소스를 참조하도록 설정
+  optimizeDeps: {
+    include: ['swiper'], // swiper 포함
+  },
 });
