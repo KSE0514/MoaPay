@@ -291,7 +291,13 @@
 
 ## ✅ 산출물(ERD, 명세서, 파일구조)
 
-### ERD (bank, cocopay)
+### ERD 
+<img src="./ERD_카드뱅크.png">
+<img src="./ERD_카드사.png" alt="카드사 ERD">
+<img src="./ERD_가맹점.png" alt="가맹점 ERD">
+<img src="./ERD_모아페이.png" alt="모아페이 ERD">
+<img src="./전체ERD.png" alt="전체 ERD">
+
 
 <div style="display: flex; justify-content: space-between;">
     <img src="" alt="ERD" style="width: 48%;">
