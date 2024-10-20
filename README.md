@@ -3,7 +3,7 @@
 ## 🏆삼성 청년 SW아카데미(SSAFY) 11th 특화프로젝트 🏆
 
 <div align="center">
-  <img src="./image/MoAPay.png" alt="MoAPay" width="">
+  <img src="./image/moAPay.png" alt="MoAPay" width="">
 </div>
 
 ## 📆 프로젝트 진행 기간
