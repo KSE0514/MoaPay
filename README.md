@@ -2,25 +2,27 @@
 
 ## 🏆삼성 청년 SW아카데미(SSAFY) 11th 특화프로젝트 🏆
 
+<div align="center">
+  <img src="./image/MoAPay.png" alt="MoAPay" width="400">
+</div>
+
 ## 📆 프로젝트 진행 기간
 
-2023.08.19 ~ 2023.10.11
+2023.08.19 ~ 2023.10.11 (8주)
 
 ## 🗿 팀 모토 및 그라운드룰 사진
 
 <div align="center">
-  <img src="./front/public/assets/readme/ground.jpg" alt="그라운드룰" width="400">
+  <img src="./image/ground.jpg" alt="그라운드룰" width="400">
 </div>
 
 ## 🫂 멤버소개
 
 <div align="center">
-  <img src="./front/public/assets/readme/photo.jpg" alt="팀원사진" width="400">
+  <img src="./image/member_photo.png" alt="팀원사진" width="400">
 </div>
 
 ## 🤸‍♂️ 기술스택
-
-## :pushpin: 기술 스택
 
 <table>
     <tr>
@@ -160,11 +162,13 @@ style="width:50%"/>
     </tr>
     <tr> 
         <td>
-            1. 앱 실행 시 로그인 및 회원가입 진행 가능 <br>
+            1. 앱 실행 시 로그인이 안되어있을 경우 본인인증 진행 <br>
+            2. 이름, 주민 번호, 통신사, 핸드폰 번호 입력 후 <br>
+             수신받은 인증번호로 본인인증 진행<br>
+            3. 계정이 있는 경우 간편비밀번호 로그인으로 <br> 계정이 없는 경우 회원가입으로 이동
         </td>
         <td>
-            1. 이름, 주민 번호, 통신사, 핸드폰 번호 입력<br>
-            2. 수신 받은 인증번호를 통해 회원 가입 진행
+            1. 이메일, 주소를 입력 후 회원가입 <br> 미입력해도 가입 가능
         </td>
     </tr>
     <tr align="center"> 
@@ -177,8 +181,9 @@ style="width:50%"/>
     </tr>
     <tr> 
         <td >
-            1. 간편 비밀번호 등록 가능<br>
-            2. 재확인을 통해 오입력, 실수 방지
+            1. 간편 비밀번호 등록<br>
+            2. 재확인을 통해 오입력, 실수 방지<br>
+            3. 보안성 강화를 위한 보안 키패드
         </td>
         <td>
             1. 보안성 강화를 위한 지문 등록<br>
@@ -200,10 +205,12 @@ style="width:50%"/>
     </tr>
     <tr> 
         <td>
-            <br>
+            1. 카드사에 등록된 카드를 불러와 등록<br>
+            2. 사용하지않을 카드는 삭제 가능
         </td>
         <td>
-           <br>
+           1. 결제 시 실적을 우선으로 채울지<br>
+           혜택을 최대한으로 받을지 선택
         </td>
 </table>
 
@@ -218,34 +225,51 @@ style="width:50%"/>
     </tr>
     <tr> 
         <td>
-            <br>
-            <br>
+            1. 카드 리스트를 슬라이드 시 <br>오프라인 결제가 가능한 바코드 생성
         </td>
 </table>
 
-### 온라인 결제
+### 분할결제
 
+<table>
+  <tr align="center">
+    <td><strong>결제 준비 - 결세수단 결정</strong></td>
+    <td><strong>결제 준비 - 결제인증</strong></td>
+  </tr>
+  <tr>
+    <td><img src=""></td>
+    <td><img src=""></td>
+  </tr>
+  <tr>
+    <td>
+     1. 가맹점 사이트에서 결제 QR을 <br>모아페이에서 인식<br>
+     2. 결제 방식 중 분할 결제 클릭
+    </td>
+    <td>
+      1. 결제를 위한 인증 과정 수행<br>방식 : 간단 비밀번호 or 생체인증
+    </td> 
+  </tr>
+</table>
 <table>    
     <tr align="center" > 
-        <td><strong>바코드 잠금, 지문 인식 설정</strong></td>
-        <td><strong>최종 결제</strong></td>
+        <td><strong>결제 진행 및 결과</strong></td>
     </tr>
     <tr align="center">
-        <td> <img src= "" height="450"> </td>
         <td> <img src= "" height="450"> </td>
     </tr>
     <tr> 
         <td>
-          <br>
-        </td>
-        <td>
-          <br>
+          1. 결제 인증 후 결제가 진행<br>
+          2. 사용자는 결과창에서<br>어떤 카드가 결제에 사용되었고, <br>얼마의 혜택을 받고 <br>얼마의 실적이 쌓였는지 확인 가능
         </td>
 </table>
+
+### 더치페이
+
 <table>
   <tr align="center">
-    <td><strong>결제 준비</strong></td>
-    <td><strong>결제 후</strong></td>
+    <td><strong>결제 준비 - 결세수단 결정</strong></td>
+    <td><strong>더치페이 준비</strong></td>
   </tr>
   <tr>
     <td><img src=""></td>
@@ -253,12 +277,28 @@ style="width:50%"/>
   </tr>
   <tr>
     <td>
-      <br>
+     1. 가맹점 사이트에서 결제 QR을 <br>모아페이에서 인식<br>
+     2. 결제 방식 중 더치페이 클릭
     </td>
     <td>
-      <br>
+      1. 더치페이 참가 인원 설정<br>
+      2. 더치페이 공유 링크를 참가자에게 공유<br>
+      3. 더치페이 시작 클릭
     </td> 
   </tr>
+</table>
+<table>    
+    <tr align="center" > 
+        <td><strong>결제 진행 및 결과</strong></td>
+    </tr>
+    <tr align="center">
+        <td> <img src= "" height="450"> </td>
+    </tr>
+    <tr> 
+        <td>
+          1. 결제 카드 선택 후 <br> 개인에게 할당된 금액 결제 진헹<br>
+          2. 더치페이 현황 페이지를 통해 <br>결제 진행사항을 확인 가능
+        </td>
 </table>
 
 ### 카드
@@ -266,33 +306,13 @@ style="width:50%"/>
 <table>    
     <tr align="center" > 
         <td><strong>카드 세부 정보 조회</strong></td>
-        <td><strong>.</strong></td>
     </tr>
     <tr align="center">
-        <td> <img src= "assets/gif/mobile/10_cardA.gif" height="450"> </td>
-        <td> <img src= "assets/gif/mobile/09_cardList.gif" height="450"> </td>
+        <td> <img src= "" height="450"> </td>
     </tr>
     <tr> 
         <td>
-            <br>
-        </td>
-        <td>
-         <br>
-        </td>
-    <tr align="center" > 
-        <td><strong>카드 세부 정보 조회</strong></td>
-        <td><strong>카드 세부 정보 조회</strong></td>
-    </tr>
-    <tr align="center">
-        <td> <img src= "assets/gif/mobile/11_cardADetail.gif" height="450"> </td>
-        <td> <img src= "assets/gif/mobile/12_cardBDetail.gif" height="450"> </td>
-    </tr>
-    <tr> 
-        <td>
-            <br>
-        </td>
-        <td>
-            <br>
+            1. 홈 화면에서 카드를 클릭 시 <br> 월마다 결제 내역 확인 가능
         </td>
 </table>
 
@@ -300,8 +320,8 @@ style="width:50%"/>
 
 <table>    
     <tr align="center" > 
-        <td><strong>이번 달 할인 내역, 이용내역</strong></td>
-        <td><strong>내 소비, 혜택</strong></td>
+        <td><strong>월 별 소비 내역</strong></td>
+        <td><strong>월 별 받은 혜택 내역</strong></td>
     </tr>
     <tr align="center">
         <td> <img src= "" height="450"> </td>
@@ -309,53 +329,64 @@ style="width:50%"/>
     </tr>
     <tr> 
         <td>
-          <br>
+          1. 월 별 소비한 내역을 카테고리별로 확인 가능<br>
         </td>
         <td>
-            <br>
+            1. 월 별 받은 혜택을 카테고리별로 확인 가능<br>
         </td>
 </table>
-
-### 마이페이지
-
 <table>    
     <tr align="center" > 
-        <td><strong>바코드 잠금, 지문 인식 설정</strong></td>
+        <td><strong>통계</strong></td>
+        <td><strong>소비 절감 챌린지</strong></td>
     </tr>
     <tr align="center">
+        <td> <img src= "" height="450"> </td>
         <td> <img src= "" height="450"> </td>
     </tr>
     <tr> 
         <td>
-        <br>
+          1. 같은 성별, 또래에 비해 저번 달에 <br> 얼마나 소비를 얼마나 덜/더 했는지 정보 제공<br>
+          2. 1년 치 소비/혜택 그래프 제공
         </td>
         <td>
-          <br>
-        </td>
-        <td>
+          1. 이번 달 목표 소비 금액 설정<br>
+          2. 사용 금액 / 목표를 달성하기 위해 <br> 하루 사용가능한 금액 제공<br>
+          3. 주차별 사용 금액과 하루 평균 사용 금액 정보 제공<br>
+          4. 매일 사용 금액을 그래프로 제공 
         </td>
 </table>
 
 ## ⚒️ 활용기술, 기술 설명
 
-- 생체인증
+### 생체 정보 등록 및 인증
+
+WebAuthn API를 활용해 진행<br>
+
+**생체정보 등록**<br>
+클라이언트에서 새로운 생체 정보를 등록하기 위한 요청을 보내고 서버로부터 등록에 필요한 옵션 데이터를 받아옵니다.<br>
+받은 옵션 데이터를 바탕으로 navigator.credentials.create() API를 호출하여 실제 생체 정보 등록을 시작합니다.
+<br>이 과정에서 사용자의 생체 정보를 기반으로 키 쌍이 생성되는데 생성된 생체 인증 데이터를 서버에 전송하여 등록을 완료합니다. <br>이때 서버는 사용자 인증 데이터를 검증하고, 성공 시 해당 정보를 저장하여 추후 인증에 사용할 수 있도록 합니다.
+
+**생체 인증**<br>
+클라이언트에서 생체 인증을 요청할 때, 서버로부터 인증 옵션 데이터를 받습니다.<br>받은 옵션 데이터를 바탕으로 navigator.credentials.get() API를 호출하여 사용자 생체 인증을 시작합니다.<br>이때 서버에서 제공한 옵션을 사용하여 사용자 정보를 검증합니다. <br>인증 결과 데이터를 서버로 전송하여 사용자 인증을 완료합니다. <br>서버는 이 데이터를 검증한 후, 성공적인 경우 안증 완료 처리합니다.
 
 ## 📕 산출물(ERD, 명세서, 파일구조)
 
 ### ERD
 
 <div>
-<img src= "./ERD_모아페이.png" height="300">
+<img src= "./image/ERD_모아페이.png" height="300">
 
-<img src= "./ERD_페이먼트.png" height="300">
+<img src= "./image/ERD_페이먼트.png" height="300">
 
-<img src= "./ERD_멤버.png" height="300">
+<img src= "./image/ERD_멤버.png" height="300">
 
-<img src= "./ERD_카드사.png" height="300">
+<img src= "./image/ERD_카드사.png" height="300">
 
-<img src= "./ERD_가맹점.png" height="300">
+<img src= "./image/ERD_가맹점.png" height="300">
 
-<img src= "./전체ERD.png" height="450">
+<img src= "./image/전체ERD.png" height="450">
 </div>
 
 ### 명세서
@@ -365,5 +396,23 @@ style="width:50%"/>
 - **API 명세서**
 
 ## 💸 결과공유, 느낀점(모두작성)
+
+**이예빈**
+
+모아페이 프로젝트는 저에게 있어서 낯설었던 핀테크에 한발자국 다가갈 수 있는 경험이 되었습니다.
+또한 webAuthn, QRcode 등 활용해 기존에 구현해보지않았던 기능 개발을 담당하여 배워가는게 많았던 프로젝트였습니다.
+허나 통합 페이 플랫폼으로 다양한 기능을 유저에게 제공하고싶다는 마음이 컸기에
+수면시간을 줄이면서 진행해 원하던 기능은 대부분 구현했지만
+시간이 많이 제한되어있어 원했던 만큼의 퀄리티는 나오지 못한 것이 아쉬웠습니다.
+
+**최현석**
+
+**주수아**
+
+**정유진**
+
+**김성은**
+
+**이대현**
 
 ## 🎬 UCC링크
