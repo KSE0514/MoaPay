@@ -3,7 +3,7 @@
 ## 🏆삼성 청년 SW아카데미(SSAFY) 11th 특화프로젝트 🏆
 
 <div align="center">
-  <img src="./image/MoAPay.png" alt="MoAPay" width="400">
+  <img src="./image/MoAPay.png" alt="MoAPay" width="">
 </div>
 
 ## 📆 프로젝트 진행 기간
@@ -391,9 +391,7 @@ WebAuthn API를 활용해 진행<br>
 
 ### 명세서
 
-- **요구사항, 기능 명세서**
-
-- **API 명세서**
+[API 명세서](https://docs.google.com/spreadsheets/d/1CjcQ9EE2V08nea62A1RsqoH-0oQzRCKgm-9PH1YaQ3M/edit?usp=sharing)
 
 ## 💸 결과공유, 느낀점(모두작성)
 
