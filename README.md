@@ -157,7 +157,7 @@ style="width:50%"/>
         <td><strong> 회원 가입</strong></td>
     </tr>
     <tr align="center"> 
-        <td> <img src="" height="450"> </td>
+        <td> <img src="./gif/system_open.gif" height="450"> </td>
         <td> <img src="" height="450"> </td>
     </tr>
     <tr> 
@@ -176,8 +176,8 @@ style="width:50%"/>
         <td><strong>지문 등록</strong></td>
     </tr>
     <tr align="center"> 
-        <td> <img src="" height="450"> </td>
-        <td> <img src="" height="450"> </td>
+        <td> <img src="./gif/simple_password.gif" height="450"> </td>
+        <td> <img src="./gif/biometrics.gif" height="450"> </td>
     </tr>
     <tr> 
         <td >
@@ -200,7 +200,7 @@ style="width:50%"/>
         <td><strong>결제 우선 순위 설정</strong></td>
     </tr>
     <tr align="center"> 
-        <td> <img src= "" height="450"> </td>
+        <td> <img src= "./gif/get_card.gif" height="450"> </td>
         <td> <img src= "" height="450"> </td>
     </tr>
     <tr> 
@@ -221,7 +221,7 @@ style="width:50%"/>
         <td><strong>메인 화면</strong></td>
     </tr>
     <tr align="center"> 
-        <td> <img src= "" height="450"> </td>
+        <td> <img src= "./gif/card_slide.gif" height="450"> </td>
     </tr>
     <tr> 
         <td>
@@ -234,34 +234,20 @@ style="width:50%"/>
 <table>
   <tr align="center">
     <td><strong>결제 준비 - 결세수단 결정</strong></td>
-    <td><strong>결제 준비 - 결제인증</strong></td>
+
   </tr>
   <tr>
-    <td><img src=""></td>
-    <td><img src=""></td>
+    <td><img src="./gif/divide_payment.gif"></td>
   </tr>
   <tr>
     <td>
-     1. 가맹점 사이트에서 결제 QR을 <br>모아페이에서 인식<br>
-     2. 결제 방식 중 분할 결제 클릭
-    </td>
-    <td>
-      1. 결제를 위한 인증 과정 수행<br>방식 : 간단 비밀번호 or 생체인증
+    1. 가맹점 사이트에서 결제 QR을 <br>모아페이에서 인식<br>
+    2. 결제 방식 중 분할 결제 클릭<br>
+    3. 결제를 위한 인증 과정 수행<br>방식 : 간단 비밀번호 or 생체인증<br>
+    4. 결제 인증 후 결제가 진행<br>
+    5. 사용자는 결과창에서 어떤 카드가 결제에 사용되었고, <br>얼마의 혜택을 받고 얼마의 실적이 쌓였는지 확인 가능
     </td> 
   </tr>
-</table>
-<table>    
-    <tr align="center" > 
-        <td><strong>결제 진행 및 결과</strong></td>
-    </tr>
-    <tr align="center">
-        <td> <img src= "" height="450"> </td>
-    </tr>
-    <tr> 
-        <td>
-          1. 결제 인증 후 결제가 진행<br>
-          2. 사용자는 결과창에서 어떤 카드가 결제에 사용되었고, <br>얼마의 혜택을 받고 얼마의 실적이 쌓였는지 확인 가능
-        </td>
 </table>
 
 ### 더치페이
@@ -272,12 +258,12 @@ style="width:50%"/>
     <td><strong>더치페이 준비</strong></td>
   </tr>
   <tr>
-    <td><img src=""></td>
-    <td><img src=""></td>
+    <td><img src="./gif/dutch_start.gif"></td>
+    <td><img src="./gif/dutch_open.gif"></td>
   </tr>
   <tr>
     <td>
-     1. 가맹점 사이트에서 결제 QR을 <br>모아페이에서 인식<br>
+     1. 가맹점 사이트에서 결제 QR을 모아페이에서 인식<br>
      2. 결제 방식 중 더치페이 클릭
     </td>
     <td>
@@ -292,7 +278,7 @@ style="width:50%"/>
         <td><strong>결제 진행 및 결과</strong></td>
     </tr>
     <tr align="center">
-        <td> <img src= "" height="450"> </td>
+        <td> <img src= "./gif/ducth_payment.gif" height="450"> </td>
     </tr>
     <tr> 
         <td>
@@ -308,7 +294,7 @@ style="width:50%"/>
         <td><strong>카드 세부 정보 조회</strong></td>
     </tr>
     <tr align="center">
-        <td> <img src= "" height="450"> </td>
+        <td> <img src= "./gif/card_detail.gif" height="450"> </td>
     </tr>
     <tr> 
         <td>
@@ -324,8 +310,8 @@ style="width:50%"/>
         <td><strong>월 별 받은 혜택 내역</strong></td>
     </tr>
     <tr align="center">
-        <td> <img src= "" height="450"> </td>
-        <td> <img src= "" height="450"> </td>
+        <td> <img src= "./gif/consumption.gif" height="450"> </td>
+        <td> <img src= "./gif/benefit.gif" height="450"> </td>
     </tr>
     <tr> 
         <td>
@@ -342,7 +328,7 @@ style="width:50%"/>
     </tr>
     <tr align="center">
         <td> <img src= "" height="450"> </td>
-        <td> <img src= "" height="450"> </td>
+        <td> <img src= "./gif/saving.gif" height="450"> </td>
     </tr>
     <tr> 
         <td>
@@ -430,18 +416,18 @@ WebAuthn API를 활용해 진행<br>
 핀테크라는 다소 생소한 도메인에 도전했지만, 모두가 힘을 합쳐 좋은 결과를 얻은 것 같아 뿌듯합니다. <br>
 이번 프로젝트에서는 MSA를 도입하며 MSA 구조의 특징을 깊이 이해할 수 있었습니다. 또한 Spring Securiy의 JWT를 활용해 인증/인가를 처리하면서, 멤버 서비스에서 인증을 하고 API Gateway에서 인가를 수행하도록 하여 MSA의 장점을 살린 보안 구축을 경험할 수 있었습니다. <br>
 또한 중간발표, 최종발표, 발표회 총 3번의 발표를 진행하며 발표 능력과 자신감도 많이 기를 수 있었습니다. <br>
-특히 팀원들의 협렵과 강한 의지 덕분에 여러 날밤을 새면서도 즐겁게 개발할 수 있었던 것 같습니다. 
+특히 팀원들의 협렵과 강한 의지 덕분에 여러 날밤을 새면서도 즐겁게 개발할 수 있었던 것 같습니다.
 
 **김성은**
 
 모아페이 프로젝트를 진행하며 일상에서 너무 당연하게 썼던 기능을 직접 개발 하게 되어 신기하고 뿌듯했습니다. <br>
-특히 처음 다뤄보는 기술인 WebSocket을 이용하여 온라인 더치페이를 구현했던 것이 마냥 쉽지만은 않았지만, 일전에 WebSocket을 사용한 경험이 있는 팀원분이 도움을 주신 덕분에 잘 마무리할 수 있었던 것 같습니다.  <br>
-프로젝트 중반 때만 해도 기간 안에 끝낼 수 있을지 걱정이 앞섰지만, 걱정과 달리 기획 했던 기능을 전부 구현해서 다행이라고 생각합니다.  <br>
-모든 팀원들이 열심히 해준 덕분에 가능한 일이 아니었나 싶습니다. 함께 프로젝트를 진행한 팀원들께 감사하고 좋은 사람들과 뜻깊은 경험을 할 수 있었음에도 감사합니다. 
+특히 처음 다뤄보는 기술인 WebSocket을 이용하여 온라인 더치페이를 구현했던 것이 마냥 쉽지만은 않았지만, 일전에 WebSocket을 사용한 경험이 있는 팀원분이 도움을 주신 덕분에 잘 마무리할 수 있었던 것 같습니다. <br>
+프로젝트 중반 때만 해도 기간 안에 끝낼 수 있을지 걱정이 앞섰지만, 걱정과 달리 기획 했던 기능을 전부 구현해서 다행이라고 생각합니다. <br>
+모든 팀원들이 열심히 해준 덕분에 가능한 일이 아니었나 싶습니다. 함께 프로젝트를 진행한 팀원들께 감사하고 좋은 사람들과 뜻깊은 경험을 할 수 있었음에도 감사합니다.
 
 **이대현**
 
-MSA 환경에서 인프라를 전담하면서 많이 배웠고 얻어 가는 것이 많았습니다. 뛰어난 팀원들과 프로젝트에 진행하면서 입상까지 하게 되어 보람찬 프로젝트였다고 생각합니다. 
+MSA 환경에서 인프라를 전담하면서 많이 배웠고 얻어 가는 것이 많았습니다. 뛰어난 팀원들과 프로젝트에 진행하면서 입상까지 하게 되어 보람찬 프로젝트였다고 생각합니다.
 
 ## 🎬 UCC링크
 
