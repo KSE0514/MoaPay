@@ -327,7 +327,7 @@ style="width:50%"/>
         <td><strong>소비 절감 챌린지</strong></td>
     </tr>
     <tr align="center">
-        <td> <img src= "" height="450"> </td>
+        <td> <img src= "./gif/sta.gif" height="450"> </td>
         <td> <img src= "./gif/saving.gif" height="450"> </td>
     </tr>
     <tr> 
