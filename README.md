@@ -429,6 +429,9 @@ WebAuthn API를 활용해 진행<br>
 
 MSA 환경에서 인프라를 전담하면서 많이 배웠고 얻어 가는 것이 많았습니다. 뛰어난 팀원들과 프로젝트에 진행하면서 입상까지 하게 되어 보람찬 프로젝트였다고 생각합니다.
 
+## 발표자료
+[ MoA Pay 발표자료 ](https://www.canva.com/design/DAGThq8O6Ng/hB-zjelzyV5C7eQN0cnMyg/edit?utm_content=DAGThq8O6Ng&utm_campaign=designshare&utm_medium=link2&utm_source=sharebutton)
+
 ## 🎬 UCC링크
 
 [MoA Pay Ucc](https://youtu.be/GBB3lD6g-10?feature=shared)
